@@ -1,0 +1,57 @@
+services:
+  # Redis (Celery Broker)
+  redis:
+    image: redis:7-alpine
+    container_name: ebenezer_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./CRM Back end
+      dockerfile: docker/django/Dockerfile
+    container_name: ebenezer_celery_worker
+    restart: unless-stopped
+    command: celery -A config worker --loglevel=info --concurrency=2
+    volumes:
+      - "./CRM Back end:/app"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+      - DATABASE_URL=postgres://ebenezer:ebenezer_dev_2025@host.docker.internal:5432/ebenezer_crm
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-dev-key-change-in-production}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Celery Beat Scheduler
+  celery_beat:
+    build:
+      context: ./CRM Back end
+      dockerfile: docker/django/Dockerfile
+    container_name: ebenezer_celery_beat
+    restart: unless-stopped
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - "./CRM Back end:/app"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+      - DATABASE_URL=postgres://ebenezer:ebenezer_dev_2025@host.docker.internal:5432/ebenezer_crm
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-dev-key-change-in-production}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy

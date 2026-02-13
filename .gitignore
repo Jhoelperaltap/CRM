@@ -1,0 +1,84 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Database
+*.sqlite3
+*.db
+
+# Static files (collected)
+staticfiles/
+static/
+
+# Media files
+media/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Secrets
+*.pem
+*.key
+credentials.json
+
+# Mobile
+crm-mobile/.expo/
+crm-mobile/android/
+crm-mobile/ios/
+*.apk
+*.ipa
+
+# Misc
+*.bak
+*.tmp
+
+# Windows reserved names
+nul
+NUL

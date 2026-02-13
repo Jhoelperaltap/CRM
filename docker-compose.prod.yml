@@ -1,0 +1,114 @@
+# =============================================================================
+# Docker Compose - Production Configuration
+# =============================================================================
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Or with build:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# =============================================================================
+
+version: '3.9'
+
+services:
+  # PostgreSQL Database (production settings)
+  db:
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ebenezer_crm}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Backup volume
+      - postgres_backup:/backups
+
+  # Redis (production settings)
+  redis:
+    restart: always
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  # Django Backend API (production)
+  backend:
+    restart: always
+    volumes:
+      - static_files:/app/staticfiles
+      - media_files:/app/media
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --worker-class gthread"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME:-ebenezer_crm}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - PORTAL_JWT_SIGNING_KEY=${PORTAL_JWT_SIGNING_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://localhost}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Celery Worker (production)
+  celery_worker:
+    restart: always
+    command: celery -A config worker --loglevel=warning --concurrency=4
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME:-ebenezer_crm}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY}
+
+  # Celery Beat (production)
+  celery_beat:
+    restart: always
+    command: celery -A config beat --loglevel=warning --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME:-ebenezer_crm}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY}
+
+  # Next.js Frontend (production)
+  frontend:
+    build:
+      context: ./CRM Front end
+      dockerfile: Dockerfile
+      target: runner
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.yourdomain.com/api/v1}
+    restart: always
+    volumes: []  # No volume mounts in production
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy (production)
+  nginx:
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static_files:/app/staticfiles:ro
+      - media_files:/app/media:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+    profiles: []  # Remove profile restriction for production
+
+volumes:
+  postgres_data:
+  postgres_backup:
+  static_files:
+  media_files:

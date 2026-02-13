@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm --version:*)",
+      "Bash(pip:*)",
+      "WebSearch",
+      "Bash(npx create-next-app:*)",
+      "Bash(ls -la \"C:\\\\copia dell\\\\backup windows10\\\\CRM\\\\CRM Front end\"\" 2>/dev/null || dir \"C:copia dellbackup windows10CRMCRM Front end\" 2>/dev/null || echo \"DIRECTORY NOT FOUND OR EMPTY \")",
+      "Bash(test -d \"C:\\\\copia dell\\\\backup windows10\\\\CRM\\\\CRM Front end\")",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npx shadcn@latest add button input label card table badge dialog dropdown-menu separator sheet avatar tooltip tabs select command popover calendar -y)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(tree:*)",
+      "Bash(while read dir)",
+      "Bash(do if [ -d \"C:\\\\copia dell\\\\backup windows10\\\\CRM\\\\CRM Back end\\\\apps$dir\" ])",
+      "Bash(then echo \"$dir\")",
+      "Bash(fi:*)",
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(dir /s \"C:\\\\copia dell\\\\backup windows10\\\\CRM\\\\CRM Back end\\\\apps\\\\appointments\")",
+      "Bash(dir:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(where:*)",
+      "Bash(python -m pip:*)",
+      "Bash(python -m django makemigrations:*)",
+      "Bash(python:*)"
+    ]
+  }
+}
