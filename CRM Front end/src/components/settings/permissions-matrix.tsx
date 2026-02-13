@@ -38,6 +38,7 @@ export function PermissionsMatrix({
   const [local, setLocal] = useState<ExtendedModulePermission[]>([]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocal(permissions.map((p) => ({ ...p })));
   }, [permissions]);
 

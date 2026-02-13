@@ -735,7 +735,7 @@ export function UserForm({ initialData, onSubmit, isEdit = false, isLoading }: U
                     <SelectItem value=",">,</SelectItem>
                     <SelectItem value=".">.</SelectItem>
                     <SelectItem value=" ">(space)</SelectItem>
-                    <SelectItem value="'">'</SelectItem>
+                    <SelectItem value="'">&apos;</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

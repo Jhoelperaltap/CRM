@@ -44,6 +44,7 @@ export function useInactivityTimeout(options: UseInactivityTimeoutOptions = {}) 
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
   const [showWarning, setShowWarning] = useState(false);
 
+  // eslint-disable-next-line react-hooks/purity
   const lastActivityRef = useRef<number>(Date.now());
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
   const warningIntervalRef = useRef<NodeJS.Timeout | null>(null);

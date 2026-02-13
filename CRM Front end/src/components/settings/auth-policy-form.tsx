@@ -32,6 +32,7 @@ export function AuthPolicyForm({ policy, onSave, loading = false }: AuthPolicyFo
 
   useEffect(() => {
     if (policy) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResetFrequencyDays(policy.password_reset_frequency_days);
       setHistoryCount(policy.password_history_count);
       setEnforceComplexity(policy.enforce_password_complexity);

@@ -51,11 +51,13 @@ export function AppointmentSlideOver({ appointmentId, open, onClose }: Props) {
 
   useEffect(() => {
     if (!appointmentId || !open) return;
-    setLoading(true);
+    let cancelled = false;
+    setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     getAppointment(appointmentId)
-      .then(setAppointment)
-      .catch(() => setAppointment(null))
-      .finally(() => setLoading(false));
+      .then((data) => !cancelled && setAppointment(data))
+      .catch(() => !cancelled && setAppointment(null))
+      .finally(() => !cancelled && setLoading(false));
+    return () => { cancelled = true; };
   }, [appointmentId, open]);
 
   const formatDateTime = (iso: string) => {

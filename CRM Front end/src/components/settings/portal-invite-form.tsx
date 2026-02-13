@@ -121,7 +121,7 @@ export function PortalInviteForm({ onSuccess }: PortalInviteFormProps) {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Leave blank to use the contact's existing email.
+                Leave blank to use the contact&apos;s existing email.
               </p>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>

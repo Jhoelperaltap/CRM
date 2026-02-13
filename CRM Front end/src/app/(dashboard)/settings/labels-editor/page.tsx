@@ -566,7 +566,7 @@ export default function LabelsEditorPage() {
       // Handle both array and paginated responses
       const labels: FieldLabel[] = Array.isArray(raw)
         ? raw
-        : (raw as any).results || [];
+        : (raw as { results?: FieldLabel[] }).results || [];
       const filtered = labels.filter((l: FieldLabel) => l.language === language);
       setExistingLabels(filtered);
 

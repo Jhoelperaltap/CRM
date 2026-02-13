@@ -61,7 +61,7 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
             Two-factor authentication adds an extra layer of security to your
-            account. You'll need an authenticator app like Google Authenticator
+            account. You&apos;ll need an authenticator app like Google Authenticator
             or Authy.
           </p>
           {error && (
@@ -99,7 +99,7 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
           </div>
           <div className="rounded-md bg-muted p-3">
             <p className="text-xs text-muted-foreground mb-1">
-              Can't scan? Enter this code manually:
+              Can&apos;t scan? Enter this code manually:
             </p>
             <code className="text-sm font-mono break-all">{secret}</code>
           </div>

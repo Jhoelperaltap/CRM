@@ -44,7 +44,7 @@ export function DocumentViewer({
   // Fetch secure download token when dialog opens
   useEffect(() => {
     if (open && !viewUrl && !urlLoading) {
-      setUrlLoading(true);
+      setUrlLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
       getDocumentViewUrl(documentId)
         .then(setViewUrl)
         .catch((err) => {

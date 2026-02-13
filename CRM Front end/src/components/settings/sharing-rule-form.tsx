@@ -70,6 +70,7 @@ export function SharingRuleForm({
 
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setModule(initialData.module || "");
       setDefaultAccess(initialData.default_access || "private");
       setShareType(initialData.share_type || "role_hierarchy");

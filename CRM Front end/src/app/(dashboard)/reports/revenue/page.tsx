@@ -32,11 +32,18 @@ export default function RevenueReportPage() {
   const [groupBy, setGroupBy] = useState("monthly");
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
     getRevenueReport({ group_by: groupBy })
-      .then(setData)
+      .then((result) => {
+        if (!cancelled) setData(result);
+      })
       .catch(console.error)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [groupBy]);
 
   if (loading) return <LoadingSpinner />;

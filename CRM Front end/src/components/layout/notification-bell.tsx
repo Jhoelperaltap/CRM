@@ -34,7 +34,7 @@ export function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    fetchUnreadCount();
+    fetchUnreadCount(); // eslint-disable-line react-hooks/set-state-in-effect
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, [fetchUnreadCount]);

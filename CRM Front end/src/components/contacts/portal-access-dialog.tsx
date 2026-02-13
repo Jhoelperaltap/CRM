@@ -59,11 +59,12 @@ export function PortalAccessDialog({
       });
 
       onSuccess?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string; contact?: string[]; email?: string[] } } };
       const message =
-        err.response?.data?.detail ||
-        err.response?.data?.contact?.[0] ||
-        err.response?.data?.email?.[0] ||
+        axiosErr.response?.data?.detail ||
+        axiosErr.response?.data?.contact?.[0] ||
+        axiosErr.response?.data?.email?.[0] ||
         "Failed to create portal access";
       setError(message);
     } finally {
@@ -166,7 +167,7 @@ export function PortalAccessDialog({
                 placeholder={contactEmail || "Enter email address"}
               />
               <p className="text-xs text-muted-foreground">
-                Leave empty to use the contact's email: {contactEmail || "(no email)"}
+                Leave empty to use the contact&apos;s email: {contactEmail || "(no email)"}
               </p>
             </div>
 
