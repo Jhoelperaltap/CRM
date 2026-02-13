@@ -40,7 +40,6 @@ export function LoginForm() {
       setSessionTimeoutMessage("Your session has expired due to inactivity. Please sign in again.");
       router.replace("/login", { scroll: false });
     } else if (reason === "session_terminated") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSessionTimeoutMessage("Your session was terminated because you logged in from another device.");
       router.replace("/login", { scroll: false });
     }
