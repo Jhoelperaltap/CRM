@@ -180,8 +180,8 @@ export function QuickCreateDialog({
                   )}
                   style={{
                     backgroundColor: c.value,
-                    ringColor: c.value,
-                  }}
+                    ["--tw-ring-color" as string]: c.value,
+                  } as React.CSSProperties}
                   title={c.name}
                 >
                   {color === c.value && (
