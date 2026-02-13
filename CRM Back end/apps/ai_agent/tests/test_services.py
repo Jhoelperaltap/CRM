@@ -4,15 +4,12 @@ Tests for AI Agent services.
 
 import pytest
 from datetime import timedelta
-from unittest.mock import MagicMock, patch
 
 from django.utils import timezone
 
 from apps.ai_agent.models import (
     AgentAction,
     AgentConfiguration,
-    AgentInsight,
-    AgentLog,
 )
 
 
@@ -47,7 +44,7 @@ class TestAppointmentMonitor:
         now = timezone.now()
         apt_time = now + timedelta(hours=24, minutes=5)
 
-        appointment = Appointment.objects.create(
+        Appointment.objects.create(
             title="Tax Consultation",
             contact=contact,
             start_datetime=apt_time,
@@ -72,7 +69,7 @@ class TestAppointmentMonitor:
         now = timezone.now()
         apt_time = now + timedelta(hours=24, minutes=5)
 
-        appointment = Appointment.objects.create(
+        Appointment.objects.create(
             title="Tax Consultation",
             contact=contact,
             start_datetime=apt_time,
@@ -83,8 +80,7 @@ class TestAppointmentMonitor:
         monitor = AppointmentMonitor(agent_config)
 
         # First check should create reminder
-        actions1 = monitor.check_upcoming_appointments()
-        initial_count = len(actions1)
+        monitor.check_upcoming_appointments()
 
         # Second check should not create duplicate
         actions2 = monitor.check_upcoming_appointments()

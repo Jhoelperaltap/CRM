@@ -1,7 +1,7 @@
 import pytest
 
 from apps.portal.models import ClientPortalAccess
-from tests.factories import ClientPortalAccessFactory, ContactFactory
+from tests.factories import ContactFactory
 
 
 @pytest.mark.django_db

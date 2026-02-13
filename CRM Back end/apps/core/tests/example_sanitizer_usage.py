@@ -7,7 +7,6 @@ Run with: python manage.py shell < apps/core/tests/example_sanitizer_usage.py
 
 from apps.core.sanitizers import (
     HTMLSanitizer,
-    PlainTextSanitizer,
     StrictHTMLSanitizer,
     sanitize_html,
     strip_html,

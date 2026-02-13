@@ -5,17 +5,12 @@ time-series and aggregate data for the Sales Insights dashboard.
 """
 
 from datetime import date, timedelta
-from decimal import Decimal
 
-from django.db.models import Avg, Count, F, Q, Sum
+from django.db.models import Avg, Count, F, Sum
 from django.db.models.functions import (
-    ExtractMonth,
-    ExtractWeek,
-    ExtractYear,
     TruncMonth,
     TruncWeek,
 )
-from django.utils import timezone
 
 from apps.appointments.models import Appointment
 from apps.cases.models import TaxCase
@@ -464,11 +459,6 @@ def get_sales_cycle_duration(date_from=None, date_to=None, user_id=None):
         qs = qs.filter(assigned_preparer=user_id)
 
     TYPE_LABELS = dict(TaxCase.CaseType.choices)
-
-    # Overall average
-    overall = qs.annotate(
-        duration=F("closed_date") - F("created_at__date")
-    )
 
     rows_qs = (
         qs.values("case_type")

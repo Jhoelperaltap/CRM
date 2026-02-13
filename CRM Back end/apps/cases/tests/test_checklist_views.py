@@ -4,8 +4,6 @@ from rest_framework import status
 from tests.factories import (
     ChecklistTemplateFactory,
     ChecklistTemplateItemFactory,
-    CaseChecklistFactory,
-    CaseChecklistItemFactory,
     TaxCaseFactory,
 )
 

@@ -130,7 +130,7 @@ def check_magic_bytes(file_content: bytes, mime_type: str) -> bool:
         # Text types don't have magic bytes, accept them
         return True
 
-    for offset, magic, _ in signatures:
+    for offset, magic, _desc in signatures:
         if len(file_content) >= offset + len(magic):
             if file_content[offset : offset + len(magic)] == magic:
                 return True

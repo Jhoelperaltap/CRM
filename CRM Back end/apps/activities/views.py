@@ -16,7 +16,6 @@ from apps.activities.serializers import (
     CommentSerializer,
     CommentCreateSerializer,
     CommentUpdateSerializer,
-    CommentReactionSerializer,
     MentionSuggestionSerializer,
 )
 from apps.users.models import User

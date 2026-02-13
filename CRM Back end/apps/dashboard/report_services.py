@@ -6,15 +6,11 @@ date filtering, grouping, and CSV export.
 """
 
 import csv
-import io
-from datetime import timedelta
 from decimal import Decimal
 
-from django.db.models import Avg, Count, DecimalField, F, Q, Sum
+from django.db.models import Count, DecimalField, F, Q, Sum
 from django.db.models.functions import (
     Coalesce,
-    ExtractMonth,
-    ExtractYear,
     TruncMonth,
     TruncQuarter,
     TruncYear,
@@ -211,7 +207,6 @@ def get_contact_acquisition(date_from=None, date_to=None):
     New contacts by month, by source, and conversion rate.
     """
     _, Contact = _get_models()
-    TaxCase = __import__("apps.cases.models", fromlist=["TaxCase"]).TaxCase
     date_from, date_to = _parse_dates(date_from, date_to)
 
     qs = Contact.objects.filter(created_at__gte=date_from, created_at__lte=date_to)

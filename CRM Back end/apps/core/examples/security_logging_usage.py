@@ -11,9 +11,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from django.core.exceptions import PermissionDenied
 
-from apps.core.logging import security_event_logger, SecurityEvent
+from apps.core.logging import security_event_logger
 from apps.users.models import User
 
 
@@ -194,7 +193,7 @@ def enable_2fa_view(request):
 
 
 # Example 4: Permission Denied Logging in DRF Permission Class
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission  # noqa: E402
 
 
 class LoggedPermission(BasePermission):
@@ -261,7 +260,7 @@ class SuspiciousActivityMiddleware:
 
 
 # Example 6: Custom Authentication Backend with Security Logging
-from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.backends import ModelBackend  # noqa: E402
 
 
 class LoggedAuthenticationBackend(ModelBackend):
@@ -308,8 +307,7 @@ def get_client_ip(request):
 
 
 # Example 7: Scheduled Task to Review Security Events
-from celery import shared_task
-from datetime import datetime, timedelta
+from celery import shared_task  # noqa: E402
 
 
 @shared_task

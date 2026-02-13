@@ -5,13 +5,10 @@ from rest_framework import status
 
 from tests.factories import (
     ContactFactory,
-    EmailAccountFactory,
-    EmailAttachmentFactory,
     EmailMessageFactory,
     EmailTemplateFactory,
     EmailThreadFactory,
     TaxCaseFactory,
-    UserFactory,
 )
 
 

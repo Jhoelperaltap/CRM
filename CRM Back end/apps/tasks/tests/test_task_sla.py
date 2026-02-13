@@ -1,7 +1,6 @@
 import pytest
-from django.utils import timezone
 
-from tests.factories import TaskFactory, UserFactory, UserGroupFactory
+from tests.factories import TaskFactory
 
 
 @pytest.mark.django_db

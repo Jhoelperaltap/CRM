@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from apps.cases.checklist_views import CaseChecklistViewSet
 from apps.cases.filters import TaxCaseFilter
-from apps.cases.models import TaxCase, TaxCaseNote
+from apps.cases.models import TaxCase
 from apps.cases.serializers import (
     TaxCaseCreateUpdateSerializer,
     TaxCaseDetailSerializer,

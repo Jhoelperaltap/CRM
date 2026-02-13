@@ -1,6 +1,5 @@
 import pytest
 
-from apps.portal.models import PortalMessage
 from tests.factories import ContactFactory, PortalMessageFactory, UserFactory
 
 

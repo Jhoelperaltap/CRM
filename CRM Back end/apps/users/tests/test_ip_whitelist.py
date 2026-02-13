@@ -1,7 +1,6 @@
 import pytest
 from rest_framework import status
 
-from apps.users.models import LoginIPWhitelist
 from tests.factories import LoginIPWhitelistFactory
 
 

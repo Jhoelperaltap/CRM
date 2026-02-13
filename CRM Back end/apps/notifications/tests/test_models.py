@@ -18,7 +18,7 @@ class TestNotificationModel:
 
     def test_ordering_newest_first(self):
         user = UserFactory()
-        n1 = NotificationFactory(recipient=user, title="First")
+        NotificationFactory(recipient=user, title="First")
         n2 = NotificationFactory(recipient=user, title="Second")
         from apps.notifications.models import Notification
         notifs = list(Notification.objects.filter(recipient=user))

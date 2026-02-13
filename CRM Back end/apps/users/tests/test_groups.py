@@ -1,7 +1,7 @@
 import pytest
 from rest_framework import status
 
-from tests.factories import UserFactory, UserGroupFactory
+from tests.factories import UserGroupFactory
 
 
 BASE = "/api/v1/settings/groups/"

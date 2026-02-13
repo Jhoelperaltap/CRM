@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, ANY
 
-from tests.factories import TaxCaseFactory, DocumentFactory, WorkflowRuleFactory
+from tests.factories import TaxCaseFactory, DocumentFactory
 
 
 @pytest.mark.django_db

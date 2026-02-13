@@ -5,11 +5,9 @@ Celery tasks for email sync, send, and notification checks.
 import logging
 import re
 from datetime import timedelta
-from io import BytesIO
 
 from celery import shared_task
 from django.core.files.base import ContentFile
-from django.db.models import Q
 from django.utils import timezone
 
 from apps.emails.imap_client import IMAPClient

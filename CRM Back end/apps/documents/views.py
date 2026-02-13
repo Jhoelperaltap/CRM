@@ -10,7 +10,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from apps.core.throttling import FileUploadRateThrottle, BulkOperationRateThrottle
+from apps.core.throttling import FileUploadRateThrottle
 from apps.documents.filters import DocumentFilter, DocumentLinkFilter
 from apps.documents.models import (
     Document,

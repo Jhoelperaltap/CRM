@@ -3,7 +3,6 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.users.models import AuthenticationPolicy, User
 from apps.users.totp import (
     check_recovery_code,
     generate_recovery_codes,

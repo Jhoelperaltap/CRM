@@ -3,7 +3,6 @@ Tests for AI Agent API views.
 """
 
 import pytest
-from django.utils import timezone
 from rest_framework import status
 
 from apps.ai_agent.models import (

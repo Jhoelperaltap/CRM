@@ -9,7 +9,6 @@ from rest_framework.response import Response
 
 from apps.emails.filters import EmailMessageFilter, EmailThreadFilter
 from apps.emails.models import (
-    EmailAccount,
     EmailAttachment,
     EmailMessage,
     EmailTemplate,

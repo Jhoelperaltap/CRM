@@ -1,5 +1,5 @@
 from decimal import Decimal
-from django.db.models import Sum, Q
+from django.db.models import Sum
 
 from apps.cases.models import TaxCase
 from apps.forecasts.models import ForecastEntry, SalesQuota
@@ -89,7 +89,6 @@ def get_quarter_summary(user_ids, fiscal_year, quarter):
     )
     best_case = forecast["best_case"] or ZERO
     commit = forecast["commit"] or ZERO
-    f_pipeline = forecast["f_pipeline"] or ZERO
 
     gap = quota_total - closed_won
     funnel_total = pipeline_value + best_case + commit
@@ -159,7 +158,6 @@ def get_member_quarter_detail(user, fiscal_year, quarter):
     ).first()
     best_case = forecast.best_case if forecast else ZERO
     commit_val = forecast.commit if forecast else ZERO
-    f_pipeline = forecast.pipeline if forecast else ZERO
 
     gap = quota - closed_won
     funnel_total = pipeline_value + best_case + commit_val

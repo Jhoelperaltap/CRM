@@ -12,7 +12,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 # Sentry
-import sentry_sdk
+import sentry_sdk  # noqa: E402
 
 sentry_sdk.init(
     dsn=env("SENTRY_DSN", default=""),  # noqa: F405

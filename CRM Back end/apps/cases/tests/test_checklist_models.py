@@ -4,7 +4,6 @@ from tests.factories import (
     ChecklistTemplateFactory,
     ChecklistTemplateItemFactory,
     CaseChecklistFactory,
-    CaseChecklistItemFactory,
 )
 
 
@@ -40,7 +39,7 @@ class TestChecklistTemplateItemModel:
 
     def test_ordering_by_sort_order(self):
         template = ChecklistTemplateFactory()
-        i3 = ChecklistTemplateItemFactory(template=template, sort_order=3)
+        ChecklistTemplateItemFactory(template=template, sort_order=3)  # i3 - for ordering test
         i1 = ChecklistTemplateItemFactory(template=template, sort_order=1)
         i2 = ChecklistTemplateItemFactory(template=template, sort_order=2)
         items = list(template.items.all())

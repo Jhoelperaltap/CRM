@@ -4,12 +4,11 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.users.models import AuthenticationPolicy, UserSession
+from apps.users.models import UserSession
 from tests.factories import (
     AuthenticationPolicyFactory,
     LoginIPWhitelistFactory,
     UserFactory,
-    UserSessionFactory,
 )
 
 
@@ -17,7 +16,7 @@ from tests.factories import (
 class TestSessionTimeoutMiddleware:
     def test_active_session_passes(self, admin_role):
         """A session with recent activity should not be timed out."""
-        policy = AuthenticationPolicyFactory(idle_session_timeout_minutes=240)
+        AuthenticationPolicyFactory(idle_session_timeout_minutes=240)
         user = UserFactory(role=admin_role)
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
@@ -33,7 +32,7 @@ class TestSessionTimeoutMiddleware:
 
     def test_idle_session_returns_401(self, admin_role):
         """A session idle beyond the timeout should return 401."""
-        policy = AuthenticationPolicyFactory(idle_session_timeout_minutes=1)
+        AuthenticationPolicyFactory(idle_session_timeout_minutes=1)
         user = UserFactory(role=admin_role)
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token

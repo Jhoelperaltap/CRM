@@ -1,8 +1,7 @@
 """
 Tests for security event logging with pattern detection.
 """
-import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from django.test import TestCase
 from django.core.cache import cache
 

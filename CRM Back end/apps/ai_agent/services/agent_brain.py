@@ -7,7 +7,6 @@ import logging
 from datetime import timedelta
 from typing import Any
 
-from django.db import transaction
 from django.utils import timezone
 
 from apps.ai_agent.models import AgentAction, AgentConfiguration, AgentLog

@@ -1,7 +1,6 @@
 import pytest
 from rest_framework import status
 
-from tests.factories import UserFactory
 
 
 BASE_AUTH = "/api/v1/auth/"

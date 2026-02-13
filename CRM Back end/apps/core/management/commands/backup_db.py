@@ -7,8 +7,6 @@ Usage:
     python manage.py backup_db --key <base64-fernet-key>
 """
 
-import json
-import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -66,7 +64,7 @@ class Command(BaseCommand):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = options["output"] or f"backup_{timestamp}.enc"
 
-        self.stdout.write(f"Creating database dump...")
+        self.stdout.write("Creating database dump...")
 
         # Dump data to JSON
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
@@ -80,7 +78,7 @@ class Command(BaseCommand):
             tmp_path = tmp.name
 
         # Read and encrypt
-        self.stdout.write(f"Encrypting backup...")
+        self.stdout.write("Encrypting backup...")
         with open(tmp_path, "rb") as f:
             plaintext = f.read()
 

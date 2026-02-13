@@ -1,9 +1,7 @@
 import pytest
-from rest_framework.test import APIClient
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.cases.models import TaxCase
-from tests.factories import ContactFactory, TaxCaseFactory, UserFactory
+from tests.factories import TaxCaseFactory
 
 
 @pytest.mark.django_db

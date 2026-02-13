@@ -3,7 +3,6 @@ Django Admin configuration for Activity Timeline and Comments.
 """
 
 from django.contrib import admin
-from django.contrib.contenttypes.models import ContentType
 
 from apps.activities.models import Activity, Comment, CommentReaction
 

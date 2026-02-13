@@ -9,7 +9,6 @@ from apps.workflows.workflow_engine import (
 )
 from tests.factories import (
     TaxCaseFactory,
-    UserFactory,
     WorkflowRuleFactory,
 )
 
@@ -58,7 +57,7 @@ class TestExecuteAction:
 class TestEvaluateSignalTrigger:
     @patch("apps.workflows.workflow_engine.execute_action")
     def test_fires_matching_rules(self, mock_exec):
-        rule = WorkflowRuleFactory(
+        WorkflowRuleFactory(
             trigger_type="case_created",
             is_active=True,
             conditions={},

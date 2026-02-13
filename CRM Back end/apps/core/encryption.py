@@ -7,7 +7,6 @@ If the setting is not configured, a warning is logged and values are
 stored in plaintext (for development convenience).
 """
 
-import base64
 import logging
 
 from cryptography.fernet import Fernet, InvalidToken

@@ -13,12 +13,9 @@ import base64
 import logging
 import os
 import secrets
-from io import BytesIO
-from typing import BinaryIO, Optional, Tuple
+from typing import Optional, Tuple
 
 from cryptography.fernet import Fernet, InvalidToken
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from django.conf import settings
 from django.core.files.base import ContentFile
 

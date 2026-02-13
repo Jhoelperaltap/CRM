@@ -1,9 +1,7 @@
 import pytest
 
-from apps.cases.checklist_models import CaseChecklist, CaseChecklistItem
+from apps.cases.checklist_models import CaseChecklist
 from tests.factories import (
-    ChecklistTemplateFactory,
-    ChecklistTemplateItemFactory,
     DocumentFactory,
     TaxCaseFactory,
 )

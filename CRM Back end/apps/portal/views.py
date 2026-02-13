@@ -9,6 +9,38 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
+from apps.portal.auth import (
+    create_portal_tokens,
+    hash_portal_password,
+    verify_portal_password,
+)
+from apps.portal.models import (
+    ClientPortalAccess,
+    PortalDeviceToken,
+    PortalDocumentUpload,
+    PortalMessage,
+    PortalNotification,
+)
+from apps.portal.permissions import IsPortalAuthenticated
+from apps.portal.serializers import (
+    PortalAppointmentSerializer,
+    PortalCaseDetailSerializer,
+    PortalCaseListSerializer,
+    PortalContactSerializer,
+    PortalDeviceTokenCreateSerializer,
+    PortalDeviceTokenSerializer,
+    PortalDocumentCreateSerializer,
+    PortalDocumentSerializer,
+    PortalDocumentUploadSerializer,
+    PortalLoginSerializer,
+    PortalMeSerializer,
+    PortalMessageCreateSerializer,
+    PortalMessageSerializer,
+    PortalNotificationSerializer,
+    PortalPasswordResetConfirmSerializer,
+    PortalPasswordResetRequestSerializer,
+)
+
 
 def _hash_reset_token(token: str) -> str:
     """
@@ -33,38 +65,6 @@ class PortalLoginThrottle(AnonRateThrottle):
 class PortalPasswordResetThrottle(AnonRateThrottle):
     """Limit password reset requests to prevent abuse."""
     rate = "3/hour"
-
-from apps.portal.auth import (
-    create_portal_tokens,
-    hash_portal_password,
-    verify_portal_password,
-)
-from apps.portal.models import (
-    ClientPortalAccess,
-    PortalDeviceToken,
-    PortalDocumentUpload,
-    PortalMessage,
-    PortalNotification,
-)
-from apps.portal.permissions import IsContactOwner, IsPortalAuthenticated
-from apps.portal.serializers import (
-    PortalAppointmentSerializer,
-    PortalCaseDetailSerializer,
-    PortalCaseListSerializer,
-    PortalContactSerializer,
-    PortalDeviceTokenCreateSerializer,
-    PortalDeviceTokenSerializer,
-    PortalDocumentCreateSerializer,
-    PortalDocumentSerializer,
-    PortalDocumentUploadSerializer,
-    PortalLoginSerializer,
-    PortalMeSerializer,
-    PortalMessageCreateSerializer,
-    PortalMessageSerializer,
-    PortalNotificationSerializer,
-    PortalPasswordResetConfirmSerializer,
-    PortalPasswordResetRequestSerializer,
-)
 
 
 # -----------------------------------------------------------------------

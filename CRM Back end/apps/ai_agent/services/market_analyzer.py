@@ -8,8 +8,8 @@ from datetime import timedelta
 from typing import Any
 
 from django.db import transaction
-from django.db.models import Avg, Count, Q, Sum
-from django.db.models.functions import TruncMonth, TruncWeek
+from django.db.models import Count
+from django.db.models.functions import TruncWeek
 from django.utils import timezone
 
 from apps.ai_agent.models import AgentAction, AgentInsight, AgentLog

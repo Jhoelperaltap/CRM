@@ -10,8 +10,6 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from apps.core.sanitizers import (
-    ALLOWED_ATTRIBUTES,
-    ALLOWED_TAGS,
     HAS_BLEACH,
     HTMLSanitizer,
     HTMLValidator,

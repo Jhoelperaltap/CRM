@@ -2,8 +2,6 @@ import logging
 from datetime import datetime, timedelta
 
 from django.db.models import Count, Max
-
-logger = logging.getLogger(__name__)
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -31,7 +29,6 @@ from apps.chatbot.serializers import (
     ChatbotConversationListSerializer,
     ChatbotKnowledgeEntryCreateSerializer,
     ChatbotKnowledgeEntrySerializer,
-    PortalAvailableSlotsSerializer,
     PortalBookAppointmentSerializer,
     PortalChatMessageSerializer,
     PortalChatResponseSerializer,
@@ -39,6 +36,8 @@ from apps.chatbot.serializers import (
 )
 from apps.portal.permissions import IsPortalAuthenticated
 from apps.users.permissions import IsAdminRole
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -348,8 +347,8 @@ class PortalChatView(APIView):
             conversation.fallback_count += 1
             if conversation.fallback_count >= config.max_fallbacks_before_handoff:
                 response_content += (
-                    f"\n\nI notice I'm having trouble helping you. "
-                    f"Would you like me to connect you with a representative?"
+                    "\n\nI notice I'm having trouble helping you. "
+                    "Would you like me to connect you with a representative?"
                 )
             conversation.save()
 

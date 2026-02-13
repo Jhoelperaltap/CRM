@@ -95,7 +95,7 @@ class TestGenerateRecurring:
             end_datetime=now - datetime.timedelta(days=1) + datetime.timedelta(hours=1),
         )
 
-        instances1 = generate_recurring_appointments(parent, days_ahead=5)
+        generate_recurring_appointments(parent, days_ahead=5)
         instances2 = generate_recurring_appointments(parent, days_ahead=5)
         # Second call should create no new instances
         assert len(instances2) == 0
@@ -126,7 +126,7 @@ class TestUpdateRecurringSeries:
         instances = generate_recurring_appointments(parent, days_ahead=5)
         instance = instances[0]
 
-        result = update_recurring_series(
+        update_recurring_series(
             parent, "this_only", {"title": "Updated"}, from_instance=instance
         )
         instance.refresh_from_db()

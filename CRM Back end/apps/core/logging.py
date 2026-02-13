@@ -37,12 +37,10 @@ import json
 import logging
 import traceback
 import time
-from collections import defaultdict
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Optional, List
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
 from threading import Lock
 
-from django.conf import settings
 from django.core.cache import cache
 
 

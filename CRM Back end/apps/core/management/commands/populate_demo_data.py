@@ -4,11 +4,15 @@ Usage: python manage.py populate_demo_data
 """
 import random
 from decimal import Decimal
-from datetime import datetime, timedelta, date, time
+from datetime import timedelta, date, time
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
+
+from apps.cases.models import TaxCase
+from apps.contacts.models import Contact
+from apps.corporations.models import Corporation
 
 User = get_user_model()
 
@@ -501,7 +505,7 @@ class Command(BaseCommand):
                     corporation=corp,
                     assigned_to=random.choice(users) if users else None,
                     created_by=random.choice(users) if users else None,
-                    description=f"Contact created for demo purposes. Interested in tax services.",
+                    description="Contact created for demo purposes. Interested in tax services.",
                 )
                 created.append(contact)
         return created
@@ -618,7 +622,6 @@ class Command(BaseCommand):
         ]
 
         locations = ["OFFICE", "VIRTUAL", "PHONE"]
-        statuses = ["SCHEDULED", "CONFIRMED", "COMPLETED", "CANCELLED", "NO_SHOW"]
 
         created = []
         base_date = timezone.now()
@@ -1098,7 +1101,7 @@ class Command(BaseCommand):
                 billing_zip=contact.zip_code if contact else "",
                 billing_country="USA",
                 terms_and_conditions="Payment due within 30 days.",
-                description=f"Invoice for tax services rendered.",
+                description="Invoice for tax services rendered.",
             )
 
             # Add line items

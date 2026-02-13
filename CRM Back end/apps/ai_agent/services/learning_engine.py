@@ -7,7 +7,7 @@ import logging
 from datetime import timedelta
 from typing import Any
 
-from django.db.models import Avg, Count, F, Q, Sum
+from django.db.models import Avg, Count, Q, Sum
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 

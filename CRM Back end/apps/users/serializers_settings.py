@@ -7,9 +7,7 @@ from apps.users.models import (
     LoginIPWhitelist,
     SharingRule,
     UserGroup,
-    UserGroupMembership,
 )
-from apps.users.serializers import UserSerializer
 
 
 # ---------------------------------------------------------------------------

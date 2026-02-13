@@ -12,7 +12,7 @@ from decimal import Decimal
 import re
 
 from django.apps import apps
-from django.db.models import Q, CharField, DecimalField, DateField, DateTimeField
+from django.db.models import DecimalField, DateField, DateTimeField
 from django.utils import timezone
 
 from apps.reports.models import Report

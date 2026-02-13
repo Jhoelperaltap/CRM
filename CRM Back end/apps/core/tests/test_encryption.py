@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch
 from cryptography.fernet import Fernet
 from django.db import connection
 
@@ -115,8 +114,6 @@ class TestEncryptedCharField:
         assert contact.ssn_last_four == "1234"
 
         # The raw database value should be the encrypted token, not plaintext
-        from apps.contacts.models import Contact
-        raw_qs = Contact.objects.filter(pk=contact.pk).values_list("ssn_last_four", flat=True)
         # Bypass the from_db_value by reading via raw SQL
         with connection.cursor() as cursor:
             cursor.execute(

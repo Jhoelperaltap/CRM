@@ -13,9 +13,6 @@ Endpoints:
 import logging
 import uuid
 
-from django.conf import settings
-
-logger = logging.getLogger(__name__)
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -23,7 +20,6 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.throttling import TwoFactorRateThrottle
-
 from apps.users.authentication import set_auth_cookies
 from apps.users.models import AuthenticationPolicy, User
 from apps.users.serializers_2fa import (
@@ -41,6 +37,8 @@ from apps.users.totp import (
     hash_recovery_code,
     verify_totp,
 )
+
+logger = logging.getLogger(__name__)
 
 # JWT helpers for temp tokens ------------------------------------------------
 

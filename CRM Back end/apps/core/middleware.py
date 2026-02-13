@@ -3,8 +3,6 @@ Core middleware for the CRM application.
 
 Includes API versioning and deprecation headers.
 """
-from datetime import datetime, timezone
-from django.conf import settings
 
 
 class APIVersioningMiddleware:

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.portal.models import (
-    ClientPortalAccess,
     PortalDeviceToken,
     PortalDocumentUpload,
     PortalMessage,

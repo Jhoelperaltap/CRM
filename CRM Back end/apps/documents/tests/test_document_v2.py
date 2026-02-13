@@ -1,8 +1,8 @@
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.documents.models import Document, DocumentAccessLog
-from tests.factories import DocumentFactory, UserFactory
+from apps.documents.models import DocumentAccessLog
+from tests.factories import DocumentFactory
 
 # Valid PDF magic bytes (minimal PDF structure)
 VALID_PDF_CONTENT = b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF"
@@ -30,7 +30,7 @@ class TestDocumentVersioning:
 
     def test_list_versions(self, admin_client, admin_user):
         parent = DocumentFactory(uploaded_by=admin_user, version=1)
-        child = DocumentFactory(
+        DocumentFactory(
             uploaded_by=admin_user,
             version=2,
             parent_document=parent,
