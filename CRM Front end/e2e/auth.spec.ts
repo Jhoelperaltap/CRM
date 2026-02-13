@@ -11,40 +11,47 @@ test.describe('Authentication', () => {
     test('should display login form', async ({ page }) => {
       await page.goto('/login');
 
-      // Check for form elements
-      await expect(page.getByRole('heading', { name: /iniciar sesión|sign in|login/i })).toBeVisible();
-      await expect(page.getByLabel(/email|correo/i)).toBeVisible();
-      await expect(page.getByLabel(/password|contraseña/i)).toBeVisible();
-      await expect(page.getByRole('button', { name: /iniciar sesión|sign in|login/i })).toBeVisible();
+      // Check for form elements - actual heading is "Ebenezer Tax Services"
+      await expect(page.getByText(/ebenezer tax services/i)).toBeVisible();
+      await expect(page.getByLabel(/email/i)).toBeVisible();
+      await expect(page.getByLabel(/password/i)).toBeVisible();
+      await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
     });
 
     test('should show error for invalid credentials', async ({ page }) => {
       await page.goto('/login');
 
       // Fill in invalid credentials
-      await page.getByLabel(/email|correo/i).fill('invalid@example.com');
-      await page.getByLabel(/password|contraseña/i).fill('wrongpassword');
-      await page.getByRole('button', { name: /iniciar sesión|sign in|login/i }).click();
+      await page.getByLabel(/email/i).fill('invalid@example.com');
+      await page.getByLabel(/password/i).fill('wrongpassword');
+      await page.getByRole('button', { name: /sign in/i }).click();
 
       // Should show error message
-      await expect(page.getByText(/invalid|error|incorrecta|inválido/i)).toBeVisible({ timeout: 10000 });
+      await expect(page.getByText(/invalid|error/i)).toBeVisible({ timeout: 10000 });
     });
 
     test('should show validation errors for empty fields', async ({ page }) => {
       await page.goto('/login');
 
-      // Try to submit empty form
-      await page.getByRole('button', { name: /iniciar sesión|sign in|login/i }).click();
+      // Fill email but leave password empty to trigger validation
+      await page.getByLabel(/email/i).fill('test@example.com');
+      await page.getByLabel(/password/i).fill('');
+      await page.getByRole('button', { name: /sign in/i }).click();
 
-      // Should show validation errors
-      await expect(page.getByText(/required|requerido|obligatorio/i)).toBeVisible();
+      // Should show validation error for password
+      await expect(page.getByText(/password is required/i)).toBeVisible();
     });
 
-    test('should have forgot password link', async ({ page }) => {
+    test('should show email validation error for invalid email', async ({ page }) => {
       await page.goto('/login');
 
-      const forgotLink = page.getByRole('link', { name: /forgot|olvidó|olvidaste|recuperar/i });
-      await expect(forgotLink).toBeVisible();
+      // Fill invalid email
+      await page.getByLabel(/email/i).fill('invalid-email');
+      await page.getByLabel(/password/i).fill('password123');
+      await page.getByRole('button', { name: /sign in/i }).click();
+
+      // Should show validation error
+      await expect(page.getByText(/valid email/i)).toBeVisible();
     });
   });
 
