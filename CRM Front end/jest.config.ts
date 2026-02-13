@@ -42,11 +42,12 @@ const config: Config = {
   //   },
   // },
 
-  // Ignore patterns
+  // Ignore patterns - use regex to ensure cross-platform compatibility
   testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/.next/',
-    '<rootDir>/e2e/',
+    '/node_modules/',
+    '/.next/',
+    '/e2e/',
+    '\\.spec\\.ts$',
   ],
 
   // Transform ignore patterns
