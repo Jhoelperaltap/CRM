@@ -18,10 +18,11 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 
-  // Test patterns
+  // Test patterns - only match tests in src/__tests__ directory
+  // This explicitly excludes e2e/ directory which uses Playwright
   testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
+    '<rootDir>/src/**/*.test.[jt]s?(x)',
   ],
 
   // Coverage configuration
@@ -32,22 +33,10 @@ const config: Config = {
     '!src/types/**/*',
   ],
 
-  // Coverage thresholds (disabled for now, enable when test coverage improves)
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 20,
-  //     functions: 20,
-  //     lines: 20,
-  //     statements: 20,
-  //   },
-  // },
-
-  // Ignore patterns - use regex to ensure cross-platform compatibility
+  // Ignore patterns
   testPathIgnorePatterns: [
     '/node_modules/',
     '/.next/',
-    '/e2e/',
-    '\\.spec\\.ts$',
   ],
 
   // Transform ignore patterns
