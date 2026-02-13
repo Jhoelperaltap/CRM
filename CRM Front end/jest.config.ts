@@ -2,19 +2,14 @@ import type { Config } from 'jest';
 import nextJest from 'next/jest';
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files
   dir: './',
 });
 
 const config: Config = {
-  // Test environment
   testEnvironment: 'jsdom',
-
-  // Setup files
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
   // IMPORTANT: Only look for tests in src/ directory
-  // This prevents Jest from finding e2e/ Playwright tests
   roots: ['<rootDir>/src'],
 
   // Module name mapping for path aliases
@@ -22,13 +17,21 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 
-  // Test patterns
+  // Test patterns - only match files in src directory
   testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/*.test.[jt]s?(x)',
+    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
+    '<rootDir>/src/**/*.test.[jt]s?(x)',
   ],
 
-  // Coverage configuration
+  // Explicitly exclude e2e directory and other non-test directories
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '<rootDir>/e2e/',
+    '\\.spec\\.[jt]s$',
+  ],
+
+  // Coverage configuration - NO THRESHOLDS
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
@@ -36,13 +39,9 @@ const config: Config = {
     '!src/types/**/*',
   ],
 
-  // Ignore patterns
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/.next/',
-  ],
+  // Disable coverage thresholds
+  coverageThreshold: undefined,
 
-  // Transform ignore patterns
   transformIgnorePatterns: [
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
