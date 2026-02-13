@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   Archive,
   ChevronDown,
-  Clock,
   Inbox,
   Mail,
   MailOpen,
@@ -16,7 +15,6 @@ import {
   Send,
   Star,
   Trash2,
-  User,
   Paperclip,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

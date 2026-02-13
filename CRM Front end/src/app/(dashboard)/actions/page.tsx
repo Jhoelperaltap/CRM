@@ -15,7 +15,6 @@ import {
   Users as UsersIcon,
   MessageSquare,
   ListTodo,
-  Plus,
   ChevronDown,
   Clock,
   Calendar,

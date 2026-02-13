@@ -105,7 +105,7 @@ test.describe('Authenticated User', () => {
 
     if (response.ok()) {
       // Store auth state
-      const data = await response.json();
+      await response.json();
       await page.goto('/');
 
       // Wait for redirect or dashboard to load
