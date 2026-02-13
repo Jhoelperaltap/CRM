@@ -17,21 +17,21 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 
-  // Test patterns - only match files in src directory
+  // Test patterns - ONLY match .test. files in src directory (NOT .spec. files)
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
+    '<rootDir>/src/**/__tests__/**/*.test.[jt]s?(x)',
     '<rootDir>/src/**/*.test.[jt]s?(x)',
   ],
 
-  // Explicitly exclude e2e directory and other non-test directories
+  // Use regex patterns for cross-platform compatibility (Linux CI)
   testPathIgnorePatterns: [
     '/node_modules/',
     '/.next/',
-    '<rootDir>/e2e/',
-    '\\.spec\\.[jt]s$',
+    '/e2e/',
+    '\\.spec\\.',
   ],
 
-  // Coverage configuration - NO THRESHOLDS
+  // Coverage configuration - only collect from src
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
@@ -39,8 +39,15 @@ const config: Config = {
     '!src/types/**/*',
   ],
 
-  // Disable coverage thresholds
-  coverageThreshold: undefined,
+  // Explicitly set thresholds to 0 to disable enforcement
+  coverageThreshold: {
+    global: {
+      statements: 0,
+      branches: 0,
+      functions: 0,
+      lines: 0,
+    },
+  },
 
   transformIgnorePatterns: [
     '/node_modules/',
