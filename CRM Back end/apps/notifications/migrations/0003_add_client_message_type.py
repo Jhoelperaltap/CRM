@@ -6,18 +6,51 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifications', '0002_alter_notification_notification_type_and_more'),
+        ("notifications", "0002_alter_notification_notification_type_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='notification',
-            name='notification_type',
-            field=models.CharField(choices=[('workflow_triggered', 'Workflow Triggered'), ('case_status_changed', 'Case Status Changed'), ('email_assigned', 'Email Assigned'), ('email_no_reply', 'Email No Reply'), ('appointment_reminder', 'Appointment Reminder'), ('task_overdue', 'Task Overdue'), ('document_missing', 'Document Missing'), ('case_due_date', 'Case Due Date'), ('mention', 'Mentioned in Comment'), ('comment_reply', 'Reply to Comment'), ('client_message', 'Client Portal Message'), ('system', 'System')], db_index=True, max_length=30),
+            model_name="notification",
+            name="notification_type",
+            field=models.CharField(
+                choices=[
+                    ("workflow_triggered", "Workflow Triggered"),
+                    ("case_status_changed", "Case Status Changed"),
+                    ("email_assigned", "Email Assigned"),
+                    ("email_no_reply", "Email No Reply"),
+                    ("appointment_reminder", "Appointment Reminder"),
+                    ("task_overdue", "Task Overdue"),
+                    ("document_missing", "Document Missing"),
+                    ("case_due_date", "Case Due Date"),
+                    ("mention", "Mentioned in Comment"),
+                    ("comment_reply", "Reply to Comment"),
+                    ("client_message", "Client Portal Message"),
+                    ("system", "System"),
+                ],
+                db_index=True,
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='notificationpreference',
-            name='notification_type',
-            field=models.CharField(choices=[('workflow_triggered', 'Workflow Triggered'), ('case_status_changed', 'Case Status Changed'), ('email_assigned', 'Email Assigned'), ('email_no_reply', 'Email No Reply'), ('appointment_reminder', 'Appointment Reminder'), ('task_overdue', 'Task Overdue'), ('document_missing', 'Document Missing'), ('case_due_date', 'Case Due Date'), ('mention', 'Mentioned in Comment'), ('comment_reply', 'Reply to Comment'), ('client_message', 'Client Portal Message'), ('system', 'System')], max_length=30),
+            model_name="notificationpreference",
+            name="notification_type",
+            field=models.CharField(
+                choices=[
+                    ("workflow_triggered", "Workflow Triggered"),
+                    ("case_status_changed", "Case Status Changed"),
+                    ("email_assigned", "Email Assigned"),
+                    ("email_no_reply", "Email No Reply"),
+                    ("appointment_reminder", "Appointment Reminder"),
+                    ("task_overdue", "Task Overdue"),
+                    ("document_missing", "Document Missing"),
+                    ("case_due_date", "Case Due Date"),
+                    ("mention", "Mentioned in Comment"),
+                    ("comment_reply", "Reply to Comment"),
+                    ("client_message", "Client Portal Message"),
+                    ("system", "System"),
+                ],
+                max_length=30,
+            ),
         ),
     ]

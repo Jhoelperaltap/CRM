@@ -9,43 +9,117 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contacts', '0006_add_contact_number_and_office_services'),
+        ("contacts", "0006_add_contact_number_and_office_services"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ContactTag',
+            name="ContactTag",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=50, verbose_name='name')),
-                ('color', models.CharField(default='#6366f1', help_text='Hex color code for the tag.', max_length=7, verbose_name='color')),
-                ('tag_type', models.CharField(choices=[('shared', 'Shared'), ('personal', 'Personal')], default='shared', max_length=10, verbose_name='type')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_contact_tags', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, verbose_name="name")),
+                (
+                    "color",
+                    models.CharField(
+                        default="#6366f1",
+                        help_text="Hex color code for the tag.",
+                        max_length=7,
+                        verbose_name="color",
+                    ),
+                ),
+                (
+                    "tag_type",
+                    models.CharField(
+                        choices=[("shared", "Shared"), ("personal", "Personal")],
+                        default="shared",
+                        max_length=10,
+                        verbose_name="type",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_contact_tags",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'contact tag',
-                'verbose_name_plural': 'contact tags',
-                'db_table': 'crm_contact_tags',
-                'ordering': ['name'],
+                "verbose_name": "contact tag",
+                "verbose_name_plural": "contact tags",
+                "db_table": "crm_contact_tags",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='ContactTagAssignment',
+            name="ContactTagAssignment",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('assigned_at', models.DateTimeField(auto_now_add=True, verbose_name='assigned at')),
-                ('assigned_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_contact_tags', to=settings.AUTH_USER_MODEL, verbose_name='assigned by')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tag_assignments', to='contacts.contact', verbose_name='contact')),
-                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assignments', to='contacts.contacttag', verbose_name='tag')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "assigned_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="assigned at"),
+                ),
+                (
+                    "assigned_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_contact_tags",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned by",
+                    ),
+                ),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tag_assignments",
+                        to="contacts.contact",
+                        verbose_name="contact",
+                    ),
+                ),
+                (
+                    "tag",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="assignments",
+                        to="contacts.contacttag",
+                        verbose_name="tag",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'contact tag assignment',
-                'verbose_name_plural': 'contact tag assignments',
-                'db_table': 'crm_contact_tag_assignments',
-                'ordering': ['-assigned_at'],
-                'unique_together': {('contact', 'tag')},
+                "verbose_name": "contact tag assignment",
+                "verbose_name_plural": "contact tag assignments",
+                "db_table": "crm_contact_tag_assignments",
+                "ordering": ["-assigned_at"],
+                "unique_together": {("contact", "tag")},
             },
         ),
     ]

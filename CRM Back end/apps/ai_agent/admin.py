@@ -29,46 +29,67 @@ class AgentConfigurationAdmin(admin.ModelAdmin):
     readonly_fields = ["id", "created_at", "updated_at"]
 
     fieldsets = (
-        ("Status", {
-            "fields": ("is_active",),
-        }),
-        ("Capabilities", {
-            "fields": (
-                "email_analysis_enabled",
-                "appointment_reminders_enabled",
-                "task_enforcement_enabled",
-                "market_analysis_enabled",
-                "autonomous_actions_enabled",
-            ),
-        }),
-        ("Timing", {
-            "fields": (
-                "email_check_interval_minutes",
-                "task_reminder_hours_before",
-                "appointment_reminder_hours",
-            ),
-        }),
-        ("AI Configuration", {
-            "fields": (
-                "ai_provider",
-                "ai_model",
-                "ai_temperature",
-                "max_tokens",
-                "openai_api_key",
-                "anthropic_api_key",
-            ),
-        }),
-        ("Instructions", {
-            "fields": ("custom_instructions", "focus_areas"),
-            "classes": ("collapse",),
-        }),
-        ("Rate Limiting", {
-            "fields": ("max_actions_per_hour", "max_ai_calls_per_hour"),
-        }),
-        ("Timestamps", {
-            "fields": ("id", "created_at", "updated_at"),
-            "classes": ("collapse",),
-        }),
+        (
+            "Status",
+            {
+                "fields": ("is_active",),
+            },
+        ),
+        (
+            "Capabilities",
+            {
+                "fields": (
+                    "email_analysis_enabled",
+                    "appointment_reminders_enabled",
+                    "task_enforcement_enabled",
+                    "market_analysis_enabled",
+                    "autonomous_actions_enabled",
+                ),
+            },
+        ),
+        (
+            "Timing",
+            {
+                "fields": (
+                    "email_check_interval_minutes",
+                    "task_reminder_hours_before",
+                    "appointment_reminder_hours",
+                ),
+            },
+        ),
+        (
+            "AI Configuration",
+            {
+                "fields": (
+                    "ai_provider",
+                    "ai_model",
+                    "ai_temperature",
+                    "max_tokens",
+                    "openai_api_key",
+                    "anthropic_api_key",
+                ),
+            },
+        ),
+        (
+            "Instructions",
+            {
+                "fields": ("custom_instructions", "focus_areas"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Rate Limiting",
+            {
+                "fields": ("max_actions_per_hour", "max_ai_calls_per_hour"),
+            },
+        ),
+        (
+            "Timestamps",
+            {
+                "fields": ("id", "created_at", "updated_at"),
+                "classes": ("collapse",),
+            },
+        ),
     )
 
     def capabilities_summary(self, obj):
@@ -126,55 +147,73 @@ class AgentActionAdmin(admin.ModelAdmin):
     ]
 
     fieldsets = (
-        ("Action", {
-            "fields": (
-                "action_type",
-                "status",
-                "title",
-                "description",
-                "reasoning",
-                "action_data",
-            ),
-        }),
-        ("Related Entities", {
-            "fields": (
-                "related_email",
-                "related_task",
-                "related_appointment",
-                "related_contact",
-                "related_case",
-            ),
-            "classes": ("collapse",),
-        }),
-        ("Approval", {
-            "fields": (
-                "requires_approval",
-                "approved_by",
-                "approved_at",
-                "rejected_by",
-                "rejected_at",
-                "rejection_reason",
-            ),
-        }),
-        ("Execution", {
-            "fields": (
-                "executed_at",
-                "execution_result",
-                "error_message",
-            ),
-        }),
-        ("Outcome", {
-            "fields": (
-                "outcome",
-                "outcome_score",
-                "outcome_recorded_by",
-                "outcome_recorded_at",
-            ),
-        }),
-        ("Timestamps", {
-            "fields": ("id", "created_at", "updated_at"),
-            "classes": ("collapse",),
-        }),
+        (
+            "Action",
+            {
+                "fields": (
+                    "action_type",
+                    "status",
+                    "title",
+                    "description",
+                    "reasoning",
+                    "action_data",
+                ),
+            },
+        ),
+        (
+            "Related Entities",
+            {
+                "fields": (
+                    "related_email",
+                    "related_task",
+                    "related_appointment",
+                    "related_contact",
+                    "related_case",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Approval",
+            {
+                "fields": (
+                    "requires_approval",
+                    "approved_by",
+                    "approved_at",
+                    "rejected_by",
+                    "rejected_at",
+                    "rejection_reason",
+                ),
+            },
+        ),
+        (
+            "Execution",
+            {
+                "fields": (
+                    "executed_at",
+                    "execution_result",
+                    "error_message",
+                ),
+            },
+        ),
+        (
+            "Outcome",
+            {
+                "fields": (
+                    "outcome",
+                    "outcome_score",
+                    "outcome_recorded_by",
+                    "outcome_recorded_at",
+                ),
+            },
+        ),
+        (
+            "Timestamps",
+            {
+                "fields": ("id", "created_at", "updated_at"),
+                "classes": ("collapse",),
+            },
+        ),
     )
 
     def status_badge(self, obj):
@@ -265,40 +304,52 @@ class AgentInsightAdmin(admin.ModelAdmin):
     raw_id_fields = ["acknowledged_by", "source_action"]
 
     fieldsets = (
-        ("Insight", {
-            "fields": (
-                "insight_type",
-                "title",
-                "description",
-                "supporting_data",
-            ),
-        }),
-        ("Priority & Actions", {
-            "fields": (
-                "priority",
-                "is_actionable",
-                "recommended_action",
-            ),
-        }),
-        ("Acknowledgment", {
-            "fields": (
-                "is_acknowledged",
-                "acknowledged_by",
-                "acknowledged_at",
-                "outcome",
-                "outcome_recorded_at",
-            ),
-        }),
-        ("Metadata", {
-            "fields": (
-                "expires_at",
-                "source_action",
-                "id",
-                "created_at",
-                "updated_at",
-            ),
-            "classes": ("collapse",),
-        }),
+        (
+            "Insight",
+            {
+                "fields": (
+                    "insight_type",
+                    "title",
+                    "description",
+                    "supporting_data",
+                ),
+            },
+        ),
+        (
+            "Priority & Actions",
+            {
+                "fields": (
+                    "priority",
+                    "is_actionable",
+                    "recommended_action",
+                ),
+            },
+        ),
+        (
+            "Acknowledgment",
+            {
+                "fields": (
+                    "is_acknowledged",
+                    "acknowledged_by",
+                    "acknowledged_at",
+                    "outcome",
+                    "outcome_recorded_at",
+                ),
+            },
+        ),
+        (
+            "Metadata",
+            {
+                "fields": (
+                    "expires_at",
+                    "source_action",
+                    "id",
+                    "created_at",
+                    "updated_at",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
     )
 
 

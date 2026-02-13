@@ -224,8 +224,8 @@ class Comment(TimeStampedModel):
             # Find matching users
             for username in usernames:
                 matching_users = User.objects.filter(
-                    models.Q(first_name__iexact=username) |
-                    models.Q(email__istartswith=f"{username}@")
+                    models.Q(first_name__iexact=username)
+                    | models.Q(email__istartswith=f"{username}@")
                 )
                 for user in matching_users:
                     # Add to mentioned_users
@@ -236,8 +236,11 @@ class Comment(TimeStampedModel):
                         # Determine entity name for the notification
                         entity_name = ""
                         if self.content_object:
-                            entity_name = getattr(self.content_object, "full_name", None) or \
-                                          getattr(self.content_object, "name", str(self.content_object))
+                            entity_name = getattr(
+                                self.content_object, "full_name", None
+                            ) or getattr(
+                                self.content_object, "name", str(self.content_object)
+                            )
 
                         Notification.objects.create(
                             recipient=user,
@@ -245,9 +248,15 @@ class Comment(TimeStampedModel):
                             title=f"{self.author.full_name} mentioned you",
                             message=f"You were mentioned in a comment on {entity_name}: \"{self.content[:100]}{'...' if len(self.content) > 100 else ''}\"",
                             severity=Notification.Severity.INFO,
-                            related_object_type=self.content_type.model if self.content_type else "",
+                            related_object_type=(
+                                self.content_type.model if self.content_type else ""
+                            ),
                             related_object_id=self.object_id,
-                            action_url=f"/{self.content_type.model}s/{self.object_id}" if self.content_type else "",
+                            action_url=(
+                                f"/{self.content_type.model}s/{self.object_id}"
+                                if self.content_type
+                                else ""
+                            ),
                         )
 
 

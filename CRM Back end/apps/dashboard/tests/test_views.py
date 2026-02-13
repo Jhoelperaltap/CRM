@@ -46,15 +46,11 @@ class TestUserPreferences:
         assert "theme" in resp.data
 
     def test_update_preferences(self, authenticated_client):
-        resp = authenticated_client.put(
-            BASE_PREFS, {"theme": "dark"}, format="json"
-        )
+        resp = authenticated_client.put(BASE_PREFS, {"theme": "dark"}, format="json")
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["theme"] == "dark"
 
     def test_get_after_update(self, authenticated_client):
-        authenticated_client.put(
-            BASE_PREFS, {"theme": "dark"}, format="json"
-        )
+        authenticated_client.put(BASE_PREFS, {"theme": "dark"}, format="json")
         resp = authenticated_client.get(BASE_PREFS)
         assert resp.data["theme"] == "dark"

@@ -75,7 +75,9 @@ class DocumentFolderViewSet(viewsets.ModelViewSet):
             .annotate(document_count=Count("documents"))
             .prefetch_related("children")
         )
-        serializer = DocumentFolderTreeSerializer(roots, many=True, context={"request": request})
+        serializer = DocumentFolderTreeSerializer(
+            roots, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -203,14 +205,18 @@ class DocumentViewSet(viewsets.ModelViewSet):
             document=document,
             user=request.user,
         )
-        return Response({
-            "token": token.token,
-            "expires_at": token.expires_at.isoformat(),
-            "download_url": f"/api/v1/documents/{document.id}/download/?token={token.token}",
-        })
+        return Response(
+            {
+                "token": token.token,
+                "expires_at": token.expires_at.isoformat(),
+                "download_url": f"/api/v1/documents/{document.id}/download/?token={token.token}",
+            }
+        )
 
     @method_decorator(xframe_options_exempt)
-    @action(detail=True, methods=["get"], url_path="download", permission_classes=[AllowAny])
+    @action(
+        detail=True, methods=["get"], url_path="download", permission_classes=[AllowAny]
+    )
     def download(self, request, pk=None):
         """Stream the file as a download or inline view.
 
@@ -229,7 +235,9 @@ class DocumentViewSet(viewsets.ModelViewSet):
             token_str = request.query_params.get("token")
             if not token_str:
                 return Response(
-                    {"detail": "Authentication required. Use download-token endpoint to get a secure token."},
+                    {
+                        "detail": "Authentication required. Use download-token endpoint to get a secure token."
+                    },
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
@@ -276,7 +284,11 @@ class DocumentViewSet(viewsets.ModelViewSet):
         DocumentAccessLog.objects.create(
             document=document,
             user=user,
-            action=DocumentAccessLog.Action.VIEW if inline_view else DocumentAccessLog.Action.DOWNLOAD,
+            action=(
+                DocumentAccessLog.Action.VIEW
+                if inline_view
+                else DocumentAccessLog.Action.DOWNLOAD
+            ),
             ip_address=request.META.get("REMOTE_ADDR"),
             user_agent=request.META.get("HTTP_USER_AGENT", ""),
         )
@@ -296,7 +308,9 @@ class DocumentViewSet(viewsets.ModelViewSet):
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
         # Allow embedding in iframes (for PDF preview)
         response["X-Frame-Options"] = "SAMEORIGIN"
-        response["Content-Security-Policy"] = "frame-ancestors 'self' http://localhost:* https://localhost:*"
+        response["Content-Security-Policy"] = (
+            "frame-ancestors 'self' http://localhost:* https://localhost:*"
+        )
         return response
 
     @action(detail=True, methods=["get"], url_path="versions")

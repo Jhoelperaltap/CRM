@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('appointments', '0004_appointmentpage'),
+        ("appointments", "0004_appointmentpage"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='appointment',
-            name='color',
-            field=models.CharField(blank=True, default='#2563eb', help_text='Hex color code for calendar display', max_length=7, verbose_name='calendar color'),
+            model_name="appointment",
+            name="color",
+            field=models.CharField(
+                blank=True,
+                default="#2563eb",
+                help_text="Hex color code for calendar display",
+                max_length=7,
+                verbose_name="calendar color",
+            ),
         ),
     ]

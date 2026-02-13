@@ -55,7 +55,9 @@ def on_action_status_change(sender, instance, created, **kwargs):
                 admins = User.objects.filter(
                     is_active=True,
                     role__slug="admin",
-                ).exclude(id=None)[:5]  # Limit notifications
+                ).exclude(id=None)[
+                    :5
+                ]  # Limit notifications
 
                 for admin in admins:
                     create_notification(

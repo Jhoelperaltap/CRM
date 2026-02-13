@@ -16,49 +16,222 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ContactStar',
+            name="ContactStar",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
             ],
             options={
-                'verbose_name': 'contact star',
-                'verbose_name_plural': 'contact stars',
-                'db_table': 'crm_contact_stars',
-                'ordering': ['-created_at'],
+                "verbose_name": "contact star",
+                "verbose_name_plural": "contact stars",
+                "db_table": "crm_contact_stars",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='Contact',
+            name="Contact",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('salutation', models.CharField(blank=True, choices=[('Mr.', 'Mr.'), ('Mrs.', 'Mrs.'), ('Ms.', 'Ms.'), ('Dr.', 'Dr.'), ('Prof.', 'Prof.')], default='', max_length=10, verbose_name='salutation')),
-                ('first_name', models.CharField(db_index=True, max_length=100, verbose_name='first name')),
-                ('last_name', models.CharField(db_index=True, max_length=100, verbose_name='last name')),
-                ('email', models.EmailField(blank=True, db_index=True, default='', max_length=254, verbose_name='email address')),
-                ('phone', models.CharField(blank=True, default='', max_length=20, verbose_name='phone')),
-                ('mobile', models.CharField(blank=True, default='', max_length=20, verbose_name='mobile')),
-                ('date_of_birth', models.DateField(blank=True, null=True, verbose_name='date of birth')),
-                ('ssn_last_four', models.CharField(blank=True, default='', help_text='Last four digits of SSN. Encrypted at rest.', max_length=255, verbose_name='SSN last four')),
-                ('street_address', models.CharField(blank=True, default='', max_length=255, verbose_name='street address')),
-                ('city', models.CharField(blank=True, default='', max_length=100, verbose_name='city')),
-                ('state', models.CharField(blank=True, default='', max_length=100, verbose_name='state')),
-                ('zip_code', models.CharField(blank=True, default='', max_length=20, verbose_name='zip code')),
-                ('country', models.CharField(blank=True, default='United States', max_length=100, verbose_name='country')),
-                ('preferred_language', models.CharField(blank=True, choices=[('en', 'English'), ('es', 'Spanish'), ('fr', 'French'), ('pt', 'Portuguese'), ('zh', 'Chinese'), ('ko', 'Korean'), ('vi', 'Vietnamese'), ('ht', 'Haitian Creole'), ('other', 'Other')], default='en', max_length=10, verbose_name='preferred language')),
-                ('status', models.CharField(choices=[('active', 'Active'), ('inactive', 'Inactive'), ('lead', 'Lead')], db_index=True, default='active', max_length=10, verbose_name='status')),
-                ('source', models.CharField(blank=True, default='', help_text='How the contact was acquired (e.g., referral, website, walk-in).', max_length=100, verbose_name='source')),
-                ('description', models.TextField(blank=True, default='', verbose_name='description')),
-                ('tags', models.CharField(blank=True, default='', help_text='Comma-separated tags.', max_length=500, verbose_name='tags')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_contacts', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "salutation",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("Mr.", "Mr."),
+                            ("Mrs.", "Mrs."),
+                            ("Ms.", "Ms."),
+                            ("Dr.", "Dr."),
+                            ("Prof.", "Prof."),
+                        ],
+                        default="",
+                        max_length=10,
+                        verbose_name="salutation",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(
+                        db_index=True, max_length=100, verbose_name="first name"
+                    ),
+                ),
+                (
+                    "last_name",
+                    models.CharField(
+                        db_index=True, max_length=100, verbose_name="last name"
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        blank=True,
+                        db_index=True,
+                        default="",
+                        max_length=254,
+                        verbose_name="email address",
+                    ),
+                ),
+                (
+                    "phone",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="phone"
+                    ),
+                ),
+                (
+                    "mobile",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="mobile"
+                    ),
+                ),
+                (
+                    "date_of_birth",
+                    models.DateField(
+                        blank=True, null=True, verbose_name="date of birth"
+                    ),
+                ),
+                (
+                    "ssn_last_four",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Last four digits of SSN. Encrypted at rest.",
+                        max_length=255,
+                        verbose_name="SSN last four",
+                    ),
+                ),
+                (
+                    "street_address",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="street address",
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="city"
+                    ),
+                ),
+                (
+                    "state",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="state"
+                    ),
+                ),
+                (
+                    "zip_code",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="zip code"
+                    ),
+                ),
+                (
+                    "country",
+                    models.CharField(
+                        blank=True,
+                        default="United States",
+                        max_length=100,
+                        verbose_name="country",
+                    ),
+                ),
+                (
+                    "preferred_language",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("en", "English"),
+                            ("es", "Spanish"),
+                            ("fr", "French"),
+                            ("pt", "Portuguese"),
+                            ("zh", "Chinese"),
+                            ("ko", "Korean"),
+                            ("vi", "Vietnamese"),
+                            ("ht", "Haitian Creole"),
+                            ("other", "Other"),
+                        ],
+                        default="en",
+                        max_length=10,
+                        verbose_name="preferred language",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("active", "Active"),
+                            ("inactive", "Inactive"),
+                            ("lead", "Lead"),
+                        ],
+                        db_index=True,
+                        default="active",
+                        max_length=10,
+                        verbose_name="status",
+                    ),
+                ),
+                (
+                    "source",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="How the contact was acquired (e.g., referral, website, walk-in).",
+                        max_length=100,
+                        verbose_name="source",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
+                ),
+                (
+                    "tags",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Comma-separated tags.",
+                        max_length=500,
+                        verbose_name="tags",
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_contacts",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'contact',
-                'verbose_name_plural': 'contacts',
-                'db_table': 'crm_contacts',
-                'ordering': ['last_name', 'first_name'],
+                "verbose_name": "contact",
+                "verbose_name_plural": "contacts",
+                "db_table": "crm_contacts",
+                "ordering": ["last_name", "first_name"],
             },
         ),
     ]

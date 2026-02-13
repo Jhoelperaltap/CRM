@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 
 def _normalize_subject(subject: str) -> str:
     """Strip Re:/Fwd: prefixes for thread matching."""
-    return re.sub(r"^(re|fwd?)\s*:\s*", "", subject.strip(), flags=re.IGNORECASE).strip()
+    return re.sub(
+        r"^(re|fwd?)\s*:\s*", "", subject.strip(), flags=re.IGNORECASE
+    ).strip()
 
 
 def _find_or_create_thread(parsed, account):
@@ -26,9 +28,13 @@ def _find_or_create_thread(parsed, account):
 
     # Try matching by In-Reply-To
     if parsed.in_reply_to:
-        existing = EmailMessage.objects.filter(
-            message_id=parsed.in_reply_to, thread__isnull=False
-        ).select_related("thread").first()
+        existing = (
+            EmailMessage.objects.filter(
+                message_id=parsed.in_reply_to, thread__isnull=False
+            )
+            .select_related("thread")
+            .first()
+        )
         if existing:
             return existing.thread
 
@@ -38,9 +44,11 @@ def _find_or_create_thread(parsed, account):
         for ref_id in reversed(ref_ids):
             ref_id = ref_id.strip()
             if ref_id:
-                existing = EmailMessage.objects.filter(
-                    message_id=ref_id, thread__isnull=False
-                ).select_related("thread").first()
+                existing = (
+                    EmailMessage.objects.filter(message_id=ref_id, thread__isnull=False)
+                    .select_related("thread")
+                    .first()
+                )
                 if existing:
                     return existing.thread
 
@@ -61,6 +69,7 @@ def _find_or_create_thread(parsed, account):
 def _auto_link_contact(from_address: str):
     """Try to find a Contact by email address."""
     from apps.contacts.models import Contact
+
     return Contact.objects.filter(email__iexact=from_address).first()
 
 
@@ -136,9 +145,11 @@ def sync_email_account(self, account_id: str):
                     imap_uid=parsed.uid,
                     raw_headers=parsed.raw_headers,
                     contact=contact,
-                    case=contact.tax_cases.order_by("-created_at").first()
-                    if contact
-                    else None,
+                    case=(
+                        contact.tax_cases.order_by("-created_at").first()
+                        if contact
+                        else None
+                    ),
                 )
 
                 # Save attachments
@@ -158,9 +169,14 @@ def sync_email_account(self, account_id: str):
                 thread.message_count = thread.messages.count()
                 if contact and not thread.contact:
                     thread.contact = contact
-                thread.save(update_fields=[
-                    "last_message_at", "message_count", "contact", "updated_at"
-                ])
+                thread.save(
+                    update_fields=[
+                        "last_message_at",
+                        "message_count",
+                        "contact",
+                        "updated_at",
+                    ]
+                )
 
         account.last_sync_at = timezone.now()
         account.save(update_fields=["last_sync_at", "updated_at"])
@@ -191,9 +207,9 @@ def sync_all_accounts():
     """Dispatch sync tasks for all active email accounts."""
     from apps.emails.models import EmailAccount
 
-    for account_id in EmailAccount.objects.filter(
-        is_active=True
-    ).values_list("id", flat=True):
+    for account_id in EmailAccount.objects.filter(is_active=True).values_list(
+        "id", flat=True
+    ):
         sync_email_account.delay(str(account_id))
 
 
@@ -216,10 +232,12 @@ def send_email_task(self, message_id: str):
     for att in msg.attachments.all():
         if att.file:
             att.file.seek(0)
-            attachments.append({
-                "filename": att.filename,
-                "data": att.file.read(),
-            })
+            attachments.append(
+                {
+                    "filename": att.filename,
+                    "data": att.file.read(),
+                }
+            )
 
     try:
         with SMTPClient(
@@ -252,9 +270,9 @@ def send_email_task(self, message_id: str):
         if msg.thread:
             msg.thread.last_message_at = msg.sent_at
             msg.thread.message_count = msg.thread.messages.count()
-            msg.thread.save(update_fields=[
-                "last_message_at", "message_count", "updated_at"
-            ])
+            msg.thread.save(
+                update_fields=["last_message_at", "message_count", "updated_at"]
+            )
 
     except Exception as exc:
         logger.exception("Error sending email %s", message_id)
@@ -295,14 +313,18 @@ def check_no_reply_emails():
     one_day_ago = timezone.now() - timedelta(days=1)
 
     # Threads with inbound messages older than 1 day
-    threads_needing_reply = EmailThread.objects.filter(
-        messages__direction=EmailMessage.Direction.INBOUND,
-        messages__sent_at__lte=one_day_ago,
-        messages__folder=EmailMessage.Folder.INBOX,
-    ).exclude(
-        # Exclude threads that already have an outbound reply after the inbound
-        messages__direction=EmailMessage.Direction.OUTBOUND,
-    ).distinct()
+    threads_needing_reply = (
+        EmailThread.objects.filter(
+            messages__direction=EmailMessage.Direction.INBOUND,
+            messages__sent_at__lte=one_day_ago,
+            messages__folder=EmailMessage.Folder.INBOX,
+        )
+        .exclude(
+            # Exclude threads that already have an outbound reply after the inbound
+            messages__direction=EmailMessage.Direction.OUTBOUND,
+        )
+        .distinct()
+    )
 
     count = threads_needing_reply.count()
     if count:

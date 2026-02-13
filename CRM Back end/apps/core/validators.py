@@ -32,7 +32,9 @@ MAGIC_SIGNATURES: Dict[str, List[Tuple[int, bytes, str]]] = {
     "image/svg+xml": [(0, b"<?xml", "SVG image"), (0, b"<svg", "SVG image")],
     # Documents
     "application/pdf": [(0, b"%PDF", "PDF document")],
-    "application/msword": [(0, b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1", "MS Word document")],
+    "application/msword": [
+        (0, b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1", "MS Word document")
+    ],
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
         (0, b"PK\x03\x04", "DOCX document")
     ],
@@ -40,7 +42,9 @@ MAGIC_SIGNATURES: Dict[str, List[Tuple[int, bytes, str]]] = {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
         (0, b"PK\x03\x04", "XLSX document")
     ],
-    "application/vnd.ms-powerpoint": [(0, b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1", "MS PowerPoint")],
+    "application/vnd.ms-powerpoint": [
+        (0, b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1", "MS PowerPoint")
+    ],
     "application/vnd.openxmlformats-officedocument.presentationml.presentation": [
         (0, b"PK\x03\x04", "PPTX document")
     ],
@@ -70,11 +74,15 @@ EXTENSION_MIME_MAP: Dict[str, List[str]] = {
     ".svg": ["image/svg+xml"],
     ".pdf": ["application/pdf"],
     ".doc": ["application/msword"],
-    ".docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+    ".docx": [
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
     ".xls": ["application/vnd.ms-excel"],
     ".xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
     ".ppt": ["application/vnd.ms-powerpoint"],
-    ".pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+    ".pptx": [
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    ],
     ".zip": ["application/zip"],
     ".rar": ["application/x-rar-compressed"],
     ".gz": ["application/gzip"],
@@ -162,9 +170,7 @@ def validate_file_type(uploaded_file, allowed_types: Optional[set] = None) -> st
     expected_mimes = EXTENSION_MIME_MAP.get(ext, [])
 
     if not expected_mimes:
-        raise ValidationError(
-            _("File type '%(ext)s' is not allowed.") % {"ext": ext}
-        )
+        raise ValidationError(_("File type '%(ext)s' is not allowed.") % {"ext": ext})
 
     # Check if any expected MIME type is in allowed types
     allowed_mimes = [m for m in expected_mimes if m in allowed_types]
@@ -190,14 +196,18 @@ def validate_file_type(uploaded_file, allowed_types: Optional[set] = None) -> st
             f"(expected one of {allowed_mimes})"
         )
         raise ValidationError(
-            _("File content does not match the file extension. "
-              "Please ensure the file is not corrupted or renamed.")
+            _(
+                "File content does not match the file extension. "
+                "Please ensure the file is not corrupted or renamed."
+            )
         )
 
     return validated_mime
 
 
-def validate_file_extension(filename: str, allowed_extensions: Optional[set] = None) -> bool:
+def validate_file_extension(
+    filename: str, allowed_extensions: Optional[set] = None
+) -> bool:
     """
     Validate that a filename has an allowed extension.
 
@@ -255,21 +265,15 @@ def validate_path_traversal(path: str) -> str:
     for pattern in dangerous_patterns:
         if pattern in path_lower:
             logger.warning(f"Path traversal attempt detected: {path}")
-            raise ValidationError(
-                _("Invalid path: path traversal not allowed.")
-            )
+            raise ValidationError(_("Invalid path: path traversal not allowed."))
 
     # Check for null bytes
     if "\x00" in path:
         logger.warning(f"Null byte injection attempt detected: {path}")
-        raise ValidationError(
-            _("Invalid path: null bytes not allowed.")
-        )
+        raise ValidationError(_("Invalid path: null bytes not allowed."))
 
     # Check for absolute paths (Unix and Windows)
     if path.startswith("/") or (len(path) > 1 and path[1] == ":"):
-        raise ValidationError(
-            _("Invalid path: absolute paths not allowed.")
-        )
+        raise ValidationError(_("Invalid path: absolute paths not allowed."))
 
     return path

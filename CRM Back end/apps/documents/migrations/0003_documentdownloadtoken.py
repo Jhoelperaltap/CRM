@@ -8,30 +8,78 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0002_documentfolder_document_folder_documenttag_and_more'),
+        ("documents", "0002_documentfolder_document_folder_documenttag_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DocumentDownloadToken',
+            name="DocumentDownloadToken",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(db_index=True, max_length=64, unique=True, verbose_name='token')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('expires_at', models.DateTimeField(verbose_name='expires at')),
-                ('is_used', models.BooleanField(default=False, verbose_name='used')),
-                ('used_at', models.DateTimeField(blank=True, null=True, verbose_name='used at')),
-                ('ip_address', models.GenericIPAddressField(blank=True, help_text='IP address that used this token', null=True, verbose_name='IP address')),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='download_tokens', to='documents.document', verbose_name='document')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='document_download_tokens', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "token",
+                    models.CharField(
+                        db_index=True, max_length=64, unique=True, verbose_name="token"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                ("expires_at", models.DateTimeField(verbose_name="expires at")),
+                ("is_used", models.BooleanField(default=False, verbose_name="used")),
+                (
+                    "used_at",
+                    models.DateTimeField(blank=True, null=True, verbose_name="used at"),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True,
+                        help_text="IP address that used this token",
+                        null=True,
+                        verbose_name="IP address",
+                    ),
+                ),
+                (
+                    "document",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="download_tokens",
+                        to="documents.document",
+                        verbose_name="document",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="document_download_tokens",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'document download token',
-                'verbose_name_plural': 'document download tokens',
-                'db_table': 'crm_document_download_tokens',
-                'ordering': ['-created_at'],
-                'indexes': [models.Index(fields=['token', 'is_used', 'expires_at'], name='crm_documen_token_5ab6f1_idx')],
+                "verbose_name": "document download token",
+                "verbose_name_plural": "document download tokens",
+                "db_table": "crm_document_download_tokens",
+                "ordering": ["-created_at"],
+                "indexes": [
+                    models.Index(
+                        fields=["token", "is_used", "expires_at"],
+                        name="crm_documen_token_5ab6f1_idx",
+                    )
+                ],
             },
         ),
     ]

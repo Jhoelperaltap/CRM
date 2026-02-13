@@ -29,15 +29,21 @@ router.register("purchase-orders", PurchaseOrderViewSet, basename="purchase-orde
 router.register("payments", PaymentViewSet, basename="payment")
 router.register("work-orders", WorkOrderViewSet, basename="work-order")
 router.register("assets", AssetViewSet, basename="asset")
-router.register("stock-transactions", StockTransactionViewSet, basename="stock-transaction")
+router.register(
+    "stock-transactions", StockTransactionViewSet, basename="stock-transaction"
+)
 
 # Settings-level
 router.register("tax-rates", TaxRateViewSet, basename="tax-rate")
-router.register("terms-conditions", TermsAndConditionsViewSet, basename="terms-conditions")
+router.register(
+    "terms-conditions", TermsAndConditionsViewSet, basename="terms-conditions"
+)
 
 # Nested price book entries
 price_book_entries_router = DefaultRouter()
-price_book_entries_router.register("entries", PriceBookEntryViewSet, basename="price-book-entry")
+price_book_entries_router.register(
+    "entries", PriceBookEntryViewSet, basename="price-book-entry"
+)
 
 urlpatterns = [
     path(

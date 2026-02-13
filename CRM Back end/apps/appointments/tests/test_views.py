@@ -95,7 +95,9 @@ class TestAppointmentDateFilter:
         )
         AppointmentFactory(
             start_datetime=now - datetime.timedelta(days=60),
-            end_datetime=now - datetime.timedelta(days=60) + datetime.timedelta(hours=1),
+            end_datetime=now
+            - datetime.timedelta(days=60)
+            + datetime.timedelta(hours=1),
         )
         date_from = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S")
         date_to = (now + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S")

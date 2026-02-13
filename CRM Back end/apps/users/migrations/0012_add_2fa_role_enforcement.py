@@ -4,6 +4,7 @@ Add role-based 2FA enforcement field.
 Security: Allows admins to require 2FA for specific roles (e.g., admin, manager)
 without requiring it for all users.
 """
+
 from django.db import migrations, models
 
 

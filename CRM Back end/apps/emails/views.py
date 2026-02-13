@@ -63,10 +63,16 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         """Compose and send a new email. Accepts JSON or multipart with files."""
         # When sent as multipart, JSON fields arrive as strings
         compose_data = request.data.copy()
-        for list_field in ("to_addresses", "cc_addresses", "bcc_addresses", "attachment_ids"):
+        for list_field in (
+            "to_addresses",
+            "cc_addresses",
+            "bcc_addresses",
+            "attachment_ids",
+        ):
             val = compose_data.get(list_field)
             if isinstance(val, str):
                 import json
+
                 try:
                     compose_data[list_field] = json.loads(val)
                 except (json.JSONDecodeError, TypeError):
@@ -80,14 +86,18 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         user = request.user
         if not user.email_account:
             return Response(
-                {"detail": "You do not have an email account assigned. Contact your administrator."},
+                {
+                    "detail": "You do not have an email account assigned. Contact your administrator."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         account = user.email_account
         if not account.is_active:
             return Response(
-                {"detail": "Your assigned email account is inactive. Contact your administrator."},
+                {
+                    "detail": "Your assigned email account is inactive. Contact your administrator."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -96,7 +106,9 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         body_text = data["body_text"]
         if data.get("template_id"):
             try:
-                template = EmailTemplate.objects.get(id=data["template_id"], is_active=True)
+                template = EmailTemplate.objects.get(
+                    id=data["template_id"], is_active=True
+                )
                 subject, body_text = template.render(data.get("template_context", {}))
             except EmailTemplate.DoesNotExist:
                 pass
@@ -104,14 +116,17 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         # Find or create thread for replies
         thread = None
         if data.get("in_reply_to"):
-            parent = EmailMessage.objects.filter(
-                message_id=data["in_reply_to"]
-            ).select_related("thread").first()
+            parent = (
+                EmailMessage.objects.filter(message_id=data["in_reply_to"])
+                .select_related("thread")
+                .first()
+            )
             if parent and parent.thread:
                 thread = parent.thread
 
         if not thread:
             from apps.emails.tasks import _normalize_subject
+
             thread = EmailThread.objects.create(
                 subject=_normalize_subject(subject),
                 contact_id=data.get("contact"),
@@ -141,6 +156,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
 
         # Attach documents from CRM
         from apps.documents.models import Document
+
         for doc_id in data.get("attachment_ids", []):
             try:
                 doc = Document.objects.get(id=doc_id)
@@ -157,7 +173,11 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
 
         # Attach uploaded files
         for uploaded in request.FILES.getlist("files"):
-            mime = uploaded.content_type or mimetypes.guess_type(uploaded.name)[0] or "application/octet-stream"
+            mime = (
+                uploaded.content_type
+                or mimetypes.guess_type(uploaded.name)[0]
+                or "application/octet-stream"
+            )
             EmailAttachment.objects.create(
                 email=msg,
                 file=uploaded,
@@ -205,6 +225,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         user_id = request.data.get("user_id")
         if user_id:
             from apps.users.models import User
+
             try:
                 user = User.objects.get(id=user_id)
                 msg.assigned_to = user
@@ -225,6 +246,7 @@ class EmailMessageViewSet(viewsets.ModelViewSet):
         contact_id = request.data.get("contact_id")
         if contact_id:
             from apps.contacts.models import Contact
+
             try:
                 contact = Contact.objects.get(id=contact_id)
                 msg.contact = contact

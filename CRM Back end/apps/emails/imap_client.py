@@ -92,12 +92,14 @@ def _get_attachments(msg: Message) -> list[dict]:
         data = part.get_payload(decode=True)
         if data is None:
             continue
-        attachments.append({
-            "filename": filename,
-            "mime_type": part.get_content_type(),
-            "data": data,
-            "size": len(data),
-        })
+        attachments.append(
+            {
+                "filename": filename,
+                "mime_type": part.get_content_type(),
+                "data": data,
+                "size": len(data),
+            }
+        )
     return attachments
 
 
@@ -119,16 +121,25 @@ class ParsedEmail:
         # Store select raw headers
         self.raw_headers = {
             k: msg.get(k, "")
-            for k in ("From", "To", "Cc", "Subject", "Date",
-                       "Message-ID", "In-Reply-To", "References")
+            for k in (
+                "From",
+                "To",
+                "Cc",
+                "Subject",
+                "Date",
+                "Message-ID",
+                "In-Reply-To",
+                "References",
+            )
         }
 
 
 class IMAPClient:
     """Wraps imaplib for fetching new emails from an account."""
 
-    def __init__(self, host: str, port: int, use_ssl: bool,
-                 username: str, password: str):
+    def __init__(
+        self, host: str, port: int, use_ssl: bool, username: str, password: str
+    ):
         self.host = host
         self.port = port
         self.use_ssl = use_ssl
@@ -195,8 +206,9 @@ class IMAPClient:
 class SMTPClient:
     """Wraps smtplib for sending outbound email."""
 
-    def __init__(self, host: str, port: int, use_tls: bool,
-                 username: str, password: str):
+    def __init__(
+        self, host: str, port: int, use_tls: bool, username: str, password: str
+    ):
         self.host = host
         self.port = port
         self.use_tls = use_tls
@@ -262,6 +274,7 @@ class SMTPClient:
 
         # Generate a Message-ID
         import uuid as _uuid
+
         domain = from_addr.split("@")[1] if "@" in from_addr else "localhost"
         generated_id = f"<{_uuid.uuid4()}@{domain}>"
         msg["Message-ID"] = generated_id

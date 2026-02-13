@@ -16,37 +16,123 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Notification',
+            name="Notification",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('notification_type', models.CharField(choices=[('workflow_triggered', 'Workflow Triggered'), ('case_status_changed', 'Case Status Changed'), ('email_assigned', 'Email Assigned'), ('email_no_reply', 'Email No Reply'), ('appointment_reminder', 'Appointment Reminder'), ('task_overdue', 'Task Overdue'), ('document_missing', 'Document Missing'), ('case_due_date', 'Case Due Date'), ('system', 'System')], db_index=True, max_length=30)),
-                ('title', models.CharField(max_length=255)),
-                ('message', models.TextField(blank=True, default='')),
-                ('severity', models.CharField(choices=[('info', 'Info'), ('warning', 'Warning'), ('error', 'Error'), ('success', 'Success')], default='info', max_length=10)),
-                ('related_object_type', models.CharField(blank=True, default='', max_length=50)),
-                ('related_object_id', models.UUIDField(blank=True, null=True)),
-                ('action_url', models.CharField(blank=True, default='', max_length=500)),
-                ('is_read', models.BooleanField(db_index=True, default=False)),
-                ('email_sent', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='notifications', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "notification_type",
+                    models.CharField(
+                        choices=[
+                            ("workflow_triggered", "Workflow Triggered"),
+                            ("case_status_changed", "Case Status Changed"),
+                            ("email_assigned", "Email Assigned"),
+                            ("email_no_reply", "Email No Reply"),
+                            ("appointment_reminder", "Appointment Reminder"),
+                            ("task_overdue", "Task Overdue"),
+                            ("document_missing", "Document Missing"),
+                            ("case_due_date", "Case Due Date"),
+                            ("system", "System"),
+                        ],
+                        db_index=True,
+                        max_length=30,
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("message", models.TextField(blank=True, default="")),
+                (
+                    "severity",
+                    models.CharField(
+                        choices=[
+                            ("info", "Info"),
+                            ("warning", "Warning"),
+                            ("error", "Error"),
+                            ("success", "Success"),
+                        ],
+                        default="info",
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "related_object_type",
+                    models.CharField(blank=True, default="", max_length=50),
+                ),
+                ("related_object_id", models.UUIDField(blank=True, null=True)),
+                (
+                    "action_url",
+                    models.CharField(blank=True, default="", max_length=500),
+                ),
+                ("is_read", models.BooleanField(db_index=True, default=False)),
+                ("email_sent", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                (
+                    "recipient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="notifications",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
-                'indexes': [models.Index(fields=['recipient', 'is_read', '-created_at'], name='notif_recipient_read_idx')],
+                "ordering": ["-created_at"],
+                "indexes": [
+                    models.Index(
+                        fields=["recipient", "is_read", "-created_at"],
+                        name="notif_recipient_read_idx",
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='NotificationPreference',
+            name="NotificationPreference",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('notification_type', models.CharField(choices=[('workflow_triggered', 'Workflow Triggered'), ('case_status_changed', 'Case Status Changed'), ('email_assigned', 'Email Assigned'), ('email_no_reply', 'Email No Reply'), ('appointment_reminder', 'Appointment Reminder'), ('task_overdue', 'Task Overdue'), ('document_missing', 'Document Missing'), ('case_due_date', 'Case Due Date'), ('system', 'System')], max_length=30)),
-                ('in_app_enabled', models.BooleanField(default=True)),
-                ('email_enabled', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='notification_preferences', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "notification_type",
+                    models.CharField(
+                        choices=[
+                            ("workflow_triggered", "Workflow Triggered"),
+                            ("case_status_changed", "Case Status Changed"),
+                            ("email_assigned", "Email Assigned"),
+                            ("email_no_reply", "Email No Reply"),
+                            ("appointment_reminder", "Appointment Reminder"),
+                            ("task_overdue", "Task Overdue"),
+                            ("document_missing", "Document Missing"),
+                            ("case_due_date", "Case Due Date"),
+                            ("system", "System"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("in_app_enabled", models.BooleanField(default=True)),
+                ("email_enabled", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="notification_preferences",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'notification_type')},
+                "unique_together": {("user", "notification_type")},
             },
         ),
     ]

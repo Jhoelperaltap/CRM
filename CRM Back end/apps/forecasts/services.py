@@ -32,6 +32,7 @@ def _quarter_date_range(fiscal_year, quarter):
     else:
         end = date(fiscal_year, month_end + 1, 1)
         from datetime import timedelta
+
         end = end - timedelta(days=1)
     return start, end
 
@@ -76,16 +77,14 @@ def get_quarter_summary(user_ids, fiscal_year, quarter):
         or ZERO
     )
 
-    forecast = (
-        ForecastEntry.objects.filter(
-            user_id__in=user_ids,
-            fiscal_year=fiscal_year,
-            quarter=quarter,
-        ).aggregate(
-            best_case=Sum("best_case"),
-            commit=Sum("commit"),
-            f_pipeline=Sum("pipeline"),
-        )
+    forecast = ForecastEntry.objects.filter(
+        user_id__in=user_ids,
+        fiscal_year=fiscal_year,
+        quarter=quarter,
+    ).aggregate(
+        best_case=Sum("best_case"),
+        commit=Sum("commit"),
+        f_pipeline=Sum("pipeline"),
     )
     best_case = forecast["best_case"] or ZERO
     commit = forecast["commit"] or ZERO

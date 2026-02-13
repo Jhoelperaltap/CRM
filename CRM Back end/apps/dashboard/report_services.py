@@ -22,13 +22,16 @@ from django.utils import timezone
 def _get_models():
     from apps.cases.models import TaxCase
     from apps.contacts.models import Contact
+
     return TaxCase, Contact
 
 
 def _parse_dates(date_from=None, date_to=None):
     now = timezone.now()
     if date_from is None:
-        date_from = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        date_from = now.replace(
+            month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+        )
     if date_to is None:
         date_to = now
     return date_from, date_to
@@ -68,16 +71,24 @@ def get_revenue_report(date_from=None, date_to=None, group_by="monthly", filters
         qs.annotate(period=trunc_fn("created_at"))
         .values("period")
         .annotate(
-            estimated=Coalesce(Sum("estimated_fee"), Decimal("0"), output_field=DecimalField()),
-            actual=Coalesce(Sum("actual_fee"), Decimal("0"), output_field=DecimalField()),
+            estimated=Coalesce(
+                Sum("estimated_fee"), Decimal("0"), output_field=DecimalField()
+            ),
+            actual=Coalesce(
+                Sum("actual_fee"), Decimal("0"), output_field=DecimalField()
+            ),
             count=Count("id"),
         )
         .order_by("period")
     )
 
     totals = qs.aggregate(
-        total_estimated=Coalesce(Sum("estimated_fee"), Decimal("0"), output_field=DecimalField()),
-        total_actual=Coalesce(Sum("actual_fee"), Decimal("0"), output_field=DecimalField()),
+        total_estimated=Coalesce(
+            Sum("estimated_fee"), Decimal("0"), output_field=DecimalField()
+        ),
+        total_actual=Coalesce(
+            Sum("actual_fee"), Decimal("0"), output_field=DecimalField()
+        ),
         total_count=Count("id"),
     )
 
@@ -148,9 +159,7 @@ def get_case_report(date_from=None, date_to=None, filters=None):
         "completed": completed,
         "completion_rate": completion_rate,
         "status_breakdown": status_breakdown,
-        "aging_buckets": [
-            {"bucket": k, "count": v} for k, v in buckets.items()
-        ],
+        "aging_buckets": [{"bucket": k, "count": v} for k, v in buckets.items()],
         "by_type": by_type,
     }
 
@@ -179,8 +188,12 @@ def get_preparer_performance(date_from=None, date_to=None):
         .annotate(
             assigned=Count("id"),
             completed=Count("id", filter=Q(status="completed")),
-            revenue_estimated=Coalesce(Sum("estimated_fee"), Decimal("0"), output_field=DecimalField()),
-            revenue_actual=Coalesce(Sum("actual_fee"), Decimal("0"), output_field=DecimalField()),
+            revenue_estimated=Coalesce(
+                Sum("estimated_fee"), Decimal("0"), output_field=DecimalField()
+            ),
+            revenue_actual=Coalesce(
+                Sum("actual_fee"), Decimal("0"), output_field=DecimalField()
+            ),
         )
         .order_by("-assigned")
     )
@@ -191,7 +204,11 @@ def get_preparer_performance(date_from=None, date_to=None):
             "preparer_name": f"{row['preparer_first'] or ''} {row['preparer_last'] or ''}".strip(),
             "assigned": row["assigned"],
             "completed": row["completed"],
-            "completion_rate": round(row["completed"] / row["assigned"] * 100) if row["assigned"] else 0,
+            "completion_rate": (
+                round(row["completed"] / row["assigned"] * 100)
+                if row["assigned"]
+                else 0
+            ),
             "revenue_estimated": float(row["revenue_estimated"]),
             "revenue_actual": float(row["revenue_actual"]),
         }
@@ -218,17 +235,13 @@ def get_contact_acquisition(date_from=None, date_to=None):
         .order_by("month")
     )
 
-    by_source = list(
-        qs.values("source")
-        .annotate(count=Count("id"))
-        .order_by("-count")
-    )
+    by_source = list(qs.values("source").annotate(count=Count("id")).order_by("-count"))
 
     total_contacts = qs.count()
-    contacts_with_cases = (
-        qs.filter(tax_cases__isnull=False).distinct().count()
+    contacts_with_cases = qs.filter(tax_cases__isnull=False).distinct().count()
+    conversion_rate = (
+        round(contacts_with_cases / total_contacts * 100) if total_contacts else 0
     )
-    conversion_rate = round(contacts_with_cases / total_contacts * 100) if total_contacts else 0
 
     return {
         "by_month": [

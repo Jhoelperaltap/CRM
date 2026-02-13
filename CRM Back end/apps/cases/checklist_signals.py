@@ -103,9 +103,7 @@ def auto_check_checklist_items(sender, instance, created, **kwargs):
     )
 
     if updated:
-        checklist.completed_count = checklist.items.filter(
-            is_completed=True
-        ).count()
+        checklist.completed_count = checklist.items.filter(is_completed=True).count()
         checklist.save(update_fields=["completed_count", "updated_at"])
         logger.info(
             "Auto-checked %d checklist item(s) for case %s (doc_type=%s)",

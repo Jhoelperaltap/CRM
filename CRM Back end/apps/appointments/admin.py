@@ -16,7 +16,13 @@ class AppointmentAdmin(admin.ModelAdmin):
     ]
     list_filter = ["status", "location", "recurrence_pattern"]
     search_fields = ["title", "contact__first_name", "contact__last_name"]
-    raw_id_fields = ["contact", "assigned_to", "created_by", "case", "parent_appointment"]
+    raw_id_fields = [
+        "contact",
+        "assigned_to",
+        "created_by",
+        "case",
+        "parent_appointment",
+    ]
 
 
 @admin.register(AppointmentPage)

@@ -10,25 +10,44 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('appointments', '0002_initial'),
-        ('contacts', '0001_initial'),
+        ("appointments", "0002_initial"),
+        ("contacts", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='appointment',
-            name='contact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='appointments', to='contacts.contact', verbose_name='contact'),
+            model_name="appointment",
+            name="contact",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="appointments",
+                to="contacts.contact",
+                verbose_name="contact",
+            ),
         ),
         migrations.AddField(
-            model_name='appointment',
-            name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_appointments', to=settings.AUTH_USER_MODEL, verbose_name='created by'),
+            model_name="appointment",
+            name="created_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="created_appointments",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="created by",
+            ),
         ),
         migrations.AddField(
-            model_name='appointment',
-            name='parent_appointment',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='recurring_instances', to='appointments.appointment', verbose_name='parent appointment'),
+            model_name="appointment",
+            name="parent_appointment",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="recurring_instances",
+                to="appointments.appointment",
+                verbose_name="parent appointment",
+            ),
         ),
     ]

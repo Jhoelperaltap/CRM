@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from apps.contacts.models import Contact, ContactStar, ContactTag, ContactTagAssignment
@@ -96,9 +95,7 @@ class ContactListSerializer(serializers.ModelSerializer):
             # Prefer pre-annotated value when available (set by the viewset queryset)
             if hasattr(obj, "_is_starred"):
                 return obj._is_starred
-            return ContactStar.objects.filter(
-                user=request.user, contact=obj
-            ).exists()
+            return ContactStar.objects.filter(user=request.user, contact=obj).exists()
         return False
 
 
@@ -215,9 +212,7 @@ class ContactDetailSerializer(serializers.ModelSerializer):
         if request and hasattr(request, "user") and request.user.is_authenticated:
             if hasattr(obj, "_is_starred"):
                 return obj._is_starred
-            return ContactStar.objects.filter(
-                user=request.user, contact=obj
-            ).exists()
+            return ContactStar.objects.filter(user=request.user, contact=obj).exists()
         return False
 
 
@@ -315,9 +310,7 @@ class ContactCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_ssn_last_four(self, value):
         if value and (not value.isdigit() or len(value) != 4):
-            raise serializers.ValidationError(
-                "SSN last four must be exactly 4 digits."
-            )
+            raise serializers.ValidationError("SSN last four must be exactly 4 digits.")
         return value
 
     def to_representation(self, instance):
@@ -338,8 +331,12 @@ class ContactImportSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
     email = serializers.EmailField(required=False, allow_blank=True, default="")
-    phone = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
-    mobile = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
+    phone = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
+    mobile = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
     salutation = serializers.ChoiceField(
         choices=Contact.Salutation.choices,
         required=False,
@@ -347,26 +344,52 @@ class ContactImportSerializer(serializers.Serializer):
         default="",
     )
     date_of_birth = serializers.DateField(required=False, allow_null=True, default=None)
-    title = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    department = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    title = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    department = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
     # Mailing address
-    mailing_street = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
-    mailing_city = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    mailing_state = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    mailing_zip = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
-    mailing_country = serializers.CharField(max_length=100, required=False, allow_blank=True, default="United States")
+    mailing_street = serializers.CharField(
+        max_length=255, required=False, allow_blank=True, default=""
+    )
+    mailing_city = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    mailing_state = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    mailing_zip = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
+    mailing_country = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default="United States"
+    )
     # Legacy address fields for backwards compatibility
-    street_address = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
-    city = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    state = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    zip_code = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
-    country = serializers.CharField(max_length=100, required=False, allow_blank=True, default="United States")
+    street_address = serializers.CharField(
+        max_length=255, required=False, allow_blank=True, default=""
+    )
+    city = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    state = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    zip_code = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
+    country = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default="United States"
+    )
     status = serializers.ChoiceField(
         choices=Contact.Status.choices,
         required=False,
         default=Contact.Status.ACTIVE,
     )
-    source = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    source = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
     lead_source = serializers.ChoiceField(
         choices=Contact.LeadSource.choices,
         required=False,
@@ -380,8 +403,12 @@ class ContactImportSerializer(serializers.Serializer):
         allow_blank=True,
         default="en",
     )
-    tags = serializers.CharField(max_length=500, required=False, allow_blank=True, default="")
-    office_services = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    tags = serializers.CharField(
+        max_length=500, required=False, allow_blank=True, default=""
+    )
+    office_services = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -390,7 +417,9 @@ class ContactImportSerializer(serializers.Serializer):
 class ContactTagSerializer(serializers.ModelSerializer):
     """Serializer for contact tags."""
 
-    created_by_name = serializers.CharField(source="created_by.get_full_name", read_only=True)
+    created_by_name = serializers.CharField(
+        source="created_by.get_full_name", read_only=True
+    )
     contact_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -405,7 +434,13 @@ class ContactTagSerializer(serializers.ModelSerializer):
             "contact_count",
             "created_at",
         ]
-        read_only_fields = ["id", "created_by", "created_by_name", "contact_count", "created_at"]
+        read_only_fields = [
+            "id",
+            "created_by",
+            "created_by_name",
+            "contact_count",
+            "created_at",
+        ]
 
     def get_contact_count(self, obj):
         return obj.assignments.count()
@@ -420,7 +455,9 @@ class ContactTagAssignmentSerializer(serializers.ModelSerializer):
 
     tag_name = serializers.CharField(source="tag.name", read_only=True)
     tag_color = serializers.CharField(source="tag.color", read_only=True)
-    assigned_by_name = serializers.CharField(source="assigned_by.get_full_name", read_only=True)
+    assigned_by_name = serializers.CharField(
+        source="assigned_by.get_full_name", read_only=True
+    )
 
     class Meta:
         model = ContactTagAssignment

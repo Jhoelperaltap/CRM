@@ -5,6 +5,7 @@ from apps.approvals.models import Approval, ApprovalRule, ApprovalAction
 
 # ── Action ──────────────────────────────────────────────────────────────
 
+
 class ApprovalActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApprovalAction
@@ -21,6 +22,7 @@ class ApprovalActionSerializer(serializers.ModelSerializer):
 
 
 # ── Rule ────────────────────────────────────────────────────────────────
+
 
 class ApprovalRuleSerializer(serializers.ModelSerializer):
     owner_profile_ids = serializers.PrimaryKeyRelatedField(
@@ -48,6 +50,7 @@ class ApprovalRuleSerializer(serializers.ModelSerializer):
 
 
 # ── Approval List ───────────────────────────────────────────────────────
+
 
 class ApprovalListSerializer(serializers.ModelSerializer):
     created_by_name = serializers.SerializerMethodField()
@@ -78,6 +81,7 @@ class ApprovalListSerializer(serializers.ModelSerializer):
 
 
 # ── Approval Detail ─────────────────────────────────────────────────────
+
 
 class ApprovalDetailSerializer(serializers.ModelSerializer):
     rules = ApprovalRuleSerializer(many=True, read_only=True)
@@ -112,15 +116,14 @@ class ApprovalDetailSerializer(serializers.ModelSerializer):
 
 # ── Approval Create/Update ──────────────────────────────────────────────
 
+
 class ApprovalRuleWriteSerializer(serializers.Serializer):
     rule_number = serializers.IntegerField(default=1)
     conditions = serializers.JSONField(default=list)
     owner_profile_ids = serializers.ListField(
         child=serializers.UUIDField(), default=list
     )
-    approver_ids = serializers.ListField(
-        child=serializers.UUIDField(), default=list
-    )
+    approver_ids = serializers.ListField(child=serializers.UUIDField(), default=list)
 
 
 class ApprovalActionWriteSerializer(serializers.Serializer):

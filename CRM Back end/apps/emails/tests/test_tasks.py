@@ -46,12 +46,8 @@ class TestSyncEmailAccount:
 
         sync_email_account(str(account.id))
 
-        assert EmailMessage.objects.filter(
-            message_id="<test-123@example.com>"
-        ).exists()
-        assert EmailSyncLog.objects.filter(
-            account=account, status="success"
-        ).exists()
+        assert EmailMessage.objects.filter(message_id="<test-123@example.com>").exists()
+        assert EmailSyncLog.objects.filter(account=account, status="success").exists()
 
     @patch("apps.emails.tasks.IMAPClient")
     def test_sync_auto_links_contact(self, mock_imap_cls):

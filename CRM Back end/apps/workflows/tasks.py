@@ -52,9 +52,7 @@ def check_appointment_reminders():
 
         for apt in appointments:
             if evaluate_conditions(rule, apt, {}):
-                execute_action(
-                    rule, apt, {"minutes_before": minutes_before}
-                )
+                execute_action(rule, apt, {"minutes_before": minutes_before})
 
 
 @shared_task
@@ -68,24 +66,18 @@ def check_document_missing():
     )
 
     for rule in rules:
-        required_types = rule.trigger_config.get(
-            "required_doc_types", ["w2", "1099"]
-        )
+        required_types = rule.trigger_config.get("required_doc_types", ["w2", "1099"])
         active_cases = TaxCase.objects.filter(
             status__in=["new", "in_progress"]
         ).select_related("assigned_preparer", "contact")
 
         for case in active_cases:
             existing = set(
-                Document.objects.filter(case=case).values_list(
-                    "doc_type", flat=True
-                )
+                Document.objects.filter(case=case).values_list("doc_type", flat=True)
             )
             missing = [dt for dt in required_types if dt not in existing]
             if missing and evaluate_conditions(rule, case, {}):
-                execute_action(
-                    rule, case, {"missing_doc_types": missing}
-                )
+                execute_action(rule, case, {"missing_doc_types": missing})
 
 
 @shared_task
@@ -109,9 +101,7 @@ def check_due_dates():
 
         for case in cases:
             if evaluate_conditions(rule, case, {}):
-                execute_action(
-                    rule, case, {"days_until_due": days_before}
-                )
+                execute_action(rule, case, {"days_until_due": days_before})
 
 
 @shared_task
@@ -120,9 +110,7 @@ def check_overdue_tasks():
     from apps.tasks.models import Task
 
     today = timezone.now().date()
-    rules = WorkflowRule.objects.filter(
-        is_active=True, trigger_type="task_overdue"
-    )
+    rules = WorkflowRule.objects.filter(is_active=True, trigger_type="task_overdue")
 
     if not rules.exists():
         return

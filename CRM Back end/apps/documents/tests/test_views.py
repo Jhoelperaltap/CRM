@@ -8,7 +8,9 @@ from tests.factories import DocumentFactory
 BASE = "/api/v1/documents/"
 
 # Valid PDF magic bytes (minimal PDF structure)
-VALID_PDF_CONTENT = b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF"
+VALID_PDF_CONTENT = (
+    b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF"
+)
 
 
 @pytest.mark.django_db

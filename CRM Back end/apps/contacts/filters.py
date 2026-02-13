@@ -24,8 +24,12 @@ class ContactFilter(django_filters.FilterSet):
     status = django_filters.CharFilter(field_name="status", lookup_expr="exact")
     assigned_to = django_filters.UUIDFilter(field_name="assigned_to__id")
     corporation = django_filters.UUIDFilter(field_name="corporation__id")
-    created_after = django_filters.DateFilter(field_name="created_at", lookup_expr="date__gte")
-    created_before = django_filters.DateFilter(field_name="created_at", lookup_expr="date__lte")
+    created_after = django_filters.DateFilter(
+        field_name="created_at", lookup_expr="date__gte"
+    )
+    created_before = django_filters.DateFilter(
+        field_name="created_at", lookup_expr="date__lte"
+    )
     is_starred = django_filters.BooleanFilter(method="filter_is_starred")
 
     class Meta:

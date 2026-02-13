@@ -2,7 +2,6 @@ import pytest
 from rest_framework import status
 
 
-
 BASE_AUTH = "/api/v1/auth/"
 BASE_USERS = "/api/v1/users/"
 

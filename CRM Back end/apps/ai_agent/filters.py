@@ -32,7 +32,9 @@ class AgentActionFilter(django_filters.FilterSet):
     related_contact = django_filters.UUIDFilter(field_name="related_contact__id")
     related_case = django_filters.UUIDFilter(field_name="related_case__id")
     related_task = django_filters.UUIDFilter(field_name="related_task__id")
-    related_appointment = django_filters.UUIDFilter(field_name="related_appointment__id")
+    related_appointment = django_filters.UUIDFilter(
+        field_name="related_appointment__id"
+    )
 
     class Meta:
         model = AgentAction

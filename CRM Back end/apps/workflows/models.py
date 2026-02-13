@@ -37,7 +37,7 @@ class WorkflowRule(TimeStampedModel):
     conditions = models.JSONField(
         default=dict,
         blank=True,
-        help_text="Optional extra filters, e.g. {\"case_type\": \"individual_1040\"}",
+        help_text='Optional extra filters, e.g. {"case_type": "individual_1040"}',
     )
 
     action_type = models.CharField(max_length=30, choices=ActionType.choices)
@@ -76,9 +76,7 @@ class WorkflowExecutionLog(TimeStampedModel):
     trigger_object_type = models.CharField(max_length=50, blank=True, default="")
     trigger_object_id = models.UUIDField(null=True, blank=True)
     action_taken = models.CharField(max_length=500, default="")
-    result = models.CharField(
-        max_length=10, choices=Result.choices, db_index=True
-    )
+    result = models.CharField(max_length=10, choices=Result.choices, db_index=True)
     error_message = models.TextField(blank=True, default="")
 
     class Meta:

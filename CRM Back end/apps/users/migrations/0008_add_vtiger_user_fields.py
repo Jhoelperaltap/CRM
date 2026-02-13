@@ -159,7 +159,10 @@ class Migration(migrations.Migration):
             model_name="user",
             name="country",
             field=models.CharField(
-                blank=True, default="United States", max_length=100, verbose_name="country"
+                blank=True,
+                default="United States",
+                max_length=100,
+                verbose_name="country",
             ),
         ),
         migrations.AddField(
@@ -174,7 +177,10 @@ class Migration(migrations.Migration):
             model_name="user",
             name="preferred_currency",
             field=models.CharField(
-                blank=True, default="USD", max_length=10, verbose_name="preferred currency"
+                blank=True,
+                default="USD",
+                max_length=10,
+                verbose_name="preferred currency",
             ),
         ),
         migrations.AddField(
@@ -267,7 +273,10 @@ class Migration(migrations.Migration):
             model_name="user",
             name="phone_country_code",
             field=models.CharField(
-                blank=True, default="+1", max_length=10, verbose_name="phone country code"
+                blank=True,
+                default="+1",
+                max_length=10,
+                verbose_name="phone country code",
             ),
         ),
         migrations.AddField(

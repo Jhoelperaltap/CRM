@@ -18,17 +18,21 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Create an encrypted database backup using Django dumpdata + Fernet encryption."
+    help = (
+        "Create an encrypted database backup using Django dumpdata + Fernet encryption."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--output", "-o",
+            "--output",
+            "-o",
             type=str,
             default="",
             help="Output path for the encrypted backup file.",
         )
         parser.add_argument(
-            "--key", "-k",
+            "--key",
+            "-k",
             type=str,
             default="",
             help="Fernet encryption key (base64). Defaults to FIELD_ENCRYPTION_KEY.",
@@ -72,7 +76,8 @@ class Command(BaseCommand):
                 "dumpdata",
                 "--natural-foreign",
                 "--natural-primary",
-                "--indent", "2",
+                "--indent",
+                "2",
                 stdout=tmp,
             )
             tmp_path = tmp.name

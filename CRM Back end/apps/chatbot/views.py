@@ -309,10 +309,10 @@ class PortalChatView(APIView):
                 response_content = f"I found {len(slots)} available appointment slots. Here are some options:\n\n"
                 for slot in slots[:5]:  # Show first 5
                     slot_date = datetime.strptime(slot["date"], "%Y-%m-%d")
-                    response_content += f"- {slot_date.strftime('%A, %B %d')} at {slot['time']}\n"
-                response_content += (
-                    "\nWould you like to book one of these times?"
-                )
+                    response_content += (
+                        f"- {slot_date.strftime('%A, %B %d')} at {slot['time']}\n"
+                    )
+                response_content += "\nWould you like to book one of these times?"
             else:
                 response_content = (
                     "I'm sorry, there are no available appointment slots in that "
@@ -360,9 +360,11 @@ class PortalChatView(APIView):
             message_type=(
                 ChatbotMessage.MessageType.APPOINTMENT_CONFIRM
                 if action == "appointment_confirmed"
-                else ChatbotMessage.MessageType.HANDOFF_REQUEST
-                if action == "request_human_handoff"
-                else ChatbotMessage.MessageType.TEXT
+                else (
+                    ChatbotMessage.MessageType.HANDOFF_REQUEST
+                    if action == "request_human_handoff"
+                    else ChatbotMessage.MessageType.TEXT
+                )
             ),
             metadata=metadata,
             tokens_used=response.get("tokens_used", 0),
@@ -406,9 +408,9 @@ class PortalChatConversationView(APIView):
     def get(self, request, conversation_id):
         contact = request.portal_access.contact
         try:
-            conversation = ChatbotConversation.objects.prefetch_related(
-                "messages"
-            ).get(pk=conversation_id, contact=contact)
+            conversation = ChatbotConversation.objects.prefetch_related("messages").get(
+                pk=conversation_id, contact=contact
+            )
         except ChatbotConversation.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

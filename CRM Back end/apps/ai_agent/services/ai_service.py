@@ -98,7 +98,9 @@ class AIService:
         # Build system prompt with custom instructions
         full_system_prompt = system_prompt or ""
         if self.config.custom_instructions:
-            full_system_prompt = f"{full_system_prompt}\n\n{self.config.custom_instructions}".strip()
+            full_system_prompt = (
+                f"{full_system_prompt}\n\n{self.config.custom_instructions}".strip()
+            )
 
         try:
             if self.provider == "openai":
@@ -155,7 +157,9 @@ class AIService:
         return {
             "content": content,
             "tokens_used": tokens_used,
-            "raw_response": response.model_dump() if hasattr(response, "model_dump") else None,
+            "raw_response": (
+                response.model_dump() if hasattr(response, "model_dump") else None
+            ),
         }
 
     def _call_anthropic(
@@ -176,9 +180,9 @@ class AIService:
 
         if json_response:
             # Anthropic doesn't have native JSON mode, add instruction
-            kwargs["messages"][0]["content"] = (
-                f"{prompt}\n\nIMPORTANT: Respond ONLY with valid JSON, no other text."
-            )
+            kwargs["messages"][0][
+                "content"
+            ] = f"{prompt}\n\nIMPORTANT: Respond ONLY with valid JSON, no other text."
 
         response = self.client.messages.create(**kwargs)
 
@@ -194,7 +198,9 @@ class AIService:
         return {
             "content": content,
             "tokens_used": tokens_used,
-            "raw_response": response.model_dump() if hasattr(response, "model_dump") else None,
+            "raw_response": (
+                response.model_dump() if hasattr(response, "model_dump") else None
+            ),
         }
 
     def analyze_with_context(

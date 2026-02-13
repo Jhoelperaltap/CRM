@@ -118,9 +118,7 @@ class InternalTicket(TimeStampedModel):
         blank=True,
         default="",
     )
-    deferred_date = models.DateField(
-        _("deferred date"), null=True, blank=True
-    )
+    deferred_date = models.DateField(_("deferred date"), null=True, blank=True)
     resolution_type = models.CharField(
         _("resolution type"),
         max_length=20,
@@ -135,9 +133,7 @@ class InternalTicket(TimeStampedModel):
         blank=True,
         default="",
     )
-    reopen_count = models.PositiveIntegerField(
-        _("reopen count"), default=0
-    )
+    reopen_count = models.PositiveIntegerField(_("reopen count"), default=0)
     satisfaction_survey_feedback = models.TextField(
         _("satisfaction survey feedback"), blank=True, default=""
     )
@@ -159,18 +155,14 @@ class InternalTicket(TimeStampedModel):
     )
 
     # === SLA Information ===
-    sla_name = models.CharField(
-        _("SLA name"), max_length=100, blank=True, default=""
-    )
+    sla_name = models.CharField(_("SLA name"), max_length=100, blank=True, default="")
     sla_hours = models.PositiveIntegerField(
         _("SLA hours"),
         null=True,
         blank=True,
         help_text=_("Expected resolution time in hours."),
     )
-    sla_breached_at = models.DateTimeField(
-        _("SLA breached at"), null=True, blank=True
-    )
+    sla_breached_at = models.DateTimeField(_("SLA breached at"), null=True, blank=True)
 
     class Meta:
         db_table = "crm_internal_tickets"

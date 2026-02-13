@@ -17,18 +17,18 @@ from apps.users.models import User
 
 
 # Example 1: Login View with Security Logging
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def login_view(request):
     """
     Login endpoint with comprehensive security logging.
     """
-    email = request.data.get('email')
-    password = request.data.get('password')
+    email = request.data.get("email")
+    password = request.data.get("password")
 
     # Get request metadata
     ip_address = get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
 
     # Check if IP is already flagged for suspicious activity
     if security_event_logger.is_suspicious_activity(ip_address=ip_address):
@@ -39,8 +39,8 @@ def login_view(request):
             user_agent=user_agent,
         )
         return Response(
-            {'error': 'Account temporarily locked. Please contact support.'},
-            status=status.HTTP_403_FORBIDDEN
+            {"error": "Account temporarily locked. Please contact support."},
+            status=status.HTTP_403_FORBIDDEN,
         )
 
     # Attempt authentication
@@ -55,12 +55,11 @@ def login_view(request):
                 reason="account_inactive",
             )
             return Response(
-                {'error': 'Account is inactive'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Account is inactive"}, status=status.HTTP_403_FORBIDDEN
             )
 
         # Check if account is locked
-        if hasattr(user, 'is_locked') and user.is_locked:
+        if hasattr(user, "is_locked") and user.is_locked:
             security_event_logger.log_login_failed(
                 email=email,
                 ip_address=ip_address,
@@ -68,8 +67,7 @@ def login_view(request):
                 reason="account_locked",
             )
             return Response(
-                {'error': 'Account is locked'},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Account is locked"}, status=status.HTTP_403_FORBIDDEN
             )
 
         # Successful login
@@ -83,15 +81,17 @@ def login_view(request):
         # Generate tokens
         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-            'user': {
-                'id': str(user.id),
-                'email': user.email,
-                'name': f"{user.first_name} {user.last_name}",
+        return Response(
+            {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "id": str(user.id),
+                    "email": user.email,
+                    "name": f"{user.first_name} {user.last_name}",
+                },
             }
-        })
+        )
 
     else:
         # Failed login
@@ -121,30 +121,29 @@ def login_view(request):
                 pass
 
         return Response(
-            {'error': 'Invalid credentials'},
-            status=status.HTTP_401_UNAUTHORIZED
+            {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
         )
 
 
 # Example 2: Password Change View with Security Logging
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def change_password_view(request):
     """
     Change password endpoint with security logging.
     """
     user = request.user
-    old_password = request.data.get('old_password')
-    new_password = request.data.get('new_password')
+    old_password = request.data.get("old_password")
+    new_password = request.data.get("new_password")
 
     ip_address = get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
 
     # Verify old password
     if not user.check_password(old_password):
         return Response(
-            {'error': 'Current password is incorrect'},
-            status=status.HTTP_400_BAD_REQUEST
+            {"error": "Current password is incorrect"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     # Set new password
@@ -159,21 +158,21 @@ def change_password_view(request):
         user_agent=user_agent,
     )
 
-    return Response({'message': 'Password changed successfully'})
+    return Response({"message": "Password changed successfully"})
 
 
 # Example 3: Enable 2FA View with Security Logging
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def enable_2fa_view(request):
     """
     Enable two-factor authentication with security logging.
     """
     user = request.user
-    method = request.data.get('method', 'totp')
+    method = request.data.get("method", "totp")
 
     ip_address = get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
 
     # Enable 2FA (implementation depends on your 2FA library)
     user.two_factor_enabled = True
@@ -189,7 +188,7 @@ def enable_2fa_view(request):
         method=method,
     )
 
-    return Response({'message': '2FA enabled successfully'})
+    return Response({"message": "2FA enabled successfully"})
 
 
 # Example 4: Permission Denied Logging in DRF Permission Class
@@ -212,7 +211,7 @@ class LoggedPermission(BasePermission):
         if not has_perm:
             # Log permission denied
             ip_address = get_client_ip(request)
-            user_agent = request.META.get('HTTP_USER_AGENT', '')
+            user_agent = request.META.get("HTTP_USER_AGENT", "")
 
             security_event_logger.log_permission_denied(
                 user_id=str(request.user.id),
@@ -228,7 +227,7 @@ class LoggedPermission(BasePermission):
     def _check_permission(self, request, view):
         """Implement your permission logic here."""
         # Example: Check if user has required role
-        required_role = getattr(view, 'required_role', None)
+        required_role = getattr(view, "required_role", None)
         if required_role:
             return request.user.role.name == required_role
         return True
@@ -249,10 +248,12 @@ class SuspiciousActivityMiddleware:
         # Check for suspicious activity before processing request
         if security_event_logger.is_suspicious_activity(ip_address=ip_address):
             # For non-authenticated endpoints, block the request
-            if not request.user.is_authenticated and request.path.startswith('/api/v1/auth/'):
+            if not request.user.is_authenticated and request.path.startswith(
+                "/api/v1/auth/"
+            ):
                 return Response(
-                    {'error': 'Too many requests. Please try again later.'},
-                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                    {"error": "Too many requests. Please try again later."},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
                 )
 
         response = self.get_response(request)
@@ -273,7 +274,7 @@ class LoggedAuthenticationBackend(ModelBackend):
         Authenticate user with security logging.
         """
         ip_address = get_client_ip(request) if request else None
-        user_agent = request.META.get('HTTP_USER_AGENT', '') if request else ''
+        user_agent = request.META.get("HTTP_USER_AGENT", "") if request else ""
 
         try:
             user = User.objects.get(email=email)
@@ -300,10 +301,10 @@ def get_client_ip(request):
     """
     Get the client's IP address from the request.
     """
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
-        return x_forwarded_for.split(',')[0].strip()
-    return request.META.get('REMOTE_ADDR', '')
+        return x_forwarded_for.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "")
 
 
 # Example 7: Scheduled Task to Review Security Events
@@ -330,7 +331,7 @@ def review_security_events():
 
 
 # Example 8: API View for Security Event Dashboard
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def security_events_view(request):
     """
@@ -340,15 +341,14 @@ def security_events_view(request):
     """
     if not request.user.is_staff:
         return Response(
-            {'error': 'Insufficient permissions'},
-            status=status.HTTP_403_FORBIDDEN
+            {"error": "Insufficient permissions"}, status=status.HTTP_403_FORBIDDEN
         )
 
     # In production, this would query Elasticsearch, Splunk, etc.
     # For now, we can show information from cache
 
-    ip_address = request.query_params.get('ip_address')
-    email = request.query_params.get('email')
+    ip_address = request.query_params.get("ip_address")
+    email = request.query_params.get("email")
 
     result = {}
 
@@ -357,17 +357,17 @@ def security_events_view(request):
         is_suspicious = security_event_logger.is_suspicious_activity(
             ip_address=ip_address
         )
-        result['ip_address'] = {
-            'address': ip_address,
-            'failed_login_count': failed_count,
-            'is_suspicious': is_suspicious,
+        result["ip_address"] = {
+            "address": ip_address,
+            "failed_login_count": failed_count,
+            "is_suspicious": is_suspicious,
         }
 
     if email:
         is_suspicious = security_event_logger.is_suspicious_activity(email=email)
-        result['email'] = {
-            'address': email,
-            'is_suspicious': is_suspicious,
+        result["email"] = {
+            "address": email,
+            "is_suspicious": is_suspicious,
         }
 
     return Response(result)

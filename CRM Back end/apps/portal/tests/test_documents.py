@@ -41,19 +41,13 @@ class TestPortalDocumentRetrieve:
         doc = DocumentFactory(contact=portal_contact)
         upload = PortalDocumentUploadFactory(contact=portal_contact, document=doc)
 
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/documents/{upload.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/documents/{upload.id}/")
         assert resp.status_code == 200
 
-    def test_cannot_view_other_contacts_document(
-        self, portal_authenticated_client
-    ):
+    def test_cannot_view_other_contacts_document(self, portal_authenticated_client):
         other_contact = ContactFactory()
         doc = DocumentFactory(contact=other_contact)
         upload = PortalDocumentUploadFactory(contact=other_contact, document=doc)
 
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/documents/{upload.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/documents/{upload.id}/")
         assert resp.status_code == 404

@@ -6,18 +6,54 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_branch_alter_user_managers_and_more'),
+        ("users", "0002_branch_alter_user_managers_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='modulepermission',
-            name='module',
-            field=models.CharField(choices=[('contacts', 'Contacts'), ('corporations', 'Corporations'), ('cases', 'Cases'), ('dashboard', 'Dashboard'), ('users', 'Users'), ('audit', 'Audit'), ('appointments', 'Appointments'), ('documents', 'Documents'), ('tasks', 'Tasks'), ('quotes', 'Quotes'), ('emails', 'Emails'), ('notifications', 'Notifications'), ('workflows', 'Workflows')], max_length=30, verbose_name='module'),
+            model_name="modulepermission",
+            name="module",
+            field=models.CharField(
+                choices=[
+                    ("contacts", "Contacts"),
+                    ("corporations", "Corporations"),
+                    ("cases", "Cases"),
+                    ("dashboard", "Dashboard"),
+                    ("users", "Users"),
+                    ("audit", "Audit"),
+                    ("appointments", "Appointments"),
+                    ("documents", "Documents"),
+                    ("tasks", "Tasks"),
+                    ("quotes", "Quotes"),
+                    ("emails", "Emails"),
+                    ("notifications", "Notifications"),
+                    ("workflows", "Workflows"),
+                ],
+                max_length=30,
+                verbose_name="module",
+            ),
         ),
         migrations.AlterField(
-            model_name='sharingrule',
-            name='module',
-            field=models.CharField(choices=[('contacts', 'Contacts'), ('corporations', 'Corporations'), ('cases', 'Cases'), ('dashboard', 'Dashboard'), ('users', 'Users'), ('audit', 'Audit'), ('appointments', 'Appointments'), ('documents', 'Documents'), ('tasks', 'Tasks'), ('quotes', 'Quotes'), ('emails', 'Emails'), ('notifications', 'Notifications'), ('workflows', 'Workflows')], max_length=30, verbose_name='module'),
+            model_name="sharingrule",
+            name="module",
+            field=models.CharField(
+                choices=[
+                    ("contacts", "Contacts"),
+                    ("corporations", "Corporations"),
+                    ("cases", "Cases"),
+                    ("dashboard", "Dashboard"),
+                    ("users", "Users"),
+                    ("audit", "Audit"),
+                    ("appointments", "Appointments"),
+                    ("documents", "Documents"),
+                    ("tasks", "Tasks"),
+                    ("quotes", "Quotes"),
+                    ("emails", "Emails"),
+                    ("notifications", "Notifications"),
+                    ("workflows", "Workflows"),
+                ],
+                max_length=30,
+                verbose_name="module",
+            ),
         ),
     ]

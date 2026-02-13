@@ -6,22 +6,45 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0004_role_can_assign_records_to'),
+        ("users", "0004_role_can_assign_records_to"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='role',
-            name='can_assign_records_to',
+            model_name="role",
+            name="can_assign_records_to",
         ),
         migrations.AddField(
-            model_name='role',
-            name='assign_groups_policy',
-            field=models.CharField(choices=[('all_groups', 'All Groups'), ('user_groups', 'All Groups that user is part of'), ('selected_groups', 'Selected Groups'), ('no_groups', 'Can not assign to any group'), ('selected_groups_members', 'Selected Groups and Group members')], default='all_groups', max_length=30, verbose_name='assign records to groups'),
+            model_name="role",
+            name="assign_groups_policy",
+            field=models.CharField(
+                choices=[
+                    ("all_groups", "All Groups"),
+                    ("user_groups", "All Groups that user is part of"),
+                    ("selected_groups", "Selected Groups"),
+                    ("no_groups", "Can not assign to any group"),
+                    ("selected_groups_members", "Selected Groups and Group members"),
+                ],
+                default="all_groups",
+                max_length=30,
+                verbose_name="assign records to groups",
+            ),
         ),
         migrations.AddField(
-            model_name='role',
-            name='assign_users_policy',
-            field=models.CharField(choices=[('all_users', 'All Users'), ('same_role_hierarchy', 'Users having Same Role or Same Hierarchy or Subordinate Role'), ('subordinate_role', 'Users having Subordinate Role')], default='all_users', max_length=30, verbose_name='assign records to users'),
+            model_name="role",
+            name="assign_users_policy",
+            field=models.CharField(
+                choices=[
+                    ("all_users", "All Users"),
+                    (
+                        "same_role_hierarchy",
+                        "Users having Same Role or Same Hierarchy or Subordinate Role",
+                    ),
+                    ("subordinate_role", "Users having Subordinate Role"),
+                ],
+                default="all_users",
+                max_length=30,
+                verbose_name="assign records to users",
+            ),
         ),
     ]

@@ -49,7 +49,11 @@ class TaxCase(TimeStampedModel):
     VALID_TRANSITIONS = {
         Status.NEW: [Status.IN_PROGRESS, Status.WAITING_FOR_DOCUMENTS],
         Status.WAITING_FOR_DOCUMENTS: [Status.IN_PROGRESS, Status.NEW],
-        Status.IN_PROGRESS: [Status.UNDER_REVIEW, Status.WAITING_FOR_DOCUMENTS, Status.NEW],
+        Status.IN_PROGRESS: [
+            Status.UNDER_REVIEW,
+            Status.WAITING_FOR_DOCUMENTS,
+            Status.NEW,
+        ],
         Status.UNDER_REVIEW: [Status.READY_TO_FILE, Status.IN_PROGRESS],
         Status.READY_TO_FILE: [Status.FILED, Status.UNDER_REVIEW],
         Status.FILED: [Status.COMPLETED, Status.UNDER_REVIEW],

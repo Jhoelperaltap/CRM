@@ -27,6 +27,7 @@ For immediate rotation (emergency):
 3. Restart application servers
 4. All users will need to log in again
 """
+
 import secrets
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
@@ -60,26 +61,28 @@ class Command(BaseCommand):
         elif options["invalidate_all"]:
             self.invalidate_all()
         else:
-            self.stdout.write(self.style.WARNING(
-                "No action specified. Use --help for options."
-            ))
+            self.stdout.write(
+                self.style.WARNING("No action specified. Use --help for options.")
+            )
 
     def generate_key(self):
         """Generate a new JWT signing key."""
         # Generate a secure 256-bit key
         key = secrets.token_urlsafe(32)
 
-        self.stdout.write(self.style.SUCCESS(
-            "\n=== New JWT Signing Key Generated ===\n"
-        ))
+        self.stdout.write(
+            self.style.SUCCESS("\n=== New JWT Signing Key Generated ===\n")
+        )
         self.stdout.write(f"JWT_SIGNING_KEY={key}\n")
-        self.stdout.write(self.style.WARNING(
-            "\nTo rotate keys:\n"
-            "1. Add the new key to your environment variables\n"
-            "2. Restart your application servers\n"
-            "3. Existing tokens will become invalid\n"
-            "4. Users will need to log in again\n"
-        ))
+        self.stdout.write(
+            self.style.WARNING(
+                "\nTo rotate keys:\n"
+                "1. Add the new key to your environment variables\n"
+                "2. Restart your application servers\n"
+                "3. Existing tokens will become invalid\n"
+                "4. Users will need to log in again\n"
+            )
+        )
 
     def show_info(self):
         """Show information about current JWT configuration."""
@@ -117,13 +120,16 @@ class Command(BaseCommand):
             masked_portal = f"{portal_key[:4]}...{portal_key[-4:]}"
             self.stdout.write(f"\nPortal Signing Key: {masked_portal}")
             if portal_key == signing_key:
-                self.stdout.write(self.style.WARNING(
-                    "  WARNING: Portal key is the same as staff key!"
-                ))
+                self.stdout.write(
+                    self.style.WARNING(
+                        "  WARNING: Portal key is the same as staff key!"
+                    )
+                )
 
         # Active sessions
         try:
             from apps.users.models import UserSession
+
             active_sessions = UserSession.objects.filter(is_active=True).count()
             self.stdout.write(f"\nActive Sessions: {active_sessions}")
         except Exception:
@@ -132,6 +138,7 @@ class Command(BaseCommand):
         # Blacklisted tokens
         try:
             from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+
             blacklisted = BlacklistedToken.objects.count()
             self.stdout.write(f"Blacklisted Tokens: {blacklisted}")
         except Exception:
@@ -139,9 +146,9 @@ class Command(BaseCommand):
 
     def invalidate_all(self):
         """Invalidate all existing tokens by blacklisting them."""
-        self.stdout.write(self.style.WARNING(
-            "\nWARNING: This will log out ALL users immediately!\n"
-        ))
+        self.stdout.write(
+            self.style.WARNING("\nWARNING: This will log out ALL users immediately!\n")
+        )
 
         confirm = input("Type 'yes' to confirm: ")
         if confirm.lower() != "yes":
@@ -167,12 +174,12 @@ class Command(BaseCommand):
                 is_active=False
             )
 
-            self.stdout.write(self.style.SUCCESS(
-                f"\nInvalidated {count} tokens and {sessions_count} sessions."
-            ))
             self.stdout.write(
-                "All users will need to log in again."
+                self.style.SUCCESS(
+                    f"\nInvalidated {count} tokens and {sessions_count} sessions."
+                )
             )
+            self.stdout.write("All users will need to log in again.")
 
         except Exception as e:
             raise CommandError(f"Failed to invalidate tokens: {e}")

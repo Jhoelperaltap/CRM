@@ -253,7 +253,9 @@ class QuoteCreateUpdateSerializer(serializers.ModelSerializer):
             item_data["total"] = self._calc_line_total(item_data)
 
             if item_id and item_id in existing_ids:
-                QuoteLineItem.objects.filter(pk=item_id, quote=quote).update(**item_data)
+                QuoteLineItem.objects.filter(pk=item_id, quote=quote).update(
+                    **item_data
+                )
                 incoming_ids.add(item_id)
             else:
                 li = QuoteLineItem.objects.create(quote=quote, **item_data)

@@ -36,19 +36,13 @@ class TestStaffPortalMessageList:
         assert resp.data["count"] == 1
 
     def test_filter_by_message_type(self, admin_client, portal_contact):
-        PortalMessageFactory(
-            contact=portal_contact, message_type="client_to_staff"
-        )
+        PortalMessageFactory(contact=portal_contact, message_type="client_to_staff")
 
-        resp = admin_client.get(
-            self.URL, {"message_type": "client_to_staff"}
-        )
+        resp = admin_client.get(self.URL, {"message_type": "client_to_staff"})
         assert resp.status_code == 200
         assert resp.data["count"] == 1
 
-        resp = admin_client.get(
-            self.URL, {"message_type": "staff_to_client"}
-        )
+        resp = admin_client.get(self.URL, {"message_type": "staff_to_client"})
         assert resp.status_code == 200
         assert resp.data["count"] == 0
 
@@ -61,9 +55,7 @@ class TestStaffPortalMessageList:
 class TestStaffPortalMessageReply:
     """Tests for POST /api/v1/settings/portal/messages/{id}/reply/."""
 
-    def test_reply_to_client_message(
-        self, admin_client, admin_user, portal_contact
-    ):
+    def test_reply_to_client_message(self, admin_client, admin_user, portal_contact):
         msg = PortalMessageFactory(
             contact=portal_contact,
             message_type="client_to_staff",
@@ -84,9 +76,7 @@ class TestStaffPortalMessageReply:
         assert str(resp.data["parent_message"]) == str(msg.id)
         assert str(resp.data["contact"]) == str(portal_contact.id)
 
-    def test_reply_with_custom_subject(
-        self, admin_client, portal_contact
-    ):
+    def test_reply_with_custom_subject(self, admin_client, portal_contact):
         msg = PortalMessageFactory(contact=portal_contact, subject="Question")
         url = f"/api/v1/settings/portal/messages/{msg.id}/reply/"
         resp = admin_client.post(

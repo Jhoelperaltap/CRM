@@ -23,10 +23,23 @@ class EmailMessageListSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailMessage
         fields = [
-            "id", "message_id", "direction", "from_address", "to_addresses",
-            "subject", "sent_at", "is_read", "is_starred", "folder",
-            "contact", "case", "assigned_to", "thread",
-            "attachment_count", "contact_name", "assigned_to_name",
+            "id",
+            "message_id",
+            "direction",
+            "from_address",
+            "to_addresses",
+            "subject",
+            "sent_at",
+            "is_read",
+            "is_starred",
+            "folder",
+            "contact",
+            "case",
+            "assigned_to",
+            "thread",
+            "attachment_count",
+            "contact_name",
+            "assigned_to_name",
         ]
 
     def get_attachment_count(self, obj):
@@ -52,11 +65,31 @@ class EmailMessageDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailMessage
         fields = [
-            "id", "account", "thread", "message_id", "in_reply_to", "references",
-            "direction", "from_address", "to_addresses", "cc_addresses", "bcc_addresses",
-            "subject", "body_text", "sent_at", "is_read", "is_starred", "folder",
-            "contact", "case", "assigned_to", "sent_by",
-            "attachments", "contact_name", "assigned_to_name", "case_title",
+            "id",
+            "account",
+            "thread",
+            "message_id",
+            "in_reply_to",
+            "references",
+            "direction",
+            "from_address",
+            "to_addresses",
+            "cc_addresses",
+            "bcc_addresses",
+            "subject",
+            "body_text",
+            "sent_at",
+            "is_read",
+            "is_starred",
+            "folder",
+            "contact",
+            "case",
+            "assigned_to",
+            "sent_by",
+            "attachments",
+            "contact_name",
+            "assigned_to_name",
+            "case_title",
             "created_at",
         ]
 
@@ -95,7 +128,9 @@ class ComposeEmailSerializer(serializers.Serializer):
     template_id = serializers.UUIDField(required=False, allow_null=True, default=None)
     template_context = serializers.DictField(required=False, default=dict)
     attachment_ids = serializers.ListField(
-        child=serializers.UUIDField(), required=False, default=list,
+        child=serializers.UUIDField(),
+        required=False,
+        default=list,
     )
 
 
@@ -108,10 +143,17 @@ class EmailThreadListSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailThread
         fields = [
-            "id", "subject", "contact", "case", "last_message_at",
-            "message_count", "is_archived",
-            "last_message_subject", "last_message_from",
-            "contact_name", "has_unread",
+            "id",
+            "subject",
+            "contact",
+            "case",
+            "last_message_at",
+            "message_count",
+            "is_archived",
+            "last_message_subject",
+            "last_message_from",
+            "contact_name",
+            "has_unread",
         ]
 
     def get_last_message_subject(self, obj):
@@ -139,9 +181,16 @@ class EmailThreadDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailThread
         fields = [
-            "id", "subject", "contact", "case", "last_message_at",
-            "message_count", "is_archived", "messages",
-            "contact_name", "case_title",
+            "id",
+            "subject",
+            "contact",
+            "case",
+            "last_message_at",
+            "message_count",
+            "is_archived",
+            "messages",
+            "contact_name",
+            "case_title",
         ]
 
     def get_contact_name(self, obj):
@@ -159,8 +208,15 @@ class EmailTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailTemplate
         fields = [
-            "id", "name", "subject", "body_text", "variables",
-            "is_active", "created_by", "created_at", "updated_at",
+            "id",
+            "name",
+            "subject",
+            "body_text",
+            "variables",
+            "is_active",
+            "created_by",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = ["id", "created_by", "created_at", "updated_at"]
 

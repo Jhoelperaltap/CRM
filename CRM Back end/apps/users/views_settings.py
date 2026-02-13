@@ -61,9 +61,7 @@ class UserGroupViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        _, created = UserGroupMembership.objects.get_or_create(
-            group=group, user=user
-        )
+        _, created = UserGroupMembership.objects.get_or_create(group=group, user=user)
         if not created:
             return Response(
                 {"detail": "User is already a member."},
@@ -158,9 +156,11 @@ class SessionTimeoutView(APIView):
 
     def get(self, request):
         policy = AuthenticationPolicy.load()
-        return Response({
-            "idle_session_timeout_minutes": policy.idle_session_timeout_minutes,
-        })
+        return Response(
+            {
+                "idle_session_timeout_minutes": policy.idle_session_timeout_minutes,
+            }
+        )
 
 
 # ---------------------------------------------------------------------------

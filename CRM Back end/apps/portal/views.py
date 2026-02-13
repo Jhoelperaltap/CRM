@@ -59,11 +59,13 @@ def _hash_reset_token(token: str) -> str:
 
 class PortalLoginThrottle(AnonRateThrottle):
     """Limit login attempts to prevent brute force attacks."""
+
     rate = "5/minute"
 
 
 class PortalPasswordResetThrottle(AnonRateThrottle):
     """Limit password reset requests to prevent abuse."""
+
     rate = "3/hour"
 
 
@@ -143,9 +145,7 @@ class PortalPasswordResetRequestView(APIView):
 
         email = serializer.validated_data["email"]
         try:
-            portal_access = ClientPortalAccess.objects.get(
-                email=email, is_active=True
-            )
+            portal_access = ClientPortalAccess.objects.get(email=email, is_active=True)
         except ClientPortalAccess.DoesNotExist:
             # Don't reveal whether the email exists
             return Response(
@@ -164,9 +164,7 @@ class PortalPasswordResetRequestView(APIView):
 
         # TODO: Send email with reset link containing the UNHASHED token
         # The token variable (not token_hash) should be sent to the user
-        return Response(
-            {"detail": "If the email exists, a reset link has been sent."}
-        )
+        return Response({"detail": "If the email exists, a reset link has been sent."})
 
 
 class PortalPasswordResetConfirmView(APIView):
@@ -269,9 +267,9 @@ class PortalCaseViewSet(viewsets.ViewSet):
     def list(self, request):
         from apps.cases.models import TaxCase
 
-        qs = TaxCase.objects.filter(
-            contact_id=request.portal_contact_id
-        ).order_by("-created_at")
+        qs = TaxCase.objects.filter(contact_id=request.portal_contact_id).order_by(
+            "-created_at"
+        )
 
         serializer = PortalCaseListSerializer(qs, many=True)
         return Response(serializer.data)
@@ -280,10 +278,10 @@ class PortalCaseViewSet(viewsets.ViewSet):
         from apps.cases.models import TaxCase
 
         try:
-            case = TaxCase.objects.select_related("checklist").prefetch_related(
-                "checklist__items"
-            ).get(
-                pk=pk, contact_id=request.portal_contact_id
+            case = (
+                TaxCase.objects.select_related("checklist")
+                .prefetch_related("checklist__items")
+                .get(pk=pk, contact_id=request.portal_contact_id)
             )
         except TaxCase.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -302,36 +300,42 @@ class PortalDocumentViewSet(viewsets.ViewSet):
         from apps.documents.models import Document
 
         # Get regular documents associated with the contact
-        regular_docs = Document.objects.filter(
-            contact_id=request.portal_contact_id
-        ).select_related("case").order_by("-created_at")
+        regular_docs = (
+            Document.objects.filter(contact_id=request.portal_contact_id)
+            .select_related("case")
+            .order_by("-created_at")
+        )
 
         # Serialize regular documents
         regular_data = PortalDocumentSerializer(regular_docs, many=True).data
 
         # Also get portal uploads (if any)
-        portal_uploads = PortalDocumentUpload.objects.filter(
-            contact_id=request.portal_contact_id
-        ).select_related("document").order_by("-created_at")
+        portal_uploads = (
+            PortalDocumentUpload.objects.filter(contact_id=request.portal_contact_id)
+            .select_related("document")
+            .order_by("-created_at")
+        )
 
         # Convert portal uploads to similar format
         portal_data = []
         for upload in portal_uploads:
-            portal_data.append({
-                "id": str(upload.id),
-                "title": upload.document.title,
-                "doc_type": upload.document.doc_type,
-                "file": upload.document.file.url if upload.document.file else None,
-                "file_size": upload.document.file_size,
-                "mime_type": upload.document.mime_type,
-                "status": upload.status,
-                "case_id": str(upload.case_id) if upload.case_id else None,
-                "case_number": upload.case.case_number if upload.case else None,
-                "created_at": upload.created_at.isoformat(),
-                "source": "portal_upload",
-                "download_url": f"/api/v1/portal/documents/{upload.id}/download/",
-                "view_url": f"/api/v1/portal/documents/{upload.id}/download/?inline=true",
-            })
+            portal_data.append(
+                {
+                    "id": str(upload.id),
+                    "title": upload.document.title,
+                    "doc_type": upload.document.doc_type,
+                    "file": upload.document.file.url if upload.document.file else None,
+                    "file_size": upload.document.file_size,
+                    "mime_type": upload.document.mime_type,
+                    "status": upload.status,
+                    "case_id": str(upload.case_id) if upload.case_id else None,
+                    "case_number": upload.case.case_number if upload.case else None,
+                    "created_at": upload.created_at.isoformat(),
+                    "source": "portal_upload",
+                    "download_url": f"/api/v1/portal/documents/{upload.id}/download/",
+                    "view_url": f"/api/v1/portal/documents/{upload.id}/download/?inline=true",
+                }
+            )
 
         # Combine both lists
         all_documents = list(regular_data) + portal_data
@@ -395,7 +399,7 @@ class PortalDocumentViewSet(viewsets.ViewSet):
         contact_id = None
 
         # Try header authentication first
-        if hasattr(request, 'portal_contact_id'):
+        if hasattr(request, "portal_contact_id"):
             contact_id = request.portal_contact_id
         else:
             # Try query param token
@@ -410,7 +414,7 @@ class PortalDocumentViewSet(viewsets.ViewSet):
         if not contact_id:
             return Response(
                 {"detail": "Authentication required."},
-                status=status.HTTP_401_UNAUTHORIZED
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         # Try to find the document - either from portal upload or regular document
@@ -428,19 +432,16 @@ class PortalDocumentViewSet(viewsets.ViewSet):
         # If not found, check regular documents
         if not document:
             try:
-                document = Document.objects.get(
-                    pk=pk, contact_id=contact_id
-                )
+                document = Document.objects.get(pk=pk, contact_id=contact_id)
             except Document.DoesNotExist:
                 return Response(
-                    {"detail": "Document not found."},
-                    status=status.HTTP_404_NOT_FOUND
+                    {"detail": "Document not found."}, status=status.HTTP_404_NOT_FOUND
                 )
 
         if not document.file:
             return Response(
                 {"detail": "No file associated with this document."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         # Determine content disposition
@@ -464,7 +465,7 @@ class PortalDocumentViewSet(viewsets.ViewSet):
         except Exception:
             return Response(
                 {"detail": "Error reading file."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
@@ -475,9 +476,11 @@ class PortalMessageViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def list(self, request):
-        qs = PortalMessage.objects.filter(
-            contact_id=request.portal_contact_id
-        ).select_related("sender_user", "contact").order_by("-created_at")
+        qs = (
+            PortalMessage.objects.filter(contact_id=request.portal_contact_id)
+            .select_related("sender_user", "contact")
+            .order_by("-created_at")
+        )
 
         serializer = PortalMessageSerializer(qs, many=True)
         return Response(serializer.data)
@@ -486,9 +489,7 @@ class PortalMessageViewSet(viewsets.ViewSet):
         try:
             message = PortalMessage.objects.select_related(
                 "sender_user", "contact"
-            ).get(
-                pk=pk, contact_id=request.portal_contact_id
-            )
+            ).get(pk=pk, contact_id=request.portal_contact_id)
         except PortalMessage.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -524,38 +525,52 @@ class PortalMessageViewSet(viewsets.ViewSet):
         import logging
 
         logger = logging.getLogger(__name__)
-        print(f"[NOTIFICATION DEBUG] Starting notification creation for message: {message.id}")
+        print(
+            f"[NOTIFICATION DEBUG] Starting notification creation for message: {message.id}"
+        )
         print(f"[NOTIFICATION DEBUG] Message contact_id: {message.contact_id}")
 
         try:
             contact = Contact.objects.get(id=message.contact_id)
             print(f"[NOTIFICATION DEBUG] Found contact: {contact}")
-            contact_name = f"{contact.first_name} {contact.last_name}".strip() or "Client"
+            contact_name = (
+                f"{contact.first_name} {contact.last_name}".strip() or "Client"
+            )
 
             # Notify the assigned user if exists
             recipients = []
-            print(f"[NOTIFICATION DEBUG] Contact assigned_to_id: {contact.assigned_to_id}")
+            print(
+                f"[NOTIFICATION DEBUG] Contact assigned_to_id: {contact.assigned_to_id}"
+            )
 
             if contact.assigned_to_id:
                 recipients.append(contact.assigned_to)
-                print(f"[NOTIFICATION DEBUG] Using assigned user: {contact.assigned_to}")
+                print(
+                    f"[NOTIFICATION DEBUG] Using assigned user: {contact.assigned_to}"
+                )
 
             # If no assigned user, try admins
             if not recipients:
-                admin_users = User.objects.filter(is_active=True, role__slug=Role.RoleSlug.ADMIN)
+                admin_users = User.objects.filter(
+                    is_active=True, role__slug=Role.RoleSlug.ADMIN
+                )
                 print(f"[NOTIFICATION DEBUG] Admin query: {admin_users.query}")
                 recipients = list(admin_users)
                 print(f"[NOTIFICATION DEBUG] Found {len(recipients)} admins")
 
             # If still no recipients, try superusers
             if not recipients:
-                recipients = list(User.objects.filter(is_active=True, is_superuser=True))
+                recipients = list(
+                    User.objects.filter(is_active=True, is_superuser=True)
+                )
                 print(f"[NOTIFICATION DEBUG] Found {len(recipients)} superusers")
 
             # Last resort: any active user
             if not recipients:
                 recipients = list(User.objects.filter(is_active=True)[:3])
-                print(f"[NOTIFICATION DEBUG] Using first {len(recipients)} active users")
+                print(
+                    f"[NOTIFICATION DEBUG] Using first {len(recipients)} active users"
+                )
 
             print(f"[NOTIFICATION DEBUG] Total recipients: {len(recipients)}")
 
@@ -564,7 +579,9 @@ class PortalMessageViewSet(viewsets.ViewSet):
                 return
 
             for recipient in recipients:
-                print(f"[NOTIFICATION DEBUG] Creating notification for: {recipient.email}")
+                print(
+                    f"[NOTIFICATION DEBUG] Creating notification for: {recipient.email}"
+                )
                 notif = Notification.objects.create(
                     recipient=recipient,
                     notification_type=Notification.Type.CLIENT_MESSAGE,
@@ -580,8 +597,12 @@ class PortalMessageViewSet(viewsets.ViewSet):
         except Exception as e:
             print(f"[NOTIFICATION DEBUG] EXCEPTION: {e}")
             import traceback
+
             traceback.print_exc()
-            logger.error(f"Failed to create staff notification for client message: {e}", exc_info=True)
+            logger.error(
+                f"Failed to create staff notification for client message: {e}",
+                exc_info=True,
+            )
 
     @action(detail=True, methods=["post"], url_path="mark-read")
     def mark_read(self, request, pk=None):
@@ -606,9 +627,11 @@ class PortalAppointmentViewSet(viewsets.ViewSet):
     def list(self, request):
         from apps.appointments.models import Appointment
 
-        qs = Appointment.objects.filter(
-            contact_id=request.portal_contact_id
-        ).select_related("assigned_to").order_by("-start_datetime")
+        qs = (
+            Appointment.objects.filter(contact_id=request.portal_contact_id)
+            .select_related("assigned_to")
+            .order_by("-start_datetime")
+        )
 
         serializer = PortalAppointmentSerializer(qs, many=True)
         return Response(serializer.data)
@@ -677,11 +700,11 @@ class PortalNotificationViewSet(viewsets.ViewSet):
 
     def list(self, request):
         """List all notifications for the portal client."""
-        qs = PortalNotification.objects.filter(
-            contact_id=request.portal_contact_id
-        ).select_related(
-            "related_message", "related_case", "related_appointment"
-        ).order_by("-created_at")
+        qs = (
+            PortalNotification.objects.filter(contact_id=request.portal_contact_id)
+            .select_related("related_message", "related_case", "related_appointment")
+            .order_by("-created_at")
+        )
 
         serializer = PortalNotificationSerializer(qs, many=True)
         return Response(serializer.data)

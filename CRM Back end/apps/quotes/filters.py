@@ -9,7 +9,9 @@ class QuoteFilter(django_filters.FilterSet):
     contact = django_filters.UUIDFilter(field_name="contact__id")
     corporation = django_filters.UUIDFilter(field_name="corporation__id")
     valid_after = django_filters.DateFilter(field_name="valid_until", lookup_expr="gte")
-    valid_before = django_filters.DateFilter(field_name="valid_until", lookup_expr="lte")
+    valid_before = django_filters.DateFilter(
+        field_name="valid_until", lookup_expr="lte"
+    )
 
     class Meta:
         model = Quote

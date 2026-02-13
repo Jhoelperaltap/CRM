@@ -11,87 +11,253 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('users', '0010_sync_username_with_email'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("users", "0010_sync_username_with_email"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('object_id', models.UUIDField()),
-                ('content', models.TextField()),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('is_edited', models.BooleanField(default=False)),
-                ('edited_at', models.DateTimeField(blank=True, null=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments_authored', to=settings.AUTH_USER_MODEL)),
-                ('content_type', models.ForeignKey(limit_choices_to={'model__in': ['contact', 'corporation']}, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
-                ('mentioned_users', models.ManyToManyField(blank=True, related_name='comments_mentioned_in', to=settings.AUTH_USER_MODEL)),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='replies', to='activities.comment')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("object_id", models.UUIDField()),
+                ("content", models.TextField()),
+                ("is_deleted", models.BooleanField(default=False)),
+                ("is_edited", models.BooleanField(default=False)),
+                ("edited_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comments_authored",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        limit_choices_to={"model__in": ["contact", "corporation"]},
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="contenttypes.contenttype",
+                    ),
+                ),
+                (
+                    "mentioned_users",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="comments_mentioned_in",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="replies",
+                        to="activities.comment",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Comment',
-                'verbose_name_plural': 'Comments',
-                'ordering': ['created_at'],
+                "verbose_name": "Comment",
+                "verbose_name_plural": "Comments",
+                "ordering": ["created_at"],
             },
         ),
         migrations.CreateModel(
-            name='CommentReaction',
+            name="CommentReaction",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('reaction_type', models.CharField(choices=[('like', 'Like'), ('thumbs_up', 'Thumbs Up'), ('heart', 'Heart'), ('celebrate', 'Celebrate')], default='like', max_length=20)),
-                ('comment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reactions', to='activities.comment')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comment_reactions', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "reaction_type",
+                    models.CharField(
+                        choices=[
+                            ("like", "Like"),
+                            ("thumbs_up", "Thumbs Up"),
+                            ("heart", "Heart"),
+                            ("celebrate", "Celebrate"),
+                        ],
+                        default="like",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "comment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="reactions",
+                        to="activities.comment",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_reactions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Comment Reaction',
-                'verbose_name_plural': 'Comment Reactions',
+                "verbose_name": "Comment Reaction",
+                "verbose_name_plural": "Comment Reactions",
             },
         ),
         migrations.CreateModel(
-            name='Activity',
+            name="Activity",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('object_id', models.UUIDField()),
-                ('activity_type', models.CharField(choices=[('email_sent', 'Email Sent'), ('email_received', 'Email Received'), ('document_uploaded', 'Document Uploaded'), ('document_shared', 'Document Shared'), ('document_viewed', 'Document Viewed'), ('note_added', 'Note Added'), ('comment_added', 'Comment Added'), ('appointment_scheduled', 'Appointment Scheduled'), ('appointment_completed', 'Appointment Completed'), ('appointment_cancelled', 'Appointment Cancelled'), ('case_created', 'Case Created'), ('case_updated', 'Case Updated'), ('case_closed', 'Case Closed'), ('task_created', 'Task Created'), ('task_completed', 'Task Completed'), ('field_changed', 'Field Changed'), ('status_changed', 'Status Changed'), ('call_logged', 'Call Logged'), ('meeting_logged', 'Meeting Logged'), ('record_created', 'Record Created'), ('record_updated', 'Record Updated'), ('linked', 'Record Linked'), ('unlinked', 'Record Unlinked')], db_index=True, max_length=30)),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, default='')),
-                ('metadata', models.JSONField(blank=True, default=dict)),
-                ('related_object_id', models.UUIDField(blank=True, null=True)),
-                ('content_type', models.ForeignKey(limit_choices_to={'model__in': ['contact', 'corporation']}, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
-                ('department', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='activities', to='users.usergroup')),
-                ('performed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='activities_performed', to=settings.AUTH_USER_MODEL)),
-                ('related_content_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='related_activities', to='contenttypes.contenttype')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("object_id", models.UUIDField()),
+                (
+                    "activity_type",
+                    models.CharField(
+                        choices=[
+                            ("email_sent", "Email Sent"),
+                            ("email_received", "Email Received"),
+                            ("document_uploaded", "Document Uploaded"),
+                            ("document_shared", "Document Shared"),
+                            ("document_viewed", "Document Viewed"),
+                            ("note_added", "Note Added"),
+                            ("comment_added", "Comment Added"),
+                            ("appointment_scheduled", "Appointment Scheduled"),
+                            ("appointment_completed", "Appointment Completed"),
+                            ("appointment_cancelled", "Appointment Cancelled"),
+                            ("case_created", "Case Created"),
+                            ("case_updated", "Case Updated"),
+                            ("case_closed", "Case Closed"),
+                            ("task_created", "Task Created"),
+                            ("task_completed", "Task Completed"),
+                            ("field_changed", "Field Changed"),
+                            ("status_changed", "Status Changed"),
+                            ("call_logged", "Call Logged"),
+                            ("meeting_logged", "Meeting Logged"),
+                            ("record_created", "Record Created"),
+                            ("record_updated", "Record Updated"),
+                            ("linked", "Record Linked"),
+                            ("unlinked", "Record Unlinked"),
+                        ],
+                        db_index=True,
+                        max_length=30,
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, default="")),
+                ("metadata", models.JSONField(blank=True, default=dict)),
+                ("related_object_id", models.UUIDField(blank=True, null=True)),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        limit_choices_to={"model__in": ["contact", "corporation"]},
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="contenttypes.contenttype",
+                    ),
+                ),
+                (
+                    "department",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="activities",
+                        to="users.usergroup",
+                    ),
+                ),
+                (
+                    "performed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="activities_performed",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "related_content_type",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="related_activities",
+                        to="contenttypes.contenttype",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Activity',
-                'verbose_name_plural': 'Activities',
-                'ordering': ['-created_at'],
-                'indexes': [models.Index(fields=['content_type', 'object_id'], name='activities__content_32e159_idx'), models.Index(fields=['activity_type'], name='activities__activit_8e7970_idx'), models.Index(fields=['performed_by'], name='activities__perform_353f12_idx'), models.Index(fields=['created_at'], name='activities__created_0e5d3c_idx')],
+                "verbose_name": "Activity",
+                "verbose_name_plural": "Activities",
+                "ordering": ["-created_at"],
+                "indexes": [
+                    models.Index(
+                        fields=["content_type", "object_id"],
+                        name="activities__content_32e159_idx",
+                    ),
+                    models.Index(
+                        fields=["activity_type"], name="activities__activit_8e7970_idx"
+                    ),
+                    models.Index(
+                        fields=["performed_by"], name="activities__perform_353f12_idx"
+                    ),
+                    models.Index(
+                        fields=["created_at"], name="activities__created_0e5d3c_idx"
+                    ),
+                ],
             },
         ),
         migrations.AddIndex(
-            model_name='comment',
-            index=models.Index(fields=['content_type', 'object_id'], name='activities__content_10aae1_idx'),
+            model_name="comment",
+            index=models.Index(
+                fields=["content_type", "object_id"],
+                name="activities__content_10aae1_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='comment',
-            index=models.Index(fields=['author'], name='activities__author__abea1d_idx'),
+            model_name="comment",
+            index=models.Index(
+                fields=["author"], name="activities__author__abea1d_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='comment',
-            index=models.Index(fields=['created_at'], name='activities__created_fbf0c1_idx'),
+            model_name="comment",
+            index=models.Index(
+                fields=["created_at"], name="activities__created_fbf0c1_idx"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='commentreaction',
-            unique_together={('comment', 'user', 'reaction_type')},
+            name="commentreaction",
+            unique_together={("comment", "user", "reaction_type")},
         ),
     ]

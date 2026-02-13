@@ -50,7 +50,9 @@ class TestStaffPortalAccessInvite:
         assert resp.status_code == 201
         assert resp.data["email"] == "override@example.com"
 
-    def test_cannot_invite_twice(self, admin_client, portal_contact, portal_client_access):
+    def test_cannot_invite_twice(
+        self, admin_client, portal_contact, portal_client_access
+    ):
         resp = admin_client.post(
             self.URL,
             {"contact": str(portal_contact.id)},

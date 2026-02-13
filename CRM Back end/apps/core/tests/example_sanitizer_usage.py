@@ -84,10 +84,10 @@ print(f"Output: {plain_text}")
 # Example 8: Custom allowed tags
 print("\n8. Custom Allowed Tags")
 print("-" * 40)
-custom_html = '<p>Paragraph</p><blockquote>Quote</blockquote><code>code</code>'
+custom_html = "<p>Paragraph</p><blockquote>Quote</blockquote><code>code</code>"
 custom_result = sanitize_html(
     custom_html,
-    allowed_tags={'p', 'code'},  # Only allow p and code tags
+    allowed_tags={"p", "code"},  # Only allow p and code tags
 )
 print(f"Input:  {custom_html}")
 print(f"Output: {custom_result}")
@@ -96,7 +96,7 @@ print("Note: blockquote removed, only p and code allowed")
 # Example 9: Nested malicious tags
 print("\n9. Nested Malicious Tags")
 print("-" * 40)
-nested_danger = '<p><script><script>alert(1)</script></script></p>'
+nested_danger = "<p><script><script>alert(1)</script></script></p>"
 safe_nested = sanitize_html(nested_danger)
 print(f"Input:  {nested_danger}")
 print(f"Output: {safe_nested}")
@@ -104,7 +104,7 @@ print(f"Output: {safe_nested}")
 # Example 10: Unicode content preservation
 print("\n10. Unicode Content Preservation")
 print("-" * 40)
-unicode_html = '<p>Hello 世界 🌍! Привет мир!</p>'
+unicode_html = "<p>Hello 世界 🌍! Привет мир!</p>"
 unicode_result = sanitize_html(unicode_html)
 print(f"Input:  {unicode_html}")
 print(f"Output: {unicode_result}")

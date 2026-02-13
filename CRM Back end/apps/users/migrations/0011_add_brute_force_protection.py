@@ -6,38 +6,59 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0010_sync_username_with_email'),
+        ("users", "0010_sync_username_with_email"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='failed_login_window_minutes',
-            field=models.PositiveIntegerField(default=15, help_text='Time window to count failed login attempts.', verbose_name='failed login window (minutes)'),
+            model_name="authenticationpolicy",
+            name="failed_login_window_minutes",
+            field=models.PositiveIntegerField(
+                default=15,
+                help_text="Time window to count failed login attempts.",
+                verbose_name="failed login window (minutes)",
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='lockout_duration_minutes',
-            field=models.PositiveIntegerField(default=30, help_text='Duration of account lockout after max failed attempts.', verbose_name='lockout duration (minutes)'),
+            model_name="authenticationpolicy",
+            name="lockout_duration_minutes",
+            field=models.PositiveIntegerField(
+                default=30,
+                help_text="Duration of account lockout after max failed attempts.",
+                verbose_name="lockout duration (minutes)",
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='max_failed_login_attempts',
-            field=models.PositiveIntegerField(default=5, help_text='Number of failed login attempts before account lockout.', verbose_name='max failed login attempts'),
+            model_name="authenticationpolicy",
+            name="max_failed_login_attempts",
+            field=models.PositiveIntegerField(
+                default=5,
+                help_text="Number of failed login attempts before account lockout.",
+                verbose_name="max failed login attempts",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='failed_login_attempts',
-            field=models.PositiveIntegerField(default=0, verbose_name='failed login attempts'),
+            model_name="user",
+            name="failed_login_attempts",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="failed login attempts"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='last_failed_login',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='last failed login'),
+            model_name="user",
+            name="last_failed_login",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="last failed login"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='locked_until',
-            field=models.DateTimeField(blank=True, help_text='Account is locked until this time.', null=True, verbose_name='locked until'),
+            model_name="user",
+            name="locked_until",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="Account is locked until this time.",
+                null=True,
+                verbose_name="locked until",
+            ),
         ),
     ]

@@ -12,11 +12,15 @@ def drop_existing_indexes(apps, schema_editor):
         cursor.execute("DROP INDEX IF EXISTS crm_contacts_contact_number_key")
         # Try to drop the column if it exists (from previous failed attempts)
         try:
-            cursor.execute("ALTER TABLE crm_contacts DROP COLUMN IF EXISTS contact_number")
+            cursor.execute(
+                "ALTER TABLE crm_contacts DROP COLUMN IF EXISTS contact_number"
+            )
         except Exception:
             pass
         try:
-            cursor.execute("ALTER TABLE crm_contacts DROP COLUMN IF EXISTS office_services")
+            cursor.execute(
+                "ALTER TABLE crm_contacts DROP COLUMN IF EXISTS office_services"
+            )
         except Exception:
             pass
 
@@ -30,7 +34,9 @@ def generate_contact_numbers(apps, schema_editor):
     Generate contact numbers for existing contacts.
     """
     Contact = apps.get_model("contacts", "Contact")
-    for idx, contact in enumerate(Contact.objects.all().order_by("created_at"), start=1):
+    for idx, contact in enumerate(
+        Contact.objects.all().order_by("created_at"), start=1
+    ):
         contact.contact_number = f"CON{idx:04d}"
         contact.save(update_fields=["contact_number"])
 

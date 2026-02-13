@@ -11,187 +11,604 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('appointments', '0004_appointmentpage'),
-        ('cases', '0003_taxcase_custom_fields'),
-        ('contacts', '0007_contacttag_contacttagassignment'),
-        ('emails', '0002_email_settings_singleton'),
-        ('tasks', '0001_initial'),
+        ("appointments", "0004_appointmentpage"),
+        ("cases", "0003_taxcase_custom_fields"),
+        ("contacts", "0007_contacttag_contacttagassignment"),
+        ("emails", "0002_email_settings_singleton"),
+        ("tasks", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AgentConfiguration',
+            name="AgentConfiguration",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('is_active', models.BooleanField(default=False, help_text='Master switch to enable/disable the AI agent')),
-                ('email_analysis_enabled', models.BooleanField(default=False, help_text='Analyze incoming emails and create notes from important content')),
-                ('appointment_reminders_enabled', models.BooleanField(default=True, help_text='Send automated reminders for upcoming appointments')),
-                ('task_enforcement_enabled', models.BooleanField(default=False, help_text='Monitor task completion and send reminders/escalations')),
-                ('market_analysis_enabled', models.BooleanField(default=False, help_text='Analyze business metrics and generate insights')),
-                ('autonomous_actions_enabled', models.BooleanField(default=False, help_text='Allow AI to execute actions without manual approval')),
-                ('email_check_interval_minutes', models.PositiveIntegerField(default=15, help_text='How often to check for new emails to analyze')),
-                ('task_reminder_hours_before', models.PositiveIntegerField(default=24, help_text='Hours before due date to send task reminders')),
-                ('appointment_reminder_hours', models.JSONField(blank=True, default=list, help_text='List of hours before appointment to send reminders (e.g., [24, 2])')),
-                ('ai_provider', models.CharField(choices=[('openai', 'OpenAI (GPT)'), ('anthropic', 'Anthropic (Claude)')], default='openai', max_length=20)),
-                ('ai_model', models.CharField(default='gpt-4o', help_text='AI model to use (e.g., gpt-4o, claude-3-opus-20240229)', max_length=50)),
-                ('ai_temperature', models.FloatField(default=0.3, help_text='AI temperature (0.0-1.0, lower = more deterministic)')),
-                ('max_tokens', models.PositiveIntegerField(default=2000, help_text='Maximum tokens for AI responses')),
-                ('openai_api_key', models.CharField(blank=True, help_text='OpenAI API key', max_length=255)),
-                ('anthropic_api_key', models.CharField(blank=True, help_text='Anthropic API key', max_length=255)),
-                ('custom_instructions', models.TextField(blank=True, help_text='Additional instructions for the AI agent')),
-                ('focus_areas', models.JSONField(blank=True, default=list, help_text='Priority areas for analysis (e.g., ["revenue", "client_retention"])')),
-                ('max_actions_per_hour', models.PositiveIntegerField(default=100, help_text='Maximum actions the agent can take per hour')),
-                ('max_ai_calls_per_hour', models.PositiveIntegerField(default=50, help_text='Maximum AI API calls per hour')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Master switch to enable/disable the AI agent",
+                    ),
+                ),
+                (
+                    "email_analysis_enabled",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Analyze incoming emails and create notes from important content",
+                    ),
+                ),
+                (
+                    "appointment_reminders_enabled",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Send automated reminders for upcoming appointments",
+                    ),
+                ),
+                (
+                    "task_enforcement_enabled",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Monitor task completion and send reminders/escalations",
+                    ),
+                ),
+                (
+                    "market_analysis_enabled",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Analyze business metrics and generate insights",
+                    ),
+                ),
+                (
+                    "autonomous_actions_enabled",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Allow AI to execute actions without manual approval",
+                    ),
+                ),
+                (
+                    "email_check_interval_minutes",
+                    models.PositiveIntegerField(
+                        default=15,
+                        help_text="How often to check for new emails to analyze",
+                    ),
+                ),
+                (
+                    "task_reminder_hours_before",
+                    models.PositiveIntegerField(
+                        default=24,
+                        help_text="Hours before due date to send task reminders",
+                    ),
+                ),
+                (
+                    "appointment_reminder_hours",
+                    models.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text="List of hours before appointment to send reminders (e.g., [24, 2])",
+                    ),
+                ),
+                (
+                    "ai_provider",
+                    models.CharField(
+                        choices=[
+                            ("openai", "OpenAI (GPT)"),
+                            ("anthropic", "Anthropic (Claude)"),
+                        ],
+                        default="openai",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "ai_model",
+                    models.CharField(
+                        default="gpt-4o",
+                        help_text="AI model to use (e.g., gpt-4o, claude-3-opus-20240229)",
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "ai_temperature",
+                    models.FloatField(
+                        default=0.3,
+                        help_text="AI temperature (0.0-1.0, lower = more deterministic)",
+                    ),
+                ),
+                (
+                    "max_tokens",
+                    models.PositiveIntegerField(
+                        default=2000, help_text="Maximum tokens for AI responses"
+                    ),
+                ),
+                (
+                    "openai_api_key",
+                    models.CharField(
+                        blank=True, help_text="OpenAI API key", max_length=255
+                    ),
+                ),
+                (
+                    "anthropic_api_key",
+                    models.CharField(
+                        blank=True, help_text="Anthropic API key", max_length=255
+                    ),
+                ),
+                (
+                    "custom_instructions",
+                    models.TextField(
+                        blank=True, help_text="Additional instructions for the AI agent"
+                    ),
+                ),
+                (
+                    "focus_areas",
+                    models.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text='Priority areas for analysis (e.g., ["revenue", "client_retention"])',
+                    ),
+                ),
+                (
+                    "max_actions_per_hour",
+                    models.PositiveIntegerField(
+                        default=100,
+                        help_text="Maximum actions the agent can take per hour",
+                    ),
+                ),
+                (
+                    "max_ai_calls_per_hour",
+                    models.PositiveIntegerField(
+                        default=50, help_text="Maximum AI API calls per hour"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'AI Agent Configuration',
-                'verbose_name_plural': 'AI Agent Configurations',
-                'db_table': 'crm_agent_configuration',
+                "verbose_name": "AI Agent Configuration",
+                "verbose_name_plural": "AI Agent Configurations",
+                "db_table": "crm_agent_configuration",
             },
         ),
         migrations.CreateModel(
-            name='AgentMetrics',
+            name="AgentMetrics",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('date', models.DateField(db_index=True, unique=True)),
-                ('total_actions', models.PositiveIntegerField(default=0)),
-                ('actions_executed', models.PositiveIntegerField(default=0)),
-                ('actions_approved', models.PositiveIntegerField(default=0)),
-                ('actions_rejected', models.PositiveIntegerField(default=0)),
-                ('actions_failed', models.PositiveIntegerField(default=0)),
-                ('email_notes_created', models.PositiveIntegerField(default=0)),
-                ('appointment_reminders_sent', models.PositiveIntegerField(default=0)),
-                ('task_reminders_sent', models.PositiveIntegerField(default=0)),
-                ('tasks_escalated', models.PositiveIntegerField(default=0)),
-                ('insights_generated', models.PositiveIntegerField(default=0)),
-                ('total_ai_calls', models.PositiveIntegerField(default=0)),
-                ('total_tokens_used', models.PositiveIntegerField(default=0)),
-                ('avg_ai_latency_ms', models.FloatField(blank=True, null=True)),
-                ('avg_outcome_score', models.FloatField(blank=True, null=True)),
-                ('outcomes_recorded', models.PositiveIntegerField(default=0)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("date", models.DateField(db_index=True, unique=True)),
+                ("total_actions", models.PositiveIntegerField(default=0)),
+                ("actions_executed", models.PositiveIntegerField(default=0)),
+                ("actions_approved", models.PositiveIntegerField(default=0)),
+                ("actions_rejected", models.PositiveIntegerField(default=0)),
+                ("actions_failed", models.PositiveIntegerField(default=0)),
+                ("email_notes_created", models.PositiveIntegerField(default=0)),
+                ("appointment_reminders_sent", models.PositiveIntegerField(default=0)),
+                ("task_reminders_sent", models.PositiveIntegerField(default=0)),
+                ("tasks_escalated", models.PositiveIntegerField(default=0)),
+                ("insights_generated", models.PositiveIntegerField(default=0)),
+                ("total_ai_calls", models.PositiveIntegerField(default=0)),
+                ("total_tokens_used", models.PositiveIntegerField(default=0)),
+                ("avg_ai_latency_ms", models.FloatField(blank=True, null=True)),
+                ("avg_outcome_score", models.FloatField(blank=True, null=True)),
+                ("outcomes_recorded", models.PositiveIntegerField(default=0)),
             ],
             options={
-                'verbose_name': 'AI Agent Metrics',
-                'verbose_name_plural': 'AI Agent Metrics',
-                'db_table': 'crm_agent_metrics',
-                'ordering': ['-date'],
+                "verbose_name": "AI Agent Metrics",
+                "verbose_name_plural": "AI Agent Metrics",
+                "db_table": "crm_agent_metrics",
+                "ordering": ["-date"],
             },
         ),
         migrations.CreateModel(
-            name='AgentAction',
+            name="AgentAction",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('action_type', models.CharField(choices=[('email_note', 'Created note from email'), ('appt_reminder', 'Sent appointment reminder'), ('task_reminder', 'Sent task reminder'), ('task_escalated', 'Escalated overdue task'), ('insight', 'Generated business insight'), ('recommendation', 'Made recommendation'), ('email_sent', 'Sent email'), ('task_created', 'Created task')], db_index=True, max_length=30)),
-                ('status', models.CharField(choices=[('pending', 'Pending approval'), ('approved', 'Approved'), ('executed', 'Executed'), ('rejected', 'Rejected'), ('failed', 'Failed')], db_index=True, default='pending', max_length=20)),
-                ('title', models.CharField(max_length=200)),
-                ('description', models.TextField()),
-                ('reasoning', models.TextField(blank=True, help_text="AI's explanation for this action")),
-                ('action_data', models.JSONField(blank=True, default=dict, help_text='Structured data needed to execute the action')),
-                ('requires_approval', models.BooleanField(default=True)),
-                ('approved_at', models.DateTimeField(blank=True, null=True)),
-                ('rejected_at', models.DateTimeField(blank=True, null=True)),
-                ('rejection_reason', models.TextField(blank=True)),
-                ('executed_at', models.DateTimeField(blank=True, null=True)),
-                ('execution_result', models.TextField(blank=True)),
-                ('error_message', models.TextField(blank=True)),
-                ('outcome', models.TextField(blank=True, help_text="Description of the action's outcome")),
-                ('outcome_score', models.FloatField(blank=True, help_text='Outcome score from -1 (bad) to 1 (good)', null=True)),
-                ('outcome_recorded_at', models.DateTimeField(blank=True, null=True)),
-                ('approved_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='approved_agent_actions', to=settings.AUTH_USER_MODEL)),
-                ('outcome_recorded_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='recorded_agent_outcomes', to=settings.AUTH_USER_MODEL)),
-                ('rejected_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='rejected_agent_actions', to=settings.AUTH_USER_MODEL)),
-                ('related_appointment', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agent_actions', to='appointments.appointment')),
-                ('related_case', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agent_actions', to='cases.taxcase')),
-                ('related_contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agent_actions', to='contacts.contact')),
-                ('related_email', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agent_actions', to='emails.emailmessage')),
-                ('related_task', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agent_actions', to='tasks.task')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "action_type",
+                    models.CharField(
+                        choices=[
+                            ("email_note", "Created note from email"),
+                            ("appt_reminder", "Sent appointment reminder"),
+                            ("task_reminder", "Sent task reminder"),
+                            ("task_escalated", "Escalated overdue task"),
+                            ("insight", "Generated business insight"),
+                            ("recommendation", "Made recommendation"),
+                            ("email_sent", "Sent email"),
+                            ("task_created", "Created task"),
+                        ],
+                        db_index=True,
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending approval"),
+                            ("approved", "Approved"),
+                            ("executed", "Executed"),
+                            ("rejected", "Rejected"),
+                            ("failed", "Failed"),
+                        ],
+                        db_index=True,
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("description", models.TextField()),
+                (
+                    "reasoning",
+                    models.TextField(
+                        blank=True, help_text="AI's explanation for this action"
+                    ),
+                ),
+                (
+                    "action_data",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Structured data needed to execute the action",
+                    ),
+                ),
+                ("requires_approval", models.BooleanField(default=True)),
+                ("approved_at", models.DateTimeField(blank=True, null=True)),
+                ("rejected_at", models.DateTimeField(blank=True, null=True)),
+                ("rejection_reason", models.TextField(blank=True)),
+                ("executed_at", models.DateTimeField(blank=True, null=True)),
+                ("execution_result", models.TextField(blank=True)),
+                ("error_message", models.TextField(blank=True)),
+                (
+                    "outcome",
+                    models.TextField(
+                        blank=True, help_text="Description of the action's outcome"
+                    ),
+                ),
+                (
+                    "outcome_score",
+                    models.FloatField(
+                        blank=True,
+                        help_text="Outcome score from -1 (bad) to 1 (good)",
+                        null=True,
+                    ),
+                ),
+                ("outcome_recorded_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "approved_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="approved_agent_actions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "outcome_recorded_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="recorded_agent_outcomes",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "rejected_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="rejected_agent_actions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "related_appointment",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agent_actions",
+                        to="appointments.appointment",
+                    ),
+                ),
+                (
+                    "related_case",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agent_actions",
+                        to="cases.taxcase",
+                    ),
+                ),
+                (
+                    "related_contact",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agent_actions",
+                        to="contacts.contact",
+                    ),
+                ),
+                (
+                    "related_email",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agent_actions",
+                        to="emails.emailmessage",
+                    ),
+                ),
+                (
+                    "related_task",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agent_actions",
+                        to="tasks.task",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'AI Agent Action',
-                'verbose_name_plural': 'AI Agent Actions',
-                'db_table': 'crm_agent_actions',
-                'ordering': ['-created_at'],
+                "verbose_name": "AI Agent Action",
+                "verbose_name_plural": "AI Agent Actions",
+                "db_table": "crm_agent_actions",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='AgentInsight',
+            name="AgentInsight",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('insight_type', models.CharField(choices=[('strength', 'Business Strength'), ('weakness', 'Business Weakness'), ('opportunity', 'Opportunity'), ('threat', 'Threat'), ('trend', 'Trend Analysis'), ('metric', 'Metric Alert'), ('recommendation', 'Recommendation')], db_index=True, max_length=20)),
-                ('title', models.CharField(max_length=200)),
-                ('description', models.TextField()),
-                ('supporting_data', models.JSONField(blank=True, default=dict, help_text='Data that supports this insight')),
-                ('priority', models.IntegerField(choices=[(1, 'Low'), (3, 'Medium-Low'), (5, 'Medium'), (7, 'Medium-High'), (9, 'High'), (10, 'Critical')], default=5)),
-                ('is_actionable', models.BooleanField(default=True)),
-                ('recommended_action', models.TextField(blank=True, help_text='Suggested action to take based on this insight')),
-                ('is_acknowledged', models.BooleanField(default=False)),
-                ('acknowledged_at', models.DateTimeField(blank=True, null=True)),
-                ('outcome', models.TextField(blank=True, help_text='What happened after acknowledging this insight')),
-                ('outcome_recorded_at', models.DateTimeField(blank=True, null=True)),
-                ('expires_at', models.DateTimeField(blank=True, help_text='When this insight is no longer relevant', null=True)),
-                ('acknowledged_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='acknowledged_insights', to=settings.AUTH_USER_MODEL)),
-                ('source_action', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='insights', to='ai_agent.agentaction')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "insight_type",
+                    models.CharField(
+                        choices=[
+                            ("strength", "Business Strength"),
+                            ("weakness", "Business Weakness"),
+                            ("opportunity", "Opportunity"),
+                            ("threat", "Threat"),
+                            ("trend", "Trend Analysis"),
+                            ("metric", "Metric Alert"),
+                            ("recommendation", "Recommendation"),
+                        ],
+                        db_index=True,
+                        max_length=20,
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("description", models.TextField()),
+                (
+                    "supporting_data",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Data that supports this insight",
+                    ),
+                ),
+                (
+                    "priority",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Low"),
+                            (3, "Medium-Low"),
+                            (5, "Medium"),
+                            (7, "Medium-High"),
+                            (9, "High"),
+                            (10, "Critical"),
+                        ],
+                        default=5,
+                    ),
+                ),
+                ("is_actionable", models.BooleanField(default=True)),
+                (
+                    "recommended_action",
+                    models.TextField(
+                        blank=True,
+                        help_text="Suggested action to take based on this insight",
+                    ),
+                ),
+                ("is_acknowledged", models.BooleanField(default=False)),
+                ("acknowledged_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "outcome",
+                    models.TextField(
+                        blank=True,
+                        help_text="What happened after acknowledging this insight",
+                    ),
+                ),
+                ("outcome_recorded_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "expires_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="When this insight is no longer relevant",
+                        null=True,
+                    ),
+                ),
+                (
+                    "acknowledged_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="acknowledged_insights",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "source_action",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="insights",
+                        to="ai_agent.agentaction",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'AI Agent Insight',
-                'verbose_name_plural': 'AI Agent Insights',
-                'db_table': 'crm_agent_insights',
-                'ordering': ['-priority', '-created_at'],
+                "verbose_name": "AI Agent Insight",
+                "verbose_name_plural": "AI Agent Insights",
+                "db_table": "crm_agent_insights",
+                "ordering": ["-priority", "-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='AgentLog',
+            name="AgentLog",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('level', models.CharField(choices=[('debug', 'Debug'), ('info', 'Info'), ('warning', 'Warning'), ('error', 'Error'), ('decision', 'Decision')], db_index=True, max_length=20)),
-                ('component', models.CharField(db_index=True, help_text='Component that generated this log (e.g., email_analyzer)', max_length=50)),
-                ('message', models.TextField()),
-                ('context', models.JSONField(blank=True, default=dict, help_text='Additional structured data')),
-                ('tokens_used', models.PositiveIntegerField(blank=True, help_text='Number of tokens used for this operation', null=True)),
-                ('ai_model', models.CharField(blank=True, max_length=50)),
-                ('ai_latency_ms', models.PositiveIntegerField(blank=True, help_text='AI API response time in milliseconds', null=True)),
-                ('action', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='ai_agent.agentaction')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "level",
+                    models.CharField(
+                        choices=[
+                            ("debug", "Debug"),
+                            ("info", "Info"),
+                            ("warning", "Warning"),
+                            ("error", "Error"),
+                            ("decision", "Decision"),
+                        ],
+                        db_index=True,
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "component",
+                    models.CharField(
+                        db_index=True,
+                        help_text="Component that generated this log (e.g., email_analyzer)",
+                        max_length=50,
+                    ),
+                ),
+                ("message", models.TextField()),
+                (
+                    "context",
+                    models.JSONField(
+                        blank=True, default=dict, help_text="Additional structured data"
+                    ),
+                ),
+                (
+                    "tokens_used",
+                    models.PositiveIntegerField(
+                        blank=True,
+                        help_text="Number of tokens used for this operation",
+                        null=True,
+                    ),
+                ),
+                ("ai_model", models.CharField(blank=True, max_length=50)),
+                (
+                    "ai_latency_ms",
+                    models.PositiveIntegerField(
+                        blank=True,
+                        help_text="AI API response time in milliseconds",
+                        null=True,
+                    ),
+                ),
+                (
+                    "action",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="logs",
+                        to="ai_agent.agentaction",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'AI Agent Log',
-                'verbose_name_plural': 'AI Agent Logs',
-                'db_table': 'crm_agent_logs',
-                'ordering': ['-created_at'],
+                "verbose_name": "AI Agent Log",
+                "verbose_name_plural": "AI Agent Logs",
+                "db_table": "crm_agent_logs",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.AddIndex(
-            model_name='agentaction',
-            index=models.Index(fields=['action_type', 'status'], name='crm_agent_a_action__0b69f3_idx'),
+            model_name="agentaction",
+            index=models.Index(
+                fields=["action_type", "status"], name="crm_agent_a_action__0b69f3_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='agentaction',
-            index=models.Index(fields=['status', 'created_at'], name='crm_agent_a_status_b2f5e9_idx'),
+            model_name="agentaction",
+            index=models.Index(
+                fields=["status", "created_at"], name="crm_agent_a_status_b2f5e9_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='agentinsight',
-            index=models.Index(fields=['insight_type', 'is_acknowledged'], name='crm_agent_i_insight_9f1e2b_idx'),
+            model_name="agentinsight",
+            index=models.Index(
+                fields=["insight_type", "is_acknowledged"],
+                name="crm_agent_i_insight_9f1e2b_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='agentinsight',
-            index=models.Index(fields=['priority', '-created_at'], name='crm_agent_i_priorit_765634_idx'),
+            model_name="agentinsight",
+            index=models.Index(
+                fields=["priority", "-created_at"],
+                name="crm_agent_i_priorit_765634_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='agentlog',
-            index=models.Index(fields=['level', 'created_at'], name='crm_agent_l_level_d791bc_idx'),
+            model_name="agentlog",
+            index=models.Index(
+                fields=["level", "created_at"], name="crm_agent_l_level_d791bc_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='agentlog',
-            index=models.Index(fields=['component', 'created_at'], name='crm_agent_l_compone_026378_idx'),
+            model_name="agentlog",
+            index=models.Index(
+                fields=["component", "created_at"],
+                name="crm_agent_l_compone_026378_idx",
+            ),
         ),
     ]

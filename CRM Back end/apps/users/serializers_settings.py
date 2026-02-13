@@ -18,7 +18,14 @@ class UserGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserGroup
-        fields = ["id", "name", "description", "member_count", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "name",
+            "description",
+            "member_count",
+            "created_at",
+            "updated_at",
+        ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
     def get_member_count(self, obj):
@@ -32,8 +39,13 @@ class UserGroupDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGroup
         fields = [
-            "id", "name", "description", "member_count",
-            "members", "created_at", "updated_at",
+            "id",
+            "name",
+            "description",
+            "member_count",
+            "members",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
@@ -165,7 +177,13 @@ class BlockedIPListSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "blocked_webform_requests", "created_by", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "blocked_webform_requests",
+            "created_by",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_created_by_name(self, obj):
         if obj.created_by:
@@ -192,7 +210,13 @@ class BlockedIPDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "blocked_webform_requests", "created_by", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "blocked_webform_requests",
+            "created_by",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_created_by_name(self, obj):
         if obj.created_by:
@@ -214,6 +238,7 @@ class BlockedIPCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_ip_address(self, value):
         import ipaddress
+
         try:
             ipaddress.ip_address(value)
         except ValueError:

@@ -335,7 +335,9 @@ class TwoFactorStatusView(APIView):
                 try:
                     totp = pyotp.TOTP(user.totp_secret)
                     response_data["debug"]["current_code"] = totp.now()
-                    response_data["debug"]["time_remaining"] = 30 - (int(now.timestamp()) % 30)
+                    response_data["debug"]["time_remaining"] = 30 - (
+                        int(now.timestamp()) % 30
+                    )
                 except Exception as e:
                     response_data["debug"]["error"] = str(e)
 

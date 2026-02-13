@@ -4,6 +4,7 @@ Custom exception handling for the CRM API.
 Security: This module sanitizes error responses to prevent information
 disclosure while still providing useful feedback for legitimate errors.
 """
+
 import logging
 import re
 from typing import Any
@@ -90,13 +91,20 @@ def sanitize_error_message(message: str, debug: bool = False) -> str:
                 return GENERIC_ERROR_MESSAGES["database"]
             elif category == "internal error":
                 return GENERIC_ERROR_MESSAGES["server"]
-            elif category in ("file path", "connection details", "credentials", "potential secret"):
+            elif category in (
+                "file path",
+                "connection details",
+                "credentials",
+                "potential secret",
+            ):
                 return GENERIC_ERROR_MESSAGES["server"]
             elif category == "query details":
                 return GENERIC_ERROR_MESSAGES["database"]
             else:
                 # Redact the matched portion
-                sanitized = re.sub(pattern, f"[{category}]", sanitized, flags=re.IGNORECASE)
+                sanitized = re.sub(
+                    pattern, f"[{category}]", sanitized, flags=re.IGNORECASE
+                )
 
     return sanitized
 
@@ -186,7 +194,9 @@ def custom_exception_handler(exc, context):
 
     # Log to security log if it looks suspicious
     exc_str = str(exc)
-    if any(keyword in exc_str.lower() for keyword in ["injection", "script", "sql", "xss"]):
+    if any(
+        keyword in exc_str.lower() for keyword in ["injection", "script", "sql", "xss"]
+    ):
         security_logger.error(
             "Potentially malicious request caused exception",
             extra={
@@ -221,6 +231,7 @@ def _get_client_ip(request):
 # Custom exceptions for the application
 class BusinessLogicError(APIException):
     """Exception for business logic violations."""
+
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "A business logic error occurred."
     default_code = "business_logic_error"
@@ -228,6 +239,7 @@ class BusinessLogicError(APIException):
 
 class ConflictError(APIException):
     """Exception for resource conflicts (e.g., duplicate entries)."""
+
     status_code = status.HTTP_409_CONFLICT
     default_detail = "A conflict occurred with the current state of the resource."
     default_code = "conflict"
@@ -235,6 +247,7 @@ class ConflictError(APIException):
 
 class ServiceUnavailableError(APIException):
     """Exception for temporary service unavailability."""
+
     status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     default_detail = "Service temporarily unavailable. Please try again later."
     default_code = "service_unavailable"

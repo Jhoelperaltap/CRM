@@ -12,6 +12,7 @@ from apps.portal.models import (
 # Auth serializers
 # -----------------------------------------------------------------------
 
+
 class PortalLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -30,8 +31,10 @@ class PortalPasswordResetConfirmSerializer(serializers.Serializer):
 # Contact / profile
 # -----------------------------------------------------------------------
 
+
 class PortalContactSerializer(serializers.Serializer):
     """Read-only serializer for the portal user's contact info."""
+
     id = serializers.UUIDField(read_only=True)
     first_name = serializers.CharField(read_only=True)
     last_name = serializers.CharField(read_only=True)
@@ -41,6 +44,7 @@ class PortalContactSerializer(serializers.Serializer):
 
 class PortalMeSerializer(serializers.Serializer):
     """Response for /portal/auth/me/."""
+
     portal_access_id = serializers.UUIDField(source="id")
     email = serializers.EmailField()
     contact = PortalContactSerializer()
@@ -50,6 +54,7 @@ class PortalMeSerializer(serializers.Serializer):
 # -----------------------------------------------------------------------
 # Cases
 # -----------------------------------------------------------------------
+
 
 class _CaseChecklistItemSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
@@ -96,8 +101,10 @@ class PortalCaseDetailSerializer(serializers.Serializer):
 # Documents
 # -----------------------------------------------------------------------
 
+
 class PortalDocumentSerializer(serializers.Serializer):
     """Serializer for regular documents visible to portal users."""
+
     id = serializers.UUIDField(read_only=True)
     title = serializers.CharField(read_only=True)
     doc_type = serializers.CharField(read_only=True)
@@ -106,7 +113,9 @@ class PortalDocumentSerializer(serializers.Serializer):
     mime_type = serializers.CharField(read_only=True)
     status = serializers.CharField(read_only=True)
     case_id = serializers.UUIDField(source="case.id", read_only=True, allow_null=True)
-    case_number = serializers.CharField(source="case.case_number", read_only=True, allow_null=True)
+    case_number = serializers.CharField(
+        source="case.case_number", read_only=True, allow_null=True
+    )
     created_at = serializers.DateTimeField(read_only=True)
     # URLs for download/view
     download_url = serializers.SerializerMethodField()
@@ -145,6 +154,7 @@ class PortalDocumentUploadSerializer(serializers.ModelSerializer):
 
 class PortalDocumentCreateSerializer(serializers.Serializer):
     """Handles file upload from portal clients."""
+
     title = serializers.CharField(max_length=255)
     file = serializers.FileField()
     case = serializers.UUIDField(required=False, allow_null=True)
@@ -155,8 +165,10 @@ class PortalDocumentCreateSerializer(serializers.Serializer):
 # Messages
 # -----------------------------------------------------------------------
 
+
 class _SenderSerializer(serializers.Serializer):
     """Sender info for messages."""
+
     id = serializers.UUIDField(read_only=True)
     first_name = serializers.CharField(read_only=True)
     last_name = serializers.CharField(read_only=True)
@@ -165,6 +177,7 @@ class _SenderSerializer(serializers.Serializer):
 
 class _CaseSummarySerializer(serializers.Serializer):
     """Case summary for messages."""
+
     id = serializers.UUIDField(read_only=True)
     case_number = serializers.CharField(read_only=True)
     title = serializers.CharField(read_only=True)
@@ -267,6 +280,7 @@ class PortalMessageCreateSerializer(serializers.Serializer):
 # -----------------------------------------------------------------------
 # Appointments
 # -----------------------------------------------------------------------
+
 
 class PortalAppointmentSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)

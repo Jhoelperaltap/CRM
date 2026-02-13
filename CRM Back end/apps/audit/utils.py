@@ -1,6 +1,7 @@
 """
 Helpers for creating audit entries from views and middleware.
 """
+
 from apps.core.utils import get_current_request
 
 

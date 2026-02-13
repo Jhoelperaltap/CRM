@@ -53,7 +53,9 @@ class PasswordComplexityValidator:
             r"[!@#$%^&*()_+\-=\[\]{}|;':\",./<>?`~\\]", password
         ):
             errors.append(
-                _("Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;':\",./<>?`~\\).")
+                _(
+                    "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;':\",./<>?`~\\)."
+                )
             )
 
         # Check for unique characters
@@ -103,9 +105,7 @@ class PasswordHistoryValidator:
         for entry in recent:
             if check_password(password, entry.password_hash):
                 raise ValidationError(
-                    _(
-                        "You cannot reuse any of your last %(count)d passwords."
-                    )
+                    _("You cannot reuse any of your last %(count)d passwords.")
                     % {"count": policy.password_history_count},
                     code="password_reuse",
                 )

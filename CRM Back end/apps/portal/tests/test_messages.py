@@ -52,19 +52,13 @@ class TestPortalMessageDetail:
 
     def test_view_own_message(self, portal_authenticated_client, portal_contact):
         msg = PortalMessageFactory(contact=portal_contact)
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/messages/{msg.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/messages/{msg.id}/")
         assert resp.status_code == 200
 
-    def test_cannot_view_other_contacts_message(
-        self, portal_authenticated_client
-    ):
+    def test_cannot_view_other_contacts_message(self, portal_authenticated_client):
         other_contact = ContactFactory()
         msg = PortalMessageFactory(contact=other_contact)
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/messages/{msg.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/messages/{msg.id}/")
         assert resp.status_code == 404
 
 
@@ -107,9 +101,7 @@ class TestPortalMarkRead:
         msg.refresh_from_db()
         assert msg.is_read is True
 
-    def test_cannot_mark_other_contacts_message(
-        self, portal_authenticated_client
-    ):
+    def test_cannot_mark_other_contacts_message(self, portal_authenticated_client):
         other_contact = ContactFactory()
         msg = PortalMessageFactory(contact=other_contact)
         resp = portal_authenticated_client.post(

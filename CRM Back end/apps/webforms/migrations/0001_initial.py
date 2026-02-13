@@ -16,86 +16,264 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Webform',
+            name="Webform",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255, verbose_name='name')),
-                ('primary_module', models.CharField(help_text='Target CRM module, e.g. contacts, cases, corporations.', max_length=50, verbose_name='primary module')),
-                ('return_url', models.URLField(blank=True, default='', help_text='Redirect URL after form submission.', max_length=2048, verbose_name='return URL')),
-                ('description', models.TextField(blank=True, default='', verbose_name='description')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('captcha_enabled', models.BooleanField(default=False, verbose_name='captcha enabled')),
-                ('round_robin_enabled', models.BooleanField(default=False, verbose_name='round-robin enabled')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_webforms', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_webforms', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255, verbose_name="name")),
+                (
+                    "primary_module",
+                    models.CharField(
+                        help_text="Target CRM module, e.g. contacts, cases, corporations.",
+                        max_length=50,
+                        verbose_name="primary module",
+                    ),
+                ),
+                (
+                    "return_url",
+                    models.URLField(
+                        blank=True,
+                        default="",
+                        help_text="Redirect URL after form submission.",
+                        max_length=2048,
+                        verbose_name="return URL",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="active")),
+                (
+                    "captcha_enabled",
+                    models.BooleanField(default=False, verbose_name="captcha enabled"),
+                ),
+                (
+                    "round_robin_enabled",
+                    models.BooleanField(
+                        default=False, verbose_name="round-robin enabled"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_webforms",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_webforms",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'webform',
-                'verbose_name_plural': 'webforms',
-                'db_table': 'crm_webforms',
-                'ordering': ['-created_at'],
+                "verbose_name": "webform",
+                "verbose_name_plural": "webforms",
+                "db_table": "crm_webforms",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='WebformHiddenField',
+            name="WebformHiddenField",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('field_name', models.CharField(max_length=100, verbose_name='field name')),
-                ('url_parameter', models.CharField(blank=True, default='', max_length=100, verbose_name='URL parameter')),
-                ('override_value', models.CharField(blank=True, default='', max_length=500, verbose_name='override value')),
-                ('sort_order', models.IntegerField(default=0, verbose_name='sort order')),
-                ('webform', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hidden_fields', to='webforms.webform', verbose_name='webform')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "field_name",
+                    models.CharField(max_length=100, verbose_name="field name"),
+                ),
+                (
+                    "url_parameter",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="URL parameter",
+                    ),
+                ),
+                (
+                    "override_value",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=500,
+                        verbose_name="override value",
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(default=0, verbose_name="sort order"),
+                ),
+                (
+                    "webform",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="hidden_fields",
+                        to="webforms.webform",
+                        verbose_name="webform",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'webform hidden field',
-                'verbose_name_plural': 'webform hidden fields',
-                'db_table': 'crm_webform_hidden_fields',
-                'ordering': ['sort_order'],
+                "verbose_name": "webform hidden field",
+                "verbose_name_plural": "webform hidden fields",
+                "db_table": "crm_webform_hidden_fields",
+                "ordering": ["sort_order"],
             },
         ),
         migrations.CreateModel(
-            name='WebformField',
+            name="WebformField",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('field_name', models.CharField(max_length=100, verbose_name='field name')),
-                ('is_mandatory', models.BooleanField(default=False, verbose_name='mandatory')),
-                ('is_hidden', models.BooleanField(default=False, verbose_name='hidden')),
-                ('override_value', models.CharField(blank=True, default='', max_length=500, verbose_name='override value')),
-                ('reference_field', models.CharField(blank=True, default='', max_length=100, verbose_name='reference field')),
-                ('duplicate_handling', models.CharField(choices=[('none', 'None'), ('skip', 'Skip'), ('update', 'Update')], default='none', max_length=20, verbose_name='duplicate handling')),
-                ('sort_order', models.IntegerField(default=0, verbose_name='sort order')),
-                ('webform', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fields', to='webforms.webform', verbose_name='webform')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "field_name",
+                    models.CharField(max_length=100, verbose_name="field name"),
+                ),
+                (
+                    "is_mandatory",
+                    models.BooleanField(default=False, verbose_name="mandatory"),
+                ),
+                (
+                    "is_hidden",
+                    models.BooleanField(default=False, verbose_name="hidden"),
+                ),
+                (
+                    "override_value",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=500,
+                        verbose_name="override value",
+                    ),
+                ),
+                (
+                    "reference_field",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="reference field",
+                    ),
+                ),
+                (
+                    "duplicate_handling",
+                    models.CharField(
+                        choices=[
+                            ("none", "None"),
+                            ("skip", "Skip"),
+                            ("update", "Update"),
+                        ],
+                        default="none",
+                        max_length=20,
+                        verbose_name="duplicate handling",
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(default=0, verbose_name="sort order"),
+                ),
+                (
+                    "webform",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="fields",
+                        to="webforms.webform",
+                        verbose_name="webform",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'webform field',
-                'verbose_name_plural': 'webform fields',
-                'db_table': 'crm_webform_fields',
-                'ordering': ['sort_order'],
-                'unique_together': {('webform', 'field_name')},
+                "verbose_name": "webform field",
+                "verbose_name_plural": "webform fields",
+                "db_table": "crm_webform_fields",
+                "ordering": ["sort_order"],
+                "unique_together": {("webform", "field_name")},
             },
         ),
         migrations.CreateModel(
-            name='WebformRoundRobinUser',
+            name="WebformRoundRobinUser",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('sort_order', models.IntegerField(default=0, verbose_name='sort order')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='webform_round_robin_entries', to=settings.AUTH_USER_MODEL, verbose_name='user')),
-                ('webform', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='round_robin_users', to='webforms.webform', verbose_name='webform')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "sort_order",
+                    models.IntegerField(default=0, verbose_name="sort order"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="webform_round_robin_entries",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
+                (
+                    "webform",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="round_robin_users",
+                        to="webforms.webform",
+                        verbose_name="webform",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'webform round-robin user',
-                'verbose_name_plural': 'webform round-robin users',
-                'db_table': 'crm_webform_round_robin_users',
-                'ordering': ['sort_order'],
-                'unique_together': {('webform', 'user')},
+                "verbose_name": "webform round-robin user",
+                "verbose_name_plural": "webform round-robin users",
+                "db_table": "crm_webform_round_robin_users",
+                "ordering": ["sort_order"],
+                "unique_together": {("webform", "user")},
             },
         ),
     ]

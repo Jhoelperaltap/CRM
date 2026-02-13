@@ -16,41 +16,132 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ForecastEntry',
+            name="ForecastEntry",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('fiscal_year', models.PositiveIntegerField(db_index=True)),
-                ('quarter', models.PositiveSmallIntegerField(choices=[(1, 'Q1'), (2, 'Q2'), (3, 'Q3'), (4, 'Q4')])),
-                ('pipeline', models.DecimalField(decimal_places=2, default=0, help_text='Total pipeline value', max_digits=12)),
-                ('best_case', models.DecimalField(decimal_places=2, default=0, help_text='Best-case forecast', max_digits=12)),
-                ('commit', models.DecimalField(decimal_places=2, default=0, help_text='Committed forecast', max_digits=12)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='forecast_entries', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("fiscal_year", models.PositiveIntegerField(db_index=True)),
+                (
+                    "quarter",
+                    models.PositiveSmallIntegerField(
+                        choices=[(1, "Q1"), (2, "Q2"), (3, "Q3"), (4, "Q4")]
+                    ),
+                ),
+                (
+                    "pipeline",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        help_text="Total pipeline value",
+                        max_digits=12,
+                    ),
+                ),
+                (
+                    "best_case",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        help_text="Best-case forecast",
+                        max_digits=12,
+                    ),
+                ),
+                (
+                    "commit",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        help_text="Committed forecast",
+                        max_digits=12,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="forecast_entries",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'crm_forecast_entries',
-                'ordering': ['fiscal_year', 'quarter'],
-                'constraints': [models.UniqueConstraint(fields=('user', 'fiscal_year', 'quarter'), name='unique_user_quarter_forecast')],
+                "db_table": "crm_forecast_entries",
+                "ordering": ["fiscal_year", "quarter"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("user", "fiscal_year", "quarter"),
+                        name="unique_user_quarter_forecast",
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='SalesQuota',
+            name="SalesQuota",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('fiscal_year', models.PositiveIntegerField(db_index=True)),
-                ('quarter', models.PositiveSmallIntegerField(choices=[(1, 'Q1'), (2, 'Q2'), (3, 'Q3'), (4, 'Q4')])),
-                ('amount', models.DecimalField(decimal_places=2, default=0, help_text='Quota target amount for this quarter', max_digits=12)),
-                ('notify_by_email', models.BooleanField(default=False)),
-                ('set_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quotas_set', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sales_quotas', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("fiscal_year", models.PositiveIntegerField(db_index=True)),
+                (
+                    "quarter",
+                    models.PositiveSmallIntegerField(
+                        choices=[(1, "Q1"), (2, "Q2"), (3, "Q3"), (4, "Q4")]
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        help_text="Quota target amount for this quarter",
+                        max_digits=12,
+                    ),
+                ),
+                ("notify_by_email", models.BooleanField(default=False)),
+                (
+                    "set_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="quotas_set",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sales_quotas",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'crm_sales_quotas',
-                'ordering': ['fiscal_year', 'quarter'],
-                'constraints': [models.UniqueConstraint(fields=('user', 'fiscal_year', 'quarter'), name='unique_user_quarter_quota')],
+                "db_table": "crm_sales_quotas",
+                "ordering": ["fiscal_year", "quarter"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("user", "fiscal_year", "quarter"),
+                        name="unique_user_quarter_quota",
+                    )
+                ],
             },
         ),
     ]

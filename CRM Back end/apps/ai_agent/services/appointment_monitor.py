@@ -103,11 +103,21 @@ class AppointmentMonitor:
                     "appointment_title": appointment.title,
                     "start_datetime": appointment.start_datetime.isoformat(),
                     "location": appointment.location,
-                    "contact_id": str(appointment.contact.id) if appointment.contact else None,
+                    "contact_id": (
+                        str(appointment.contact.id) if appointment.contact else None
+                    ),
                     "contact_name": reminder_data.get("contact_name", ""),
                     "contact_email": reminder_data.get("contact_email", ""),
-                    "assigned_to_id": str(appointment.assigned_to.id) if appointment.assigned_to else None,
-                    "assigned_to_email": appointment.assigned_to.email if appointment.assigned_to else None,
+                    "assigned_to_id": (
+                        str(appointment.assigned_to.id)
+                        if appointment.assigned_to
+                        else None
+                    ),
+                    "assigned_to_email": (
+                        appointment.assigned_to.email
+                        if appointment.assigned_to
+                        else None
+                    ),
                     "message": reminder_data["message"],
                     "notification_channels": reminder_data["channels"],
                 },
@@ -222,7 +232,9 @@ Details:
 
             action.status = AgentAction.Status.EXECUTED
             action.executed_at = timezone.now()
-            action.execution_result = f"Sent reminder via: {', '.join(reminder_data.get('channels', []))}"
+            action.execution_result = (
+                f"Sent reminder via: {', '.join(reminder_data.get('channels', []))}"
+            )
             action.save()
 
             self._log(
@@ -291,9 +303,11 @@ Details:
                     "title": apt.title,
                     "start_datetime": apt.start_datetime.isoformat(),
                     "hours_until": round(hours_until, 1),
-                    "contact_name": f"{apt.contact.first_name} {apt.contact.last_name}".strip()
-                    if apt.contact
-                    else None,
+                    "contact_name": (
+                        f"{apt.contact.first_name} {apt.contact.last_name}".strip()
+                        if apt.contact
+                        else None
+                    ),
                     "pending_reminders": pending_reminders,
                 }
             )

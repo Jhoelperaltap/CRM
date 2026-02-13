@@ -29,11 +29,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     ordering = ["-start_datetime"]
 
     def get_queryset(self):
-        return (
-            Appointment.objects.select_related(
-                "contact", "assigned_to", "created_by", "case"
-            ).all()
-        )
+        return Appointment.objects.select_related(
+            "contact", "assigned_to", "created_by", "case"
+        ).all()
 
     def get_serializer_class(self):
         if self.action == "list":

@@ -16,47 +16,181 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ReportFolder',
+            name="ReportFolder",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, default='')),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='report_folders', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, default="")),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="report_folders",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'crm_report_folders',
-                'ordering': ['name'],
+                "db_table": "crm_report_folders",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Report',
+            name="Report",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
-                ('report_type', models.CharField(choices=[('detail', 'Detail'), ('summary', 'Summary'), ('tabular', 'Tabular')], default='detail', max_length=20)),
-                ('primary_module', models.CharField(choices=[('contacts', 'Contacts'), ('corporations', 'Corporations'), ('cases', 'Cases'), ('quotes', 'Quotes'), ('appointments', 'Appointments'), ('tasks', 'Tasks'), ('documents', 'Documents'), ('invoices', 'Invoices'), ('users', 'Users')], max_length=50)),
-                ('related_modules', models.JSONField(blank=True, default=list, help_text='Up to 2 related module names')),
-                ('description', models.TextField(blank=True, default='')),
-                ('frequency', models.CharField(choices=[('none', 'None'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')], default='none', max_length=20)),
-                ('columns', models.JSONField(blank=True, default=list, help_text='Column field names to display')),
-                ('filters', models.JSONField(blank=True, default=list, help_text='Filter conditions [{field, operator, value}]')),
-                ('sort_field', models.CharField(blank=True, default='', max_length=100)),
-                ('sort_order', models.CharField(choices=[('asc', 'Ascending'), ('desc', 'Descending')], default='asc', max_length=4)),
-                ('chart_type', models.CharField(blank=True, default='', help_text='none, bar, line, pie, funnel, etc.', max_length=30)),
-                ('chart_config', models.JSONField(blank=True, default=dict, help_text='Chart configuration {group_by, measure, ...}')),
-                ('last_run', models.DateTimeField(blank=True, null=True)),
-                ('last_accessed', models.DateTimeField(blank=True, null=True)),
-                ('owner', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='owned_reports', to=settings.AUTH_USER_MODEL)),
-                ('shared_with', models.ManyToManyField(blank=True, related_name='shared_reports', to=settings.AUTH_USER_MODEL)),
-                ('folder', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reports', to='reports.reportfolder')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "report_type",
+                    models.CharField(
+                        choices=[
+                            ("detail", "Detail"),
+                            ("summary", "Summary"),
+                            ("tabular", "Tabular"),
+                        ],
+                        default="detail",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "primary_module",
+                    models.CharField(
+                        choices=[
+                            ("contacts", "Contacts"),
+                            ("corporations", "Corporations"),
+                            ("cases", "Cases"),
+                            ("quotes", "Quotes"),
+                            ("appointments", "Appointments"),
+                            ("tasks", "Tasks"),
+                            ("documents", "Documents"),
+                            ("invoices", "Invoices"),
+                            ("users", "Users"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "related_modules",
+                    models.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text="Up to 2 related module names",
+                    ),
+                ),
+                ("description", models.TextField(blank=True, default="")),
+                (
+                    "frequency",
+                    models.CharField(
+                        choices=[
+                            ("none", "None"),
+                            ("daily", "Daily"),
+                            ("weekly", "Weekly"),
+                            ("monthly", "Monthly"),
+                        ],
+                        default="none",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "columns",
+                    models.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text="Column field names to display",
+                    ),
+                ),
+                (
+                    "filters",
+                    models.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text="Filter conditions [{field, operator, value}]",
+                    ),
+                ),
+                (
+                    "sort_field",
+                    models.CharField(blank=True, default="", max_length=100),
+                ),
+                (
+                    "sort_order",
+                    models.CharField(
+                        choices=[("asc", "Ascending"), ("desc", "Descending")],
+                        default="asc",
+                        max_length=4,
+                    ),
+                ),
+                (
+                    "chart_type",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="none, bar, line, pie, funnel, etc.",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "chart_config",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Chart configuration {group_by, measure, ...}",
+                    ),
+                ),
+                ("last_run", models.DateTimeField(blank=True, null=True)),
+                ("last_accessed", models.DateTimeField(blank=True, null=True)),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="owned_reports",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "shared_with",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="shared_reports",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "folder",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="reports",
+                        to="reports.reportfolder",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'crm_reports',
-                'ordering': ['-created_at'],
+                "db_table": "crm_reports",
+                "ordering": ["-created_at"],
             },
         ),
     ]

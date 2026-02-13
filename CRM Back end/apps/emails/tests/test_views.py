@@ -109,7 +109,9 @@ class TestEmailMessageActions:
 @pytest.mark.django_db
 class TestEmailCompose:
     @patch("apps.emails.views.send_email_task")
-    def test_compose_sends_email(self, mock_send, admin_client, admin_user, email_account):
+    def test_compose_sends_email(
+        self, mock_send, admin_client, admin_user, email_account
+    ):
         # Assign email account to admin user (required for compose)
         admin_user.email_account = email_account
         admin_user.save()
@@ -129,7 +131,9 @@ class TestEmailCompose:
         assert resp.data["direction"] == "outbound"
 
     @patch("apps.emails.views.send_email_task")
-    def test_compose_with_template(self, mock_send, admin_client, admin_user, email_account):
+    def test_compose_with_template(
+        self, mock_send, admin_client, admin_user, email_account
+    ):
         # Assign email account to admin user (required for compose)
         admin_user.email_account = email_account
         admin_user.save()

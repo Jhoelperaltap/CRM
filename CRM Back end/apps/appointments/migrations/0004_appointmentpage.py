@@ -9,41 +9,182 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('appointments', '0003_initial'),
+        ("appointments", "0003_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AppointmentPage',
+            name="AppointmentPage",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255, verbose_name='name')),
-                ('page_type', models.CharField(choices=[('meet_me', 'Meet Me'), ('auto_assigned', 'Auto Assigned'), ('group_event', 'Group Event')], max_length=20, verbose_name='page type')),
-                ('introduction', models.TextField(blank=True, default='', verbose_name='introduction')),
-                ('slug', models.SlugField(help_text='URL-safe identifier appended to the appointment page link', max_length=255, unique=True, verbose_name='page link slug')),
-                ('css_url', models.URLField(blank=True, default='', max_length=2048, verbose_name='CSS file URL')),
-                ('event_duration', models.PositiveIntegerField(default=30, verbose_name='event duration (minutes)')),
-                ('event_activity_type', models.CharField(choices=[('call', 'Call'), ('meeting', 'Meeting'), ('demo', 'Demo'), ('consultation', 'Consultation'), ('follow_up', 'Follow Up'), ('other', 'Other')], default='meeting', max_length=20, verbose_name='event activity type')),
-                ('allow_known_records', models.BooleanField(default=False, verbose_name='allow known records')),
-                ('email_otp_validation', models.BooleanField(default=False, verbose_name='email OTP validation')),
-                ('is_active', models.BooleanField(default=True, verbose_name='status')),
-                ('track_utm', models.BooleanField(default=False, verbose_name='track UTM parameters')),
-                ('notification_config', models.JSONField(blank=True, default=dict, help_text='Email/notification settings', verbose_name='notification config')),
-                ('schedule_config', models.JSONField(blank=True, default=dict, help_text='Availability schedule and buffer times', verbose_name='schedule config')),
-                ('invitee_questions', models.JSONField(blank=True, default=list, help_text='Custom questions asked to invitees [{label, type, required}]', verbose_name='invitee questions')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_appointment_pages', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_appointment_pages', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
-                ('event', models.ForeignKey(blank=True, help_text='For Group Event pages, the actual event', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='appointment_pages', to='appointments.appointment', verbose_name='linked event')),
-                ('meet_with', models.ForeignKey(blank=True, help_text='Specific user for Meet Me pages', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='meet_me_pages', to=settings.AUTH_USER_MODEL, verbose_name='meet with')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255, verbose_name="name")),
+                (
+                    "page_type",
+                    models.CharField(
+                        choices=[
+                            ("meet_me", "Meet Me"),
+                            ("auto_assigned", "Auto Assigned"),
+                            ("group_event", "Group Event"),
+                        ],
+                        max_length=20,
+                        verbose_name="page type",
+                    ),
+                ),
+                (
+                    "introduction",
+                    models.TextField(
+                        blank=True, default="", verbose_name="introduction"
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="URL-safe identifier appended to the appointment page link",
+                        max_length=255,
+                        unique=True,
+                        verbose_name="page link slug",
+                    ),
+                ),
+                (
+                    "css_url",
+                    models.URLField(
+                        blank=True,
+                        default="",
+                        max_length=2048,
+                        verbose_name="CSS file URL",
+                    ),
+                ),
+                (
+                    "event_duration",
+                    models.PositiveIntegerField(
+                        default=30, verbose_name="event duration (minutes)"
+                    ),
+                ),
+                (
+                    "event_activity_type",
+                    models.CharField(
+                        choices=[
+                            ("call", "Call"),
+                            ("meeting", "Meeting"),
+                            ("demo", "Demo"),
+                            ("consultation", "Consultation"),
+                            ("follow_up", "Follow Up"),
+                            ("other", "Other"),
+                        ],
+                        default="meeting",
+                        max_length=20,
+                        verbose_name="event activity type",
+                    ),
+                ),
+                (
+                    "allow_known_records",
+                    models.BooleanField(
+                        default=False, verbose_name="allow known records"
+                    ),
+                ),
+                (
+                    "email_otp_validation",
+                    models.BooleanField(
+                        default=False, verbose_name="email OTP validation"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="status")),
+                (
+                    "track_utm",
+                    models.BooleanField(
+                        default=False, verbose_name="track UTM parameters"
+                    ),
+                ),
+                (
+                    "notification_config",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Email/notification settings",
+                        verbose_name="notification config",
+                    ),
+                ),
+                (
+                    "schedule_config",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Availability schedule and buffer times",
+                        verbose_name="schedule config",
+                    ),
+                ),
+                (
+                    "invitee_questions",
+                    models.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text="Custom questions asked to invitees [{label, type, required}]",
+                        verbose_name="invitee questions",
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_appointment_pages",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_appointment_pages",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
+                (
+                    "event",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="For Group Event pages, the actual event",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="appointment_pages",
+                        to="appointments.appointment",
+                        verbose_name="linked event",
+                    ),
+                ),
+                (
+                    "meet_with",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Specific user for Meet Me pages",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="meet_me_pages",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="meet with",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'appointment page',
-                'verbose_name_plural': 'appointment pages',
-                'db_table': 'crm_appointment_pages',
-                'ordering': ['-created_at'],
+                "verbose_name": "appointment page",
+                "verbose_name_plural": "appointment pages",
+                "db_table": "crm_appointment_pages",
+                "ordering": ["-created_at"],
             },
         ),
     ]

@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contacts', '0002_initial'),
+        ("contacts", "0002_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contact',
-            name='custom_fields',
-            field=models.JSONField(blank=True, default=dict, verbose_name='custom fields'),
+            model_name="contact",
+            name="custom_fields",
+            field=models.JSONField(
+                blank=True, default=dict, verbose_name="custom fields"
+            ),
         ),
     ]

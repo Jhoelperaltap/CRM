@@ -126,7 +126,9 @@ class AgentBrain:
                 results["actions"].extend([str(a.id) for a in email_actions])
             except Exception as e:
                 self._log("error", f"Email analysis failed: {e}")
-                results["errors"].append({"component": "email_analyzer", "error": str(e)})
+                results["errors"].append(
+                    {"component": "email_analyzer", "error": str(e)}
+                )
 
         # Run appointment reminders
         if self.config.appointment_reminders_enabled:
@@ -135,7 +137,9 @@ class AgentBrain:
                 results["actions"].extend([str(a.id) for a in appt_actions])
             except Exception as e:
                 self._log("error", f"Appointment reminders failed: {e}")
-                results["errors"].append({"component": "appointment_monitor", "error": str(e)})
+                results["errors"].append(
+                    {"component": "appointment_monitor", "error": str(e)}
+                )
 
         # Run task enforcement
         if self.config.task_enforcement_enabled:
@@ -144,7 +148,9 @@ class AgentBrain:
                 results["actions"].extend([str(a.id) for a in task_actions])
             except Exception as e:
                 self._log("error", f"Task enforcement failed: {e}")
-                results["errors"].append({"component": "task_enforcer", "error": str(e)})
+                results["errors"].append(
+                    {"component": "task_enforcer", "error": str(e)}
+                )
 
         # Update daily metrics
         try:
@@ -220,7 +226,9 @@ class AgentBrain:
 
         try:
             insights = self.market_analyzer.analyze_business_metrics()
-            self._log("info", f"Market analysis complete: {len(insights)} insights generated")
+            self._log(
+                "info", f"Market analysis complete: {len(insights)} insights generated"
+            )
             return insights
         except Exception as e:
             self._log("error", f"Market analysis failed: {e}")
@@ -275,7 +283,9 @@ class AgentBrain:
             action.status = AgentAction.Status.FAILED
             action.error_message = str(e)
             action.save()
-            self._log("error", f"Action execution failed: {e}", {"action_id": str(action.id)})
+            self._log(
+                "error", f"Action execution failed: {e}", {"action_id": str(action.id)}
+            )
             raise
 
         return action
@@ -328,7 +338,9 @@ class AgentBrain:
         one_hour_ago = timezone.now() - timedelta(hours=1)
 
         # Check actions per hour
-        recent_actions = AgentAction.objects.filter(created_at__gte=one_hour_ago).count()
+        recent_actions = AgentAction.objects.filter(
+            created_at__gte=one_hour_ago
+        ).count()
         if recent_actions >= self.config.max_actions_per_hour:
             return False
 
@@ -393,11 +405,19 @@ class AgentBrain:
                     0, self.config.max_actions_per_hour - recent_actions.count()
                 ),
             },
-            "today_metrics": {
-                "total_actions": today_metrics.total_actions if today_metrics else 0,
-                "executed": today_metrics.actions_executed if today_metrics else 0,
-                "tokens_used": today_metrics.total_tokens_used if today_metrics else 0,
-            } if today_metrics else None,
+            "today_metrics": (
+                {
+                    "total_actions": (
+                        today_metrics.total_actions if today_metrics else 0
+                    ),
+                    "executed": today_metrics.actions_executed if today_metrics else 0,
+                    "tokens_used": (
+                        today_metrics.total_tokens_used if today_metrics else 0
+                    ),
+                }
+                if today_metrics
+                else None
+            ),
             "health": "healthy" if recent_errors == 0 else "degraded",
         }
 

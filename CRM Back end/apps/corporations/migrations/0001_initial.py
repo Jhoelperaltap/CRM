@@ -11,46 +11,223 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contacts', '0001_initial'),
+        ("contacts", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Corporation',
+            name="Corporation",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(db_index=True, max_length=255, verbose_name='name')),
-                ('legal_name', models.CharField(blank=True, default='', max_length=255, verbose_name='legal name')),
-                ('entity_type', models.CharField(choices=[('sole_proprietorship', 'Sole Proprietorship'), ('partnership', 'Partnership'), ('llc', 'LLC'), ('s_corp', 'S Corporation'), ('c_corp', 'C Corporation'), ('nonprofit', 'Nonprofit'), ('trust', 'Trust'), ('estate', 'Estate'), ('other', 'Other')], db_index=True, max_length=30, verbose_name='entity type')),
-                ('ein', models.CharField(blank=True, default='', help_text='Employer Identification Number. Encrypted at rest.', max_length=255, verbose_name='EIN')),
-                ('state_id', models.CharField(blank=True, default='', max_length=50, verbose_name='state ID')),
-                ('street_address', models.CharField(blank=True, default='', max_length=255, verbose_name='street address')),
-                ('city', models.CharField(blank=True, default='', max_length=100, verbose_name='city')),
-                ('state', models.CharField(blank=True, default='', max_length=100, verbose_name='state')),
-                ('zip_code', models.CharField(blank=True, default='', max_length=20, verbose_name='ZIP code')),
-                ('country', models.CharField(blank=True, default='United States', max_length=100, verbose_name='country')),
-                ('phone', models.CharField(blank=True, default='', max_length=20, verbose_name='phone')),
-                ('fax', models.CharField(blank=True, default='', max_length=20, verbose_name='fax')),
-                ('email', models.EmailField(blank=True, default='', max_length=254, verbose_name='email')),
-                ('website', models.URLField(blank=True, default='', verbose_name='website')),
-                ('industry', models.CharField(blank=True, default='', max_length=100, verbose_name='industry')),
-                ('annual_revenue', models.DecimalField(blank=True, decimal_places=2, max_digits=15, null=True, verbose_name='annual revenue')),
-                ('fiscal_year_end', models.CharField(blank=True, default='', max_length=20, verbose_name='fiscal year end')),
-                ('date_incorporated', models.DateField(blank=True, null=True, verbose_name='date incorporated')),
-                ('status', models.CharField(choices=[('active', 'Active'), ('inactive', 'Inactive'), ('dissolved', 'Dissolved')], db_index=True, default='active', max_length=20, verbose_name='status')),
-                ('description', models.TextField(blank=True, default='', verbose_name='description')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_corporations', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_corporations', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
-                ('primary_contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='primary_for_corporations', to='contacts.contact', verbose_name='primary contact')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=255, verbose_name="name"
+                    ),
+                ),
+                (
+                    "legal_name",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="legal name",
+                    ),
+                ),
+                (
+                    "entity_type",
+                    models.CharField(
+                        choices=[
+                            ("sole_proprietorship", "Sole Proprietorship"),
+                            ("partnership", "Partnership"),
+                            ("llc", "LLC"),
+                            ("s_corp", "S Corporation"),
+                            ("c_corp", "C Corporation"),
+                            ("nonprofit", "Nonprofit"),
+                            ("trust", "Trust"),
+                            ("estate", "Estate"),
+                            ("other", "Other"),
+                        ],
+                        db_index=True,
+                        max_length=30,
+                        verbose_name="entity type",
+                    ),
+                ),
+                (
+                    "ein",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Employer Identification Number. Encrypted at rest.",
+                        max_length=255,
+                        verbose_name="EIN",
+                    ),
+                ),
+                (
+                    "state_id",
+                    models.CharField(
+                        blank=True, default="", max_length=50, verbose_name="state ID"
+                    ),
+                ),
+                (
+                    "street_address",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="street address",
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="city"
+                    ),
+                ),
+                (
+                    "state",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="state"
+                    ),
+                ),
+                (
+                    "zip_code",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="ZIP code"
+                    ),
+                ),
+                (
+                    "country",
+                    models.CharField(
+                        blank=True,
+                        default="United States",
+                        max_length=100,
+                        verbose_name="country",
+                    ),
+                ),
+                (
+                    "phone",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="phone"
+                    ),
+                ),
+                (
+                    "fax",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="fax"
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        blank=True, default="", max_length=254, verbose_name="email"
+                    ),
+                ),
+                (
+                    "website",
+                    models.URLField(blank=True, default="", verbose_name="website"),
+                ),
+                (
+                    "industry",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="industry"
+                    ),
+                ),
+                (
+                    "annual_revenue",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=15,
+                        null=True,
+                        verbose_name="annual revenue",
+                    ),
+                ),
+                (
+                    "fiscal_year_end",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=20,
+                        verbose_name="fiscal year end",
+                    ),
+                ),
+                (
+                    "date_incorporated",
+                    models.DateField(
+                        blank=True, null=True, verbose_name="date incorporated"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("active", "Active"),
+                            ("inactive", "Inactive"),
+                            ("dissolved", "Dissolved"),
+                        ],
+                        db_index=True,
+                        default="active",
+                        max_length=20,
+                        verbose_name="status",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_corporations",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_corporations",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
+                (
+                    "primary_contact",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="primary_for_corporations",
+                        to="contacts.contact",
+                        verbose_name="primary contact",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'corporation',
-                'verbose_name_plural': 'corporations',
-                'db_table': 'crm_corporations',
-                'ordering': ['name'],
+                "verbose_name": "corporation",
+                "verbose_name_plural": "corporations",
+                "db_table": "crm_corporations",
+                "ordering": ["name"],
             },
         ),
     ]

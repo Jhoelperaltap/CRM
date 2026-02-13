@@ -15,13 +15,16 @@ class TestChecklistTemplateModel:
         assert template.is_active is True
 
     def test_str_representation(self):
-        template = ChecklistTemplateFactory(name="1040 Template", case_type="individual_1040", tax_year=2025)
+        template = ChecklistTemplateFactory(
+            name="1040 Template", case_type="individual_1040", tax_year=2025
+        )
         assert "1040 Template" in str(template)
         assert "2025" in str(template)
 
     def test_unique_constraint(self):
         ChecklistTemplateFactory(case_type="individual_1040", tax_year=2025)
         from django.db import IntegrityError
+
         with pytest.raises(IntegrityError):
             ChecklistTemplateFactory(case_type="individual_1040", tax_year=2025)
 
@@ -39,7 +42,9 @@ class TestChecklistTemplateItemModel:
 
     def test_ordering_by_sort_order(self):
         template = ChecklistTemplateFactory()
-        ChecklistTemplateItemFactory(template=template, sort_order=3)  # i3 - for ordering test
+        ChecklistTemplateItemFactory(
+            template=template, sort_order=3
+        )  # i3 - for ordering test
         i1 = ChecklistTemplateItemFactory(template=template, sort_order=1)
         i2 = ChecklistTemplateItemFactory(template=template, sort_order=2)
         items = list(template.items.all())

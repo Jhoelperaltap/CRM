@@ -25,11 +25,14 @@ if not DEBUG:
     if SECRET_KEY == _default_secret:
         raise ValueError(
             "SECURITY ERROR: SECRET_KEY must be set in production! "
-            "Generate one with: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+            'Generate one with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"'
         )
     if len(SECRET_KEY) < 50:
         import warnings
-        warnings.warn("SECRET_KEY should be at least 50 characters for security", UserWarning)
+
+        warnings.warn(
+            "SECRET_KEY should be at least 50 characters for security", UserWarning
+        )
 
 # Field encryption key for PII data
 FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY", default="")
@@ -44,6 +47,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 # Security check for production
 if not DEBUG and ALLOWED_HOSTS == ["localhost", "127.0.0.1"]:
     import warnings
+
     warnings.warn("ALLOWED_HOSTS should be configured in production!", UserWarning)
 
 # ---------------------------------------------------------------------------
@@ -150,7 +154,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 AUTH_USER_MODEL = "users.User"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 12},  # Increased from default 8
@@ -242,7 +248,9 @@ CELERY_BEAT_SCHEDULE = {
     },
     "ai-agent-cleanup-logs": {
         "task": "apps.ai_agent.tasks.cleanup_old_logs",
-        "schedule": crontab(hour=2, minute=0, day_of_week=0),  # weekly on Sunday at 2 AM
+        "schedule": crontab(
+            hour=2, minute=0, day_of_week=0
+        ),  # weekly on Sunday at 2 AM
     },
     # Security cleanup tasks
     "cleanup-expired-download-tokens": {
@@ -278,9 +286,7 @@ REST_FRAMEWORK = {
         # Falls back to Authorization header for mobile apps
         "apps.users.authentication.CookieJWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
@@ -322,7 +328,9 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": env("JWT_SIGNING_KEY", default="jwt-secret-change-in-production-key-32bytes"),
+    "SIGNING_KEY": env(
+        "JWT_SIGNING_KEY", default="jwt-secret-change-in-production-key-32bytes"
+    ),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
@@ -338,17 +346,20 @@ SIMPLE_JWT = {
 # In PRODUCTION, set a DIFFERENT key via PORTAL_JWT_SIGNING_KEY environment variable!
 PORTAL_JWT_SIGNING_KEY = env(
     "PORTAL_JWT_SIGNING_KEY",
-    default=SIMPLE_JWT["SIGNING_KEY"]  # Default to staff key for dev backwards compatibility
+    default=SIMPLE_JWT[
+        "SIGNING_KEY"
+    ],  # Default to staff key for dev backwards compatibility
 )
 
 # Security validation for production
 if not DEBUG:
     if PORTAL_JWT_SIGNING_KEY == "portal-jwt-secret-change-in-production-key-32b":
         import warnings
+
         warnings.warn(
             "PORTAL_JWT_SIGNING_KEY should be set in production! "
-            "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(32))\"",
-            UserWarning
+            'Generate one with: python -c "import secrets; print(secrets.token_urlsafe(32))"',
+            UserWarning,
         )
 
 # ---------------------------------------------------------------------------

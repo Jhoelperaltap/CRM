@@ -18,7 +18,15 @@ class UserMiniSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "email", "full_name", "first_name", "last_name", "initials", "avatar"]
+        fields = [
+            "id",
+            "email",
+            "full_name",
+            "first_name",
+            "last_name",
+            "initials",
+            "avatar",
+        ]
 
     def get_initials(self, obj):
         if obj.first_name and obj.last_name:
@@ -38,8 +46,12 @@ class ActivitySerializer(serializers.ModelSerializer):
     entity_type = serializers.SerializerMethodField()
     entity_id = serializers.UUIDField(source="object_id", read_only=True)
     related_entity_type = serializers.SerializerMethodField()
-    related_entity_id = serializers.UUIDField(source="related_object_id", read_only=True)
-    department_name = serializers.CharField(source="department.name", read_only=True, default=None)
+    related_entity_id = serializers.UUIDField(
+        source="related_object_id", read_only=True
+    )
+    department_name = serializers.CharField(
+        source="department.name", read_only=True, default=None
+    )
     time_ago = serializers.SerializerMethodField()
 
     class Meta:
@@ -96,10 +108,16 @@ class ActivitySerializer(serializers.ModelSerializer):
 class ActivityCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating activities."""
 
-    entity_type = serializers.ChoiceField(choices=["contact", "corporation"], write_only=True)
+    entity_type = serializers.ChoiceField(
+        choices=["contact", "corporation"], write_only=True
+    )
     entity_id = serializers.UUIDField(write_only=True)
-    related_entity_type = serializers.CharField(required=False, allow_null=True, write_only=True)
-    related_entity_id = serializers.UUIDField(required=False, allow_null=True, write_only=True)
+    related_entity_type = serializers.CharField(
+        required=False, allow_null=True, write_only=True
+    )
+    related_entity_id = serializers.UUIDField(
+        required=False, allow_null=True, write_only=True
+    )
 
     class Meta:
         model = Activity
@@ -244,7 +262,9 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating comments."""
 
-    entity_type = serializers.ChoiceField(choices=["contact", "corporation"], write_only=True)
+    entity_type = serializers.ChoiceField(
+        choices=["contact", "corporation"], write_only=True
+    )
     entity_id = serializers.UUIDField(write_only=True)
 
     class Meta:
@@ -271,7 +291,8 @@ class CommentCreateSerializer(serializers.ModelSerializer):
             object_id=entity_id,
             activity_type=Activity.ActivityType.COMMENT_ADDED,
             title=f"{comment.author.full_name} added a comment",
-            description=comment.content[:200] + ("..." if len(comment.content) > 200 else ""),
+            description=comment.content[:200]
+            + ("..." if len(comment.content) > 200 else ""),
             performed_by=comment.author,
             related_content_type=ContentType.objects.get_for_model(Comment),
             related_object_id=comment.id,
@@ -303,7 +324,15 @@ class MentionSuggestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "email", "first_name", "last_name", "display_name", "mention_key", "avatar"]
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "display_name",
+            "mention_key",
+            "avatar",
+        ]
 
     def get_display_name(self, obj):
         return obj.full_name or obj.email

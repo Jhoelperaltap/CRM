@@ -34,6 +34,7 @@ class EmailAccountViewSet(viewsets.ModelViewSet):
         """Test IMAP connection for the account."""
         account = self.get_object()
         from apps.emails.imap_client import IMAPClient
+
         try:
             with IMAPClient(
                 host=account.imap_host,

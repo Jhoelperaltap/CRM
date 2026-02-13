@@ -111,6 +111,7 @@ class RoleTreeSerializer(serializers.ModelSerializer):
 # ---------------------------------------------------------------------------
 class _UserSummarySerializer(serializers.Serializer):
     """Lightweight read-only representation of reports_to user."""
+
     id = serializers.UUIDField(read_only=True)
     full_name = serializers.CharField(source="get_full_name", read_only=True)
     email = serializers.EmailField(read_only=True)
@@ -118,12 +119,14 @@ class _UserSummarySerializer(serializers.Serializer):
 
 class _UserGroupSummarySerializer(serializers.Serializer):
     """Lightweight read-only representation of primary group."""
+
     id = serializers.UUIDField(read_only=True)
     name = serializers.CharField(read_only=True)
 
 
 class _BusinessHoursSummarySerializer(serializers.Serializer):
     """Lightweight read-only representation of business hours."""
+
     id = serializers.UUIDField(read_only=True)
     name = serializers.CharField(read_only=True)
 
@@ -139,7 +142,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     role = RoleSerializer(read_only=True)
     full_name = serializers.CharField(source="get_full_name", read_only=True)
-    branch_name = serializers.CharField(source="branch.name", read_only=True, default=None)
+    branch_name = serializers.CharField(
+        source="branch.name", read_only=True, default=None
+    )
     email_account_email = serializers.CharField(
         source="email_account.email_address", read_only=True, default=None
     )
@@ -529,7 +534,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Append full user profile to the response
         user = self.user
-        data["user"] = UserSerializer(user, context={"request": self.context.get("request")}).data
+        data["user"] = UserSerializer(
+            user, context={"request": self.context.get("request")}
+        ).data
 
         return data
 

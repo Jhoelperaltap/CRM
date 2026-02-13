@@ -46,7 +46,9 @@ class ActivityViewSet(viewsets.ModelViewSet):
         if entity_type and entity_id:
             try:
                 content_type = ContentType.objects.get(model=entity_type)
-                queryset = queryset.filter(content_type=content_type, object_id=entity_id)
+                queryset = queryset.filter(
+                    content_type=content_type, object_id=entity_id
+                )
             except ContentType.DoesNotExist:
                 return Activity.objects.none()
 
@@ -106,11 +108,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        queryset = Comment.objects.select_related(
-            "author", "content_type", "parent"
-        ).prefetch_related(
-            "mentioned_users", "reactions", "replies"
-        ).filter(is_deleted=False)
+        queryset = (
+            Comment.objects.select_related("author", "content_type", "parent")
+            .prefetch_related("mentioned_users", "reactions", "replies")
+            .filter(is_deleted=False)
+        )
 
         # Filter by entity (contact or corporation)
         entity_type = self.request.query_params.get("entity_type")
@@ -119,7 +121,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         if entity_type and entity_id:
             try:
                 content_type = ContentType.objects.get(model=entity_type)
-                queryset = queryset.filter(content_type=content_type, object_id=entity_id)
+                queryset = queryset.filter(
+                    content_type=content_type, object_id=entity_id
+                )
             except ContentType.DoesNotExist:
                 return Comment.objects.none()
 
@@ -192,9 +196,9 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Response([])
 
         users = User.objects.filter(
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) |
-            Q(email__icontains=query)
+            Q(first_name__icontains=query)
+            | Q(last_name__icontains=query)
+            | Q(email__icontains=query)
         ).filter(is_active=True)[:limit]
 
         serializer = MentionSuggestionSerializer(users, many=True)
@@ -221,7 +225,9 @@ def create_activity_for_email(email_message, activity_type="email_sent"):
         activity_type=activity_type,
         title=title,
         description=email_message.subject,
-        performed_by=email_message.sent_by if hasattr(email_message, "sent_by") else None,
+        performed_by=(
+            email_message.sent_by if hasattr(email_message, "sent_by") else None
+        ),
         metadata={
             "subject": email_message.subject,
             "to": email_message.to_addresses,
@@ -283,7 +289,9 @@ def create_activity_for_appointment(appointment, activity_type="appointment_sche
         activity_type=activity_type,
         title=f"Appointment: {appointment.title}",
         description=f"Scheduled for {appointment.start_datetime}",
-        performed_by=appointment.created_by if hasattr(appointment, "created_by") else None,
+        performed_by=(
+            appointment.created_by if hasattr(appointment, "created_by") else None
+        ),
         metadata={
             "start": str(appointment.start_datetime),
             "end": str(appointment.end_datetime),

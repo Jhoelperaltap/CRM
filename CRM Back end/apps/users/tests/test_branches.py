@@ -30,7 +30,12 @@ class TestBranchList:
 
 class TestBranchCreate:
     def test_admin_can_create_branch(self, admin_client):
-        payload = {"name": "New York Office", "code": "NYC", "city": "New York", "state": "NY"}
+        payload = {
+            "name": "New York Office",
+            "code": "NYC",
+            "city": "New York",
+            "state": "NY",
+        }
         resp = admin_client.post(BRANCHES_URL, payload)
         assert resp.status_code == status.HTTP_201_CREATED
         assert resp.data["name"] == "New York Office"

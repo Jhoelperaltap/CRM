@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0008_add_vtiger_user_fields'),
+        ("users", "0008_add_vtiger_user_fields"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='phone',
-            field=models.CharField(blank=True, default='', max_length=30, verbose_name='office phone'),
+            model_name="user",
+            name="phone",
+            field=models.CharField(
+                blank=True, default="", max_length=30, verbose_name="office phone"
+            ),
         ),
     ]

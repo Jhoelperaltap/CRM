@@ -11,6 +11,7 @@ class _OwnerSummary(serializers.Serializer):
 
 # ── Folders ──────────────────────────────────────────────────────────
 
+
 class ReportFolderSerializer(serializers.ModelSerializer):
     report_count = serializers.SerializerMethodField()
 
@@ -39,9 +40,12 @@ class ReportFolderCreateUpdateSerializer(serializers.ModelSerializer):
 
 # ── Reports ──────────────────────────────────────────────────────────
 
+
 class ReportListSerializer(serializers.ModelSerializer):
     owner_detail = _OwnerSummary(source="owner", read_only=True)
-    folder_name = serializers.CharField(source="folder.name", default="", read_only=True)
+    folder_name = serializers.CharField(
+        source="folder.name", default="", read_only=True
+    )
 
     class Meta:
         model = Report
@@ -121,7 +125,9 @@ class ReportCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_related_modules(self, value):
         if len(value) > 2:
-            raise serializers.ValidationError("A maximum of 2 related modules is allowed.")
+            raise serializers.ValidationError(
+                "A maximum of 2 related modules is allowed."
+            )
         return value
 
     def to_representation(self, instance):

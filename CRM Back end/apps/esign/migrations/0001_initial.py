@@ -11,60 +11,249 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contacts', '0003_contact_custom_fields'),
-        ('documents', '0002_documentfolder_document_folder_documenttag_and_more'),
+        ("contacts", "0003_contact_custom_fields"),
+        ("documents", "0002_documentfolder_document_folder_documenttag_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EsignDocument',
+            name="EsignDocument",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('title', models.CharField(blank=True, default='', max_length=255, verbose_name='title')),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('sent', 'Sent'), ('in_progress', 'In Progress'), ('completed', 'Completed'), ('declined', 'Declined'), ('voided', 'Voided'), ('expired', 'Expired')], db_index=True, default='draft', max_length=20, verbose_name='status')),
-                ('document_source', models.CharField(choices=[('upload', 'Upload File'), ('internal', 'Internal Document'), ('related', 'Related Module')], default='upload', max_length=10, verbose_name='document source')),
-                ('file', models.FileField(blank=True, null=True, upload_to='esign/%Y/%m/', verbose_name='uploaded file')),
-                ('related_module', models.CharField(blank=True, default='', help_text="Module name when source is 'related'.", max_length=50, verbose_name='related module')),
-                ('related_record_id', models.UUIDField(blank=True, null=True, verbose_name='related record ID')),
-                ('email_subject', models.CharField(max_length=255, verbose_name='email subject')),
-                ('email_note', models.TextField(blank=True, default='', verbose_name='email note')),
-                ('sent_at', models.DateTimeField(blank=True, null=True, verbose_name='sent at')),
-                ('completed_at', models.DateTimeField(blank=True, null=True, verbose_name='completed at')),
-                ('expires_at', models.DateTimeField(blank=True, null=True, verbose_name='expires at')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='esign_documents', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
-                ('internal_document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='esign_requests', to='documents.document', verbose_name='internal document')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "title",
+                    models.CharField(
+                        blank=True, default="", max_length=255, verbose_name="title"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("draft", "Draft"),
+                            ("sent", "Sent"),
+                            ("in_progress", "In Progress"),
+                            ("completed", "Completed"),
+                            ("declined", "Declined"),
+                            ("voided", "Voided"),
+                            ("expired", "Expired"),
+                        ],
+                        db_index=True,
+                        default="draft",
+                        max_length=20,
+                        verbose_name="status",
+                    ),
+                ),
+                (
+                    "document_source",
+                    models.CharField(
+                        choices=[
+                            ("upload", "Upload File"),
+                            ("internal", "Internal Document"),
+                            ("related", "Related Module"),
+                        ],
+                        default="upload",
+                        max_length=10,
+                        verbose_name="document source",
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        upload_to="esign/%Y/%m/",
+                        verbose_name="uploaded file",
+                    ),
+                ),
+                (
+                    "related_module",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Module name when source is 'related'.",
+                        max_length=50,
+                        verbose_name="related module",
+                    ),
+                ),
+                (
+                    "related_record_id",
+                    models.UUIDField(
+                        blank=True, null=True, verbose_name="related record ID"
+                    ),
+                ),
+                (
+                    "email_subject",
+                    models.CharField(max_length=255, verbose_name="email subject"),
+                ),
+                (
+                    "email_note",
+                    models.TextField(blank=True, default="", verbose_name="email note"),
+                ),
+                (
+                    "sent_at",
+                    models.DateTimeField(blank=True, null=True, verbose_name="sent at"),
+                ),
+                (
+                    "completed_at",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="completed at"
+                    ),
+                ),
+                (
+                    "expires_at",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="expires at"
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="esign_documents",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
+                (
+                    "internal_document",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="esign_requests",
+                        to="documents.document",
+                        verbose_name="internal document",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'esign document',
-                'verbose_name_plural': 'esign documents',
-                'db_table': 'crm_esign_documents',
-                'ordering': ['-created_at'],
+                "verbose_name": "esign document",
+                "verbose_name_plural": "esign documents",
+                "db_table": "crm_esign_documents",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='EsignSignee',
+            name="EsignSignee",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('order', models.PositiveSmallIntegerField(default=1, verbose_name='signing order')),
-                ('signee_type', models.CharField(choices=[('contact', 'Contact'), ('user', 'User'), ('external', 'External')], default='contact', max_length=10, verbose_name='signee type')),
-                ('recipient_email', models.EmailField(blank=True, default='', max_length=254, verbose_name='recipient email')),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('sent', 'Sent'), ('viewed', 'Viewed'), ('signed', 'Signed'), ('declined', 'Declined')], db_index=True, default='pending', max_length=10, verbose_name='status')),
-                ('signed_at', models.DateTimeField(blank=True, null=True, verbose_name='signed at')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, verbose_name='IP address')),
-                ('contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='esign_signees', to='contacts.contact', verbose_name='contact')),
-                ('esign_document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='signees', to='esign.esigndocument', verbose_name='esign document')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='esign_signees', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "order",
+                    models.PositiveSmallIntegerField(
+                        default=1, verbose_name="signing order"
+                    ),
+                ),
+                (
+                    "signee_type",
+                    models.CharField(
+                        choices=[
+                            ("contact", "Contact"),
+                            ("user", "User"),
+                            ("external", "External"),
+                        ],
+                        default="contact",
+                        max_length=10,
+                        verbose_name="signee type",
+                    ),
+                ),
+                (
+                    "recipient_email",
+                    models.EmailField(
+                        blank=True,
+                        default="",
+                        max_length=254,
+                        verbose_name="recipient email",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("sent", "Sent"),
+                            ("viewed", "Viewed"),
+                            ("signed", "Signed"),
+                            ("declined", "Declined"),
+                        ],
+                        db_index=True,
+                        default="pending",
+                        max_length=10,
+                        verbose_name="status",
+                    ),
+                ),
+                (
+                    "signed_at",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="signed at"
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True, null=True, verbose_name="IP address"
+                    ),
+                ),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="esign_signees",
+                        to="contacts.contact",
+                        verbose_name="contact",
+                    ),
+                ),
+                (
+                    "esign_document",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="signees",
+                        to="esign.esigndocument",
+                        verbose_name="esign document",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="esign_signees",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'esign signee',
-                'verbose_name_plural': 'esign signees',
-                'db_table': 'crm_esign_signees',
-                'ordering': ['order', 'created_at'],
+                "verbose_name": "esign signee",
+                "verbose_name_plural": "esign signees",
+                "db_table": "crm_esign_signees",
+                "ordering": ["order", "created_at"],
             },
         ),
     ]

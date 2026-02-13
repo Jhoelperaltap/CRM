@@ -72,9 +72,7 @@ class TestTemplateItems:
     def test_delete_item(self, admin_client):
         template = ChecklistTemplateFactory()
         item = ChecklistTemplateItemFactory(template=template)
-        resp = admin_client.delete(
-            f"{TEMPLATES_BASE}{template.id}/items/{item.id}/"
-        )
+        resp = admin_client.delete(f"{TEMPLATES_BASE}{template.id}/items/{item.id}/")
         assert resp.status_code == status.HTTP_204_NO_CONTENT
 
 

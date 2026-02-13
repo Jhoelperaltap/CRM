@@ -58,7 +58,9 @@ Do NOT flag as important:
         Returns:
             AgentAction if note should be created, None otherwise
         """
-        self._log("info", f"Analyzing email: {email.subject}", {"email_id": str(email.id)})
+        self._log(
+            "info", f"Analyzing email: {email.subject}", {"email_id": str(email.id)}
+        )
 
         try:
             # Build context for analysis
@@ -86,7 +88,11 @@ Do NOT flag as important:
             # Parse response
             analysis = result.get("content", {})
             if isinstance(analysis, str):
-                self._log("warning", "AI returned non-JSON response", {"response": analysis[:500]})
+                self._log(
+                    "warning",
+                    "AI returned non-JSON response",
+                    {"response": analysis[:500]},
+                )
                 return None
 
             if analysis.get("should_create_note", False):
@@ -95,12 +101,17 @@ Do NOT flag as important:
             self._log(
                 "info",
                 f"Email not flagged for note creation: {email.subject}",
-                {"email_id": str(email.id), "reason": analysis.get("reason", "Not important")},
+                {
+                    "email_id": str(email.id),
+                    "reason": analysis.get("reason", "Not important"),
+                },
             )
             return None
 
         except Exception as e:
-            self._log("error", f"Failed to analyze email: {e}", {"email_id": str(email.id)})
+            self._log(
+                "error", f"Failed to analyze email: {e}", {"email_id": str(email.id)}
+            )
             raise
 
     def _build_email_context(self, email) -> dict[str, Any]:
@@ -111,7 +122,9 @@ Do NOT flag as important:
             "subject": email.subject,
             "body": email.body_text[:3000] if email.body_text else "",
             "received_at": email.received_at.isoformat() if email.received_at else None,
-            "has_attachments": email.attachments.exists() if hasattr(email, "attachments") else False,
+            "has_attachments": (
+                email.attachments.exists() if hasattr(email, "attachments") else False
+            ),
         }
 
         # Add contact info if available
@@ -172,7 +185,9 @@ Respond with JSON containing:
             status=AgentAction.Status.PENDING,
             title=analysis.get("note_title", f"Note from email: {email.subject}"),
             description=analysis.get("note_content", ""),
-            reasoning=analysis.get("reason", "AI determined this email contains important information"),
+            reasoning=analysis.get(
+                "reason", "AI determined this email contains important information"
+            ),
             action_data={
                 "note_title": analysis.get("note_title", ""),
                 "note_content": analysis.get("note_content", ""),
@@ -223,7 +238,9 @@ Respond with JSON containing:
 
                 action.status = AgentAction.Status.EXECUTED
                 action.executed_at = timezone.now()
-                action.execution_result = f"Created note {note.id} for case {action.related_case.case_number}"
+                action.execution_result = (
+                    f"Created note {note.id} for case {action.related_case.case_number}"
+                )
                 action.save()
 
                 self._log(
@@ -241,7 +258,11 @@ Respond with JSON containing:
             action.status = AgentAction.Status.FAILED
             action.error_message = str(e)
             action.save()
-            self._log("error", f"Failed to execute note creation: {e}", {"action_id": str(action.id)})
+            self._log(
+                "error",
+                f"Failed to execute note creation: {e}",
+                {"action_id": str(action.id)},
+            )
 
     def get_unanalyzed_emails(self, limit: int = 50):
         """
@@ -256,7 +277,9 @@ Respond with JSON containing:
         from apps.emails.models import EmailMessage
 
         # Get emails received in the last check interval that don't have agent actions
-        cutoff = timezone.now() - timezone.timedelta(minutes=self.config.email_check_interval_minutes * 2)
+        cutoff = timezone.now() - timezone.timedelta(
+            minutes=self.config.email_check_interval_minutes * 2
+        )
 
         return (
             EmailMessage.objects.filter(

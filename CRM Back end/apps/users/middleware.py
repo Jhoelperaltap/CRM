@@ -21,9 +21,7 @@ def _get_jwt_user_and_token(request):
         return None, None
     try:
         jwt_auth = JWTAuthentication()
-        validated_token = jwt_auth.get_validated_token(
-            auth_header.split(" ", 1)[1]
-        )
+        validated_token = jwt_auth.get_validated_token(auth_header.split(" ", 1)[1])
         user = jwt_auth.get_user(validated_token)
         return user, validated_token
     except Exception:
@@ -169,7 +167,9 @@ class SessionTimeoutMiddleware:
 
                 # Only update last_activity for paths that indicate real user activity
                 # Exclude token refresh and timeout-check endpoints
-                if not any(request.path.startswith(path) for path in self.EXCLUDED_PATHS):
+                if not any(
+                    request.path.startswith(path) for path in self.EXCLUDED_PATHS
+                ):
                     session.save(update_fields=["last_activity"])
 
         return self.get_response(request)

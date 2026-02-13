@@ -108,7 +108,9 @@ class AppointmentCreateUpdateSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        start = data.get("start_datetime", getattr(self.instance, "start_datetime", None))
+        start = data.get(
+            "start_datetime", getattr(self.instance, "start_datetime", None)
+        )
         end = data.get("end_datetime", getattr(self.instance, "end_datetime", None))
         if start and end and end <= start:
             raise serializers.ValidationError(
@@ -116,11 +118,16 @@ class AppointmentCreateUpdateSerializer(serializers.ModelSerializer):
             )
 
         # Double-booking prevention
-        assigned_to = data.get("assigned_to", getattr(self.instance, "assigned_to", None))
-        start = data.get("start_datetime", getattr(self.instance, "start_datetime", None))
+        assigned_to = data.get(
+            "assigned_to", getattr(self.instance, "assigned_to", None)
+        )
+        start = data.get(
+            "start_datetime", getattr(self.instance, "start_datetime", None)
+        )
         end = data.get("end_datetime", getattr(self.instance, "end_datetime", None))
         if assigned_to and start and end:
             from apps.appointments.models import Appointment
+
             overlapping = Appointment.objects.filter(
                 assigned_to=assigned_to,
                 start_datetime__lt=end,
@@ -132,7 +139,9 @@ class AppointmentCreateUpdateSerializer(serializers.ModelSerializer):
                 overlapping = overlapping.exclude(pk=self.instance.pk)
             if overlapping.exists():
                 raise serializers.ValidationError(
-                    {"assigned_to": "This staff member has a conflicting appointment during this time slot."}
+                    {
+                        "assigned_to": "This staff member has a conflicting appointment during this time slot."
+                    }
                 )
 
         return data
@@ -146,12 +155,12 @@ class AppointmentCreateUpdateSerializer(serializers.ModelSerializer):
 # -----------------------------------------------------------------------
 
 STATUS_COLOR_MAP = {
-    "scheduled": "#3b82f6",   # blue
-    "confirmed": "#10b981",   # green
-    "in_progress": "#f59e0b", # yellow
-    "completed": "#6b7280",   # gray
-    "cancelled": "#ef4444",   # red
-    "no_show": "#f97316",     # orange
+    "scheduled": "#3b82f6",  # blue
+    "confirmed": "#10b981",  # green
+    "in_progress": "#f59e0b",  # yellow
+    "completed": "#6b7280",  # gray
+    "cancelled": "#ef4444",  # red
+    "no_show": "#f97316",  # orange
     "checked_in": "#8b5cf6",  # purple
 }
 
@@ -222,6 +231,7 @@ class AppointmentQuickCreateSerializer(serializers.ModelSerializer):
         assigned_to = data.get("assigned_to")
         if assigned_to and start and end:
             from apps.appointments.models import Appointment
+
             overlapping = Appointment.objects.filter(
                 assigned_to=assigned_to,
                 start_datetime__lt=end,
@@ -231,7 +241,9 @@ class AppointmentQuickCreateSerializer(serializers.ModelSerializer):
             )
             if overlapping.exists():
                 raise serializers.ValidationError(
-                    {"assigned_to": "This staff member has a conflicting appointment during this time slot."}
+                    {
+                        "assigned_to": "This staff member has a conflicting appointment during this time slot."
+                    }
                 )
 
         return data

@@ -132,7 +132,14 @@ class CustomFieldAdmin(admin.ModelAdmin):
 
 @admin.register(PicklistValue)
 class PicklistValueAdmin(admin.ModelAdmin):
-    list_display = ["value", "label", "picklist", "sort_order", "is_active", "is_default"]
+    list_display = [
+        "value",
+        "label",
+        "picklist",
+        "sort_order",
+        "is_active",
+        "is_default",
+    ]
     list_filter = ["is_active", "picklist"]
     list_select_related = ["picklist"]
     readonly_fields = ["id", "created_at", "updated_at"]

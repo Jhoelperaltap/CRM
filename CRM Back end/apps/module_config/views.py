@@ -121,9 +121,7 @@ class CustomFieldViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         field_ids = serializer.validated_data["field_ids"]
-        fields = CustomField.objects.filter(
-            module_id=module_pk, id__in=field_ids
-        )
+        fields = CustomField.objects.filter(module_id=module_pk, id__in=field_ids)
         field_map = {f.id: f for f in fields}
 
         for idx, field_id in enumerate(field_ids):
@@ -150,9 +148,7 @@ class PicklistViewSet(viewsets.ModelViewSet):
     ordering = ["name"]
 
     def get_queryset(self):
-        return Picklist.objects.select_related("module").prefetch_related(
-            "values"
-        )
+        return Picklist.objects.select_related("module").prefetch_related("values")
 
     def get_serializer_class(self):
         if self.action in ("create", "update", "partial_update"):
@@ -175,9 +171,7 @@ class PicklistViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         value_ids = serializer.validated_data["value_ids"]
-        values = PicklistValue.objects.filter(
-            picklist_id=pk, id__in=value_ids
-        )
+        values = PicklistValue.objects.filter(picklist_id=pk, id__in=value_ids)
         value_map = {v.id: v for v in values}
 
         for idx, value_id in enumerate(value_ids):
@@ -207,9 +201,7 @@ class PicklistValueViewSet(viewsets.ModelViewSet):
     ordering = ["sort_order", "value"]
 
     def get_queryset(self):
-        return PicklistValue.objects.filter(
-            picklist_id=self.kwargs["picklist_pk"]
-        )
+        return PicklistValue.objects.filter(picklist_id=self.kwargs["picklist_pk"])
 
     def get_serializer_class(self):
         if self.action in ("create", "update", "partial_update"):

@@ -10,38 +10,64 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contacts', '0001_initial'),
-        ('corporations', '0001_initial'),
+        ("contacts", "0001_initial"),
+        ("corporations", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contact',
-            name='corporation',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='contacts', to='corporations.corporation', verbose_name='corporation'),
+            model_name="contact",
+            name="corporation",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="contacts",
+                to="corporations.corporation",
+                verbose_name="corporation",
+            ),
         ),
         migrations.AddField(
-            model_name='contact',
-            name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_contacts', to=settings.AUTH_USER_MODEL, verbose_name='created by'),
+            model_name="contact",
+            name="created_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="created_contacts",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="created by",
+            ),
         ),
         migrations.AddField(
-            model_name='contactstar',
-            name='contact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='stars', to='contacts.contact', verbose_name='contact'),
+            model_name="contactstar",
+            name="contact",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="stars",
+                to="contacts.contact",
+                verbose_name="contact",
+            ),
         ),
         migrations.AddField(
-            model_name='contactstar',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='starred_contacts', to=settings.AUTH_USER_MODEL, verbose_name='user'),
+            model_name="contactstar",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="starred_contacts",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="user",
+            ),
         ),
         migrations.AddIndex(
-            model_name='contact',
-            index=models.Index(fields=['last_name', 'first_name'], name='idx_contact_name'),
+            model_name="contact",
+            index=models.Index(
+                fields=["last_name", "first_name"], name="idx_contact_name"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='contactstar',
-            unique_together={('user', 'contact')},
+            name="contactstar",
+            unique_together={("user", "contact")},
         ),
     ]

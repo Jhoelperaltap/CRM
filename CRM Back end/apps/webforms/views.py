@@ -1,6 +1,7 @@
 """
 Views for Webforms.
 """
+
 from django.db.models import Count
 from django.utils.html import escape
 from rest_framework import viewsets
@@ -20,6 +21,7 @@ from .filters import WebformFilter
 
 class WebformViewSet(viewsets.ModelViewSet):
     """ViewSet for managing webforms."""
+
     permission_classes = [IsAuthenticated, IsAdminRole]
     filterset_class = WebformFilter
     search_fields = ["name", "description"]
@@ -27,15 +29,12 @@ class WebformViewSet(viewsets.ModelViewSet):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return Webform.objects.prefetch_related(
-            "fields",
-            "hidden_fields",
-            "round_robin_users__user"
-        ).select_related(
-            "assigned_to",
-            "created_by"
-        ).annotate(
-            field_count=Count("fields")
+        return (
+            Webform.objects.prefetch_related(
+                "fields", "hidden_fields", "round_robin_users__user"
+            )
+            .select_related("assigned_to", "created_by")
+            .annotate(field_count=Count("fields"))
         )
 
     def get_serializer_class(self):
@@ -62,14 +61,20 @@ class WebformViewSet(viewsets.ModelViewSet):
         for field in webform.fields.filter(is_hidden=False).order_by("sort_order"):
             required = "required" if field.is_mandatory else ""
             field_name_escaped = escape(field.field_name)
-            override_value_escaped = escape(field.override_value) if field.override_value else ""
-            value_attr = f'value="{override_value_escaped}"' if field.override_value else ""
+            override_value_escaped = (
+                escape(field.override_value) if field.override_value else ""
+            )
+            value_attr = (
+                f'value="{override_value_escaped}"' if field.override_value else ""
+            )
             label_text = escape(field.field_name.replace("_", " ").title())
-            fields_html.append(f'''
+            fields_html.append(
+                f"""
     <div class="form-group">
         <label for="{field_name_escaped}">{label_text}{"*" if field.is_mandatory else ""}</label>
         <input type="text" id="{field_name_escaped}" name="{field_name_escaped}" {value_attr} {required}>
-    </div>''')
+    </div>"""
+            )
 
         # Build hidden fields HTML
         # SECURITY: Escape all user-provided content to prevent XSS
@@ -79,25 +84,29 @@ class WebformViewSet(viewsets.ModelViewSet):
             value_escaped = escape(field.override_value) if field.override_value else ""
             param_escaped = escape(field.url_parameter) if field.url_parameter else ""
             if field.url_parameter:
-                hidden_html.append(f'''
-    <input type="hidden" name="{field_name_escaped}" id="hidden_{field_name_escaped}" value="{value_escaped}" data-url-param="{param_escaped}">''')
+                hidden_html.append(
+                    f"""
+    <input type="hidden" name="{field_name_escaped}" id="hidden_{field_name_escaped}" value="{value_escaped}" data-url-param="{param_escaped}">"""
+                )
             else:
-                hidden_html.append(f'''
-    <input type="hidden" name="{field_name_escaped}" value="{value_escaped}">''')
+                hidden_html.append(
+                    f"""
+    <input type="hidden" name="{field_name_escaped}" value="{value_escaped}">"""
+                )
 
         # Captcha placeholder
         captcha_html = ""
         if webform.captcha_enabled:
-            captcha_html = '''
+            captcha_html = """
     <div class="captcha-container">
         <!-- Add your captcha implementation here -->
         <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
-    </div>'''
+    </div>"""
 
         # Build complete HTML
         # SECURITY: Escape webform name in title
         webform_name_escaped = escape(webform.name)
-        html = f'''<!DOCTYPE html>
+        html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -166,6 +175,6 @@ class WebformViewSet(viewsets.ModelViewSet):
         }});
     </script>
 </body>
-</html>'''
+</html>"""
 
         return Response({"html": html})

@@ -48,7 +48,11 @@ class TestNotificationActions:
         resp = authenticated_client.post(f"{NOTIFICATIONS_BASE}mark-all-read/")
         assert resp.status_code == status.HTTP_200_OK
         from apps.notifications.models import Notification
-        assert Notification.objects.filter(recipient=preparer_user, is_read=False).count() == 0
+
+        assert (
+            Notification.objects.filter(recipient=preparer_user, is_read=False).count()
+            == 0
+        )
 
     def test_unread_count(self, authenticated_client, preparer_user):
         NotificationFactory.create_batch(3, recipient=preparer_user, is_read=False)

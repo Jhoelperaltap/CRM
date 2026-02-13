@@ -78,7 +78,14 @@ class PreparerReportView(APIView):
         if request.query_params.get("export") == "csv":
             return export_to_csv(
                 data,
-                ["preparer_name", "assigned", "completed", "completion_rate", "revenue_estimated", "revenue_actual"],
+                [
+                    "preparer_name",
+                    "assigned",
+                    "completed",
+                    "completion_rate",
+                    "revenue_estimated",
+                    "revenue_actual",
+                ],
                 "preparer_report.csv",
             )
 

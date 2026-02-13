@@ -80,11 +80,28 @@ class JsonFormatter(logging.Formatter):
         extra_fields = {}
         for key, value in record.__dict__.items():
             if key not in (
-                "name", "msg", "args", "created", "filename", "funcName",
-                "levelname", "levelno", "lineno", "module", "msecs",
-                "pathname", "process", "processName", "relativeCreated",
-                "stack_info", "exc_info", "exc_text", "thread", "threadName",
-                "message", "asctime",
+                "name",
+                "msg",
+                "args",
+                "created",
+                "filename",
+                "funcName",
+                "levelname",
+                "levelno",
+                "lineno",
+                "module",
+                "msecs",
+                "pathname",
+                "process",
+                "processName",
+                "relativeCreated",
+                "stack_info",
+                "exc_info",
+                "exc_text",
+                "thread",
+                "threadName",
+                "message",
+                "asctime",
             ):
                 try:
                     # Ensure value is JSON serializable
@@ -143,11 +160,15 @@ class RequestLogMiddleware:
         duration_ms = (time.time() - start_time) * 1000
 
         # Add response info
-        request_data.update({
-            "status_code": response.status_code,
-            "duration_ms": round(duration_ms, 2),
-            "user_id": str(request.user.id) if request.user.is_authenticated else None,
-        })
+        request_data.update(
+            {
+                "status_code": response.status_code,
+                "duration_ms": round(duration_ms, 2),
+                "user_id": (
+                    str(request.user.id) if request.user.is_authenticated else None
+                ),
+            }
+        )
 
         # Log based on status code
         if response.status_code >= 500:
@@ -250,7 +271,7 @@ class SecurityEvent:
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
         level: str = "INFO",
-        **extra
+        **extra,
     ):
         """
         Log a security event with consistent structure.
@@ -412,7 +433,7 @@ class SecurityEventLogger:
         email: Optional[str] = None,
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
-        **extra
+        **extra,
     ):
         """
         Internal method to log a security event with full context.
@@ -460,7 +481,7 @@ class SecurityEventLogger:
         email: str,
         ip_address: str,
         user_agent: Optional[str] = None,
-        **extra
+        **extra,
     ):
         """Log successful login attempt."""
         # Clear failed login counters on success
@@ -483,7 +504,7 @@ class SecurityEventLogger:
         ip_address: str,
         user_agent: Optional[str] = None,
         reason: str = "invalid_credentials",
-        **extra
+        **extra,
     ):
         """
         Log failed login attempt and detect suspicious patterns.
@@ -502,21 +523,23 @@ class SecurityEventLogger:
 
         # Track different IPs trying the same email (distributed attack)
         email_ips_key = self._get_cache_key("login_attempts_email", email)
-        self._add_to_set(email_ips_key, ip_address,
-                        self.DISTRIBUTED_ATTACK_WINDOW_MINUTES * 60)
+        self._add_to_set(
+            email_ips_key, ip_address, self.DISTRIBUTED_ATTACK_WINDOW_MINUTES * 60
+        )
         unique_ips = self._get_set_size(email_ips_key)
 
         # Track different emails from the same IP (account enumeration)
         ip_emails_key = self._get_cache_key("login_attempts_ip", ip_address)
-        self._add_to_set(ip_emails_key, email,
-                        self.ACCOUNT_ENUMERATION_WINDOW_MINUTES * 60)
+        self._add_to_set(
+            ip_emails_key, email, self.ACCOUNT_ENUMERATION_WINDOW_MINUTES * 60
+        )
         unique_emails = self._get_set_size(ip_emails_key)
 
         # Detect suspicious patterns
         is_suspicious = (
-            failed_count >= self.FAILED_LOGIN_THRESHOLD or
-            unique_ips >= self.DISTRIBUTED_ATTACK_THRESHOLD or
-            unique_emails >= self.ACCOUNT_ENUMERATION_THRESHOLD
+            failed_count >= self.FAILED_LOGIN_THRESHOLD
+            or unique_ips >= self.DISTRIBUTED_ATTACK_THRESHOLD
+            or unique_emails >= self.ACCOUNT_ENUMERATION_THRESHOLD
         )
 
         extra_context = {
@@ -555,7 +578,7 @@ class SecurityEventLogger:
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
         reason: str = "too_many_failed_attempts",
-        **extra
+        **extra,
     ):
         """Log account lockout event."""
         self._log_event(
@@ -575,7 +598,7 @@ class SecurityEventLogger:
         email: str,
         ip_address: str,
         user_agent: Optional[str] = None,
-        **extra
+        **extra,
     ):
         """Log password change event."""
         self._log_event(
@@ -595,7 +618,7 @@ class SecurityEventLogger:
         ip_address: str,
         user_agent: Optional[str] = None,
         method: str = "totp",
-        **extra
+        **extra,
     ):
         """Log two-factor authentication enabled event."""
         self._log_event(
@@ -619,7 +642,7 @@ class SecurityEventLogger:
         action: str,
         ip_address: str,
         user_agent: Optional[str] = None,
-        **extra
+        **extra,
     ):
         """
         Log permission denied event.
@@ -652,7 +675,7 @@ class SecurityEventLogger:
         email: Optional[str] = None,
         user_id: Optional[str] = None,
         user_agent: Optional[str] = None,
-        **extra
+        **extra,
     ):
         """
         Log suspicious activity detection.
@@ -679,10 +702,7 @@ class SecurityEventLogger:
     # Pattern Detection Methods
 
     def _build_suspicious_activity_description(
-        self,
-        failed_attempts: int,
-        unique_ips: int,
-        unique_emails: int
+        self, failed_attempts: int, unique_ips: int, unique_emails: int
     ) -> str:
         """Build a description of suspicious activity based on metrics."""
         patterns = []
@@ -693,9 +713,7 @@ class SecurityEventLogger:
             )
 
         if unique_ips >= self.DISTRIBUTED_ATTACK_THRESHOLD:
-            patterns.append(
-                f"Distributed attack detected ({unique_ips} different IPs)"
-            )
+            patterns.append(f"Distributed attack detected ({unique_ips} different IPs)")
 
         if unique_emails >= self.ACCOUNT_ENUMERATION_THRESHOLD:
             patterns.append(
@@ -705,9 +723,7 @@ class SecurityEventLogger:
         return "; ".join(patterns)
 
     def is_suspicious_activity(
-        self,
-        ip_address: Optional[str] = None,
-        email: Optional[str] = None
+        self, ip_address: Optional[str] = None, email: Optional[str] = None
     ) -> bool:
         """
         Check if there is suspicious activity for an IP or email.
@@ -726,8 +742,10 @@ class SecurityEventLogger:
             ip_emails_key = self._get_cache_key("login_attempts_ip", ip_address)
             unique_emails = self._get_set_size(ip_emails_key)
 
-            if (failed_count >= self.FAILED_LOGIN_THRESHOLD or
-                unique_emails >= self.ACCOUNT_ENUMERATION_THRESHOLD):
+            if (
+                failed_count >= self.FAILED_LOGIN_THRESHOLD
+                or unique_emails >= self.ACCOUNT_ENUMERATION_THRESHOLD
+            ):
                 return True
 
         if email:

@@ -15,9 +15,9 @@ def case_pre_save(sender, instance, **kwargs):
     """Capture old status before save for change detection."""
     if instance.pk:
         try:
-            instance._old_status = sender.objects.values_list(
-                "status", flat=True
-            ).get(pk=instance.pk)
+            instance._old_status = sender.objects.values_list("status", flat=True).get(
+                pk=instance.pk
+            )
         except sender.DoesNotExist:
             instance._old_status = None
     else:

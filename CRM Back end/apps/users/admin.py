@@ -20,7 +20,15 @@ from apps.users.models import (
 class ModulePermissionInline(admin.TabularInline):
     model = ModulePermission
     extra = 0
-    fields = ("module", "can_view", "can_create", "can_edit", "can_delete", "can_export", "can_import")
+    fields = (
+        "module",
+        "can_view",
+        "can_create",
+        "can_edit",
+        "can_delete",
+        "can_export",
+        "can_import",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -52,7 +60,14 @@ class ModulePermissionAdmin(admin.ModelAdmin):
         "can_import",
     )
     list_filter = ("role", "module")
-    list_editable = ("can_view", "can_create", "can_edit", "can_delete", "can_export", "can_import")
+    list_editable = (
+        "can_view",
+        "can_create",
+        "can_edit",
+        "can_delete",
+        "can_export",
+        "can_import",
+    )
     readonly_fields = ("id",)
 
 
@@ -78,7 +93,10 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = (
         (None, {"fields": ("id", "email", "username", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "phone", "avatar")}),
+        (
+            _("Personal info"),
+            {"fields": ("first_name", "last_name", "phone", "avatar")},
+        ),
         (_("Role"), {"fields": ("role",)}),
         (
             _("Permissions"),
@@ -144,10 +162,21 @@ class UserGroupAdmin(admin.ModelAdmin):
 # ---------------------------------------------------------------------------
 @admin.register(SharingRule)
 class SharingRuleAdmin(admin.ModelAdmin):
-    list_display = ("module", "default_access", "share_type", "access_level", "is_active")
+    list_display = (
+        "module",
+        "default_access",
+        "share_type",
+        "access_level",
+        "is_active",
+    )
     list_filter = ("module", "share_type", "is_active")
     readonly_fields = ("id", "created_at")
-    raw_id_fields = ("shared_from_role", "shared_to_role", "shared_from_group", "shared_to_group")
+    raw_id_fields = (
+        "shared_from_role",
+        "shared_to_role",
+        "shared_from_group",
+        "shared_to_group",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -175,7 +204,14 @@ class AuthenticationPolicyAdmin(admin.ModelAdmin):
 # ---------------------------------------------------------------------------
 @admin.register(LoginIPWhitelist)
 class LoginIPWhitelistAdmin(admin.ModelAdmin):
-    list_display = ("ip_address", "cidr_prefix", "role", "user", "is_active", "created_at")
+    list_display = (
+        "ip_address",
+        "cidr_prefix",
+        "role",
+        "user",
+        "is_active",
+        "created_at",
+    )
     list_filter = ("is_active", "role")
     search_fields = ("ip_address", "description")
     readonly_fields = ("id", "created_at")

@@ -1,6 +1,7 @@
 """
 Admin configuration for Webforms.
 """
+
 from django.contrib import admin
 
 from .models import Webform, WebformField, WebformHiddenField, WebformRoundRobinUser
@@ -52,19 +53,16 @@ class WebformAdmin(admin.ModelAdmin):
         WebformRoundRobinUserInline,
     ]
     fieldsets = (
-        (None, {
-            "fields": ("name", "primary_module", "description", "is_active")
-        }),
-        ("Configuration", {
-            "fields": ("return_url", "captcha_enabled")
-        }),
-        ("Assignment", {
-            "fields": ("assigned_to", "round_robin_enabled")
-        }),
-        ("Metadata", {
-            "fields": ("created_by", "created_at", "updated_at"),
-            "classes": ("collapse",)
-        }),
+        (None, {"fields": ("name", "primary_module", "description", "is_active")}),
+        ("Configuration", {"fields": ("return_url", "captcha_enabled")}),
+        ("Assignment", {"fields": ("assigned_to", "round_robin_enabled")}),
+        (
+            "Metadata",
+            {
+                "fields": ("created_by", "created_at", "updated_at"),
+                "classes": ("collapse",),
+            },
+        ),
     )
 
     def save_model(self, request, obj, form, change):

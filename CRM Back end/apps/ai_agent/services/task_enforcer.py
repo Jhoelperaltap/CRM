@@ -60,14 +60,19 @@ class TaskEnforcer:
             # Send reminder if 1+ days overdue and no recent reminder
             elif days_overdue >= 1:
                 if not self._has_recent_reminder(task, hours=24):
-                    action = self._create_reminder_action(task, days_overdue, is_overdue=True)
+                    action = self._create_reminder_action(
+                        task, days_overdue, is_overdue=True
+                    )
                     if action:
                         created_actions.append(action)
 
         self._log(
             "info",
             f"Checked {overdue_tasks.count()} overdue tasks, created {len(created_actions)} actions",
-            {"overdue_count": overdue_tasks.count(), "actions_created": len(created_actions)},
+            {
+                "overdue_count": overdue_tasks.count(),
+                "actions_created": len(created_actions),
+            },
         )
 
         return created_actions
@@ -96,14 +101,19 @@ class TaskEnforcer:
         for task in upcoming_tasks:
             if not self._has_upcoming_reminder(task):
                 hours_until = ((task.due_date - now.date()).days * 24) + (24 - now.hour)
-                action = self._create_reminder_action(task, hours_until, is_overdue=False)
+                action = self._create_reminder_action(
+                    task, hours_until, is_overdue=False
+                )
                 if action:
                     created_actions.append(action)
 
         self._log(
             "info",
             f"Checked {upcoming_tasks.count()} upcoming tasks, created {len(created_actions)} reminders",
-            {"upcoming_count": upcoming_tasks.count(), "actions_created": len(created_actions)},
+            {
+                "upcoming_count": upcoming_tasks.count(),
+                "actions_created": len(created_actions),
+            },
         )
 
         return created_actions
@@ -167,8 +177,12 @@ class TaskEnforcer:
                     "time_unit": time_unit,
                     "urgency": urgency,
                     "due_date": task.due_date.isoformat(),
-                    "assigned_to_id": str(task.assigned_to.id) if task.assigned_to else None,
-                    "assigned_to_email": task.assigned_to.email if task.assigned_to else None,
+                    "assigned_to_id": (
+                        str(task.assigned_to.id) if task.assigned_to else None
+                    ),
+                    "assigned_to_email": (
+                        task.assigned_to.email if task.assigned_to else None
+                    ),
                     "message": message,
                 },
                 related_task=task,
@@ -194,7 +208,11 @@ class TaskEnforcer:
             return action
 
         except Exception as e:
-            self._log("error", f"Failed to create task reminder: {e}", {"task_id": str(task.id)})
+            self._log(
+                "error",
+                f"Failed to create task reminder: {e}",
+                {"task_id": str(task.id)},
+            )
             return None
 
     @transaction.atomic
@@ -218,8 +236,12 @@ class TaskEnforcer:
                     "task_title": task.title,
                     "days_overdue": days_overdue,
                     "due_date": task.due_date.isoformat(),
-                    "assigned_to_id": str(task.assigned_to.id) if task.assigned_to else None,
-                    "assigned_to_name": task.assigned_to.get_full_name() if task.assigned_to else None,
+                    "assigned_to_id": (
+                        str(task.assigned_to.id) if task.assigned_to else None
+                    ),
+                    "assigned_to_name": (
+                        task.assigned_to.get_full_name() if task.assigned_to else None
+                    ),
                     "escalate_to_id": str(escalate_to.id) if escalate_to else None,
                     "escalate_to_email": escalate_to.email if escalate_to else None,
                     "message": message,
@@ -248,7 +270,11 @@ class TaskEnforcer:
             return action
 
         except Exception as e:
-            self._log("error", f"Failed to create task escalation: {e}", {"task_id": str(task.id)})
+            self._log(
+                "error",
+                f"Failed to create task escalation: {e}",
+                {"task_id": str(task.id)},
+            )
             return None
 
     def _build_reminder_message(self, task, time_value: int, is_overdue: bool) -> str:
@@ -275,9 +301,7 @@ Details:
             message += f"\nDescription:\n{task.description[:500]}\n"
 
         if task.contact:
-            message += (
-                f"\nRelated Contact: {task.contact.first_name} {task.contact.last_name}\n"
-            )
+            message += f"\nRelated Contact: {task.contact.first_name} {task.contact.last_name}\n"
 
         if task.case:
             message += f"Related Case: {task.case.case_number}\n"
@@ -318,12 +342,14 @@ Task Details:
         # First, try the assigned user's manager if we have that relationship
         # Otherwise, find any admin user
 
-        admin_users = User.objects.filter(
-            Q(is_superuser=True) | Q(role__slug="admin"),
-            is_active=True,
-        ).exclude(
-            id=task.assigned_to.id if task.assigned_to else None
-        ).first()
+        admin_users = (
+            User.objects.filter(
+                Q(is_superuser=True) | Q(role__slug="admin"),
+                is_active=True,
+            )
+            .exclude(id=task.assigned_to.id if task.assigned_to else None)
+            .first()
+        )
 
         return admin_users
 
@@ -340,7 +366,9 @@ Task Details:
                     notification_type="task_reminder",
                     title=action.title,
                     message=reminder_data.get("message", "")[:500],
-                    severity="warning" if reminder_data.get("urgency") == "high" else "info",
+                    severity=(
+                        "warning" if reminder_data.get("urgency") == "high" else "info"
+                    ),
                     related_object=action.related_task,
                 )
 
@@ -349,13 +377,22 @@ Task Details:
             action.execution_result = "Sent task reminder notification"
             action.save()
 
-            self._log("info", f"Executed task reminder: {action.title}", {"action_id": str(action.id)}, action=action)
+            self._log(
+                "info",
+                f"Executed task reminder: {action.title}",
+                {"action_id": str(action.id)},
+                action=action,
+            )
 
         except Exception as e:
             action.status = AgentAction.Status.FAILED
             action.error_message = str(e)
             action.save()
-            self._log("error", f"Failed to execute task reminder: {e}", {"action_id": str(action.id)})
+            self._log(
+                "error",
+                f"Failed to execute task reminder: {e}",
+                {"action_id": str(action.id)},
+            )
 
     def _execute_escalation(self, action: AgentAction):
         """Execute the escalation action."""
@@ -394,13 +431,22 @@ Task Details:
             action.execution_result = "Sent escalation notifications"
             action.save()
 
-            self._log("info", f"Executed task escalation: {action.title}", {"action_id": str(action.id)}, action=action)
+            self._log(
+                "info",
+                f"Executed task escalation: {action.title}",
+                {"action_id": str(action.id)},
+                action=action,
+            )
 
         except Exception as e:
             action.status = AgentAction.Status.FAILED
             action.error_message = str(e)
             action.save()
-            self._log("error", f"Failed to execute escalation: {e}", {"action_id": str(action.id)})
+            self._log(
+                "error",
+                f"Failed to execute escalation: {e}",
+                {"action_id": str(action.id)},
+            )
 
     def get_task_status_summary(self) -> dict[str, Any]:
         """Get summary of task statuses for monitoring."""
@@ -410,8 +456,12 @@ Task Details:
         today = now.date()
 
         total = Task.objects.filter(status__in=["todo", "in_progress"]).count()
-        overdue = Task.objects.filter(due_date__lt=today, status__in=["todo", "in_progress"]).count()
-        due_today = Task.objects.filter(due_date=today, status__in=["todo", "in_progress"]).count()
+        overdue = Task.objects.filter(
+            due_date__lt=today, status__in=["todo", "in_progress"]
+        ).count()
+        due_today = Task.objects.filter(
+            due_date=today, status__in=["todo", "in_progress"]
+        ).count()
         due_this_week = Task.objects.filter(
             due_date__gt=today,
             due_date__lte=today + timedelta(days=7),

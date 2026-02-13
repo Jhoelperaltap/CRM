@@ -62,7 +62,9 @@ class TestDoubleBookingPrevention:
                 "contact": str(contact.id),
                 "assigned_to": str(admin_user.id),
                 "start_datetime": (end + datetime.timedelta(minutes=15)).isoformat(),
-                "end_datetime": (end + datetime.timedelta(hours=1, minutes=15)).isoformat(),
+                "end_datetime": (
+                    end + datetime.timedelta(hours=1, minutes=15)
+                ).isoformat(),
                 "location": "office",
             },
             format="json",

@@ -31,15 +31,12 @@ class BusinessHoursViewSet(viewsets.ModelViewSet):
     ordering = ["-is_default", "name"]
 
     def get_queryset(self):
-        return (
-            BusinessHours.objects.prefetch_related(
-                "working_days__intervals",
-                "holidays",
-            )
-            .annotate(
-                working_day_count=Count("working_days", distinct=True),
-                holiday_count=Count("holidays", distinct=True),
-            )
+        return BusinessHours.objects.prefetch_related(
+            "working_days__intervals",
+            "holidays",
+        ).annotate(
+            working_day_count=Count("working_days", distinct=True),
+            holiday_count=Count("holidays", distinct=True),
         )
 
     def get_serializer_class(self):

@@ -5,7 +5,12 @@ from django.db import connection
 from tests.factories import ContactFactory, CorporationFactory
 
 import apps.core.encryption as encryption_module
-from apps.core.encryption import decrypt_value, encrypt_value, generate_encryption_key, _NOT_INITIALIZED
+from apps.core.encryption import (
+    decrypt_value,
+    encrypt_value,
+    generate_encryption_key,
+    _NOT_INITIALIZED,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -123,9 +128,7 @@ class TestEncryptedCharField:
             row = cursor.fetchone()
             if row is None:
                 # Fallback: try without CAST (some DB backends)
-                cursor.execute(
-                    "SELECT ssn_last_four FROM crm_contacts LIMIT 1"
-                )
+                cursor.execute("SELECT ssn_last_four FROM crm_contacts LIMIT 1")
                 row = cursor.fetchone()
             raw_value = row[0]
         assert raw_value != "1234"

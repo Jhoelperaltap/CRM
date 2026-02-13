@@ -11,75 +11,374 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('cases', '0003_taxcase_custom_fields'),
-        ('contacts', '0003_contact_custom_fields'),
-        ('corporations', '0002_corporation_custom_fields'),
+        ("cases", "0003_taxcase_custom_fields"),
+        ("contacts", "0003_contact_custom_fields"),
+        ("corporations", "0002_corporation_custom_fields"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Quote',
+            name="Quote",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('quote_number', models.CharField(db_index=True, max_length=20, unique=True, verbose_name='quote number')),
-                ('subject', models.CharField(max_length=255, verbose_name='subject')),
-                ('stage', models.CharField(choices=[('draft', 'Draft'), ('sent', 'Sent'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('expired', 'Expired')], db_index=True, default='draft', max_length=20, verbose_name='stage')),
-                ('valid_until', models.DateField(blank=True, null=True, verbose_name='valid until')),
-                ('billing_street', models.CharField(blank=True, default='', max_length=255, verbose_name='billing street')),
-                ('billing_city', models.CharField(blank=True, default='', max_length=100, verbose_name='billing city')),
-                ('billing_state', models.CharField(blank=True, default='', max_length=100, verbose_name='billing state')),
-                ('billing_zip', models.CharField(blank=True, default='', max_length=20, verbose_name='billing zip')),
-                ('billing_country', models.CharField(blank=True, default='United States', max_length=100, verbose_name='billing country')),
-                ('shipping_street', models.CharField(blank=True, default='', max_length=255, verbose_name='shipping street')),
-                ('shipping_city', models.CharField(blank=True, default='', max_length=100, verbose_name='shipping city')),
-                ('shipping_state', models.CharField(blank=True, default='', max_length=100, verbose_name='shipping state')),
-                ('shipping_zip', models.CharField(blank=True, default='', max_length=20, verbose_name='shipping zip')),
-                ('shipping_country', models.CharField(blank=True, default='United States', max_length=100, verbose_name='shipping country')),
-                ('subtotal', models.DecimalField(decimal_places=2, default=0, max_digits=12, verbose_name='subtotal')),
-                ('discount_percent', models.DecimalField(decimal_places=2, default=0, max_digits=5, verbose_name='discount percent')),
-                ('discount_amount', models.DecimalField(decimal_places=2, default=0, max_digits=12, verbose_name='discount amount')),
-                ('tax_percent', models.DecimalField(decimal_places=2, default=0, max_digits=5, verbose_name='tax percent')),
-                ('tax_amount', models.DecimalField(decimal_places=2, default=0, max_digits=12, verbose_name='tax amount')),
-                ('total', models.DecimalField(decimal_places=2, default=0, max_digits=12, verbose_name='total')),
-                ('custom_fields', models.JSONField(blank=True, default=dict, verbose_name='custom fields')),
-                ('terms_conditions', models.TextField(blank=True, default='', verbose_name='terms & conditions')),
-                ('description', models.TextField(blank=True, default='', verbose_name='description')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_quotes', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
-                ('case', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quotes', to='cases.taxcase', verbose_name='case')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='quotes', to='contacts.contact', verbose_name='contact')),
-                ('corporation', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quotes', to='corporations.corporation', verbose_name='corporation')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_quotes', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "quote_number",
+                    models.CharField(
+                        db_index=True,
+                        max_length=20,
+                        unique=True,
+                        verbose_name="quote number",
+                    ),
+                ),
+                ("subject", models.CharField(max_length=255, verbose_name="subject")),
+                (
+                    "stage",
+                    models.CharField(
+                        choices=[
+                            ("draft", "Draft"),
+                            ("sent", "Sent"),
+                            ("accepted", "Accepted"),
+                            ("rejected", "Rejected"),
+                            ("expired", "Expired"),
+                        ],
+                        db_index=True,
+                        default="draft",
+                        max_length=20,
+                        verbose_name="stage",
+                    ),
+                ),
+                (
+                    "valid_until",
+                    models.DateField(blank=True, null=True, verbose_name="valid until"),
+                ),
+                (
+                    "billing_street",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="billing street",
+                    ),
+                ),
+                (
+                    "billing_city",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="billing city",
+                    ),
+                ),
+                (
+                    "billing_state",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="billing state",
+                    ),
+                ),
+                (
+                    "billing_zip",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=20,
+                        verbose_name="billing zip",
+                    ),
+                ),
+                (
+                    "billing_country",
+                    models.CharField(
+                        blank=True,
+                        default="United States",
+                        max_length=100,
+                        verbose_name="billing country",
+                    ),
+                ),
+                (
+                    "shipping_street",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="shipping street",
+                    ),
+                ),
+                (
+                    "shipping_city",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="shipping city",
+                    ),
+                ),
+                (
+                    "shipping_state",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="shipping state",
+                    ),
+                ),
+                (
+                    "shipping_zip",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=20,
+                        verbose_name="shipping zip",
+                    ),
+                ),
+                (
+                    "shipping_country",
+                    models.CharField(
+                        blank=True,
+                        default="United States",
+                        max_length=100,
+                        verbose_name="shipping country",
+                    ),
+                ),
+                (
+                    "subtotal",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=12,
+                        verbose_name="subtotal",
+                    ),
+                ),
+                (
+                    "discount_percent",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=5,
+                        verbose_name="discount percent",
+                    ),
+                ),
+                (
+                    "discount_amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=12,
+                        verbose_name="discount amount",
+                    ),
+                ),
+                (
+                    "tax_percent",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=5,
+                        verbose_name="tax percent",
+                    ),
+                ),
+                (
+                    "tax_amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=12,
+                        verbose_name="tax amount",
+                    ),
+                ),
+                (
+                    "total",
+                    models.DecimalField(
+                        decimal_places=2, default=0, max_digits=12, verbose_name="total"
+                    ),
+                ),
+                (
+                    "custom_fields",
+                    models.JSONField(
+                        blank=True, default=dict, verbose_name="custom fields"
+                    ),
+                ),
+                (
+                    "terms_conditions",
+                    models.TextField(
+                        blank=True, default="", verbose_name="terms & conditions"
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_quotes",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
+                (
+                    "case",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="quotes",
+                        to="cases.taxcase",
+                        verbose_name="case",
+                    ),
+                ),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="quotes",
+                        to="contacts.contact",
+                        verbose_name="contact",
+                    ),
+                ),
+                (
+                    "corporation",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="quotes",
+                        to="corporations.corporation",
+                        verbose_name="corporation",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_quotes",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'quote',
-                'verbose_name_plural': 'quotes',
-                'db_table': 'crm_quotes',
-                'ordering': ['-created_at'],
+                "verbose_name": "quote",
+                "verbose_name_plural": "quotes",
+                "db_table": "crm_quotes",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='QuoteLineItem',
+            name="QuoteLineItem",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('service_type', models.CharField(choices=[('individual_1040', 'Individual (1040)'), ('corporate_1120', 'Corporate (1120)'), ('s_corp_1120s', 'S-Corp (1120-S)'), ('partnership_1065', 'Partnership (1065)'), ('nonprofit_990', 'Nonprofit (990)'), ('trust_1041', 'Trust (1041)'), ('payroll', 'Payroll'), ('sales_tax', 'Sales Tax'), ('bookkeeping', 'Bookkeeping'), ('consulting', 'Consulting'), ('amendment', 'Amendment'), ('other', 'Other')], default='other', max_length=30, verbose_name='service type')),
-                ('description', models.CharField(blank=True, default='', max_length=255, verbose_name='description')),
-                ('quantity', models.DecimalField(decimal_places=2, default=1, max_digits=10, verbose_name='quantity')),
-                ('unit_price', models.DecimalField(decimal_places=2, default=0, max_digits=12, verbose_name='unit price')),
-                ('discount_percent', models.DecimalField(decimal_places=2, default=0, max_digits=5, verbose_name='discount percent')),
-                ('total', models.DecimalField(decimal_places=2, default=0, max_digits=12, verbose_name='total')),
-                ('sort_order', models.IntegerField(default=0, verbose_name='sort order')),
-                ('quote', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='line_items', to='quotes.quote', verbose_name='quote')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "service_type",
+                    models.CharField(
+                        choices=[
+                            ("individual_1040", "Individual (1040)"),
+                            ("corporate_1120", "Corporate (1120)"),
+                            ("s_corp_1120s", "S-Corp (1120-S)"),
+                            ("partnership_1065", "Partnership (1065)"),
+                            ("nonprofit_990", "Nonprofit (990)"),
+                            ("trust_1041", "Trust (1041)"),
+                            ("payroll", "Payroll"),
+                            ("sales_tax", "Sales Tax"),
+                            ("bookkeeping", "Bookkeeping"),
+                            ("consulting", "Consulting"),
+                            ("amendment", "Amendment"),
+                            ("other", "Other"),
+                        ],
+                        default="other",
+                        max_length=30,
+                        verbose_name="service type",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="description",
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=1,
+                        max_digits=10,
+                        verbose_name="quantity",
+                    ),
+                ),
+                (
+                    "unit_price",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=12,
+                        verbose_name="unit price",
+                    ),
+                ),
+                (
+                    "discount_percent",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        max_digits=5,
+                        verbose_name="discount percent",
+                    ),
+                ),
+                (
+                    "total",
+                    models.DecimalField(
+                        decimal_places=2, default=0, max_digits=12, verbose_name="total"
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(default=0, verbose_name="sort order"),
+                ),
+                (
+                    "quote",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="line_items",
+                        to="quotes.quote",
+                        verbose_name="quote",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'quote line item',
-                'verbose_name_plural': 'quote line items',
-                'db_table': 'crm_quote_line_items',
-                'ordering': ['sort_order', 'created_at'],
+                "verbose_name": "quote line item",
+                "verbose_name_plural": "quote line items",
+                "db_table": "crm_quote_line_items",
+                "ordering": ["sort_order", "created_at"],
             },
         ),
     ]

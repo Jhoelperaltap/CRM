@@ -5,6 +5,7 @@ from apps.esign.models import EsignDocument, EsignSignee
 
 # ── Signee ──────────────────────────────────────────────────────────────
 
+
 class EsignSigneeSerializer(serializers.ModelSerializer):
     contact_name = serializers.SerializerMethodField()
 
@@ -44,6 +45,7 @@ class EsignSigneeWriteSerializer(serializers.ModelSerializer):
 
 
 # ── Document ────────────────────────────────────────────────────────────
+
 
 class EsignDocumentListSerializer(serializers.ModelSerializer):
     created_by_name = serializers.SerializerMethodField()

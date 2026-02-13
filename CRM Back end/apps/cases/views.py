@@ -78,7 +78,9 @@ class TaxCaseViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         if instance.is_locked:
             return Response(
-                {"detail": f"Cannot edit a case in '{instance.get_status_display()}' status. Only status transitions are allowed."},
+                {
+                    "detail": f"Cannot edit a case in '{instance.get_status_display()}' status. Only status transitions are allowed."
+                },
                 status=status.HTTP_403_FORBIDDEN,
             )
         return super().update(request, *args, **kwargs)
@@ -87,7 +89,9 @@ class TaxCaseViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         if instance.is_locked:
             return Response(
-                {"detail": f"Cannot edit a case in '{instance.get_status_display()}' status. Only status transitions are allowed."},
+                {
+                    "detail": f"Cannot edit a case in '{instance.get_status_display()}' status. Only status transitions are allowed."
+                },
                 status=status.HTTP_403_FORBIDDEN,
             )
         return super().partial_update(request, *args, **kwargs)
@@ -112,7 +116,11 @@ class TaxCaseViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
-    @action(detail=True, methods=["get", "post"], url_path="checklist(?:/items/(?P<item_id>[^/.]+)/toggle)?")
+    @action(
+        detail=True,
+        methods=["get", "post"],
+        url_path="checklist(?:/items/(?P<item_id>[^/.]+)/toggle)?",
+    )
     def checklist(self, request, pk=None, item_id=None):
         """Get case checklist or toggle an item."""
         checklist_vs = CaseChecklistViewSet()

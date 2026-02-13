@@ -7,50 +7,163 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('emails', '0001_initial'),
+        ("emails", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EmailSettings',
+            name="EmailSettings",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('server_type', models.CharField(choices=[('gmail', 'Gmail'), ('gsuite', 'GSuite'), ('office365', 'Microsoft / Office365'), ('yahoo', 'Yahoo'), ('custom', 'Custom SMTP'), ('other', 'Others')], default='custom', max_length=20)),
-                ('smtp_host', models.CharField(blank=True, default='', max_length=255)),
-                ('smtp_port', models.PositiveIntegerField(default=587)),
-                ('smtp_username', models.CharField(blank=True, default='', max_length=255)),
-                ('smtp_password', models.CharField(blank=True, default='', max_length=255)),
-                ('smtp_use_tls', models.BooleanField(default=True)),
-                ('email_tracking_enabled', models.BooleanField(default=True)),
-                ('include_email_footer', models.BooleanField(default=True)),
-                ('email_footer_text', models.TextField(blank=True, default='')),
-                ('case_reply_to', models.CharField(choices=[('primary_email', "User's Primary Email Address"), ('group_email', "User's Primary Group Email"), ('outgoing_email', 'Outgoing Email Address'), ('helpdesk_email', 'Helpdesk Email'), ('ticket_email', 'Internal Ticket Email'), ('other', 'Other')], default='helpdesk_email', max_length=30)),
-                ('case_allow_group_value', models.BooleanField(default=False)),
-                ('case_bcc_address', models.EmailField(blank=True, default='', max_length=254)),
-                ('ticket_reply_to', models.CharField(choices=[('primary_email', "User's Primary Email Address"), ('group_email', "User's Primary Group Email"), ('outgoing_email', 'Outgoing Email Address'), ('helpdesk_email', 'Helpdesk Email'), ('ticket_email', 'Internal Ticket Email'), ('other', 'Other')], default='ticket_email', max_length=30)),
-                ('ticket_reply_to_address', models.EmailField(blank=True, default='', max_length=254)),
-                ('ticket_from_name', models.CharField(blank=True, default='', max_length=255)),
-                ('ticket_bcc_address', models.EmailField(blank=True, default='', max_length=254)),
-                ('adhoc_reply_to', models.CharField(choices=[('primary_email', "User's Primary Email Address"), ('group_email', "User's Primary Group Email"), ('outgoing_email', 'Outgoing Email Address'), ('helpdesk_email', 'Helpdesk Email'), ('ticket_email', 'Internal Ticket Email'), ('other', 'Other')], default='outgoing_email', max_length=30)),
-                ('sys_notif_from_name', models.CharField(blank=True, default='', max_length=255)),
-                ('sys_notif_from_reply_to', models.EmailField(blank=True, default='', max_length=254)),
-                ('email_font_family', models.CharField(default='Arial', max_length=100)),
-                ('email_font_size', models.PositiveIntegerField(default=14)),
-                ('email_opt_in', models.CharField(choices=[('double_single', 'Double opt-ins and Single User opt-ins'), ('single', 'Single opt-in'), ('none', 'None')], default='double_single', max_length=20)),
-                ('allow_adhoc_opted_out', models.BooleanField(default=False)),
-                ('allow_workflow_opted_out', models.BooleanField(default=False)),
-                ('auto_double_opt_in', models.BooleanField(default=True)),
-                ('customer_notif_from_name', models.CharField(blank=True, default='', max_length=255)),
-                ('customer_notif_from_email', models.EmailField(blank=True, default='', max_length=254)),
-                ('undo_send_enabled', models.BooleanField(default=False)),
-                ('undo_send_duration', models.PositiveIntegerField(default=5, help_text='Undo send duration in seconds')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "server_type",
+                    models.CharField(
+                        choices=[
+                            ("gmail", "Gmail"),
+                            ("gsuite", "GSuite"),
+                            ("office365", "Microsoft / Office365"),
+                            ("yahoo", "Yahoo"),
+                            ("custom", "Custom SMTP"),
+                            ("other", "Others"),
+                        ],
+                        default="custom",
+                        max_length=20,
+                    ),
+                ),
+                ("smtp_host", models.CharField(blank=True, default="", max_length=255)),
+                ("smtp_port", models.PositiveIntegerField(default=587)),
+                (
+                    "smtp_username",
+                    models.CharField(blank=True, default="", max_length=255),
+                ),
+                (
+                    "smtp_password",
+                    models.CharField(blank=True, default="", max_length=255),
+                ),
+                ("smtp_use_tls", models.BooleanField(default=True)),
+                ("email_tracking_enabled", models.BooleanField(default=True)),
+                ("include_email_footer", models.BooleanField(default=True)),
+                ("email_footer_text", models.TextField(blank=True, default="")),
+                (
+                    "case_reply_to",
+                    models.CharField(
+                        choices=[
+                            ("primary_email", "User's Primary Email Address"),
+                            ("group_email", "User's Primary Group Email"),
+                            ("outgoing_email", "Outgoing Email Address"),
+                            ("helpdesk_email", "Helpdesk Email"),
+                            ("ticket_email", "Internal Ticket Email"),
+                            ("other", "Other"),
+                        ],
+                        default="helpdesk_email",
+                        max_length=30,
+                    ),
+                ),
+                ("case_allow_group_value", models.BooleanField(default=False)),
+                (
+                    "case_bcc_address",
+                    models.EmailField(blank=True, default="", max_length=254),
+                ),
+                (
+                    "ticket_reply_to",
+                    models.CharField(
+                        choices=[
+                            ("primary_email", "User's Primary Email Address"),
+                            ("group_email", "User's Primary Group Email"),
+                            ("outgoing_email", "Outgoing Email Address"),
+                            ("helpdesk_email", "Helpdesk Email"),
+                            ("ticket_email", "Internal Ticket Email"),
+                            ("other", "Other"),
+                        ],
+                        default="ticket_email",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "ticket_reply_to_address",
+                    models.EmailField(blank=True, default="", max_length=254),
+                ),
+                (
+                    "ticket_from_name",
+                    models.CharField(blank=True, default="", max_length=255),
+                ),
+                (
+                    "ticket_bcc_address",
+                    models.EmailField(blank=True, default="", max_length=254),
+                ),
+                (
+                    "adhoc_reply_to",
+                    models.CharField(
+                        choices=[
+                            ("primary_email", "User's Primary Email Address"),
+                            ("group_email", "User's Primary Group Email"),
+                            ("outgoing_email", "Outgoing Email Address"),
+                            ("helpdesk_email", "Helpdesk Email"),
+                            ("ticket_email", "Internal Ticket Email"),
+                            ("other", "Other"),
+                        ],
+                        default="outgoing_email",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "sys_notif_from_name",
+                    models.CharField(blank=True, default="", max_length=255),
+                ),
+                (
+                    "sys_notif_from_reply_to",
+                    models.EmailField(blank=True, default="", max_length=254),
+                ),
+                (
+                    "email_font_family",
+                    models.CharField(default="Arial", max_length=100),
+                ),
+                ("email_font_size", models.PositiveIntegerField(default=14)),
+                (
+                    "email_opt_in",
+                    models.CharField(
+                        choices=[
+                            ("double_single", "Double opt-ins and Single User opt-ins"),
+                            ("single", "Single opt-in"),
+                            ("none", "None"),
+                        ],
+                        default="double_single",
+                        max_length=20,
+                    ),
+                ),
+                ("allow_adhoc_opted_out", models.BooleanField(default=False)),
+                ("allow_workflow_opted_out", models.BooleanField(default=False)),
+                ("auto_double_opt_in", models.BooleanField(default=True)),
+                (
+                    "customer_notif_from_name",
+                    models.CharField(blank=True, default="", max_length=255),
+                ),
+                (
+                    "customer_notif_from_email",
+                    models.EmailField(blank=True, default="", max_length=254),
+                ),
+                ("undo_send_enabled", models.BooleanField(default=False)),
+                (
+                    "undo_send_duration",
+                    models.PositiveIntegerField(
+                        default=5, help_text="Undo send duration in seconds"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'email settings',
-                'verbose_name_plural': 'email settings',
-                'db_table': 'crm_email_settings',
+                "verbose_name": "email settings",
+                "verbose_name_plural": "email settings",
+                "db_table": "crm_email_settings",
             },
         ),
     ]

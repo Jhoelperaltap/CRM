@@ -346,7 +346,10 @@ class Migration(migrations.Migration):
             model_name="contact",
             name="image",
             field=models.ImageField(
-                blank=True, null=True, upload_to="contacts/images/", verbose_name="profile image"
+                blank=True,
+                null=True,
+                upload_to="contacts/images/",
+                verbose_name="profile image",
             ),
         ),
         # SLA

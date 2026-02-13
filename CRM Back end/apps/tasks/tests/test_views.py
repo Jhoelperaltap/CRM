@@ -66,9 +66,7 @@ class TestTaskFilterByAssignee:
     def test_filter(self, authenticated_client, preparer_user):
         TaskFactory(assigned_to=preparer_user)
         TaskFactory()  # different assignee
-        resp = authenticated_client.get(
-            f"{BASE}?assigned_to={preparer_user.id}"
-        )
+        resp = authenticated_client.get(f"{BASE}?assigned_to={preparer_user.id}")
         assert resp.status_code == status.HTTP_200_OK
         for result in resp.data["results"]:
             assert str(result["assigned_to"]) == str(preparer_user.id)

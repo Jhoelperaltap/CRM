@@ -51,7 +51,7 @@ class TestHTMLSanitizer:
     def test_sanitize_removes_event_handlers(self):
         """Test that event handlers are removed."""
         sanitizer = HTMLSanitizer()
-        dangerous_html = '<p onclick="alert(\'XSS\')">Click me</p>'
+        dangerous_html = "<p onclick=\"alert('XSS')\">Click me</p>"
         result = sanitizer.sanitize(dangerous_html)
 
         # onclick should be removed
@@ -61,7 +61,7 @@ class TestHTMLSanitizer:
     def test_sanitize_removes_javascript_urls(self):
         """Test that javascript: URLs are removed."""
         sanitizer = HTMLSanitizer()
-        dangerous_html = '<a href="javascript:alert(\'XSS\')">Click</a>'
+        dangerous_html = "<a href=\"javascript:alert('XSS')\">Click</a>"
         result = sanitizer.sanitize(dangerous_html)
 
         # javascript: should be removed
@@ -285,7 +285,7 @@ class TestSanitizedCharField:
             content = SanitizedCharField()
 
         serializer = TestSerializer(
-            data={"content": '<p>Hello <script>alert(1)</script></p>'}
+            data={"content": "<p>Hello <script>alert(1)</script></p>"}
         )
         assert serializer.is_valid()
 
@@ -299,7 +299,9 @@ class TestSanitizedCharField:
         class TestSerializer(serializers.Serializer):
             content = SanitizedCharField(strict=True)
 
-        serializer = TestSerializer(data={"content": '<p>Hello <a href="#">link</a></p>'})
+        serializer = TestSerializer(
+            data={"content": '<p>Hello <a href="#">link</a></p>'}
+        )
         assert serializer.is_valid()
 
         cleaned = serializer.validated_data["content"]
@@ -313,7 +315,9 @@ class TestSanitizedCharField:
         class TestSerializer(serializers.Serializer):
             content = SanitizedCharField(plain_text=True)
 
-        serializer = TestSerializer(data={"content": "<p>Hello <strong>world</strong></p>"})
+        serializer = TestSerializer(
+            data={"content": "<p>Hello <strong>world</strong></p>"}
+        )
         assert serializer.is_valid()
 
         cleaned = serializer.validated_data["content"]
@@ -367,14 +371,14 @@ class TestHTMLValidator:
             # With bleach, dangerous content is sanitized, not rejected
             # unless it contains patterns that bypass sanitization
             try:
-                validator('<p>Hello <script>alert(1)</script></p>')
+                validator("<p>Hello <script>alert(1)</script></p>")
                 # Bleach sanitizes it, so no error expected
             except serializers.ValidationError:
                 pass  # Some implementations might still reject
         else:
             # Without bleach, HTML is escaped, which changes the content
             with pytest.raises(serializers.ValidationError):
-                validator('<p>Hello <script>alert(1)</script></p>')
+                validator("<p>Hello <script>alert(1)</script></p>")
 
     def test_validator_with_custom_config(self):
         """Test validator with custom configuration."""
@@ -408,7 +412,7 @@ class TestValidateSafeHTML:
         if not HAS_BLEACH:
             # Without bleach, all HTML is escaped, so it will be rejected
             with pytest.raises(ValidationError) as exc_info:
-                validate_safe_html('<p>Hello <script>alert(1)</script></p>')
+                validate_safe_html("<p>Hello <script>alert(1)</script></p>")
             assert exc_info.value.code == "unsafe_html"
 
 
@@ -418,7 +422,7 @@ class TestSecurityScenarios:
     def test_nested_script_tags(self):
         """Test that nested script tags are handled."""
         sanitizer = HTMLSanitizer()
-        html = '<p><script><script>alert(1)</script></script></p>'
+        html = "<p><script><script>alert(1)</script></script></p>"
         result = sanitizer.sanitize(html)
 
         assert "<script>" not in result.lower()
@@ -435,7 +439,7 @@ class TestSecurityScenarios:
     def test_svg_with_script(self):
         """Test that SVG with embedded script is handled."""
         sanitizer = HTMLSanitizer()
-        html = '<svg><script>alert(1)</script></svg>'
+        html = "<svg><script>alert(1)</script></svg>"
         result = sanitizer.sanitize(html)
 
         # SVG and script should be removed
@@ -453,7 +457,7 @@ class TestSecurityScenarios:
     def test_mixed_case_tags(self):
         """Test that mixed case tags are handled."""
         sanitizer = HTMLSanitizer()
-        html = '<ScRiPt>alert(1)</ScRiPt>'
+        html = "<ScRiPt>alert(1)</ScRiPt>"
         result = sanitizer.sanitize(html)
 
         assert "<script>" not in result.lower()
@@ -520,7 +524,7 @@ class TestEdgeCases:
     def test_special_characters(self):
         """Test that special characters are handled correctly."""
         sanitizer = HTMLSanitizer()
-        html = '<p>Price: $100 &amp; <50%</p>'
+        html = "<p>Price: $100 &amp; <50%</p>"
         result = sanitizer.sanitize(html)
 
         assert "$100" in result

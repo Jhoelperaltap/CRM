@@ -10,12 +10,22 @@ class DocumentFilter(django_filters.FilterSet):
     corporation = django_filters.UUIDFilter(field_name="corporation__id")
     case = django_filters.UUIDFilter(field_name="case__id")
     folder = django_filters.UUIDFilter(field_name="folder__id")
-    folder_null = django_filters.BooleanFilter(field_name="folder", lookup_expr="isnull")
+    folder_null = django_filters.BooleanFilter(
+        field_name="folder", lookup_expr="isnull"
+    )
     tags = django_filters.UUIDFilter(field_name="tags__id")
 
     class Meta:
         model = Document
-        fields = ["doc_type", "status", "contact", "corporation", "case", "folder", "tags"]
+        fields = [
+            "doc_type",
+            "status",
+            "contact",
+            "corporation",
+            "case",
+            "folder",
+            "tags",
+        ]
 
 
 class DocumentLinkFilter(django_filters.FilterSet):

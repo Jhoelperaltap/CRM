@@ -6,33 +6,33 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('audit', '0001_initial'),
+        ("audit", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameIndex(
-            model_name='auditlog',
-            new_name='crm_audit_l_module_65785d_idx',
-            old_name='audit_auditl_module_idx',
+            model_name="auditlog",
+            new_name="crm_audit_l_module_65785d_idx",
+            old_name="audit_auditl_module_idx",
         ),
         migrations.RenameIndex(
-            model_name='auditlog',
-            new_name='crm_audit_l_user_id_2742a6_idx',
-            old_name='audit_auditl_user_ts_idx',
+            model_name="auditlog",
+            new_name="crm_audit_l_user_id_2742a6_idx",
+            old_name="audit_auditl_user_ts_idx",
         ),
         migrations.RenameIndex(
-            model_name='encryptedfieldaccesslog',
-            new_name='crm_encrypt_module_b845b5_idx',
-            old_name='audit_pii_module_obj_idx',
+            model_name="encryptedfieldaccesslog",
+            new_name="crm_encrypt_module_b845b5_idx",
+            old_name="audit_pii_module_obj_idx",
         ),
         migrations.RenameIndex(
-            model_name='encryptedfieldaccesslog',
-            new_name='crm_encrypt_user_id_bb82da_idx',
-            old_name='audit_pii_user_ts_idx',
+            model_name="encryptedfieldaccesslog",
+            new_name="crm_encrypt_user_id_bb82da_idx",
+            old_name="audit_pii_user_ts_idx",
         ),
         migrations.RenameIndex(
-            model_name='loginhistory',
-            new_name='crm_login_h_user_id_2ceee6_idx',
-            old_name='audit_loginh_user_ts_idx',
+            model_name="loginhistory",
+            new_name="crm_login_h_user_id_2ceee6_idx",
+            old_name="audit_loginh_user_ts_idx",
         ),
     ]

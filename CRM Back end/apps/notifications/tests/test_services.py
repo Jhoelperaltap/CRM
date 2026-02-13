@@ -57,6 +57,7 @@ class TestCreateNotification:
     def test_related_object_stored(self):
         user = UserFactory()
         from tests.factories import TaxCaseFactory
+
         case = TaxCaseFactory()
         notif = create_notification(
             recipient=user,

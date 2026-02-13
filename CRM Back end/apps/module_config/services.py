@@ -140,13 +140,9 @@ def validate_custom_fields(module_name: str, data: dict) -> dict:
             max_val = field_def.validation_rules.get("max")
             num_val = cleaned[field_name]
             if min_val is not None and num_val < min_val:
-                errors[field_name] = (
-                    f"{field_def.label} must be at least {min_val}."
-                )
+                errors[field_name] = f"{field_def.label} must be at least {min_val}."
             if max_val is not None and num_val > max_val:
-                errors[field_name] = (
-                    f"{field_def.label} must be at most {max_val}."
-                )
+                errors[field_name] = f"{field_def.label} must be at most {max_val}."
 
     # Check for missing required fields
     for field_name, field_def in field_defs.items():
@@ -185,9 +181,7 @@ def _validate_field_type(field_def, value):
     if ft == "select":
         valid_values = [o.get("value") for o in (field_def.options or [])]
         if valid_values and value not in valid_values:
-            raise ValueError(
-                f"{field_def.label}: '{value}' is not a valid option."
-            )
+            raise ValueError(f"{field_def.label}: '{value}' is not a valid option.")
         return value
 
     if ft == "multiselect":
@@ -197,9 +191,7 @@ def _validate_field_type(field_def, value):
         if valid_values:
             for v in value:
                 if v not in valid_values:
-                    raise ValueError(
-                        f"{field_def.label}: '{v}' is not a valid option."
-                    )
+                    raise ValueError(f"{field_def.label}: '{v}' is not a valid option.")
         return value
 
     # text, email, phone, url, textarea, date, datetime — pass through as string

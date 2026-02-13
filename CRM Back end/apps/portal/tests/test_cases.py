@@ -36,25 +36,17 @@ class TestPortalCaseDetail:
 
     def test_view_own_case(self, portal_authenticated_client, portal_contact):
         case = TaxCaseFactory(contact=portal_contact)
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/cases/{case.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/cases/{case.id}/")
         assert resp.status_code == 200
         assert resp.data["case_number"] == case.case_number
 
-    def test_cannot_view_other_contacts_case(
-        self, portal_authenticated_client
-    ):
+    def test_cannot_view_other_contacts_case(self, portal_authenticated_client):
         other_contact = ContactFactory()
         case = TaxCaseFactory(contact=other_contact)
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/cases/{case.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/cases/{case.id}/")
         assert resp.status_code == 404
 
-    def test_case_includes_checklist(
-        self, portal_authenticated_client, portal_contact
-    ):
+    def test_case_includes_checklist(self, portal_authenticated_client, portal_contact):
         from tests.factories import (
             CaseChecklistFactory,
             CaseChecklistItemFactory,
@@ -62,16 +54,10 @@ class TestPortalCaseDetail:
 
         case = TaxCaseFactory(contact=portal_contact)
         checklist = CaseChecklistFactory(case=case, total_count=2, completed_count=1)
-        CaseChecklistItemFactory(
-            checklist=checklist, title="W-2", is_completed=True
-        )
-        CaseChecklistItemFactory(
-            checklist=checklist, title="1099", is_completed=False
-        )
+        CaseChecklistItemFactory(checklist=checklist, title="W-2", is_completed=True)
+        CaseChecklistItemFactory(checklist=checklist, title="1099", is_completed=False)
 
-        resp = portal_authenticated_client.get(
-            f"/api/v1/portal/cases/{case.id}/"
-        )
+        resp = portal_authenticated_client.get(f"/api/v1/portal/cases/{case.id}/")
         assert resp.status_code == 200
         assert resp.data["checklist"] is not None
         assert resp.data["checklist"]["total_count"] == 2

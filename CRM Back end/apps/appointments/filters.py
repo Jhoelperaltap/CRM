@@ -8,8 +8,12 @@ class AppointmentFilter(django_filters.FilterSet):
     assigned_to = django_filters.UUIDFilter(field_name="assigned_to__id")
     contact = django_filters.UUIDFilter(field_name="contact__id")
     case = django_filters.UUIDFilter(field_name="case__id")
-    date_from = django_filters.DateTimeFilter(field_name="start_datetime", lookup_expr="gte")
-    date_to = django_filters.DateTimeFilter(field_name="start_datetime", lookup_expr="lte")
+    date_from = django_filters.DateTimeFilter(
+        field_name="start_datetime", lookup_expr="gte"
+    )
+    date_to = django_filters.DateTimeFilter(
+        field_name="start_datetime", lookup_expr="lte"
+    )
     assigned_to__in = django_filters.BaseInFilter(
         field_name="assigned_to__id", lookup_expr="in"
     )

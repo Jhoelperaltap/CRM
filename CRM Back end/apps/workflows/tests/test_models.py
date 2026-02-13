@@ -12,7 +12,9 @@ class TestWorkflowRuleModel:
         assert rule.execution_count == 0
 
     def test_str_representation(self):
-        rule = WorkflowRuleFactory(name="My Rule", trigger_type="case_created", action_type="create_task")
+        rule = WorkflowRuleFactory(
+            name="My Rule", trigger_type="case_created", action_type="create_task"
+        )
         assert "My Rule" in str(rule)
         assert "case_created" in str(rule)
 

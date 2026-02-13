@@ -56,7 +56,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "module",
-                    models.CharField(db_index=True, max_length=50, verbose_name="module"),
+                    models.CharField(
+                        db_index=True, max_length=50, verbose_name="module"
+                    ),
                 ),
                 (
                     "object_id",
@@ -85,7 +87,10 @@ class Migration(migrations.Migration):
                 (
                     "request_path",
                     models.CharField(
-                        blank=True, default="", max_length=500, verbose_name="request path"
+                        blank=True,
+                        default="",
+                        max_length=500,
+                        verbose_name="request path",
                     ),
                 ),
                 (
@@ -172,7 +177,10 @@ class Migration(migrations.Migration):
                 (
                     "failure_reason",
                     models.CharField(
-                        blank=True, default="", max_length=255, verbose_name="failure reason"
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="failure reason",
                     ),
                 ),
                 (
@@ -232,11 +240,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "old_value",
-                    models.JSONField(blank=True, default=dict, verbose_name="old value"),
+                    models.JSONField(
+                        blank=True, default=dict, verbose_name="old value"
+                    ),
                 ),
                 (
                     "new_value",
-                    models.JSONField(blank=True, default=dict, verbose_name="new value"),
+                    models.JSONField(
+                        blank=True, default=dict, verbose_name="new value"
+                    ),
                 ),
                 (
                     "ip_address",

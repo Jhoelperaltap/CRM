@@ -13,7 +13,9 @@ class Branch(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(_("branch name"), max_length=100, unique=True)
     code = models.CharField(
-        _("branch code"), max_length=20, unique=True,
+        _("branch code"),
+        max_length=20,
+        unique=True,
         help_text=_("Short code for the branch (e.g. 'NYC', 'MIA')."),
     )
     address = models.CharField(_("address"), max_length=255, blank=True, default="")
@@ -23,7 +25,8 @@ class Branch(models.Model):
     phone = models.CharField(_("phone"), max_length=20, blank=True, default="")
     is_active = models.BooleanField(_("active"), default=True)
     is_headquarters = models.BooleanField(
-        _("headquarters"), default=False,
+        _("headquarters"),
+        default=False,
         help_text=_("Designate as the main office."),
     )
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)

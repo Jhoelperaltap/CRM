@@ -47,7 +47,9 @@ class TestCalendarEndpoint:
         ids = [a["id"] for a in resp.data]
         assert str(appt1.id) in ids
 
-    def test_filter_by_assigned_to(self, authenticated_client, preparer_user, admin_user):
+    def test_filter_by_assigned_to(
+        self, authenticated_client, preparer_user, admin_user
+    ):
         now = timezone.now()
         contact = ContactFactory()
 
@@ -69,7 +71,11 @@ class TestCalendarEndpoint:
 
         resp = authenticated_client.get(
             self.URL,
-            {"start_date": start_date, "end_date": end_date, "assigned_to": str(preparer_user.id)},
+            {
+                "start_date": start_date,
+                "end_date": end_date,
+                "assigned_to": str(preparer_user.id),
+            },
         )
         assert resp.status_code == 200
         ids = [a["id"] for a in resp.data]

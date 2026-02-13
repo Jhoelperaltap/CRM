@@ -25,7 +25,8 @@ class Command(BaseCommand):
             help="Path to the encrypted backup file.",
         )
         parser.add_argument(
-            "--key", "-k",
+            "--key",
+            "-k",
             type=str,
             default="",
             help="Fernet encryption key (base64). Defaults to FIELD_ENCRYPTION_KEY.",

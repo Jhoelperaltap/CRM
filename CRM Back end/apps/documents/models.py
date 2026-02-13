@@ -247,9 +247,7 @@ class DocumentAccessLog(TimeStampedModel):
         max_length=10,
         choices=Action.choices,
     )
-    ip_address = models.GenericIPAddressField(
-        _("IP address"), null=True, blank=True
-    )
+    ip_address = models.GenericIPAddressField(_("IP address"), null=True, blank=True)
     user_agent = models.TextField(_("user agent"), blank=True, default="")
 
     class Meta:
@@ -367,7 +365,9 @@ class DocumentDownloadToken(models.Model):
     is_used = models.BooleanField(_("used"), default=False)
     used_at = models.DateTimeField(_("used at"), null=True, blank=True)
     ip_address = models.GenericIPAddressField(
-        _("IP address"), null=True, blank=True,
+        _("IP address"),
+        null=True,
+        blank=True,
         help_text=_("IP address that used this token"),
     )
 

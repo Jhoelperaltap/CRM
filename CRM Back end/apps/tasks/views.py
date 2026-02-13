@@ -22,11 +22,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return (
-            Task.objects.select_related(
-                "assigned_to", "created_by", "case", "contact"
-            ).all()
-        )
+        return Task.objects.select_related(
+            "assigned_to", "created_by", "case", "contact"
+        ).all()
 
     def get_serializer_class(self):
         if self.action == "list":

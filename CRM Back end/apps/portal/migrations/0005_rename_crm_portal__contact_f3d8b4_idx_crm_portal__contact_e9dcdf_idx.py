@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portal', '0004_portalnotification'),
+        ("portal", "0004_portalnotification"),
     ]
 
     operations = [
         migrations.RenameIndex(
-            model_name='portalnotification',
-            new_name='crm_portal__contact_e9dcdf_idx',
-            old_name='crm_portal__contact_f3d8b4_idx',
+            model_name="portalnotification",
+            new_name="crm_portal__contact_e9dcdf_idx",
+            old_name="crm_portal__contact_f3d8b4_idx",
         ),
     ]

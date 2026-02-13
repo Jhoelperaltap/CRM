@@ -9,47 +9,141 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0006_user_email_account'),
+        ("users", "0006_user_email_account"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BlockedIP',
+            name="BlockedIP",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('ip_address', models.CharField(max_length=45, unique=True, verbose_name='IP address')),
-                ('cidr_prefix', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='CIDR prefix length')),
-                ('reason', models.CharField(blank=True, default='', max_length=255, verbose_name='reason')),
-                ('blocked_webform_requests', models.PositiveIntegerField(default=0, verbose_name='blocked webform requests')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='blocked_ips_created', to=settings.AUTH_USER_MODEL, verbose_name='created by')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.CharField(
+                        max_length=45, unique=True, verbose_name="IP address"
+                    ),
+                ),
+                (
+                    "cidr_prefix",
+                    models.PositiveSmallIntegerField(
+                        blank=True, null=True, verbose_name="CIDR prefix length"
+                    ),
+                ),
+                (
+                    "reason",
+                    models.CharField(
+                        blank=True, default="", max_length=255, verbose_name="reason"
+                    ),
+                ),
+                (
+                    "blocked_webform_requests",
+                    models.PositiveIntegerField(
+                        default=0, verbose_name="blocked webform requests"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="active")),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="blocked_ips_created",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="created by",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'blocked IP',
-                'verbose_name_plural': 'blocked IPs',
-                'db_table': 'crm_blocked_ips',
-                'ordering': ['-created_at'],
+                "verbose_name": "blocked IP",
+                "verbose_name_plural": "blocked IPs",
+                "db_table": "crm_blocked_ips",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='BlockedIPLog',
+            name="BlockedIPLog",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('ip_address', models.GenericIPAddressField(verbose_name='IP address')),
-                ('request_type', models.CharField(choices=[('webform', 'Webform Submission'), ('login', 'Login Attempt'), ('api', 'API Request'), ('other', 'Other')], default='other', max_length=20, verbose_name='request type')),
-                ('request_path', models.CharField(blank=True, default='', max_length=500, verbose_name='request path')),
-                ('user_agent', models.TextField(blank=True, default='', verbose_name='user agent')),
-                ('request_data', models.JSONField(blank=True, default=dict, verbose_name='request data')),
-                ('timestamp', models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='timestamp')),
-                ('blocked_ip', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='users.blockedip', verbose_name='blocked IP')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("ip_address", models.GenericIPAddressField(verbose_name="IP address")),
+                (
+                    "request_type",
+                    models.CharField(
+                        choices=[
+                            ("webform", "Webform Submission"),
+                            ("login", "Login Attempt"),
+                            ("api", "API Request"),
+                            ("other", "Other"),
+                        ],
+                        default="other",
+                        max_length=20,
+                        verbose_name="request type",
+                    ),
+                ),
+                (
+                    "request_path",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=500,
+                        verbose_name="request path",
+                    ),
+                ),
+                (
+                    "user_agent",
+                    models.TextField(blank=True, default="", verbose_name="user agent"),
+                ),
+                (
+                    "request_data",
+                    models.JSONField(
+                        blank=True, default=dict, verbose_name="request data"
+                    ),
+                ),
+                (
+                    "timestamp",
+                    models.DateTimeField(
+                        auto_now_add=True, db_index=True, verbose_name="timestamp"
+                    ),
+                ),
+                (
+                    "blocked_ip",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="logs",
+                        to="users.blockedip",
+                        verbose_name="blocked IP",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'blocked IP log',
-                'verbose_name_plural': 'blocked IP logs',
-                'db_table': 'crm_blocked_ip_logs',
-                'ordering': ['-timestamp'],
+                "verbose_name": "blocked IP log",
+                "verbose_name_plural": "blocked IP logs",
+                "db_table": "crm_blocked_ip_logs",
+                "ordering": ["-timestamp"],
             },
         ),
     ]

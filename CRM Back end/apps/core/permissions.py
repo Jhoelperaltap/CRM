@@ -5,6 +5,7 @@ Security: These permissions ensure that users can only access resources
 they own or have explicit permission to access, preventing unauthorized
 access to other users' data by manipulating IDs in URLs.
 """
+
 from rest_framework.permissions import BasePermission
 
 
@@ -20,6 +21,7 @@ class IsOwnerOrAdmin(BasePermission):
             permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
             owner_field = 'user'  # Optional: specify the owner field name
     """
+
     # Common field names for ownership
     OWNER_FIELDS = ["owner", "user", "created_by", "uploaded_by", "assigned_to"]
 
@@ -31,6 +33,7 @@ class IsOwnerOrAdmin(BasePermission):
             return True
 
         from apps.users.models import Role
+
         if user.role and user.role.slug == Role.RoleSlug.ADMIN:
             return True
 
@@ -65,6 +68,7 @@ class IsOwnerOrReadOnly(BasePermission):
         class MyViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     """
+
     SAFE_METHODS = ("GET", "HEAD", "OPTIONS")
     OWNER_FIELDS = ["owner", "user", "created_by", "uploaded_by", "assigned_to"]
 
@@ -80,6 +84,7 @@ class IsOwnerOrReadOnly(BasePermission):
             return True
 
         from apps.users.models import Role
+
         if user.role and user.role.slug == Role.RoleSlug.ADMIN:
             return True
 
@@ -128,6 +133,7 @@ class HasRelatedObjectAccess(BasePermission):
             return True
 
         from apps.users.models import Role
+
         if user.role and user.role.slug == Role.RoleSlug.ADMIN:
             return True
 
@@ -171,6 +177,7 @@ class CanAccessContact(BasePermission):
             return True
 
         from apps.users.models import Role
+
         if user.role and user.role.slug == Role.RoleSlug.ADMIN:
             return True
 
@@ -207,6 +214,7 @@ class CanAccessCase(BasePermission):
             return True
 
         from apps.users.models import Role
+
         if user.role and user.role.slug in [
             Role.RoleSlug.ADMIN,
             Role.RoleSlug.MANAGER,
@@ -245,6 +253,7 @@ class CanAccessDocument(BasePermission):
             return True
 
         from apps.users.models import Role
+
         if user.role and user.role.slug == Role.RoleSlug.ADMIN:
             return True
 

@@ -35,7 +35,9 @@ def _parse_date_range(date_from=None, date_to=None):
     """
     now = timezone.now()
     if date_from is None:
-        date_from = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        date_from = now.replace(
+            month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+        )
     if date_to is None:
         date_to = now
     return date_from, date_to
@@ -70,14 +72,14 @@ def get_dashboard_stats(date_from=None, date_to=None):
         created_at__lte=now,
     ).count()
 
-    total_estimated_revenue = (
-        TaxCase.objects.filter(
-            created_at__gte=date_from,
-            created_at__lte=date_to,
-        ).aggregate(
-            total=Coalesce(Sum("estimated_fee"), Value(0), output_field=DecimalField()),
-        )["total"]
-    )
+    total_estimated_revenue = TaxCase.objects.filter(
+        created_at__gte=date_from,
+        created_at__lte=date_to,
+    ).aggregate(
+        total=Coalesce(Sum("estimated_fee"), Value(0), output_field=DecimalField()),
+    )[
+        "total"
+    ]
 
     return {
         "total_contacts": total_contacts,
@@ -128,7 +130,9 @@ def get_revenue_pipeline(date_from=None, date_to=None):
         .annotate(month=TruncMonth("created_at"))
         .values("month")
         .annotate(
-            estimated=Coalesce(Sum("estimated_fee"), Value(0), output_field=DecimalField()),
+            estimated=Coalesce(
+                Sum("estimated_fee"), Value(0), output_field=DecimalField()
+            ),
             actual=Coalesce(Sum("actual_fee"), Value(0), output_field=DecimalField()),
         )
         .order_by("month")
@@ -311,17 +315,19 @@ def get_missing_docs(required_types=None):
         )
         missing = [dt for dt in required_types if dt not in existing_types]
         if missing:
-            result.append({
-                "case_id": str(case.id),
-                "case_number": case.case_number,
-                "title": case.title,
-                "contact_name": (
-                    f"{case.contact.first_name} {case.contact.last_name}".strip()
-                    if case.contact
-                    else ""
-                ),
-                "missing_types": missing,
-            })
+            result.append(
+                {
+                    "case_id": str(case.id),
+                    "case_number": case.case_number,
+                    "title": case.title,
+                    "contact_name": (
+                        f"{case.contact.first_name} {case.contact.last_name}".strip()
+                        if case.contact
+                        else ""
+                    ),
+                    "missing_types": missing,
+                }
+            )
 
     return result
 
@@ -396,9 +402,7 @@ def get_avg_waiting_for_documents_days():
     if not waiting_cases.exists():
         return {"avg_days": 0, "currently_waiting": 0}
 
-    total_days = sum(
-        (now - case.updated_at).days for case in waiting_cases
-    )
+    total_days = sum((now - case.updated_at).days for case in waiting_cases)
     count = waiting_cases.count()
 
     return {

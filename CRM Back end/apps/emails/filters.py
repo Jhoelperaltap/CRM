@@ -42,7 +42,9 @@ class EmailThreadFilter(django_filters.FilterSet):
 class EmailSyncLogFilter(django_filters.FilterSet):
     account = django_filters.UUIDFilter(field_name="account")
     status = django_filters.CharFilter(field_name="status")
-    date_from = django_filters.DateTimeFilter(field_name="started_at", lookup_expr="gte")
+    date_from = django_filters.DateTimeFilter(
+        field_name="started_at", lookup_expr="gte"
+    )
     date_to = django_filters.DateTimeFilter(field_name="started_at", lookup_expr="lte")
 
     class Meta:

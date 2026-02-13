@@ -60,7 +60,9 @@ class AgentConfiguration(TimeStampedModel):
     appointment_reminder_hours = models.JSONField(
         default=list,
         blank=True,
-        help_text=_("List of hours before appointment to send reminders (e.g., [24, 2])"),
+        help_text=_(
+            "List of hours before appointment to send reminders (e.g., [24, 2])"
+        ),
     )
 
     # AI settings
@@ -103,7 +105,9 @@ class AgentConfiguration(TimeStampedModel):
     focus_areas = models.JSONField(
         default=list,
         blank=True,
-        help_text=_('Priority areas for analysis (e.g., ["revenue", "client_retention"])'),
+        help_text=_(
+            'Priority areas for analysis (e.g., ["revenue", "client_retention"])'
+        ),
     )
 
     # Rate limiting
@@ -137,8 +141,8 @@ class AgentConfiguration(TimeStampedModel):
             # Preserve created_at from existing record when updating
             self.created_at = existing.created_at
             # Force update if the record already exists
-            kwargs['force_update'] = True
-            kwargs.pop('force_insert', None)
+            kwargs["force_update"] = True
+            kwargs.pop("force_insert", None)
         super().save(*args, **kwargs)
 
     @classmethod

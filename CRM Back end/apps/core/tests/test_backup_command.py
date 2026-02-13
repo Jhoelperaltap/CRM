@@ -44,9 +44,7 @@ class TestBackupCreatesEncryptedFile:
         key = Fernet.generate_key()
         settings.FIELD_ENCRYPTION_KEY = key.decode()
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".enc", delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".enc", delete=False) as tmp:
             output_path = tmp.name
 
         try:
@@ -72,9 +70,7 @@ class TestBackupCreatesEncryptedFile:
         settings.FIELD_ENCRYPTION_KEY = ""
         key = Fernet.generate_key()
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".enc", delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".enc", delete=False) as tmp:
             output_path = tmp.name
 
         try:
@@ -108,9 +104,7 @@ class TestBackupDecryptRoundtrip:
         key = Fernet.generate_key()
         settings.FIELD_ENCRYPTION_KEY = key.decode()
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".enc", delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".enc", delete=False) as tmp:
             output_path = tmp.name
 
         try:
@@ -137,9 +131,7 @@ class TestBackupDecryptRoundtrip:
         settings.FIELD_ENCRYPTION_KEY = ""
         key = Fernet.generate_key()
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".enc", delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".enc", delete=False) as tmp:
             output_path = tmp.name
 
         try:
@@ -163,9 +155,7 @@ class TestBackupDecryptRoundtrip:
         wrong_key = Fernet.generate_key()
         settings.FIELD_ENCRYPTION_KEY = key.decode()
 
-        with tempfile.NamedTemporaryFile(
-            suffix=".enc", delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".enc", delete=False) as tmp:
             output_path = tmp.name
 
         try:

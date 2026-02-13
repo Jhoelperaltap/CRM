@@ -171,9 +171,19 @@ class HTMLSanitizer:
             strip: If True, strip disallowed tags instead of escaping them.
             allow_css: If True, allow safe CSS styles in style attributes.
         """
-        self.allowed_tags = allowed_tags if allowed_tags is not None else ALLOWED_TAGS.copy()
-        self.allowed_attributes = allowed_attributes if allowed_attributes is not None else ALLOWED_ATTRIBUTES.copy()
-        self.allowed_protocols = allowed_protocols if allowed_protocols is not None else ALLOWED_PROTOCOLS.copy()
+        self.allowed_tags = (
+            allowed_tags if allowed_tags is not None else ALLOWED_TAGS.copy()
+        )
+        self.allowed_attributes = (
+            allowed_attributes
+            if allowed_attributes is not None
+            else ALLOWED_ATTRIBUTES.copy()
+        )
+        self.allowed_protocols = (
+            allowed_protocols
+            if allowed_protocols is not None
+            else ALLOWED_PROTOCOLS.copy()
+        )
         self.strip = strip
         self.allow_css = allow_css
 
@@ -287,9 +297,7 @@ class HTMLSanitizer:
                 logger.warning(
                     f"Dangerous pattern detected after sanitization: {pattern.pattern}"
                 )
-                raise ValueError(
-                    "Potentially dangerous content detected in HTML input"
-                )
+                raise ValueError("Potentially dangerous content detected in HTML input")
 
     def sanitize_or_none(self, html_input: Optional[str]) -> Optional[str]:
         """
@@ -392,6 +400,7 @@ def strip_html(html_input: str) -> str:
 
 
 # Django REST Framework Integration
+
 
 class SanitizedCharField(serializers.CharField):
     """

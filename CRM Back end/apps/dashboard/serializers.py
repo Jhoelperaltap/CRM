@@ -76,7 +76,9 @@ class UserDashboardConfigUpdateSerializer(serializers.Serializer):
             raise serializers.ValidationError("Duplicate widget IDs are not allowed.")
 
         existing = set(
-            DashboardWidget.objects.filter(id__in=widget_ids).values_list("id", flat=True)
+            DashboardWidget.objects.filter(id__in=widget_ids).values_list(
+                "id", flat=True
+            )
         )
         missing = set(widget_ids) - existing
         if missing:

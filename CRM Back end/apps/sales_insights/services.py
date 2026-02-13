@@ -55,14 +55,17 @@ def _format_label(dt, group_by):
     return dt.strftime("%b %Y")
 
 
-def _base_filters(qs, date_from, date_to, date_field, user_id=None,
-                  user_field="assigned_to"):
+def _base_filters(
+    qs, date_from, date_to, date_field, user_id=None, user_field="assigned_to"
+):
     """Apply date range and optional user filter."""
     date_from, date_to = _parse_dates(date_from, date_to)
-    qs = qs.filter(**{
-        f"{date_field}__date__gte": date_from,
-        f"{date_field}__date__lte": date_to,
-    })
+    qs = qs.filter(
+        **{
+            f"{date_field}__date__gte": date_from,
+            f"{date_field}__date__lte": date_to,
+        }
+    )
     if user_id:
         qs = qs.filter(**{user_field: user_id})
     return qs
@@ -71,8 +74,9 @@ def _base_filters(qs, date_from, date_to, date_field, user_id=None,
 # ---------------------------------------------------------------------------
 # Activity Reports
 # ---------------------------------------------------------------------------
-def get_activities_added(date_from=None, date_to=None, group_by="monthly",
-                         user_id=None):
+def get_activities_added(
+    date_from=None, date_to=None, group_by="monthly", user_id=None
+):
     """Count of appointments + tasks created per time period."""
     date_from, date_to = _parse_dates(date_from, date_to)
     trunc_fn, _ = _trunc_and_label(group_by)
@@ -108,19 +112,22 @@ def get_activities_added(date_from=None, date_to=None, group_by="monthly",
         task_count = task_data.get(p, 0)
         combined = appt_count + task_count
         total += combined
-        rows.append({
-            "period": _format_period(p, group_by),
-            "label": _format_label(p, group_by),
-            "appointments": appt_count,
-            "tasks": task_count,
-            "count": combined,
-        })
+        rows.append(
+            {
+                "period": _format_period(p, group_by),
+                "label": _format_label(p, group_by),
+                "appointments": appt_count,
+                "tasks": task_count,
+                "count": combined,
+            }
+        )
 
     return {"data": rows, "total": total}
 
 
-def get_activities_completed(date_from=None, date_to=None, group_by="monthly",
-                              user_id=None):
+def get_activities_completed(
+    date_from=None, date_to=None, group_by="monthly", user_id=None
+):
     """Count of completed appointments + tasks per time period."""
     date_from, date_to = _parse_dates(date_from, date_to)
     trunc_fn, _ = _trunc_and_label(group_by)
@@ -158,11 +165,13 @@ def get_activities_completed(date_from=None, date_to=None, group_by="monthly",
     for p in all_periods:
         combined = appt_data.get(p, 0) + task_data.get(p, 0)
         total += combined
-        rows.append({
-            "period": _format_period(p, group_by),
-            "label": _format_label(p, group_by),
-            "count": combined,
-        })
+        rows.append(
+            {
+                "period": _format_period(p, group_by),
+                "label": _format_label(p, group_by),
+                "count": combined,
+            }
+        )
 
     return {"data": rows, "total": total}
 
@@ -204,8 +213,9 @@ def get_activity_efficiency(date_from=None, date_to=None, user_id=None):
 # ---------------------------------------------------------------------------
 # Pipeline Performance
 # ---------------------------------------------------------------------------
-def get_cases_added(date_from=None, date_to=None, group_by="monthly",
-                    user_id=None, case_type=None):
+def get_cases_added(
+    date_from=None, date_to=None, group_by="monthly", user_id=None, case_type=None
+):
     """Count of cases created per time period."""
     date_from, date_to = _parse_dates(date_from, date_to)
     trunc_fn, _ = _trunc_and_label(group_by)
@@ -228,17 +238,18 @@ def get_cases_added(date_from=None, date_to=None, group_by="monthly",
     total = 0
     for r in rows_qs:
         total += r["count"]
-        rows.append({
-            "period": _format_period(r["period"], group_by),
-            "label": _format_label(r["period"], group_by),
-            "count": r["count"],
-        })
+        rows.append(
+            {
+                "period": _format_period(r["period"], group_by),
+                "label": _format_label(r["period"], group_by),
+                "count": r["count"],
+            }
+        )
 
     return {"data": rows, "total": total}
 
 
-def get_pipeline_value(date_from=None, date_to=None, user_id=None,
-                       case_type=None):
+def get_pipeline_value(date_from=None, date_to=None, user_id=None, case_type=None):
     """Sum of estimated_fee grouped by case status (pipeline stages)."""
     date_from, date_to = _parse_dates(date_from, date_to)
     qs = TaxCase.objects.filter(
@@ -261,19 +272,22 @@ def get_pipeline_value(date_from=None, date_to=None, user_id=None,
     )
     rows = []
     for r in rows_qs:
-        rows.append({
-            "status": r["status"],
-            "label": STATUS_LABELS.get(r["status"], r["status"]),
-            "count": r["count"],
-            "estimated": float(r["estimated"] or 0),
-            "actual": float(r["actual"] or 0),
-        })
+        rows.append(
+            {
+                "status": r["status"],
+                "label": STATUS_LABELS.get(r["status"], r["status"]),
+                "count": r["count"],
+                "estimated": float(r["estimated"] or 0),
+                "actual": float(r["actual"] or 0),
+            }
+        )
 
     return {"data": rows}
 
 
-def get_pipeline_activity(date_from=None, date_to=None, group_by="monthly",
-                           user_id=None):
+def get_pipeline_activity(
+    date_from=None, date_to=None, group_by="monthly", user_id=None
+):
     """Activities (appointments + tasks) linked to cases, per time period."""
     date_from, date_to = _parse_dates(date_from, date_to)
     trunc_fn, _ = _trunc_and_label(group_by)
@@ -308,19 +322,20 @@ def get_pipeline_activity(date_from=None, date_to=None, group_by="monthly",
     all_periods = sorted(set(list(appt_data.keys()) + list(task_data.keys())))
     rows = []
     for p in all_periods:
-        rows.append({
-            "period": _format_period(p, group_by),
-            "label": _format_label(p, group_by),
-            "appointments": appt_data.get(p, 0),
-            "tasks": task_data.get(p, 0),
-            "count": appt_data.get(p, 0) + task_data.get(p, 0),
-        })
+        rows.append(
+            {
+                "period": _format_period(p, group_by),
+                "label": _format_label(p, group_by),
+                "appointments": appt_data.get(p, 0),
+                "tasks": task_data.get(p, 0),
+                "count": appt_data.get(p, 0) + task_data.get(p, 0),
+            }
+        )
 
     return {"data": rows}
 
 
-def get_funnel_progression(date_from=None, date_to=None, user_id=None,
-                            case_type=None):
+def get_funnel_progression(date_from=None, date_to=None, user_id=None, case_type=None):
     """Case count per status — shows pipeline funnel."""
     date_from, date_to = _parse_dates(date_from, date_to)
     qs = TaxCase.objects.filter(
@@ -339,11 +354,13 @@ def get_funnel_progression(date_from=None, date_to=None, user_id=None,
     )
     rows = []
     for s in STATUS_ORDER:
-        rows.append({
-            "status": s,
-            "label": STATUS_LABELS[s],
-            "count": counts.get(s, 0),
-        })
+        rows.append(
+            {
+                "status": s,
+                "label": STATUS_LABELS[s],
+                "count": counts.get(s, 0),
+            }
+        )
 
     return {"data": rows}
 
@@ -365,12 +382,14 @@ def get_product_pipeline(date_from=None, date_to=None, user_id=None):
     )
     rows = []
     for r in rows_qs:
-        rows.append({
-            "case_type": r["case_type"],
-            "label": TYPE_LABELS.get(r["case_type"], r["case_type"]),
-            "count": r["count"],
-            "estimated": float(r["estimated"] or 0),
-        })
+        rows.append(
+            {
+                "case_type": r["case_type"],
+                "label": TYPE_LABELS.get(r["case_type"], r["case_type"]),
+                "count": r["count"],
+                "estimated": float(r["estimated"] or 0),
+            }
+        )
 
     return {"data": rows}
 
@@ -378,8 +397,7 @@ def get_product_pipeline(date_from=None, date_to=None, user_id=None):
 # ---------------------------------------------------------------------------
 # Sales Results
 # ---------------------------------------------------------------------------
-def get_closed_vs_goals(date_from=None, date_to=None, group_by="monthly",
-                         user_id=None):
+def get_closed_vs_goals(date_from=None, date_to=None, group_by="monthly", user_id=None):
     """Closed/completed cases per period (goals are a frontend overlay)."""
     date_from, date_to = _parse_dates(date_from, date_to)
     trunc_fn, _ = _trunc_and_label(group_by)
@@ -403,12 +421,14 @@ def get_closed_vs_goals(date_from=None, date_to=None, group_by="monthly",
     )
     rows = []
     for r in rows_qs:
-        rows.append({
-            "period": _format_period(r["period"], group_by),
-            "label": _format_label(r["period"], group_by),
-            "count": r["count"],
-            "revenue": float(r["revenue"] or 0),
-        })
+        rows.append(
+            {
+                "period": _format_period(r["period"], group_by),
+                "label": _format_label(r["period"], group_by),
+                "count": r["count"],
+                "revenue": float(r["revenue"] or 0),
+            }
+        )
 
     return {"data": rows}
 
@@ -436,13 +456,15 @@ def get_product_revenue(date_from=None, date_to=None, user_id=None):
     )
     rows = []
     for r in rows_qs:
-        rows.append({
-            "case_type": r["case_type"],
-            "label": TYPE_LABELS.get(r["case_type"], r["case_type"]),
-            "count": r["count"],
-            "estimated": float(r["estimated"] or 0),
-            "actual": float(r["actual"] or 0),
-        })
+        rows.append(
+            {
+                "case_type": r["case_type"],
+                "label": TYPE_LABELS.get(r["case_type"], r["case_type"]),
+                "count": r["count"],
+                "estimated": float(r["estimated"] or 0),
+                "actual": float(r["actual"] or 0),
+            }
+        )
 
     return {"data": rows}
 
@@ -472,18 +494,19 @@ def get_sales_cycle_duration(date_from=None, date_to=None, user_id=None):
     for r in rows_qs:
         avg = r["avg_days"]
         avg_days_val = avg.days if avg else 0
-        rows.append({
-            "case_type": r["case_type"],
-            "label": TYPE_LABELS.get(r["case_type"], r["case_type"]),
-            "count": r["count"],
-            "avg_days": avg_days_val,
-        })
+        rows.append(
+            {
+                "case_type": r["case_type"],
+                "label": TYPE_LABELS.get(r["case_type"], r["case_type"]),
+                "count": r["count"],
+                "avg_days": avg_days_val,
+            }
+        )
 
     return {"data": rows}
 
 
-def get_lost_deals(date_from=None, date_to=None, group_by="monthly",
-                    user_id=None):
+def get_lost_deals(date_from=None, date_to=None, group_by="monthly", user_id=None):
     """Cases closed without being filed/completed (lost opportunities)."""
     date_from, date_to = _parse_dates(date_from, date_to)
     trunc_fn, _ = _trunc_and_label(group_by)
@@ -514,11 +537,13 @@ def get_lost_deals(date_from=None, date_to=None, group_by="monthly",
         val = float(r["lost_value"] or 0)
         total_count += r["count"]
         total_value += val
-        rows.append({
-            "period": _format_period(r["period"], group_by),
-            "label": _format_label(r["period"], group_by),
-            "count": r["count"],
-            "lost_value": val,
-        })
+        rows.append(
+            {
+                "period": _format_period(r["period"], group_by),
+                "label": _format_label(r["period"], group_by),
+                "count": r["count"],
+                "lost_value": val,
+            }
+        )
 
     return {"data": rows, "total_count": total_count, "total_value": total_value}

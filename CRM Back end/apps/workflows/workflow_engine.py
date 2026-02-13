@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 # Public API
 # ---------------------------------------------------------------------------
 
+
 def evaluate_signal_trigger(trigger_type, instance, **context):
     """
     Called from Django signals.  Finds active rules matching *trigger_type*,
@@ -24,9 +25,7 @@ def evaluate_signal_trigger(trigger_type, instance, **context):
 
     Returns a list of WorkflowExecutionLog entries.
     """
-    rules = WorkflowRule.objects.filter(
-        is_active=True, trigger_type=trigger_type
-    )
+    rules = WorkflowRule.objects.filter(is_active=True, trigger_type=trigger_type)
 
     logs = []
     for rule in rules:
@@ -66,7 +65,9 @@ def execute_action(rule, instance, context):
 
     if handler is None:
         return _create_log(
-            rule, instance, now,
+            rule,
+            instance,
+            now,
             action_taken=f"Unknown action_type: {rule.action_type}",
             result="error",
             error_message=f"No handler for action_type={rule.action_type}",
@@ -75,7 +76,9 @@ def execute_action(rule, instance, context):
     try:
         description = handler(rule, instance, context)
         log = _create_log(
-            rule, instance, now,
+            rule,
+            instance,
+            now,
             action_taken=description,
             result="success",
         )
@@ -87,7 +90,9 @@ def execute_action(rule, instance, context):
     except Exception as exc:
         logger.exception("Workflow action failed for rule %s", rule.id)
         return _create_log(
-            rule, instance, now,
+            rule,
+            instance,
+            now,
             action_taken=f"{rule.action_type} attempted",
             result="error",
             error_message=str(exc),
@@ -97,6 +102,7 @@ def execute_action(rule, instance, context):
 # ---------------------------------------------------------------------------
 # Trigger config matching
 # ---------------------------------------------------------------------------
+
 
 def _matches_trigger_config(rule, instance, context):
     """Check trigger_config against the specific trigger context."""
@@ -119,8 +125,10 @@ def _matches_trigger_config(rule, instance, context):
 # Action handlers
 # ---------------------------------------------------------------------------
 
+
 def _render_template_string(template_str, instance, context):
     """Replace ``{{field_name}}`` placeholders with instance attribute values."""
+
     def replacer(match):
         field = match.group(1).strip()
         val = context.get(field) or getattr(instance, field, None)
@@ -199,9 +207,7 @@ def _action_send_notification(rule, instance, context):
     title = _render_template_string(
         config.get("title", f"Workflow: {rule.name}"), instance, context
     )
-    message = _render_template_string(
-        config.get("message", ""), instance, context
-    )
+    message = _render_template_string(config.get("message", ""), instance, context)
     severity = config.get("severity", "info")
     action_url = _render_template_string(
         config.get("action_url", ""), instance, context
@@ -291,6 +297,7 @@ _ACTION_HANDLERS = {
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _create_log(rule, instance, triggered_at, action_taken, result, error_message=""):
     return WorkflowExecutionLog.objects.create(

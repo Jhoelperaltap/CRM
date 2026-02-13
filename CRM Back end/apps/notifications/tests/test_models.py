@@ -1,6 +1,10 @@
 import pytest
 
-from tests.factories import NotificationFactory, NotificationPreferenceFactory, UserFactory
+from tests.factories import (
+    NotificationFactory,
+    NotificationPreferenceFactory,
+    UserFactory,
+)
 
 
 @pytest.mark.django_db
@@ -21,6 +25,7 @@ class TestNotificationModel:
         NotificationFactory(recipient=user, title="First")
         n2 = NotificationFactory(recipient=user, title="Second")
         from apps.notifications.models import Notification
+
         notifs = list(Notification.objects.filter(recipient=user))
         assert notifs[0].pk == n2.pk
 
@@ -36,5 +41,6 @@ class TestNotificationPreferenceModel:
         user = UserFactory()
         NotificationPreferenceFactory(user=user, notification_type="system")
         from django.db import IntegrityError
+
         with pytest.raises(IntegrityError):
             NotificationPreferenceFactory(user=user, notification_type="system")

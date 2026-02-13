@@ -107,7 +107,13 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ["payment_number", "amount", "payment_date", "status", "payment_mode"]
+    list_display = [
+        "payment_number",
+        "amount",
+        "payment_date",
+        "status",
+        "payment_mode",
+    ]
     list_filter = ["status", "payment_mode"]
     search_fields = ["payment_number", "reference_number"]
 
@@ -128,6 +134,12 @@ class AssetAdmin(admin.ModelAdmin):
 
 @admin.register(StockTransaction)
 class StockTransactionAdmin(admin.ModelAdmin):
-    list_display = ["product", "transaction_type", "quantity", "reference", "created_at"]
+    list_display = [
+        "product",
+        "transaction_type",
+        "quantity",
+        "reference",
+        "created_at",
+    ]
     list_filter = ["transaction_type"]
     search_fields = ["reference"]

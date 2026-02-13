@@ -141,9 +141,7 @@ class TestTwoFactorVerifySetup:
     def test_verify_invalid_code_fails(self, admin_client):
         admin_client.post("/api/v1/auth/2fa/setup/")
 
-        resp = admin_client.post(
-            self.URL, {"code": "000000"}, format="json"
-        )
+        resp = admin_client.post(self.URL, {"code": "000000"}, format="json")
         assert resp.status_code == 400
 
     def test_verify_without_setup_fails(self, admin_client, admin_user):
@@ -151,9 +149,7 @@ class TestTwoFactorVerifySetup:
         admin_user.totp_secret = ""
         admin_user.save()
 
-        resp = admin_client.post(
-            self.URL, {"code": "123456"}, format="json"
-        )
+        resp = admin_client.post(self.URL, {"code": "123456"}, format="json")
         assert resp.status_code == 400
 
 

@@ -77,7 +77,5 @@ class TestGroupMembers:
             {"user_id": str(preparer_user.id)},
             format="json",
         )
-        resp = admin_client.delete(
-            f"{BASE}{test_group.id}/members/{preparer_user.id}/"
-        )
+        resp = admin_client.delete(f"{BASE}{test_group.id}/members/{preparer_user.id}/")
         assert resp.status_code == status.HTTP_204_NO_CONTENT

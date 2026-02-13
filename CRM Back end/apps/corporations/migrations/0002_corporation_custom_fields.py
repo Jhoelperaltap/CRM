@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('corporations', '0001_initial'),
+        ("corporations", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='corporation',
-            name='custom_fields',
-            field=models.JSONField(blank=True, default=dict, verbose_name='custom fields'),
+            model_name="corporation",
+            name="custom_fields",
+            field=models.JSONField(
+                blank=True, default=dict, verbose_name="custom fields"
+            ),
         ),
     ]

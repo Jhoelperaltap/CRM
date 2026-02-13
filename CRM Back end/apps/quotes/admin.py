@@ -32,7 +32,16 @@ class QuoteAdmin(admin.ModelAdmin):
     list_filter = ["stage", "created_at"]
     search_fields = ["quote_number", "subject"]
     list_select_related = ["contact", "corporation", "assigned_to"]
-    readonly_fields = ["id", "quote_number", "subtotal", "discount_amount", "tax_amount", "total", "created_at", "updated_at"]
+    readonly_fields = [
+        "id",
+        "quote_number",
+        "subtotal",
+        "discount_amount",
+        "tax_amount",
+        "total",
+        "created_at",
+        "updated_at",
+    ]
     raw_id_fields = ["contact", "corporation", "case", "assigned_to", "created_by"]
     ordering = ["-created_at"]
     inlines = [QuoteLineItemInline]

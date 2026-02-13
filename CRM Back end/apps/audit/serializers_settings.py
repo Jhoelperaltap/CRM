@@ -4,7 +4,9 @@ from apps.audit.models import EncryptedFieldAccessLog, LoginHistory, SettingsLog
 
 
 class LoginHistorySerializer(serializers.ModelSerializer):
-    user_email = serializers.CharField(source="user.email", read_only=True, default=None)
+    user_email = serializers.CharField(
+        source="user.email", read_only=True, default=None
+    )
 
     class Meta:
         model = LoginHistory
@@ -22,7 +24,9 @@ class LoginHistorySerializer(serializers.ModelSerializer):
 
 
 class SettingsLogSerializer(serializers.ModelSerializer):
-    user_email = serializers.CharField(source="user.email", read_only=True, default=None)
+    user_email = serializers.CharField(
+        source="user.email", read_only=True, default=None
+    )
 
     class Meta:
         model = SettingsLog
@@ -41,7 +45,9 @@ class SettingsLogSerializer(serializers.ModelSerializer):
 
 
 class EncryptedFieldAccessLogSerializer(serializers.ModelSerializer):
-    user_email = serializers.CharField(source="user.email", read_only=True, default=None)
+    user_email = serializers.CharField(
+        source="user.email", read_only=True, default=None
+    )
 
     class Meta:
         model = EncryptedFieldAccessLog

@@ -1,6 +1,7 @@
 """
 Serializers for Webforms.
 """
+
 from django.db import transaction
 from rest_framework import serializers
 
@@ -43,6 +44,7 @@ class WebformHiddenFieldSerializer(serializers.ModelSerializer):
 
 class WebformRoundRobinUserSerializer(serializers.ModelSerializer):
     """Serializer for round robin users."""
+
     user_name = serializers.SerializerMethodField()
 
     class Meta:
@@ -56,6 +58,7 @@ class WebformRoundRobinUserSerializer(serializers.ModelSerializer):
 
 class WebformListSerializer(serializers.ModelSerializer):
     """Serializer for webform list view."""
+
     assigned_to_name = serializers.SerializerMethodField()
     created_by_name = serializers.SerializerMethodField()
     field_count = serializers.IntegerField(read_only=True)
@@ -84,6 +87,7 @@ class WebformListSerializer(serializers.ModelSerializer):
 
 class WebformDetailSerializer(serializers.ModelSerializer):
     """Serializer for webform detail view."""
+
     fields = WebformFieldSerializer(many=True, read_only=True)
     hidden_fields = WebformHiddenFieldSerializer(many=True, read_only=True)
     round_robin_users = WebformRoundRobinUserSerializer(many=True, read_only=True)
@@ -121,13 +125,11 @@ class WebformDetailSerializer(serializers.ModelSerializer):
 
 class WebformCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating webforms with nested data."""
+
     fields = WebformFieldSerializer(many=True, required=False)
     hidden_fields = WebformHiddenFieldSerializer(many=True, required=False)
     round_robin_user_ids = serializers.ListField(
-        child=serializers.UUIDField(),
-        write_only=True,
-        required=False,
-        default=list
+        child=serializers.UUIDField(), write_only=True, required=False, default=list
     )
 
     class Meta:
@@ -171,9 +173,7 @@ class WebformCreateUpdateSerializer(serializers.ModelSerializer):
             try:
                 user = User.objects.get(id=user_id)
                 WebformRoundRobinUser.objects.create(
-                    webform=webform,
-                    user=user,
-                    sort_order=i
+                    webform=webform, user=user, sort_order=i
                 )
             except User.DoesNotExist:
                 pass
@@ -212,9 +212,7 @@ class WebformCreateUpdateSerializer(serializers.ModelSerializer):
                 try:
                     user = User.objects.get(id=user_id)
                     WebformRoundRobinUser.objects.create(
-                        webform=instance,
-                        user=user,
-                        sort_order=i
+                        webform=instance, user=user, sort_order=i
                     )
                 except User.DoesNotExist:
                     pass

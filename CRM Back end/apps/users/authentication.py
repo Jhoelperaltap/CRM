@@ -85,7 +85,9 @@ def get_cookie_settings(is_access_token: bool = True) -> dict:
     else:
         # Refresh token lifetime from settings (default 1 day)
         lifetime = settings.SIMPLE_JWT.get("REFRESH_TOKEN_LIFETIME")
-        cookie_settings["max_age"] = int(lifetime.total_seconds()) if lifetime else 86400
+        cookie_settings["max_age"] = (
+            int(lifetime.total_seconds()) if lifetime else 86400
+        )
 
     return cookie_settings
 
@@ -101,20 +103,12 @@ def set_auth_cookies(response, access_token: str, refresh_token: str = None):
     """
     # Set access token cookie
     access_settings = get_cookie_settings(is_access_token=True)
-    response.set_cookie(
-        ACCESS_TOKEN_COOKIE,
-        access_token,
-        **access_settings
-    )
+    response.set_cookie(ACCESS_TOKEN_COOKIE, access_token, **access_settings)
 
     # Set refresh token cookie if provided
     if refresh_token:
         refresh_settings = get_cookie_settings(is_access_token=False)
-        response.set_cookie(
-            REFRESH_TOKEN_COOKIE,
-            refresh_token,
-            **refresh_settings
-        )
+        response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, **refresh_settings)
 
     return response
 

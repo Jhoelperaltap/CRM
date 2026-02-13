@@ -34,11 +34,9 @@ class CorporationViewSet(viewsets.ModelViewSet):
     - **cases**     ``GET /corporations/<pk>/cases/``     -- tax cases linked to this corporation.
     """
 
-    queryset = (
-        Corporation.objects
-        .select_related("primary_contact", "assigned_to", "created_by")
-        .all()
-    )
+    queryset = Corporation.objects.select_related(
+        "primary_contact", "assigned_to", "created_by"
+    ).all()
     filterset_class = CorporationFilter
     search_fields = ["name", "legal_name", "ein"]
     ordering_fields = [
@@ -122,10 +120,8 @@ class CorporationViewSet(viewsets.ModelViewSet):
         from apps.cases.models import TaxCase
         from apps.cases.serializers import TaxCaseListSerializer
 
-        cases_qs = (
-            TaxCase.objects
-            .filter(corporation=corporation)
-            .order_by("-created_at")
+        cases_qs = TaxCase.objects.filter(corporation=corporation).order_by(
+            "-created_at"
         )
         serializer = TaxCaseListSerializer(cases_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -178,21 +174,25 @@ class CorporationViewSet(viewsets.ModelViewSet):
             if data.get("ein"):
                 match = Corporation.objects.filter(ein=data["ein"]).first()
                 if match:
-                    skipped.append({
-                        "row": row_number,
-                        "reason": f"Duplicate EIN: {data['ein']}",
-                        "matched_id": str(match.id),
-                    })
+                    skipped.append(
+                        {
+                            "row": row_number,
+                            "reason": f"Duplicate EIN: {data['ein']}",
+                            "matched_id": str(match.id),
+                        }
+                    )
                     continue
 
             # Dedup by name
             match = Corporation.objects.filter(name__iexact=data["name"]).first()
             if match:
-                skipped.append({
-                    "row": row_number,
-                    "reason": f"Duplicate name: {data['name']}",
-                    "matched_id": str(match.id),
-                })
+                skipped.append(
+                    {
+                        "row": row_number,
+                        "reason": f"Duplicate name: {data['name']}",
+                        "matched_id": str(match.id),
+                    }
+                )
                 continue
 
             Corporation.objects.create(created_by=request.user, **data)
@@ -205,7 +205,11 @@ class CorporationViewSet(viewsets.ModelViewSet):
                 "errors": errors,
                 "total_processed": created_count + len(errors) + len(skipped),
             },
-            status=status.HTTP_201_CREATED if created_count else status.HTTP_400_BAD_REQUEST,
+            status=(
+                status.HTTP_201_CREATED
+                if created_count
+                else status.HTTP_400_BAD_REQUEST
+            ),
         )
 
     @action(detail=False, methods=["get"], url_path="export_csv")
@@ -214,45 +218,77 @@ class CorporationViewSet(viewsets.ModelViewSet):
         qs = self.filter_queryset(self.get_queryset())
 
         response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = 'attachment; filename="corporations_export.csv"'
+        response["Content-Disposition"] = (
+            'attachment; filename="corporations_export.csv"'
+        )
 
         writer = csv.writer(response)
         header = [
-            "id", "name", "legal_name", "entity_type", "ein", "state_id",
-            "street_address", "city", "state", "zip_code", "country",
-            "phone", "fax", "email", "website", "industry",
-            "annual_revenue", "fiscal_year_end", "date_incorporated",
-            "status", "primary_contact", "assigned_to", "description",
+            "id",
+            "name",
+            "legal_name",
+            "entity_type",
+            "ein",
+            "state_id",
+            "street_address",
+            "city",
+            "state",
+            "zip_code",
+            "country",
+            "phone",
+            "fax",
+            "email",
+            "website",
+            "industry",
+            "annual_revenue",
+            "fiscal_year_end",
+            "date_incorporated",
+            "status",
+            "primary_contact",
+            "assigned_to",
+            "description",
             "created_at",
         ]
         writer.writerow(header)
 
         for corp in qs.iterator():
-            writer.writerow([
-                str(corp.id),
-                corp.name,
-                corp.legal_name,
-                corp.entity_type,
-                corp.ein,
-                corp.state_id,
-                corp.street_address,
-                corp.city,
-                corp.state,
-                corp.zip_code,
-                corp.country,
-                corp.phone,
-                corp.fax,
-                corp.email,
-                corp.website,
-                corp.industry,
-                str(corp.annual_revenue) if corp.annual_revenue else "",
-                corp.fiscal_year_end,
-                corp.date_incorporated.isoformat() if corp.date_incorporated else "",
-                corp.status,
-                corp.primary_contact.first_name + " " + corp.primary_contact.last_name if corp.primary_contact else "",
-                corp.assigned_to.get_full_name() if corp.assigned_to else "",
-                corp.description,
-                corp.created_at.isoformat(),
-            ])
+            writer.writerow(
+                [
+                    str(corp.id),
+                    corp.name,
+                    corp.legal_name,
+                    corp.entity_type,
+                    corp.ein,
+                    corp.state_id,
+                    corp.street_address,
+                    corp.city,
+                    corp.state,
+                    corp.zip_code,
+                    corp.country,
+                    corp.phone,
+                    corp.fax,
+                    corp.email,
+                    corp.website,
+                    corp.industry,
+                    str(corp.annual_revenue) if corp.annual_revenue else "",
+                    corp.fiscal_year_end,
+                    (
+                        corp.date_incorporated.isoformat()
+                        if corp.date_incorporated
+                        else ""
+                    ),
+                    corp.status,
+                    (
+                        corp.primary_contact.first_name
+                        + " "
+                        + corp.primary_contact.last_name
+                        if corp.primary_contact
+                        else ""
+                    ),
+                    corp.assigned_to.get_full_name() if corp.assigned_to else "",
+                    corp.description,
+                    corp.created_at.isoformat(),
+                ]
+            )
 
         return response

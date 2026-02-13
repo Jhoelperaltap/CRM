@@ -178,9 +178,7 @@ class PriceBookViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             qs = qs.annotate(entry_count=Count("entries"))
         else:
-            qs = qs.prefetch_related(
-                "entries__product", "entries__service"
-            )
+            qs = qs.prefetch_related("entries__product", "entries__service")
         return qs
 
     def get_serializer_class(self):
@@ -285,9 +283,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     ordering = ["-payment_date"]
 
     def get_queryset(self):
-        return Payment.objects.select_related(
-            "invoice", "contact", "created_by"
-        )
+        return Payment.objects.select_related("invoice", "contact", "created_by")
 
     def get_serializer_class(self):
         if self.action == "list":

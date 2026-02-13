@@ -26,7 +26,11 @@ class StaffPortalAccessListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_contact_name(self, obj):
-        return obj.contact.full_name if hasattr(obj.contact, "full_name") else str(obj.contact)
+        return (
+            obj.contact.full_name
+            if hasattr(obj.contact, "full_name")
+            else str(obj.contact)
+        )
 
 
 class StaffPortalAccessCreateSerializer(serializers.Serializer):
@@ -41,9 +45,7 @@ class StaffPortalAccessCreateSerializer(serializers.Serializer):
         except Contact.DoesNotExist:
             raise serializers.ValidationError("Contact not found.")
         if ClientPortalAccess.objects.filter(contact=contact).exists():
-            raise serializers.ValidationError(
-                "This contact already has portal access."
-            )
+            raise serializers.ValidationError("This contact already has portal access.")
         return contact
 
     def create(self, validated_data):
@@ -92,7 +94,11 @@ class StaffPortalAccessDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_contact_name(self, obj):
-        return obj.contact.full_name if hasattr(obj.contact, "full_name") else str(obj.contact)
+        return (
+            obj.contact.full_name
+            if hasattr(obj.contact, "full_name")
+            else str(obj.contact)
+        )
 
     def get_contact_email(self, obj):
         return obj.contact.email
@@ -123,7 +129,11 @@ class StaffDocumentReviewListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_contact_name(self, obj):
-        return obj.contact.full_name if hasattr(obj.contact, "full_name") else str(obj.contact)
+        return (
+            obj.contact.full_name
+            if hasattr(obj.contact, "full_name")
+            else str(obj.contact)
+        )
 
 
 class StaffDocumentReviewActionSerializer(serializers.Serializer):
@@ -156,7 +166,11 @@ class StaffPortalMessageListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_contact_name(self, obj):
-        return obj.contact.full_name if hasattr(obj.contact, "full_name") else str(obj.contact)
+        return (
+            obj.contact.full_name
+            if hasattr(obj.contact, "full_name")
+            else str(obj.contact)
+        )
 
     def get_sender_name(self, obj):
         if obj.sender_user:

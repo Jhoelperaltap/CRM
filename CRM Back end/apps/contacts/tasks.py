@@ -48,9 +48,7 @@ def async_import_contacts_csv(self, csv_content, user_id):
 
     for row_number, row in enumerate(reader, start=2):
         cleaned = {
-            k.strip().lower().replace(" ", "_"): v.strip()
-            for k, v in row.items()
-            if k
+            k.strip().lower().replace(" ", "_"): v.strip() for k, v in row.items() if k
         }
 
         serializer = ContactImportSerializer(data=cleaned)

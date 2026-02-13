@@ -48,7 +48,12 @@ class UserViewSet(viewsets.ModelViewSet):
     """
 
     queryset = User.objects.select_related(
-        "role", "reports_to", "primary_group", "branch", "business_hours", "email_account"
+        "role",
+        "reports_to",
+        "primary_group",
+        "branch",
+        "business_hours",
+        "email_account",
     ).all()
     filterset_class = UserFilter
     search_fields = ["email", "username", "first_name", "last_name", "phone"]
@@ -146,15 +151,29 @@ class UserViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="users.csv"'
         writer = csv.writer(response)
-        writer.writerow([
-            "email", "username", "first_name", "last_name",
-            "role", "phone", "is_active",
-        ])
+        writer.writerow(
+            [
+                "email",
+                "username",
+                "first_name",
+                "last_name",
+                "role",
+                "phone",
+                "is_active",
+            ]
+        )
         for u in User.objects.select_related("role").all():
-            writer.writerow([
-                u.email, u.username, u.first_name, u.last_name,
-                u.role.slug if u.role else "", u.phone, u.is_active,
-            ])
+            writer.writerow(
+                [
+                    u.email,
+                    u.username,
+                    u.first_name,
+                    u.last_name,
+                    u.role.slug if u.role else "",
+                    u.phone,
+                    u.is_active,
+                ]
+            )
         return response
 
 
@@ -167,9 +186,11 @@ class RoleViewSet(viewsets.ModelViewSet):
     write operations require admin role.
     """
 
-    queryset = Role.objects.select_related("parent").prefetch_related(
-        "permissions", "children"
-    ).all()
+    queryset = (
+        Role.objects.select_related("parent")
+        .prefetch_related("permissions", "children")
+        .all()
+    )
     pagination_class = None  # roles are a small fixed set
 
     def get_serializer_class(self):
@@ -311,8 +332,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             # Record failed attempt for brute force protection
             if user_for_lockout:
-                account_locked, lockout_seconds = BruteForceProtection.record_failed_attempt(
-                    user_for_lockout, policy
+                account_locked, lockout_seconds = (
+                    BruteForceProtection.record_failed_attempt(user_for_lockout, policy)
                 )
                 if account_locked:
                     remaining_minutes = (lockout_seconds // 60) + 1
@@ -500,7 +521,9 @@ class LogoutView(APIView):
 
     def post(self, request):
         # Try to get refresh token from body first (mobile apps), then cookie (web)
-        refresh_token = request.data.get("refresh") or get_refresh_token_from_cookie(request)
+        refresh_token = request.data.get("refresh") or get_refresh_token_from_cookie(
+            request
+        )
 
         if refresh_token:
             try:
@@ -530,7 +553,9 @@ class CookieTokenRefreshView(APIView):
 
     def post(self, request):
         # Try to get refresh token from body first (mobile apps), then cookie (web)
-        refresh_token = request.data.get("refresh") or get_refresh_token_from_cookie(request)
+        refresh_token = request.data.get("refresh") or get_refresh_token_from_cookie(
+            request
+        )
 
         if not refresh_token:
             return Response(
@@ -543,6 +568,7 @@ class CookieTokenRefreshView(APIView):
 
             # Check if token rotation is enabled
             from django.conf import settings
+
             rotate_tokens = settings.SIMPLE_JWT.get("ROTATE_REFRESH_TOKENS", False)
             blacklist_after = settings.SIMPLE_JWT.get("BLACKLIST_AFTER_ROTATION", False)
 

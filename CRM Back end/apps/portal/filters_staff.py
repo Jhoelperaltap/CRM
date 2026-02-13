@@ -33,4 +33,10 @@ class PortalMessageFilter(django_filters.FilterSet):
 
     class Meta:
         model = PortalMessage
-        fields = ["contact", "is_read", "message_type", "created_after", "created_before"]
+        fields = [
+            "contact",
+            "is_read",
+            "message_type",
+            "created_after",
+            "created_before",
+        ]

@@ -41,19 +41,13 @@ class Role(models.Model):
         SAME_ROLE_HIERARCHY = "same_role_hierarchy", _(
             "Users having Same Role or Same Hierarchy or Subordinate Role"
         )
-        SUBORDINATE_ROLE = "subordinate_role", _(
-            "Users having Subordinate Role"
-        )
+        SUBORDINATE_ROLE = "subordinate_role", _("Users having Subordinate Role")
 
     class AssignGroupsPolicy(models.TextChoices):
         ALL_GROUPS = "all_groups", _("All Groups")
-        USER_GROUPS = "user_groups", _(
-            "All Groups that user is part of"
-        )
+        USER_GROUPS = "user_groups", _("All Groups that user is part of")
         SELECTED_GROUPS = "selected_groups", _("Selected Groups")
-        NO_GROUPS = "no_groups", _(
-            "Can not assign to any group"
-        )
+        NO_GROUPS = "no_groups", _("Can not assign to any group")
         SELECTED_GROUPS_MEMBERS = "selected_groups_members", _(
             "Selected Groups and Group members"
         )
@@ -79,7 +73,9 @@ class Role(models.Model):
         verbose_name=_("parent role"),
     )
     level = models.PositiveSmallIntegerField(_("hierarchy level"), default=0)
-    department = models.CharField(_("department"), max_length=100, blank=True, default="")
+    department = models.CharField(
+        _("department"), max_length=100, blank=True, default=""
+    )
     assign_users_policy = models.CharField(
         _("assign records to users"),
         max_length=30,
@@ -258,7 +254,9 @@ class User(AbstractUser):
     class PersonNameFormat(models.TextChoices):
         FIRST_LAST = "first_last", _("First Name Last Name")
         LAST_FIRST = "last_first", _("Last Name First Name")
-        SALUTATION_FIRST_LAST = "salutation_first_last", _("Salutation First Name Last Name")
+        SALUTATION_FIRST_LAST = "salutation_first_last", _(
+            "Salutation First Name Last Name"
+        )
 
     id = models.UUIDField(
         primary_key=True,
@@ -540,14 +538,19 @@ class User(AbstractUser):
     )
     # Brute force protection fields
     failed_login_attempts = models.PositiveIntegerField(
-        _("failed login attempts"), default=0,
+        _("failed login attempts"),
+        default=0,
     )
     locked_until = models.DateTimeField(
-        _("locked until"), null=True, blank=True,
+        _("locked until"),
+        null=True,
+        blank=True,
         help_text=_("Account is locked until this time."),
     )
     last_failed_login = models.DateTimeField(
-        _("last failed login"), null=True, blank=True,
+        _("last failed login"),
+        null=True,
+        blank=True,
     )
     totp_secret = models.CharField(
         _("TOTP secret"), max_length=32, blank=True, default=""
@@ -757,7 +760,9 @@ class AuthenticationPolicy(models.Model):
     Singleton system-wide authentication settings.
     """
 
-    id = models.UUIDField(primary_key=True, default=AUTHENTICATION_POLICY_PK, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=AUTHENTICATION_POLICY_PK, editable=False
+    )
     password_reset_frequency_days = models.PositiveIntegerField(
         _("password reset frequency (days)"), default=180
     )
@@ -792,34 +797,48 @@ class AuthenticationPolicy(models.Model):
         _("remember device (days)"), default=0
     )
     sso_enabled = models.BooleanField(
-        _("SSO enabled"), default=False,
+        _("SSO enabled"),
+        default=False,
         help_text=_("Enable Single Sign-On integration."),
     )
     sso_provider = models.CharField(
-        _("SSO provider"), max_length=50, blank=True, default="",
+        _("SSO provider"),
+        max_length=50,
+        blank=True,
+        default="",
         help_text=_("SSO provider type: 'saml', 'oauth2', or empty."),
     )
     sso_entity_id = models.CharField(
-        _("SSO entity ID"), max_length=255, blank=True, default="",
+        _("SSO entity ID"),
+        max_length=255,
+        blank=True,
+        default="",
     )
     sso_login_url = models.URLField(
-        _("SSO login URL"), blank=True, default="",
+        _("SSO login URL"),
+        blank=True,
+        default="",
     )
     sso_certificate = models.TextField(
-        _("SSO certificate"), blank=True, default="",
+        _("SSO certificate"),
+        blank=True,
+        default="",
         help_text=_("X.509 certificate for SAML/OAuth2 verification."),
     )
     # Brute force protection settings
     max_failed_login_attempts = models.PositiveIntegerField(
-        _("max failed login attempts"), default=5,
+        _("max failed login attempts"),
+        default=5,
         help_text=_("Number of failed login attempts before account lockout."),
     )
     lockout_duration_minutes = models.PositiveIntegerField(
-        _("lockout duration (minutes)"), default=30,
+        _("lockout duration (minutes)"),
+        default=30,
         help_text=_("Duration of account lockout after max failed attempts."),
     )
     failed_login_window_minutes = models.PositiveIntegerField(
-        _("failed login window (minutes)"), default=15,
+        _("failed login window (minutes)"),
+        default=15,
         help_text=_("Time window to count failed login attempts."),
     )
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
@@ -921,7 +940,9 @@ class LoginIPWhitelist(models.Model):
         related_name="ip_whitelist",
         verbose_name=_("user"),
     )
-    description = models.CharField(_("description"), max_length=255, blank=True, default="")
+    description = models.CharField(
+        _("description"), max_length=255, blank=True, default=""
+    )
     is_active = models.BooleanField(_("active"), default=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
 
@@ -1067,7 +1088,9 @@ class BlockedIPLog(models.Model):
         choices=RequestType.choices,
         default=RequestType.OTHER,
     )
-    request_path = models.CharField(_("request path"), max_length=500, blank=True, default="")
+    request_path = models.CharField(
+        _("request path"), max_length=500, blank=True, default=""
+    )
     user_agent = models.TextField(_("user agent"), blank=True, default="")
     request_data = models.JSONField(_("request data"), default=dict, blank=True)
     timestamp = models.DateTimeField(_("timestamp"), auto_now_add=True, db_index=True)

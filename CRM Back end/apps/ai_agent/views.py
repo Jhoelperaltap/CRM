@@ -87,10 +87,12 @@ class AgentToggleView(APIView):
         config = AgentConfiguration.get_config()
         config.is_active = not config.is_active
         config.save()
-        return Response({
-            "is_active": config.is_active,
-            "message": f"AI Agent is now {'active' if config.is_active else 'inactive'}",
-        })
+        return Response(
+            {
+                "is_active": config.is_active,
+                "message": f"AI Agent is now {'active' if config.is_active else 'inactive'}",
+            }
+        )
 
 
 class AgentStatusView(APIView):
@@ -151,7 +153,9 @@ class AgentActionViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = AgentActionListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsAdminRole])
+    @action(
+        detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsAdminRole]
+    )
     def approve(self, request, pk=None):
         """Approve a pending action."""
         action_obj = self.get_object()
@@ -181,7 +185,9 @@ class AgentActionViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(AgentActionDetailSerializer(action_obj).data)
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsAdminRole])
+    @action(
+        detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsAdminRole]
+    )
     def reject(self, request, pk=None):
         """Reject a pending action."""
         action_obj = self.get_object()
@@ -262,24 +268,28 @@ class AgentLogViewSet(viewsets.ReadOnlyModelViewSet):
         response["Content-Disposition"] = 'attachment; filename="agent_logs.csv"'
 
         writer = csv.writer(response)
-        writer.writerow([
-            "Timestamp",
-            "Level",
-            "Component",
-            "Message",
-            "Tokens Used",
-            "Latency (ms)",
-        ])
+        writer.writerow(
+            [
+                "Timestamp",
+                "Level",
+                "Component",
+                "Message",
+                "Tokens Used",
+                "Latency (ms)",
+            ]
+        )
 
         for log in queryset[:10000]:  # Limit export size
-            writer.writerow([
-                log.created_at.isoformat(),
-                log.level,
-                log.component,
-                log.message,
-                log.tokens_used or "",
-                log.ai_latency_ms or "",
-            ])
+            writer.writerow(
+                [
+                    log.created_at.isoformat(),
+                    log.level,
+                    log.component,
+                    log.message,
+                    log.tokens_used or "",
+                    log.ai_latency_ms or "",
+                ]
+            )
 
         return response
 
@@ -406,8 +416,7 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
         except Exception as e:
             logger.exception("Error generating recommendations")
             return Response(
-                {"error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     @action(detail=False, methods=["get"])
@@ -439,17 +448,21 @@ class RunAgentCycleView(APIView):
 
         if run_async:
             task = run_agent_cycle.delay()
-            return Response({
-                "status": "queued",
-                "task_id": str(task.id),
-                "message": "Agent cycle queued for execution",
-            })
+            return Response(
+                {
+                    "status": "queued",
+                    "task_id": str(task.id),
+                    "message": "Agent cycle queued for execution",
+                }
+            )
         else:
             result = run_agent_cycle()
-            return Response({
-                "status": "completed",
-                "result": result,
-            })
+            return Response(
+                {
+                    "status": "completed",
+                    "result": result,
+                }
+            )
 
 
 class RunMarketAnalysisView(APIView):
@@ -465,14 +478,18 @@ class RunMarketAnalysisView(APIView):
 
         if run_async:
             task = generate_daily_insights.delay()
-            return Response({
-                "status": "queued",
-                "task_id": str(task.id),
-                "message": "Market analysis queued for execution",
-            })
+            return Response(
+                {
+                    "status": "queued",
+                    "task_id": str(task.id),
+                    "message": "Market analysis queued for execution",
+                }
+            )
         else:
             result = generate_daily_insights()
-            return Response({
-                "status": "completed",
-                "result": result,
-            })
+            return Response(
+                {
+                    "status": "completed",
+                    "result": result,
+                }
+            )

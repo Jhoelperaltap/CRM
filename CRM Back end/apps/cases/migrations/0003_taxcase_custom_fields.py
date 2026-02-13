@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cases', '0002_initial'),
+        ("cases", "0002_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='taxcase',
-            name='custom_fields',
-            field=models.JSONField(blank=True, default=dict, verbose_name='custom fields'),
+            model_name="taxcase",
+            name="custom_fields",
+            field=models.JSONField(
+                blank=True, default=dict, verbose_name="custom fields"
+            ),
         ),
     ]

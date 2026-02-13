@@ -27,8 +27,7 @@ def _legacy_generate_case_number() -> str:
     prefix = f"TC-{current_year}-"
 
     last_case = (
-        TaxCase.objects
-        .filter(case_number__startswith=prefix)
+        TaxCase.objects.filter(case_number__startswith=prefix)
         .order_by("-case_number")
         .values_list("case_number", flat=True)
         .first()
@@ -103,7 +102,11 @@ def transition_case_status(case: TaxCase, new_status: str, user) -> TaxCase:
 
     case.save(
         update_fields=[
-            "status", "filed_date", "completed_date", "closed_date", "updated_at",
+            "status",
+            "filed_date",
+            "completed_date",
+            "closed_date",
+            "updated_at",
         ]
     )
     return case

@@ -1,6 +1,7 @@
 """
 Filters for Webforms.
 """
+
 from django_filters import rest_framework as filters
 
 from .models import Webform
@@ -8,6 +9,7 @@ from .models import Webform
 
 class WebformFilter(filters.FilterSet):
     """Filter for webforms."""
+
     is_active = filters.BooleanFilter()
     primary_module = filters.CharFilter()
     assigned_to = filters.UUIDFilter()

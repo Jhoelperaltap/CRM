@@ -27,14 +27,11 @@ urlpatterns = [
     # Configuration endpoints
     path("config/", AgentConfigurationView.as_view(), name="agent-config"),
     path("config/toggle/", AgentToggleView.as_view(), name="agent-toggle"),
-
     # Status endpoint
     path("status/", AgentStatusView.as_view(), name="agent-status"),
-
     # Manual triggers
     path("run-cycle/", RunAgentCycleView.as_view(), name="agent-run-cycle"),
     path("run-analysis/", RunMarketAnalysisView.as_view(), name="agent-run-analysis"),
-
     # ViewSet routes
     path("", include(router.urls)),
 ]

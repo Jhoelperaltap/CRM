@@ -9,6 +9,7 @@ Architecture:
 - Document keys: Random per-document, encrypted with master key, stored in DB
 - Files: Encrypted with document key before storage
 """
+
 import base64
 import logging
 import os
@@ -24,16 +25,19 @@ logger = logging.getLogger(__name__)
 
 class DocumentEncryptionError(Exception):
     """Base exception for document encryption errors."""
+
     pass
 
 
 class EncryptionKeyError(DocumentEncryptionError):
     """Error with encryption key management."""
+
     pass
 
 
 class DecryptionError(DocumentEncryptionError):
     """Error during file decryption."""
+
     pass
 
 
@@ -113,7 +117,9 @@ class DocumentEncryptionService:
         encrypted_key = self.fernet.encrypt(raw_key)
 
         # Create key ID: version + encrypted key (base64)
-        key_id = f"{self.KEY_VERSION}:{base64.urlsafe_b64encode(encrypted_key).decode()}"
+        key_id = (
+            f"{self.KEY_VERSION}:{base64.urlsafe_b64encode(encrypted_key).decode()}"
+        )
 
         return raw_key, key_id
 
@@ -237,10 +243,7 @@ class DocumentEncryptionService:
         encrypted_content, key_id = self.encrypt_file(content)
 
         # Create new ContentFile with encrypted content
-        encrypted_file = ContentFile(
-            encrypted_content,
-            name=django_file.name
-        )
+        encrypted_file = ContentFile(encrypted_content, name=django_file.name)
 
         return encrypted_file, key_id
 

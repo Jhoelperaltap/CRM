@@ -42,7 +42,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    models.TextField(blank=True, default="", verbose_name="description"),
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
                 ),
                 (
                     "parent",
@@ -64,7 +66,10 @@ class Migration(migrations.Migration):
                 (
                     "department",
                     models.CharField(
-                        blank=True, default="", max_length=100, verbose_name="department"
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="department",
                     ),
                 ),
                 (
@@ -175,7 +180,10 @@ class Migration(migrations.Migration):
                 (
                     "phone",
                     models.CharField(
-                        blank=True, default="", max_length=30, verbose_name="phone number"
+                        blank=True,
+                        default="",
+                        max_length=30,
+                        verbose_name="phone number",
                     ),
                 ),
                 (
@@ -336,7 +344,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    models.TextField(blank=True, default="", verbose_name="description"),
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
                 ),
                 (
                     "created_at",
@@ -691,7 +701,10 @@ class Migration(migrations.Migration):
                 (
                     "description",
                     models.CharField(
-                        blank=True, default="", max_length=255, verbose_name="description"
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="description",
                     ),
                 ),
                 ("is_active", models.BooleanField(default=True, verbose_name="active")),

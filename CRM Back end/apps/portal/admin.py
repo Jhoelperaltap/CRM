@@ -53,7 +53,14 @@ class PortalShortcutInline(admin.TabularInline):
 class PortalModuleFieldConfigInline(admin.TabularInline):
     model = PortalModuleFieldConfig
     extra = 0
-    fields = ["module_name", "field_name", "field_label", "permission", "is_mandatory", "sort_order"]
+    fields = [
+        "module_name",
+        "field_name",
+        "field_label",
+        "permission",
+        "is_mandatory",
+        "sort_order",
+    ]
 
 
 @admin.register(PortalConfiguration)
@@ -62,7 +69,11 @@ class PortalConfigurationAdmin(admin.ModelAdmin):
     list_filter = ["is_active"]
     raw_id_fields = ["default_assignee"]
     readonly_fields = ["id", "created_at", "updated_at"]
-    inlines = [PortalMenuItemInline, PortalShortcutInline, PortalModuleFieldConfigInline]
+    inlines = [
+        PortalMenuItemInline,
+        PortalShortcutInline,
+        PortalModuleFieldConfigInline,
+    ]
     fieldsets = (
         (
             "General",

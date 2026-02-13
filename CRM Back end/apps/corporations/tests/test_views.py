@@ -29,9 +29,7 @@ class TestCorporationCreate:
         assert resp.data["name"] == "Acme Inc"
 
     def test_create_missing_name(self, authenticated_client):
-        resp = authenticated_client.post(
-            BASE, {"entity_type": "llc"}, format="json"
-        )
+        resp = authenticated_client.post(BASE, {"entity_type": "llc"}, format="json")
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
 
 

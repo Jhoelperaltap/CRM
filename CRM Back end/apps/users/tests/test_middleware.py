@@ -22,7 +22,10 @@ class TestSessionTimeoutMiddleware:
         access = refresh.access_token
         jti = str(access["jti"])
         UserSession.objects.create(
-            user=user, jti=jti, ip_address="127.0.0.1", is_active=True,
+            user=user,
+            jti=jti,
+            ip_address="127.0.0.1",
+            is_active=True,
         )
 
         client = APIClient()
@@ -38,7 +41,10 @@ class TestSessionTimeoutMiddleware:
         access = refresh.access_token
         jti = str(access["jti"])
         session = UserSession.objects.create(
-            user=user, jti=jti, ip_address="127.0.0.1", is_active=True,
+            user=user,
+            jti=jti,
+            ip_address="127.0.0.1",
+            is_active=True,
         )
         # Backdate last_activity beyond timeout
         UserSession.objects.filter(pk=session.pk).update(
@@ -61,7 +67,9 @@ class TestIPWhitelistMiddleware:
     def test_matching_ip_allowed(self, admin_role, admin_user):
         """When whitelist entries exist and IP matches, allow through."""
         LoginIPWhitelistFactory(
-            ip_address="127.0.0.1", role=admin_role, is_active=True,
+            ip_address="127.0.0.1",
+            role=admin_role,
+            is_active=True,
         )
         client = APIClient()
         refresh = RefreshToken.for_user(admin_user)
@@ -72,7 +80,9 @@ class TestIPWhitelistMiddleware:
     def test_non_matching_ip_blocked(self, admin_role, admin_user):
         """When whitelist entries exist and IP does not match, block."""
         LoginIPWhitelistFactory(
-            ip_address="10.0.0.99", role=admin_role, is_active=True,
+            ip_address="10.0.0.99",
+            role=admin_role,
+            is_active=True,
         )
         client = APIClient()
         refresh = RefreshToken.for_user(admin_user)
@@ -91,7 +101,10 @@ class TestConcurrentSessionMiddleware:
         access = refresh.access_token
         jti = str(access["jti"])
         UserSession.objects.create(
-            user=user, jti=jti, ip_address="127.0.0.1", is_active=True,
+            user=user,
+            jti=jti,
+            ip_address="127.0.0.1",
+            is_active=True,
         )
 
         client = APIClient()
@@ -106,7 +119,10 @@ class TestConcurrentSessionMiddleware:
         access = refresh.access_token
         jti = str(access["jti"])
         UserSession.objects.create(
-            user=user, jti=jti, ip_address="127.0.0.1", is_active=False,
+            user=user,
+            jti=jti,
+            ip_address="127.0.0.1",
+            is_active=False,
         )
 
         client = APIClient()

@@ -116,13 +116,21 @@ class TestCaseTransition:
         case = TaxCaseFactory(status="new")
         cid = case.id
         # new -> in_progress
-        authenticated_client.post(f"{BASE}{cid}/transition/", {"status": "in_progress"}, format="json")
+        authenticated_client.post(
+            f"{BASE}{cid}/transition/", {"status": "in_progress"}, format="json"
+        )
         # in_progress -> under_review
-        authenticated_client.post(f"{BASE}{cid}/transition/", {"status": "under_review"}, format="json")
+        authenticated_client.post(
+            f"{BASE}{cid}/transition/", {"status": "under_review"}, format="json"
+        )
         # under_review -> ready_to_file
-        authenticated_client.post(f"{BASE}{cid}/transition/", {"status": "ready_to_file"}, format="json")
+        authenticated_client.post(
+            f"{BASE}{cid}/transition/", {"status": "ready_to_file"}, format="json"
+        )
         # ready_to_file -> filed
-        resp = authenticated_client.post(f"{BASE}{cid}/transition/", {"status": "filed"}, format="json")
+        resp = authenticated_client.post(
+            f"{BASE}{cid}/transition/", {"status": "filed"}, format="json"
+        )
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["status"] == "filed"
         assert resp.data["filed_date"] is not None

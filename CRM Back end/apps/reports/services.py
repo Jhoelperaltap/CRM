@@ -26,7 +26,7 @@ def _get_valid_field_names(model) -> set:
     """
     valid_fields = set()
     for field in model._meta.get_fields():
-        if hasattr(field, 'column') or hasattr(field, 'attname'):
+        if hasattr(field, "column") or hasattr(field, "attname"):
             valid_fields.add(field.name)
     return valid_fields
 
@@ -43,13 +43,14 @@ def _is_safe_field_name(field_name: str, valid_fields: set) -> bool:
         return False
 
     # Only allow alphanumeric and underscore (no double underscores for traversal)
-    if '__' in field_name:
+    if "__" in field_name:
         return False
 
-    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', field_name):
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", field_name):
         return False
 
     return field_name in valid_fields
+
 
 # Map primary_module choices → (app_label, model_name)
 MODULE_MODEL_MAP = {
@@ -163,7 +164,11 @@ def execute_report(report: Report, page: int = 1, page_size: int = 50):
 
     # Sorting (with field validation)
     if report.sort_field and _is_safe_field_name(report.sort_field, valid_fields):
-        order = f"-{report.sort_field}" if report.sort_order == "desc" else report.sort_field
+        order = (
+            f"-{report.sort_field}"
+            if report.sort_order == "desc"
+            else report.sort_field
+        )
         qs = qs.order_by(order)
 
     total = qs.count()
@@ -171,7 +176,9 @@ def execute_report(report: Report, page: int = 1, page_size: int = 50):
     # Determine columns (with field validation)
     if report.columns:
         # Security: Filter to only valid field names
-        columns = [col for col in report.columns if _is_safe_field_name(col, valid_fields)]
+        columns = [
+            col for col in report.columns if _is_safe_field_name(col, valid_fields)
+        ]
     else:
         # Default: use a sensible set of model fields
         columns = [
@@ -235,9 +242,7 @@ def get_module_fields(primary_module: str):
             "type": field_type,
         }
         if field_type == "choice" and f.choices:
-            entry["choices"] = [
-                {"value": c[0], "label": str(c[1])} for c in f.choices
-            ]
+            entry["choices"] = [{"value": c[0], "label": str(c[1])} for c in f.choices]
         fields.append(entry)
 
     return fields

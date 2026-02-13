@@ -1,6 +1,7 @@
 """
 Tests for security event logging with pattern detection.
 """
+
 from unittest.mock import patch
 from django.test import TestCase
 from django.core.cache import cache
@@ -42,11 +43,11 @@ class SecurityEventTestCase(TestCase):
         """Test that events are mapped to correct categories."""
         self.assertEqual(
             SecurityEvent.EVENT_CATEGORIES[SecurityEvent.LOGIN_SUCCESS],
-            SecurityEvent.CATEGORY_AUTHENTICATION
+            SecurityEvent.CATEGORY_AUTHENTICATION,
         )
         self.assertEqual(
             SecurityEvent.EVENT_CATEGORIES[SecurityEvent.PERMISSION_DENIED],
-            SecurityEvent.CATEGORY_AUTHORIZATION
+            SecurityEvent.CATEGORY_AUTHORIZATION,
         )
 
 
@@ -258,8 +259,7 @@ class SecurityEventLoggerTestCase(TestCase):
 
         # Failed login with suspicious flag is critical
         severity = self.logger._determine_severity(
-            SecurityEvent.LOGIN_FAILED,
-            is_suspicious=True
+            SecurityEvent.LOGIN_FAILED, is_suspicious=True
         )
         self.assertEqual(severity, SecurityEvent.SEVERITY_CRITICAL)
 
@@ -285,9 +285,7 @@ class SecurityEventLoggerTestCase(TestCase):
     def test_build_suspicious_activity_description(self):
         """Test building descriptive message for suspicious activity."""
         description = self.logger._build_suspicious_activity_description(
-            failed_attempts=10,
-            unique_ips=2,
-            unique_emails=3
+            failed_attempts=10, unique_ips=2, unique_emails=3
         )
 
         self.assertIn("Multiple failed login attempts", description)
@@ -299,7 +297,7 @@ class SecurityEventLoggerTestCase(TestCase):
 
     def test_cache_unavailable_handling(self):
         """Test that logging continues even if cache is unavailable."""
-        with patch('django.core.cache.cache.get', side_effect=Exception("Cache error")):
+        with patch("django.core.cache.cache.get", side_effect=Exception("Cache error")):
             # Should not raise exception
             try:
                 self.logger.log_login_failed(
@@ -312,7 +310,7 @@ class SecurityEventLoggerTestCase(TestCase):
 
     def test_event_context_includes_all_fields(self):
         """Test that logged events include all expected fields."""
-        with patch.object(self.logger.logger, 'info') as mock_log:
+        with patch.object(self.logger.logger, "info") as mock_log:
             self.logger.log_login_success(
                 user_id=self.test_user_id,
                 email=self.test_email,
@@ -325,14 +323,14 @@ class SecurityEventLoggerTestCase(TestCase):
 
             # Get the extra data passed to the logger
             call_args = mock_log.call_args
-            extra_data = call_args[1]['extra']
+            extra_data = call_args[1]["extra"]
 
             # Verify all expected fields are present
-            self.assertEqual(extra_data['event_type'], SecurityEvent.LOGIN_SUCCESS)
-            self.assertEqual(extra_data['user_id'], self.test_user_id)
-            self.assertEqual(extra_data['email'], self.test_email)
-            self.assertEqual(extra_data['ip_address'], self.test_ip)
-            self.assertEqual(extra_data['user_agent'], self.test_user_agent)
-            self.assertIn('category', extra_data)
-            self.assertIn('severity', extra_data)
-            self.assertIn('timestamp', extra_data)
+            self.assertEqual(extra_data["event_type"], SecurityEvent.LOGIN_SUCCESS)
+            self.assertEqual(extra_data["user_id"], self.test_user_id)
+            self.assertEqual(extra_data["email"], self.test_email)
+            self.assertEqual(extra_data["ip_address"], self.test_ip)
+            self.assertEqual(extra_data["user_agent"], self.test_user_agent)
+            self.assertIn("category", extra_data)
+            self.assertIn("severity", extra_data)
+            self.assertIn("timestamp", extra_data)

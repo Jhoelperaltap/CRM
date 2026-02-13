@@ -73,15 +73,21 @@ class ForecastEntry(TimeStampedModel):
         choices=[(1, "Q1"), (2, "Q2"), (3, "Q3"), (4, "Q4")],
     )
     pipeline = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0,
+        max_digits=12,
+        decimal_places=2,
+        default=0,
         help_text=_("Total pipeline value"),
     )
     best_case = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0,
+        max_digits=12,
+        decimal_places=2,
+        default=0,
         help_text=_("Best-case forecast"),
     )
     commit = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0,
+        max_digits=12,
+        decimal_places=2,
+        default=0,
         help_text=_("Committed forecast"),
     )
 

@@ -16,43 +16,118 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='WorkflowRule',
+            name="WorkflowRule",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=200)),
-                ('description', models.TextField(blank=True, default='')),
-                ('is_active', models.BooleanField(db_index=True, default=True)),
-                ('trigger_type', models.CharField(choices=[('case_status_changed', 'Case Status Changed'), ('case_created', 'Case Created'), ('document_uploaded', 'Document Uploaded'), ('document_missing_check', 'Document Missing Check'), ('appointment_reminder', 'Appointment Reminder'), ('case_due_date_approaching', 'Case Due Date Approaching'), ('task_overdue', 'Task Overdue')], db_index=True, max_length=40)),
-                ('trigger_config', models.JSONField(blank=True, default=dict)),
-                ('conditions', models.JSONField(blank=True, default=dict, help_text='Optional extra filters, e.g. {"case_type": "individual_1040"}')),
-                ('action_type', models.CharField(choices=[('create_task', 'Create Task'), ('send_notification', 'Send Notification'), ('send_email', 'Send Email'), ('update_field', 'Update Field')], max_length=30)),
-                ('action_config', models.JSONField(default=dict)),
-                ('execution_count', models.PositiveIntegerField(default=0)),
-                ('last_executed_at', models.DateTimeField(blank=True, null=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_workflow_rules', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=200)),
+                ("description", models.TextField(blank=True, default="")),
+                ("is_active", models.BooleanField(db_index=True, default=True)),
+                (
+                    "trigger_type",
+                    models.CharField(
+                        choices=[
+                            ("case_status_changed", "Case Status Changed"),
+                            ("case_created", "Case Created"),
+                            ("document_uploaded", "Document Uploaded"),
+                            ("document_missing_check", "Document Missing Check"),
+                            ("appointment_reminder", "Appointment Reminder"),
+                            ("case_due_date_approaching", "Case Due Date Approaching"),
+                            ("task_overdue", "Task Overdue"),
+                        ],
+                        db_index=True,
+                        max_length=40,
+                    ),
+                ),
+                ("trigger_config", models.JSONField(blank=True, default=dict)),
+                (
+                    "conditions",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text='Optional extra filters, e.g. {"case_type": "individual_1040"}',
+                    ),
+                ),
+                (
+                    "action_type",
+                    models.CharField(
+                        choices=[
+                            ("create_task", "Create Task"),
+                            ("send_notification", "Send Notification"),
+                            ("send_email", "Send Email"),
+                            ("update_field", "Update Field"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("action_config", models.JSONField(default=dict)),
+                ("execution_count", models.PositiveIntegerField(default=0)),
+                ("last_executed_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_workflow_rules",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='WorkflowExecutionLog',
+            name="WorkflowExecutionLog",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('triggered_at', models.DateTimeField(db_index=True)),
-                ('trigger_object_type', models.CharField(blank=True, default='', max_length=50)),
-                ('trigger_object_id', models.UUIDField(blank=True, null=True)),
-                ('action_taken', models.CharField(default='', max_length=500)),
-                ('result', models.CharField(choices=[('success', 'Success'), ('error', 'Error')], db_index=True, max_length=10)),
-                ('error_message', models.TextField(blank=True, default='')),
-                ('rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='execution_logs', to='workflows.workflowrule')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("triggered_at", models.DateTimeField(db_index=True)),
+                (
+                    "trigger_object_type",
+                    models.CharField(blank=True, default="", max_length=50),
+                ),
+                ("trigger_object_id", models.UUIDField(blank=True, null=True)),
+                ("action_taken", models.CharField(default="", max_length=500)),
+                (
+                    "result",
+                    models.CharField(
+                        choices=[("success", "Success"), ("error", "Error")],
+                        db_index=True,
+                        max_length=10,
+                    ),
+                ),
+                ("error_message", models.TextField(blank=True, default="")),
+                (
+                    "rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="execution_logs",
+                        to="workflows.workflowrule",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-triggered_at'],
+                "ordering": ["-triggered_at"],
             },
         ),
     ]

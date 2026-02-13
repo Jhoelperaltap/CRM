@@ -7,14 +7,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('emails', '0002_email_settings_singleton'),
-        ('users', '0005_remove_role_can_assign_records_to_and_more'),
+        ("emails", "0002_email_settings_singleton"),
+        ("users", "0005_remove_role_can_assign_records_to_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='email_account',
-            field=models.ForeignKey(blank=True, help_text='The email account this user sends from.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_users', to='emails.emailaccount', verbose_name='email account'),
+            model_name="user",
+            name="email_account",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="The email account this user sends from.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="assigned_users",
+                to="emails.emailaccount",
+                verbose_name="email account",
+            ),
         ),
     ]

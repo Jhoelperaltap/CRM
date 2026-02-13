@@ -95,7 +95,9 @@ class LearningEngine:
 
         # Status breakdown
         status_counts = dict(
-            actions.values("status").annotate(count=Count("id")).values_list("status", "count")
+            actions.values("status")
+            .annotate(count=Count("id"))
+            .values_list("status", "count")
         )
 
         # Calculate rates
@@ -131,7 +133,9 @@ class LearningEngine:
             created_at__gte=cutoff,
             tokens_used__isnull=False,
         )
-        total_tokens = logs_with_tokens.aggregate(total=Sum("tokens_used"))["total"] or 0
+        total_tokens = (
+            logs_with_tokens.aggregate(total=Sum("tokens_used"))["total"] or 0
+        )
         avg_latency = logs_with_tokens.aggregate(avg=Avg("ai_latency_ms"))["avg"]
 
         return {
@@ -148,9 +152,13 @@ class LearningEngine:
                 "execution_rate": round(executed / total * 100, 1) if total > 0 else 0,
                 "rejection_rate": round(rejected / total * 100, 1) if total > 0 else 0,
                 "failure_rate": round(failed / total * 100, 1) if total > 0 else 0,
-                "approval_rate": round(
-                    (executed + status_counts.get("approved", 0)) / total * 100, 1
-                ) if total > 0 else 0,
+                "approval_rate": (
+                    round(
+                        (executed + status_counts.get("approved", 0)) / total * 100, 1
+                    )
+                    if total > 0
+                    else 0
+                ),
             },
             "outcomes": {
                 "total_recorded": scored_actions.count(),
@@ -224,7 +232,9 @@ class LearningEngine:
 
             # Calculate effectiveness score (combination of execution rate and outcome)
             execution_rate = executed / total
-            outcome_rate = (avg_score + 1) / 2 if avg_score else 0.5  # Normalize -1,1 to 0,1
+            outcome_rate = (
+                (avg_score + 1) / 2 if avg_score else 0.5
+            )  # Normalize -1,1 to 0,1
 
             # Weighted effectiveness (60% execution, 40% outcome)
             effectiveness = (execution_rate * 0.6 + outcome_rate * 0.4) * 100
@@ -254,56 +264,66 @@ class LearningEngine:
 
         # Check overall rejection rate
         if summary.get("rates", {}).get("rejection_rate", 0) > 30:
-            recommendations.append({
-                "priority": "high",
-                "category": "approval_workflow",
-                "title": "High Action Rejection Rate",
-                "description": f"Rejection rate is {summary['rates']['rejection_rate']}%. Consider reviewing AI prompts or adjusting thresholds.",
-                "action": "Review rejected actions to identify patterns and refine AI decision criteria.",
-            })
+            recommendations.append(
+                {
+                    "priority": "high",
+                    "category": "approval_workflow",
+                    "title": "High Action Rejection Rate",
+                    "description": f"Rejection rate is {summary['rates']['rejection_rate']}%. Consider reviewing AI prompts or adjusting thresholds.",
+                    "action": "Review rejected actions to identify patterns and refine AI decision criteria.",
+                }
+            )
 
         # Check failure rate
         if summary.get("rates", {}).get("failure_rate", 0) > 10:
-            recommendations.append({
-                "priority": "high",
-                "category": "reliability",
-                "title": "Elevated Action Failure Rate",
-                "description": f"Failure rate is {summary['rates']['failure_rate']}%. This may indicate integration issues.",
-                "action": "Review error logs for failed actions and fix underlying issues.",
-            })
+            recommendations.append(
+                {
+                    "priority": "high",
+                    "category": "reliability",
+                    "title": "Elevated Action Failure Rate",
+                    "description": f"Failure rate is {summary['rates']['failure_rate']}%. This may indicate integration issues.",
+                    "action": "Review error logs for failed actions and fix underlying issues.",
+                }
+            )
 
         # Check for underperforming action types
         for action_type, data in effectiveness.items():
             eff = data.get("effectiveness")
             if data["total"] >= 10 and eff is not None and eff < 40:
-                recommendations.append({
-                    "priority": "medium",
-                    "category": "effectiveness",
-                    "title": f"Low Effectiveness: {data['display_name']}",
-                    "description": f"{data['display_name']} has only {eff}% effectiveness.",
-                    "action": f"Consider disabling or refining the {data['display_name']} capability.",
-                })
+                recommendations.append(
+                    {
+                        "priority": "medium",
+                        "category": "effectiveness",
+                        "title": f"Low Effectiveness: {data['display_name']}",
+                        "description": f"{data['display_name']} has only {eff}% effectiveness.",
+                        "action": f"Consider disabling or refining the {data['display_name']} capability.",
+                    }
+                )
 
         # Check outcome recording
         outcomes = summary.get("outcomes", {})
         if outcomes.get("total_recorded", 0) < summary.get("total_actions", 0) * 0.2:
-            recommendations.append({
-                "priority": "low",
-                "category": "learning",
-                "title": "Low Outcome Recording",
-                "description": "Less than 20% of actions have recorded outcomes. This limits learning.",
-                "action": "Encourage users to record outcomes for executed actions.",
-            })
+            recommendations.append(
+                {
+                    "priority": "low",
+                    "category": "learning",
+                    "title": "Low Outcome Recording",
+                    "description": "Less than 20% of actions have recorded outcomes. This limits learning.",
+                    "action": "Encourage users to record outcomes for executed actions.",
+                }
+            )
 
         # Check for negative outcome trends
         if outcomes.get("negative", 0) > outcomes.get("positive", 0):
-            recommendations.append({
-                "priority": "high",
-                "category": "performance",
-                "title": "More Negative Than Positive Outcomes",
-                "description": "The majority of recorded outcomes are negative.",
-                "action": "Review AI decision criteria and consider more conservative thresholds.",
-            })
+            recommendations.append(
+                {
+                    "priority": "high",
+                    "category": "performance",
+                    "title": "More Negative Than Positive Outcomes",
+                    "description": "The majority of recorded outcomes are negative.",
+                    "action": "Review AI decision criteria and consider more conservative thresholds.",
+                }
+            )
 
         return recommendations
 
@@ -352,12 +372,15 @@ class LearningEngine:
                     action_type=AgentAction.ActionType.INSIGHT_GENERATED
                 ).count(),
                 "total_ai_calls": logs.count(),
-                "total_tokens_used": logs.aggregate(total=Sum("tokens_used"))["total"] or 0,
+                "total_tokens_used": logs.aggregate(total=Sum("tokens_used"))["total"]
+                or 0,
                 "avg_ai_latency_ms": logs.aggregate(avg=Avg("ai_latency_ms"))["avg"],
                 "avg_outcome_score": actions.filter(
                     outcome_score__isnull=False
                 ).aggregate(avg=Avg("outcome_score"))["avg"],
-                "outcomes_recorded": actions.filter(outcome_score__isnull=False).count(),
+                "outcomes_recorded": actions.filter(
+                    outcome_score__isnull=False
+                ).count(),
             },
         )
 
@@ -424,17 +447,23 @@ class LearningEngine:
             "outcome_score": {
                 "recent": round(recent_avg, 3) if recent_avg else None,
                 "previous": round(older_avg, 3) if older_avg else None,
-                "improvement": round(recent_avg - older_avg, 3)
-                if recent_avg and older_avg
-                else None,
+                "improvement": (
+                    round(recent_avg - older_avg, 3)
+                    if recent_avg and older_avg
+                    else None
+                ),
             },
             "rejection_rate": {
-                "recent": round(recent_rejection / recent_total * 100, 1)
-                if recent_total > 0
-                else 0,
-                "previous": round(older_rejection / older_total * 100, 1)
-                if older_total > 0
-                else 0,
+                "recent": (
+                    round(recent_rejection / recent_total * 100, 1)
+                    if recent_total > 0
+                    else 0
+                ),
+                "previous": (
+                    round(older_rejection / older_total * 100, 1)
+                    if older_total > 0
+                    else 0
+                ),
             },
             "sample_sizes": {
                 "recent_with_outcomes": recent_actions.count(),

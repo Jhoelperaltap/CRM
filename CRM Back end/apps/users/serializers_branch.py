@@ -9,8 +9,16 @@ class BranchListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = [
-            "id", "name", "code", "city", "state", "phone",
-            "is_active", "is_headquarters", "user_count", "created_at",
+            "id",
+            "name",
+            "code",
+            "city",
+            "state",
+            "phone",
+            "is_active",
+            "is_headquarters",
+            "user_count",
+            "created_at",
         ]
         read_only_fields = ["id", "user_count", "created_at"]
 
@@ -24,9 +32,19 @@ class BranchDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = [
-            "id", "name", "code", "address", "city", "state",
-            "zip_code", "phone", "is_active", "is_headquarters",
-            "user_count", "created_at", "updated_at",
+            "id",
+            "name",
+            "code",
+            "address",
+            "city",
+            "state",
+            "zip_code",
+            "phone",
+            "is_active",
+            "is_headquarters",
+            "user_count",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = ["id", "user_count", "created_at", "updated_at"]
 
@@ -38,8 +56,15 @@ class BranchCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = [
-            "name", "code", "address", "city", "state",
-            "zip_code", "phone", "is_active", "is_headquarters",
+            "name",
+            "code",
+            "address",
+            "city",
+            "state",
+            "zip_code",
+            "phone",
+            "is_active",
+            "is_headquarters",
         ]
 
     def to_representation(self, instance):

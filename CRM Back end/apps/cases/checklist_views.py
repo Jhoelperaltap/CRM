@@ -45,9 +45,7 @@ class ChecklistTemplateViewSet(viewsets.ModelViewSet):
 
         if request.method == "GET":
             items = template.items.all()
-            return Response(
-                ChecklistTemplateItemSerializer(items, many=True).data
-            )
+            return Response(ChecklistTemplateItemSerializer(items, many=True).data)
 
         serializer = ChecklistTemplateItemSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -132,9 +130,7 @@ class CaseChecklistViewSet(viewsets.ViewSet):
         )
 
         # Update denormalized counts
-        checklist.completed_count = checklist.items.filter(
-            is_completed=True
-        ).count()
+        checklist.completed_count = checklist.items.filter(is_completed=True).count()
         checklist.save(update_fields=["completed_count", "updated_at"])
 
         return Response(CaseChecklistItemSerializer(item).data)

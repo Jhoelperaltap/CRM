@@ -90,9 +90,7 @@ class ChatbotAIService:
 
     def _build_messages(self, conversation, user_message: str) -> list:
         """Build the message history for the AI."""
-        messages = [
-            {"role": "system", "content": self.config.get_full_system_prompt()}
-        ]
+        messages = [{"role": "system", "content": self.config.get_full_system_prompt()}]
 
         # Add conversation history (last 20 messages for context)
         for msg in conversation.messages.all()[:20]:
@@ -261,9 +259,11 @@ class ChatbotAIService:
             "content": "",
             "action": None,
             "metadata": {},
-            "tokens_used": response.usage.input_tokens + response.usage.output_tokens
-            if response.usage
-            else 0,
+            "tokens_used": (
+                response.usage.input_tokens + response.usage.output_tokens
+                if response.usage
+                else 0
+            ),
         }
 
         # Process response blocks
@@ -329,9 +329,11 @@ def get_available_slots(start_date: datetime, end_date: datetime = None) -> list
                             "date": current_date.isoformat(),
                             "time": current_time.strftime("%H:%M"),
                             "end_time": slot_end_time.strftime("%H:%M"),
-                            "staff_id": str(slot.assigned_staff_id)
-                            if slot.assigned_staff_id
-                            else None,
+                            "staff_id": (
+                                str(slot.assigned_staff_id)
+                                if slot.assigned_staff_id
+                                else None
+                            ),
                         }
                     )
 

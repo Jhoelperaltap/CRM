@@ -12,6 +12,7 @@ from apps.cases.checklist_models import (
 # Template serializers (admin settings)
 # ---------------------------------------------------------------------------
 
+
 class ChecklistTemplateItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChecklistTemplateItem
@@ -44,7 +45,13 @@ class ChecklistTemplateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_by", "created_by_name", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_created_by_name(self, obj):
         if obj.created_by:
@@ -74,6 +81,7 @@ class ChecklistTemplateListSerializer(serializers.ModelSerializer):
 # ---------------------------------------------------------------------------
 # Case checklist serializers
 # ---------------------------------------------------------------------------
+
 
 class CaseChecklistItemSerializer(serializers.ModelSerializer):
     completed_by_name = serializers.SerializerMethodField()

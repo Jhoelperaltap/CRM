@@ -13,7 +13,9 @@ class TestCaseNewStates:
     def test_new_to_waiting_for_documents(self, admin_client, admin_user):
         case = TaxCaseFactory(status="new", created_by=admin_user)
         url = self.TRANSITION_URL.format(id=case.id)
-        resp = admin_client.post(url, {"status": "waiting_for_documents"}, format="json")
+        resp = admin_client.post(
+            url, {"status": "waiting_for_documents"}, format="json"
+        )
         assert resp.status_code == 200
         case.refresh_from_db()
         assert case.status == TaxCase.Status.WAITING_FOR_DOCUMENTS

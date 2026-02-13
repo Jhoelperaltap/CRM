@@ -83,16 +83,18 @@ def register_audit_signals():
     from apps.tasks.models import Task
     from apps.users.models import Role, SharingRule, User, UserGroup
 
-    AUDITED_MODELS.update({
-        Contact: "contacts",
-        Corporation: "corporations",
-        TaxCase: "cases",
-        TaxCaseNote: "cases",
-        Appointment: "appointments",
-        Document: "documents",
-        Task: "tasks",
-        User: "users",
-        Role: "roles",
-        UserGroup: "groups",
-        SharingRule: "sharing_rules",
-    })
+    AUDITED_MODELS.update(
+        {
+            Contact: "contacts",
+            Corporation: "corporations",
+            TaxCase: "cases",
+            TaxCaseNote: "cases",
+            Appointment: "appointments",
+            Document: "documents",
+            Task: "tasks",
+            User: "users",
+            Role: "roles",
+            UserGroup: "groups",
+            SharingRule: "sharing_rules",
+        }
+    )

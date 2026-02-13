@@ -79,18 +79,38 @@ class Quote(TimeStampedModel):
     )
 
     # --- Billing address ---
-    billing_street = models.CharField(_("billing street"), max_length=255, blank=True, default="")
-    billing_city = models.CharField(_("billing city"), max_length=100, blank=True, default="")
-    billing_state = models.CharField(_("billing state"), max_length=100, blank=True, default="")
-    billing_zip = models.CharField(_("billing zip"), max_length=20, blank=True, default="")
-    billing_country = models.CharField(_("billing country"), max_length=100, blank=True, default="United States")
+    billing_street = models.CharField(
+        _("billing street"), max_length=255, blank=True, default=""
+    )
+    billing_city = models.CharField(
+        _("billing city"), max_length=100, blank=True, default=""
+    )
+    billing_state = models.CharField(
+        _("billing state"), max_length=100, blank=True, default=""
+    )
+    billing_zip = models.CharField(
+        _("billing zip"), max_length=20, blank=True, default=""
+    )
+    billing_country = models.CharField(
+        _("billing country"), max_length=100, blank=True, default="United States"
+    )
 
     # --- Shipping address ---
-    shipping_street = models.CharField(_("shipping street"), max_length=255, blank=True, default="")
-    shipping_city = models.CharField(_("shipping city"), max_length=100, blank=True, default="")
-    shipping_state = models.CharField(_("shipping state"), max_length=100, blank=True, default="")
-    shipping_zip = models.CharField(_("shipping zip"), max_length=20, blank=True, default="")
-    shipping_country = models.CharField(_("shipping country"), max_length=100, blank=True, default="United States")
+    shipping_street = models.CharField(
+        _("shipping street"), max_length=255, blank=True, default=""
+    )
+    shipping_city = models.CharField(
+        _("shipping city"), max_length=100, blank=True, default=""
+    )
+    shipping_state = models.CharField(
+        _("shipping state"), max_length=100, blank=True, default=""
+    )
+    shipping_zip = models.CharField(
+        _("shipping zip"), max_length=20, blank=True, default=""
+    )
+    shipping_country = models.CharField(
+        _("shipping country"), max_length=100, blank=True, default="United States"
+    )
 
     # --- Totals ---
     subtotal = models.DecimalField(
@@ -185,7 +205,9 @@ class QuoteLineItem(TimeStampedModel):
         choices=ServiceType.choices,
         default=ServiceType.OTHER,
     )
-    description = models.CharField(_("description"), max_length=255, blank=True, default="")
+    description = models.CharField(
+        _("description"), max_length=255, blank=True, default=""
+    )
     quantity = models.DecimalField(
         _("quantity"),
         max_digits=10,

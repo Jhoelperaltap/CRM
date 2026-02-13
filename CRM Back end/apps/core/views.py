@@ -27,18 +27,17 @@ class GlobalSearchView(APIView):
         )[:5]
 
         corporations = Corporation.objects.filter(
-            Q(name__icontains=q)
-            | Q(legal_name__icontains=q)
-            | Q(ein__icontains=q)
+            Q(name__icontains=q) | Q(legal_name__icontains=q) | Q(ein__icontains=q)
         )[:5]
 
         cases = TaxCase.objects.filter(
-            Q(case_number__icontains=q)
-            | Q(title__icontains=q)
+            Q(case_number__icontains=q) | Q(title__icontains=q)
         )[:5]
 
-        return Response({
-            "contacts": ContactListSerializer(contacts, many=True).data,
-            "corporations": CorporationListSerializer(corporations, many=True).data,
-            "cases": TaxCaseListSerializer(cases, many=True).data,
-        })
+        return Response(
+            {
+                "contacts": ContactListSerializer(contacts, many=True).data,
+                "corporations": CorporationListSerializer(corporations, many=True).data,
+                "cases": TaxCaseListSerializer(cases, many=True).data,
+            }
+        )

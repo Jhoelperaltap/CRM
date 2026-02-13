@@ -117,7 +117,9 @@ class TestGenerateRecurringInstances:
             recurrence_pattern="daily",
             recurrence_end_date=(now - datetime.timedelta(days=5)).date(),
             start_datetime=now - datetime.timedelta(days=10),
-            end_datetime=now - datetime.timedelta(days=10) + datetime.timedelta(hours=1),
+            end_datetime=now
+            - datetime.timedelta(days=10)
+            + datetime.timedelta(hours=1),
         )
 
         count = generate_recurring_instances()

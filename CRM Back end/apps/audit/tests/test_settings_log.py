@@ -31,6 +31,4 @@ class TestSettingsLogCreation:
             {"max_concurrent_sessions": 10},
             format="json",
         )
-        assert SettingsLog.objects.filter(
-            setting_area="authentication_policy"
-        ).exists()
+        assert SettingsLog.objects.filter(setting_area="authentication_policy").exists()

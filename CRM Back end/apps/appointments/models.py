@@ -164,7 +164,9 @@ class AppointmentPage(TimeStampedModel):
         unique=True,
         help_text=_("URL-safe identifier appended to the appointment page link"),
     )
-    css_url = models.URLField(_("CSS file URL"), max_length=2048, blank=True, default="")
+    css_url = models.URLField(
+        _("CSS file URL"), max_length=2048, blank=True, default=""
+    )
     event_duration = models.PositiveIntegerField(
         _("event duration (minutes)"),
         default=30,

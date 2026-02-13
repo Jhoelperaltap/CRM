@@ -125,9 +125,7 @@ class EmailMessage(TimeStampedModel):
     in_reply_to = models.CharField(
         _("In-Reply-To header"), max_length=500, blank=True, default=""
     )
-    references = models.TextField(
-        _("References header"), blank=True, default=""
-    )
+    references = models.TextField(_("References header"), blank=True, default="")
     direction = models.CharField(
         _("direction"),
         max_length=10,
@@ -152,9 +150,7 @@ class EmailMessage(TimeStampedModel):
         default=Folder.INBOX,
         db_index=True,
     )
-    imap_uid = models.CharField(
-        _("IMAP UID"), max_length=100, blank=True, default=""
-    )
+    imap_uid = models.CharField(_("IMAP UID"), max_length=100, blank=True, default="")
     raw_headers = models.JSONField(_("raw headers"), default=dict, blank=True)
 
     # Relationships
@@ -218,9 +214,7 @@ class EmailAttachment(TimeStampedModel):
         related_name="attachments",
         verbose_name=_("email"),
     )
-    file = models.FileField(
-        _("file"), upload_to="email_attachments/%Y/%m/"
-    )
+    file = models.FileField(_("file"), upload_to="email_attachments/%Y/%m/")
     filename = models.CharField(_("filename"), max_length=255)
     mime_type = models.CharField(_("MIME type"), max_length=100, blank=True, default="")
     file_size = models.PositiveIntegerField(_("file size (bytes)"), default=0)
@@ -257,7 +251,9 @@ class EmailTemplate(TimeStampedModel):
         _("available variables"),
         default=list,
         blank=True,
-        help_text=_("List of placeholder variable names, e.g. ['contact_name', 'case_number']"),
+        help_text=_(
+            "List of placeholder variable names, e.g. ['contact_name', 'case_number']"
+        ),
     )
     is_active = models.BooleanField(_("active"), default=True)
 
@@ -372,16 +368,16 @@ class EmailSettings(TimeStampedModel):
 
     # Reply-to for Case replies
     case_reply_to = models.CharField(
-        max_length=30, choices=ReplyToOption.choices,
-        default=ReplyToOption.HELPDESK_EMAIL
+        max_length=30,
+        choices=ReplyToOption.choices,
+        default=ReplyToOption.HELPDESK_EMAIL,
     )
     case_allow_group_value = models.BooleanField(default=False)
     case_bcc_address = models.EmailField(blank=True, default="")
 
     # Reply-to for Internal Ticket Emails
     ticket_reply_to = models.CharField(
-        max_length=30, choices=ReplyToOption.choices,
-        default=ReplyToOption.TICKET_EMAIL
+        max_length=30, choices=ReplyToOption.choices, default=ReplyToOption.TICKET_EMAIL
     )
     ticket_reply_to_address = models.EmailField(blank=True, default="")
     ticket_from_name = models.CharField(max_length=255, blank=True, default="")
@@ -389,8 +385,9 @@ class EmailSettings(TimeStampedModel):
 
     # Reply-to for Ad Hoc Emails
     adhoc_reply_to = models.CharField(
-        max_length=30, choices=ReplyToOption.choices,
-        default=ReplyToOption.OUTGOING_EMAIL
+        max_length=30,
+        choices=ReplyToOption.choices,
+        default=ReplyToOption.OUTGOING_EMAIL,
     )
 
     # System Notifications to Users
@@ -403,8 +400,7 @@ class EmailSettings(TimeStampedModel):
 
     # Required Opt-In for Email Delivery
     email_opt_in = models.CharField(
-        max_length=20, choices=OptInType.choices,
-        default=OptInType.DOUBLE_AND_SINGLE
+        max_length=20, choices=OptInType.choices, default=OptInType.DOUBLE_AND_SINGLE
     )
     allow_adhoc_opted_out = models.BooleanField(default=False)
     allow_workflow_opted_out = models.BooleanField(default=False)

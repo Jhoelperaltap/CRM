@@ -28,8 +28,15 @@ class TaxRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxRate
         fields = [
-            "id", "name", "rate", "is_active", "is_compound",
-            "tax_type", "description", "created_at", "updated_at",
+            "id",
+            "name",
+            "rate",
+            "is_active",
+            "is_compound",
+            "tax_type",
+            "description",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
@@ -41,8 +48,13 @@ class TermsAndConditionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TermsAndConditions
         fields = [
-            "id", "name", "content", "module", "is_default",
-            "created_at", "updated_at",
+            "id",
+            "name",
+            "content",
+            "module",
+            "is_default",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
@@ -58,9 +70,18 @@ class VendorListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = [
-            "id", "name", "vendor_code", "email", "phone",
-            "category", "city", "country", "is_active",
-            "assigned_to", "assigned_to_name", "created_at",
+            "id",
+            "name",
+            "vendor_code",
+            "email",
+            "phone",
+            "category",
+            "city",
+            "country",
+            "is_active",
+            "assigned_to",
+            "assigned_to_name",
+            "created_at",
         ]
 
 
@@ -82,9 +103,20 @@ class VendorCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = [
-            "name", "vendor_code", "email", "phone", "website",
-            "category", "street", "city", "state", "zip_code",
-            "country", "description", "is_active", "assigned_to",
+            "name",
+            "vendor_code",
+            "email",
+            "phone",
+            "website",
+            "category",
+            "street",
+            "city",
+            "state",
+            "zip_code",
+            "country",
+            "description",
+            "is_active",
+            "assigned_to",
         ]
 
     def to_representation(self, instance):
@@ -105,10 +137,21 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            "id", "name", "product_code", "category", "unit_price",
-            "cost_price", "unit", "qty_in_stock", "reorder_level",
-            "is_active", "vendor", "vendor_name",
-            "tax_rate", "tax_rate_name", "created_at",
+            "id",
+            "name",
+            "product_code",
+            "category",
+            "unit_price",
+            "cost_price",
+            "unit",
+            "qty_in_stock",
+            "reorder_level",
+            "is_active",
+            "vendor",
+            "vendor_name",
+            "tax_rate",
+            "tax_rate_name",
+            "created_at",
         ]
 
 
@@ -130,10 +173,21 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            "name", "product_code", "category", "unit_price", "cost_price",
-            "unit", "qty_in_stock", "qty_ordered", "reorder_level",
-            "description", "is_active", "manufacturer", "vendor",
-            "tax_rate", "image_url",
+            "name",
+            "product_code",
+            "category",
+            "unit_price",
+            "cost_price",
+            "unit",
+            "qty_in_stock",
+            "qty_ordered",
+            "reorder_level",
+            "description",
+            "is_active",
+            "manufacturer",
+            "vendor",
+            "tax_rate",
+            "image_url",
         ]
 
     def to_representation(self, instance):
@@ -151,8 +205,15 @@ class ServiceListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = [
-            "id", "name", "service_code", "category", "unit_price",
-            "usage_unit", "is_active", "tax_rate", "tax_rate_name",
+            "id",
+            "name",
+            "service_code",
+            "category",
+            "unit_price",
+            "usage_unit",
+            "is_active",
+            "tax_rate",
+            "tax_rate_name",
             "created_at",
         ]
 
@@ -172,8 +233,14 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = [
-            "name", "service_code", "category", "unit_price",
-            "usage_unit", "description", "is_active", "tax_rate",
+            "name",
+            "service_code",
+            "category",
+            "unit_price",
+            "usage_unit",
+            "description",
+            "is_active",
+            "tax_rate",
         ]
 
     def to_representation(self, instance):
@@ -194,7 +261,11 @@ class PriceBookEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = PriceBookEntry
         fields = [
-            "id", "product", "product_name", "service", "service_name",
+            "id",
+            "product",
+            "product_name",
+            "service",
+            "service_name",
             "list_price",
         ]
         read_only_fields = ["id"]
@@ -206,8 +277,13 @@ class PriceBookListSerializer(serializers.ModelSerializer):
     class Meta:
         model = PriceBook
         fields = [
-            "id", "name", "description", "is_active", "currency",
-            "entry_count", "created_at",
+            "id",
+            "name",
+            "description",
+            "is_active",
+            "currency",
+            "entry_count",
+            "created_at",
         ]
 
 
@@ -234,6 +310,7 @@ class PriceBookCreateUpdateSerializer(serializers.ModelSerializer):
 # ---------------------------------------------------------------------------
 class LineItemSerializer(serializers.Serializer):
     """Read serializer for any line item."""
+
     id = serializers.UUIDField(read_only=True)
     product = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), allow_null=True, required=False
@@ -262,6 +339,7 @@ class LineItemSerializer(serializers.Serializer):
 
 class LineItemWriteSerializer(serializers.Serializer):
     """Write serializer for line item input."""
+
     product = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), allow_null=True, required=False
     )
@@ -294,9 +372,18 @@ class InvoiceLineItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceLineItem
         fields = [
-            "id", "product", "product_name", "service", "service_name",
-            "description", "quantity", "unit_price", "discount_percent",
-            "tax_rate", "total", "sort_order",
+            "id",
+            "product",
+            "product_name",
+            "service",
+            "service_name",
+            "description",
+            "quantity",
+            "unit_price",
+            "discount_percent",
+            "tax_rate",
+            "total",
+            "sort_order",
         ]
         read_only_fields = ["id"]
 
@@ -314,10 +401,20 @@ class InvoiceListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
-            "id", "invoice_number", "subject", "status",
-            "contact", "contact_name", "corporation", "corporation_name",
-            "invoice_date", "due_date", "total",
-            "assigned_to", "assigned_to_name", "created_at",
+            "id",
+            "invoice_number",
+            "subject",
+            "status",
+            "contact",
+            "contact_name",
+            "corporation",
+            "corporation_name",
+            "invoice_date",
+            "due_date",
+            "total",
+            "assigned_to",
+            "assigned_to_name",
+            "created_at",
         ]
 
     def get_contact_name(self, obj):
@@ -356,17 +453,39 @@ class InvoiceCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
-            "invoice_number", "subject", "status", "contact", "corporation",
-            "sales_order", "order_date", "due_date",
-            "customer_no", "purchase_order_ref",
-            "sales_commission", "excise_duty",
-            "billing_street", "billing_city", "billing_state",
-            "billing_zip", "billing_country", "billing_po_box",
-            "shipping_street", "shipping_city", "shipping_state",
-            "shipping_zip", "shipping_country", "shipping_po_box",
-            "subtotal", "discount_percent", "discount_amount",
-            "tax_amount", "adjustment", "total",
-            "terms_and_conditions", "description", "assigned_to",
+            "invoice_number",
+            "subject",
+            "status",
+            "contact",
+            "corporation",
+            "sales_order",
+            "order_date",
+            "due_date",
+            "customer_no",
+            "purchase_order_ref",
+            "sales_commission",
+            "excise_duty",
+            "billing_street",
+            "billing_city",
+            "billing_state",
+            "billing_zip",
+            "billing_country",
+            "billing_po_box",
+            "shipping_street",
+            "shipping_city",
+            "shipping_state",
+            "shipping_zip",
+            "shipping_country",
+            "shipping_po_box",
+            "subtotal",
+            "discount_percent",
+            "discount_amount",
+            "tax_amount",
+            "adjustment",
+            "total",
+            "terms_and_conditions",
+            "description",
+            "assigned_to",
             "line_items",
         ]
 
@@ -381,8 +500,11 @@ class InvoiceCreateUpdateSerializer(serializers.ModelSerializer):
                 invoice=invoice,
                 sort_order=item_data.get("sort_order", idx),
                 total=round(line_total, 2),
-                **{k: v for k, v in item_data.items()
-                   if k not in ("sort_order", "total")},
+                **{
+                    k: v
+                    for k, v in item_data.items()
+                    if k not in ("sort_order", "total")
+                },
             )
 
     def create(self, validated_data):
@@ -419,9 +541,18 @@ class SalesOrderLineItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesOrderLineItem
         fields = [
-            "id", "product", "product_name", "service", "service_name",
-            "description", "quantity", "unit_price", "discount_percent",
-            "tax_rate", "total", "sort_order",
+            "id",
+            "product",
+            "product_name",
+            "service",
+            "service_name",
+            "description",
+            "quantity",
+            "unit_price",
+            "discount_percent",
+            "tax_rate",
+            "total",
+            "sort_order",
         ]
         read_only_fields = ["id"]
 
@@ -438,10 +569,21 @@ class SalesOrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesOrder
         fields = [
-            "id", "so_number", "subject", "status",
-            "contact", "contact_name", "corporation", "corporation_name",
-            "quote", "order_date", "due_date", "total",
-            "assigned_to", "assigned_to_name", "created_at",
+            "id",
+            "so_number",
+            "subject",
+            "status",
+            "contact",
+            "contact_name",
+            "corporation",
+            "corporation_name",
+            "quote",
+            "order_date",
+            "due_date",
+            "total",
+            "assigned_to",
+            "assigned_to_name",
+            "created_at",
         ]
 
     def get_contact_name(self, obj):
@@ -476,17 +618,41 @@ class SalesOrderCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesOrder
         fields = [
-            "so_number", "subject", "status", "contact", "corporation",
-            "quote", "order_date", "due_date",
-            "customer_no", "purchase_order_ref", "carrier", "pending",
-            "sales_commission", "excise_duty",
-            "billing_street", "billing_city", "billing_state",
-            "billing_zip", "billing_country", "billing_po_box",
-            "shipping_street", "shipping_city", "shipping_state",
-            "shipping_zip", "shipping_country", "shipping_po_box",
-            "subtotal", "discount_percent", "discount_amount",
-            "tax_amount", "adjustment", "total",
-            "terms_and_conditions", "description", "assigned_to",
+            "so_number",
+            "subject",
+            "status",
+            "contact",
+            "corporation",
+            "quote",
+            "order_date",
+            "due_date",
+            "customer_no",
+            "purchase_order_ref",
+            "carrier",
+            "pending",
+            "sales_commission",
+            "excise_duty",
+            "billing_street",
+            "billing_city",
+            "billing_state",
+            "billing_zip",
+            "billing_country",
+            "billing_po_box",
+            "shipping_street",
+            "shipping_city",
+            "shipping_state",
+            "shipping_zip",
+            "shipping_country",
+            "shipping_po_box",
+            "subtotal",
+            "discount_percent",
+            "discount_amount",
+            "tax_amount",
+            "adjustment",
+            "total",
+            "terms_and_conditions",
+            "description",
+            "assigned_to",
             "line_items",
         ]
 
@@ -501,8 +667,11 @@ class SalesOrderCreateUpdateSerializer(serializers.ModelSerializer):
                 sales_order=so,
                 sort_order=item_data.get("sort_order", idx),
                 total=round(line_total, 2),
-                **{k: v for k, v in item_data.items()
-                   if k not in ("sort_order", "total")},
+                **{
+                    k: v
+                    for k, v in item_data.items()
+                    if k not in ("sort_order", "total")
+                },
             )
 
     def create(self, validated_data):
@@ -539,9 +708,18 @@ class PurchaseOrderLineItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrderLineItem
         fields = [
-            "id", "product", "product_name", "service", "service_name",
-            "description", "quantity", "unit_price", "discount_percent",
-            "tax_rate", "total", "sort_order",
+            "id",
+            "product",
+            "product_name",
+            "service",
+            "service_name",
+            "description",
+            "quantity",
+            "unit_price",
+            "discount_percent",
+            "tax_rate",
+            "total",
+            "sort_order",
         ]
         read_only_fields = ["id"]
 
@@ -561,11 +739,22 @@ class PurchaseOrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = [
-            "id", "po_number", "subject", "status",
-            "vendor", "vendor_name", "contact", "contact_name",
-            "corporation", "corporation_name",
-            "order_date", "due_date", "total",
-            "assigned_to", "assigned_to_name", "created_at",
+            "id",
+            "po_number",
+            "subject",
+            "status",
+            "vendor",
+            "vendor_name",
+            "contact",
+            "contact_name",
+            "corporation",
+            "corporation_name",
+            "order_date",
+            "due_date",
+            "total",
+            "assigned_to",
+            "assigned_to_name",
+            "created_at",
         ]
 
     def get_contact_name(self, obj):
@@ -600,17 +789,41 @@ class PurchaseOrderCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = [
-            "po_number", "subject", "status", "vendor", "contact",
-            "corporation", "sales_order", "order_date", "due_date",
-            "requisition_number", "sales_commission", "excise_duty",
-            "carrier", "tracking_number",
-            "billing_street", "billing_city", "billing_state",
-            "billing_zip", "billing_country", "billing_po_box",
-            "shipping_street", "shipping_city", "shipping_state",
-            "shipping_zip", "shipping_country", "shipping_po_box",
-            "subtotal", "discount_percent", "discount_amount",
-            "tax_amount", "adjustment", "total",
-            "terms_and_conditions", "description", "assigned_to",
+            "po_number",
+            "subject",
+            "status",
+            "vendor",
+            "contact",
+            "corporation",
+            "sales_order",
+            "order_date",
+            "due_date",
+            "requisition_number",
+            "sales_commission",
+            "excise_duty",
+            "carrier",
+            "tracking_number",
+            "billing_street",
+            "billing_city",
+            "billing_state",
+            "billing_zip",
+            "billing_country",
+            "billing_po_box",
+            "shipping_street",
+            "shipping_city",
+            "shipping_state",
+            "shipping_zip",
+            "shipping_country",
+            "shipping_po_box",
+            "subtotal",
+            "discount_percent",
+            "discount_amount",
+            "tax_amount",
+            "adjustment",
+            "total",
+            "terms_and_conditions",
+            "description",
+            "assigned_to",
             "line_items",
         ]
 
@@ -625,8 +838,11 @@ class PurchaseOrderCreateUpdateSerializer(serializers.ModelSerializer):
                 purchase_order=po,
                 sort_order=item_data.get("sort_order", idx),
                 total=round(line_total, 2),
-                **{k: v for k, v in item_data.items()
-                   if k not in ("sort_order", "total")},
+                **{
+                    k: v
+                    for k, v in item_data.items()
+                    if k not in ("sort_order", "total")
+                },
             )
 
     def create(self, validated_data):
@@ -661,10 +877,18 @@ class PaymentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            "id", "payment_number", "amount", "payment_date",
-            "payment_mode", "status", "reference_number",
-            "invoice", "invoice_number",
-            "contact", "contact_name", "created_at",
+            "id",
+            "payment_number",
+            "amount",
+            "payment_date",
+            "payment_mode",
+            "status",
+            "reference_number",
+            "invoice",
+            "invoice_number",
+            "contact",
+            "contact_name",
+            "created_at",
         ]
 
     def get_contact_name(self, obj):
@@ -693,8 +917,15 @@ class PaymentCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            "payment_number", "amount", "payment_date", "payment_mode",
-            "reference_number", "invoice", "contact", "status", "notes",
+            "payment_number",
+            "amount",
+            "payment_date",
+            "payment_mode",
+            "reference_number",
+            "invoice",
+            "contact",
+            "status",
+            "notes",
         ]
 
     def create(self, validated_data):
@@ -716,9 +947,16 @@ class WorkOrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkOrder
         fields = [
-            "id", "wo_number", "subject", "status", "priority",
-            "assigned_to", "assigned_to_name",
-            "start_date", "end_date", "created_at",
+            "id",
+            "wo_number",
+            "subject",
+            "status",
+            "priority",
+            "assigned_to",
+            "assigned_to_name",
+            "start_date",
+            "end_date",
+            "created_at",
         ]
 
 
@@ -743,8 +981,14 @@ class WorkOrderCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkOrder
         fields = [
-            "wo_number", "subject", "status", "priority",
-            "assigned_to", "sales_order", "start_date", "end_date",
+            "wo_number",
+            "subject",
+            "status",
+            "priority",
+            "assigned_to",
+            "sales_order",
+            "start_date",
+            "end_date",
             "description",
         ]
 
@@ -775,13 +1019,23 @@ class AssetListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
         fields = [
-            "id", "name", "serial_number", "status",
-            "product", "product_name",
-            "contact", "contact_name",
-            "corporation", "corporation_name",
-            "assigned_to", "assigned_to_name",
-            "purchase_date", "warranty_end_date",
-            "date_in_service", "date_sold", "created_at",
+            "id",
+            "name",
+            "serial_number",
+            "status",
+            "product",
+            "product_name",
+            "contact",
+            "contact_name",
+            "corporation",
+            "corporation_name",
+            "assigned_to",
+            "assigned_to_name",
+            "purchase_date",
+            "warranty_end_date",
+            "date_in_service",
+            "date_sold",
+            "created_at",
         ]
 
     def get_contact_name(self, obj):
@@ -813,10 +1067,18 @@ class AssetCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
         fields = [
-            "name", "serial_number", "product", "contact", "corporation",
-            "status", "purchase_date", "warranty_end_date",
-            "date_in_service", "date_sold",
-            "description", "assigned_to",
+            "name",
+            "serial_number",
+            "product",
+            "contact",
+            "corporation",
+            "status",
+            "purchase_date",
+            "warranty_end_date",
+            "date_in_service",
+            "date_sold",
+            "description",
+            "assigned_to",
         ]
 
     def to_representation(self, instance):
@@ -837,9 +1099,16 @@ class StockTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockTransaction
         fields = [
-            "id", "product", "product_name", "transaction_type",
-            "quantity", "reference", "notes",
-            "created_by", "created_by_name", "created_at",
+            "id",
+            "product",
+            "product_name",
+            "transaction_type",
+            "quantity",
+            "reference",
+            "notes",
+            "created_by",
+            "created_by_name",
+            "created_at",
         ]
         read_only_fields = ["id", "created_by", "created_at", "updated_at"]
 

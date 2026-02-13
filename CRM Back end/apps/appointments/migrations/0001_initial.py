@@ -16,29 +16,116 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Appointment',
+            name="Appointment",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('title', models.CharField(max_length=255, verbose_name='title')),
-                ('description', models.TextField(blank=True, default='', verbose_name='description')),
-                ('start_datetime', models.DateTimeField(db_index=True, verbose_name='start date/time')),
-                ('end_datetime', models.DateTimeField(verbose_name='end date/time')),
-                ('location', models.CharField(choices=[('office', 'Office'), ('virtual', 'Virtual'), ('client_site', 'Client Site'), ('phone', 'Phone')], default='office', max_length=20, verbose_name='location')),
-                ('status', models.CharField(choices=[('scheduled', 'Scheduled'), ('confirmed', 'Confirmed'), ('checked_in', 'Checked In'), ('in_progress', 'In Progress'), ('completed', 'Completed'), ('cancelled', 'Cancelled'), ('no_show', 'No Show')], db_index=True, default='scheduled', max_length=20, verbose_name='status')),
-                ('reminder_at', models.DateTimeField(blank=True, null=True, verbose_name='reminder at')),
-                ('notes', models.TextField(blank=True, default='', verbose_name='notes')),
-                ('recurrence_pattern', models.CharField(choices=[('none', 'None'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')], default='none', max_length=20, verbose_name='recurrence pattern')),
-                ('recurrence_end_date', models.DateField(blank=True, null=True, verbose_name='recurrence end date')),
-                ('recurrence_config', models.JSONField(blank=True, default=dict, verbose_name='recurrence config')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_appointments', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("title", models.CharField(max_length=255, verbose_name="title")),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True, default="", verbose_name="description"
+                    ),
+                ),
+                (
+                    "start_datetime",
+                    models.DateTimeField(db_index=True, verbose_name="start date/time"),
+                ),
+                ("end_datetime", models.DateTimeField(verbose_name="end date/time")),
+                (
+                    "location",
+                    models.CharField(
+                        choices=[
+                            ("office", "Office"),
+                            ("virtual", "Virtual"),
+                            ("client_site", "Client Site"),
+                            ("phone", "Phone"),
+                        ],
+                        default="office",
+                        max_length=20,
+                        verbose_name="location",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("scheduled", "Scheduled"),
+                            ("confirmed", "Confirmed"),
+                            ("checked_in", "Checked In"),
+                            ("in_progress", "In Progress"),
+                            ("completed", "Completed"),
+                            ("cancelled", "Cancelled"),
+                            ("no_show", "No Show"),
+                        ],
+                        db_index=True,
+                        default="scheduled",
+                        max_length=20,
+                        verbose_name="status",
+                    ),
+                ),
+                (
+                    "reminder_at",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="reminder at"
+                    ),
+                ),
+                (
+                    "notes",
+                    models.TextField(blank=True, default="", verbose_name="notes"),
+                ),
+                (
+                    "recurrence_pattern",
+                    models.CharField(
+                        choices=[
+                            ("none", "None"),
+                            ("daily", "Daily"),
+                            ("weekly", "Weekly"),
+                            ("monthly", "Monthly"),
+                        ],
+                        default="none",
+                        max_length=20,
+                        verbose_name="recurrence pattern",
+                    ),
+                ),
+                (
+                    "recurrence_end_date",
+                    models.DateField(
+                        blank=True, null=True, verbose_name="recurrence end date"
+                    ),
+                ),
+                (
+                    "recurrence_config",
+                    models.JSONField(
+                        blank=True, default=dict, verbose_name="recurrence config"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_appointments",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'appointment',
-                'verbose_name_plural': 'appointments',
-                'db_table': 'crm_appointments',
-                'ordering': ['-start_datetime'],
+                "verbose_name": "appointment",
+                "verbose_name_plural": "appointments",
+                "db_table": "crm_appointments",
+                "ordering": ["-start_datetime"],
             },
         ),
     ]

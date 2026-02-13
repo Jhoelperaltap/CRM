@@ -307,15 +307,13 @@ class Invoice(AbstractOrderDocument):
     )
     customer_no = models.CharField(max_length=50, blank=True, default="")
     purchase_order_ref = models.CharField(
-        max_length=100, blank=True, default="",
+        max_length=100,
+        blank=True,
+        default="",
         help_text="External purchase order reference",
     )
-    sales_commission = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
-    )
-    excise_duty = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
-    )
+    sales_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    excise_duty = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     # Billing address
     billing_street = models.CharField(max_length=255, blank=True, default="")
     billing_city = models.CharField(max_length=100, blank=True, default="")
@@ -384,12 +382,8 @@ class SalesOrder(AbstractOrderDocument):
     purchase_order_ref = models.CharField(max_length=100, blank=True, default="")
     carrier = models.CharField(max_length=100, blank=True, default="")
     pending = models.CharField(max_length=100, blank=True, default="")
-    sales_commission = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
-    )
-    excise_duty = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
-    )
+    sales_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    excise_duty = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     # Billing address
     billing_street = models.CharField(max_length=255, blank=True, default="")
     billing_city = models.CharField(max_length=100, blank=True, default="")
@@ -462,12 +456,8 @@ class PurchaseOrder(AbstractOrderDocument):
         related_name="purchase_orders",
     )
     requisition_number = models.CharField(max_length=100, blank=True, default="")
-    sales_commission = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
-    )
-    excise_duty = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
-    )
+    sales_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    excise_duty = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     carrier = models.CharField(max_length=100, blank=True, default="")
     tracking_number = models.CharField(max_length=255, blank=True, default="")
     # Billing address
@@ -695,9 +685,7 @@ class StockTransaction(TimeStampedModel):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="stock_transactions"
     )
-    transaction_type = models.CharField(
-        max_length=20, choices=TransactionType.choices
-    )
+    transaction_type = models.CharField(max_length=20, choices=TransactionType.choices)
     quantity = models.IntegerField()
     reference = models.CharField(max_length=255, blank=True, default="")
     notes = models.TextField(blank=True, default="")

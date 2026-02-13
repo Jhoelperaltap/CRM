@@ -21,7 +21,11 @@ class TestWorkflowRuleCRUD:
             "name": "New Rule",
             "trigger_type": "case_created",
             "action_type": "send_notification",
-            "action_config": {"title": "New case", "severity": "info", "recipient": "preparer"},
+            "action_config": {
+                "title": "New case",
+                "severity": "info",
+                "recipient": "preparer",
+            },
         }
         resp = admin_client.post(WORKFLOWS_BASE, payload, format="json")
         assert resp.status_code == status.HTTP_201_CREATED

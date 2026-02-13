@@ -8,91 +8,181 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Branch',
+            name="Branch",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='branch name')),
-                ('code', models.CharField(help_text="Short code for the branch (e.g. 'NYC', 'MIA').", max_length=20, unique=True, verbose_name='branch code')),
-                ('address', models.CharField(blank=True, default='', max_length=255, verbose_name='address')),
-                ('city', models.CharField(blank=True, default='', max_length=100, verbose_name='city')),
-                ('state', models.CharField(blank=True, default='', max_length=100, verbose_name='state')),
-                ('zip_code', models.CharField(blank=True, default='', max_length=20, verbose_name='ZIP code')),
-                ('phone', models.CharField(blank=True, default='', max_length=20, verbose_name='phone')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('is_headquarters', models.BooleanField(default=False, help_text='Designate as the main office.', verbose_name='headquarters')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=100, unique=True, verbose_name="branch name"
+                    ),
+                ),
+                (
+                    "code",
+                    models.CharField(
+                        help_text="Short code for the branch (e.g. 'NYC', 'MIA').",
+                        max_length=20,
+                        unique=True,
+                        verbose_name="branch code",
+                    ),
+                ),
+                (
+                    "address",
+                    models.CharField(
+                        blank=True, default="", max_length=255, verbose_name="address"
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="city"
+                    ),
+                ),
+                (
+                    "state",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="state"
+                    ),
+                ),
+                (
+                    "zip_code",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="ZIP code"
+                    ),
+                ),
+                (
+                    "phone",
+                    models.CharField(
+                        blank=True, default="", max_length=20, verbose_name="phone"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="active")),
+                (
+                    "is_headquarters",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designate as the main office.",
+                        verbose_name="headquarters",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
             ],
             options={
-                'verbose_name': 'branch',
-                'verbose_name_plural': 'branches',
-                'db_table': 'crm_branches',
-                'ordering': ['-is_headquarters', 'name'],
+                "verbose_name": "branch",
+                "verbose_name_plural": "branches",
+                "db_table": "crm_branches",
+                "ordering": ["-is_headquarters", "name"],
             },
         ),
         migrations.AlterModelManagers(
-            name='user',
-            managers=[
-            ],
+            name="user",
+            managers=[],
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='enforce_2fa',
-            field=models.BooleanField(default=False, verbose_name='enforce two-factor authentication'),
+            model_name="authenticationpolicy",
+            name="enforce_2fa",
+            field=models.BooleanField(
+                default=False, verbose_name="enforce two-factor authentication"
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='remember_device_days',
-            field=models.PositiveIntegerField(default=0, verbose_name='remember device (days)'),
+            model_name="authenticationpolicy",
+            name="remember_device_days",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="remember device (days)"
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='sso_certificate',
-            field=models.TextField(blank=True, default='', help_text='X.509 certificate for SAML/OAuth2 verification.', verbose_name='SSO certificate'),
+            model_name="authenticationpolicy",
+            name="sso_certificate",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="X.509 certificate for SAML/OAuth2 verification.",
+                verbose_name="SSO certificate",
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='sso_enabled',
-            field=models.BooleanField(default=False, help_text='Enable Single Sign-On integration.', verbose_name='SSO enabled'),
+            model_name="authenticationpolicy",
+            name="sso_enabled",
+            field=models.BooleanField(
+                default=False,
+                help_text="Enable Single Sign-On integration.",
+                verbose_name="SSO enabled",
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='sso_entity_id',
-            field=models.CharField(blank=True, default='', max_length=255, verbose_name='SSO entity ID'),
+            model_name="authenticationpolicy",
+            name="sso_entity_id",
+            field=models.CharField(
+                blank=True, default="", max_length=255, verbose_name="SSO entity ID"
+            ),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='sso_login_url',
-            field=models.URLField(blank=True, default='', verbose_name='SSO login URL'),
+            model_name="authenticationpolicy",
+            name="sso_login_url",
+            field=models.URLField(blank=True, default="", verbose_name="SSO login URL"),
         ),
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='sso_provider',
-            field=models.CharField(blank=True, default='', help_text="SSO provider type: 'saml', 'oauth2', or empty.", max_length=50, verbose_name='SSO provider'),
+            model_name="authenticationpolicy",
+            name="sso_provider",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="SSO provider type: 'saml', 'oauth2', or empty.",
+                max_length=50,
+                verbose_name="SSO provider",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='is_2fa_enabled',
-            field=models.BooleanField(default=False, verbose_name='2FA enabled'),
+            model_name="user",
+            name="is_2fa_enabled",
+            field=models.BooleanField(default=False, verbose_name="2FA enabled"),
         ),
         migrations.AddField(
-            model_name='user',
-            name='recovery_codes',
-            field=models.JSONField(blank=True, default=list, verbose_name='recovery codes'),
+            model_name="user",
+            name="recovery_codes",
+            field=models.JSONField(
+                blank=True, default=list, verbose_name="recovery codes"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='totp_secret',
-            field=models.CharField(blank=True, default='', max_length=32, verbose_name='TOTP secret'),
+            model_name="user",
+            name="totp_secret",
+            field=models.CharField(
+                blank=True, default="", max_length=32, verbose_name="TOTP secret"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='branch',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='users', to='users.branch', verbose_name='branch'),
+            model_name="user",
+            name="branch",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="users",
+                to="users.branch",
+                verbose_name="branch",
+            ),
         ),
     ]

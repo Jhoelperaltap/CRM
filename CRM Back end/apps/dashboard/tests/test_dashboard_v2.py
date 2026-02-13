@@ -91,12 +91,8 @@ class TestAvgWaitingForDocumentsDays:
         """Cases with status 'waiting_for_documents' should yield a numeric avg_days."""
         contact = ContactFactory()
         # Create cases in waiting_for_documents status
-        case1 = TaxCaseFactory(
-            contact=contact, status="waiting_for_documents"
-        )
-        case2 = TaxCaseFactory(
-            contact=contact, status="waiting_for_documents"
-        )
+        case1 = TaxCaseFactory(contact=contact, status="waiting_for_documents")
+        case2 = TaxCaseFactory(contact=contact, status="waiting_for_documents")
         # Backdate updated_at to simulate waiting time
         from apps.cases.models import TaxCase
 

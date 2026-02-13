@@ -46,7 +46,9 @@ class TestGenerateRecurring:
             recurrence_pattern="weekly",
             recurrence_config={"days_of_week": [0, 2, 4]},  # Mon, Wed, Fri
             start_datetime=monday - datetime.timedelta(weeks=1),
-            end_datetime=monday - datetime.timedelta(weeks=1) + datetime.timedelta(hours=1),
+            end_datetime=monday
+            - datetime.timedelta(weeks=1)
+            + datetime.timedelta(hours=1),
         )
 
         instances = generate_recurring_appointments(parent, days_ahead=14)
@@ -62,7 +64,9 @@ class TestGenerateRecurring:
             recurrence_pattern="monthly",
             recurrence_config={"day_of_month": 15},
             start_datetime=now.replace(day=15) - datetime.timedelta(days=60),
-            end_datetime=now.replace(day=15) - datetime.timedelta(days=60) + datetime.timedelta(hours=1),
+            end_datetime=now.replace(day=15)
+            - datetime.timedelta(days=60)
+            + datetime.timedelta(hours=1),
         )
 
         instances = generate_recurring_appointments(parent, days_ahead=60)
@@ -102,9 +106,7 @@ class TestGenerateRecurring:
 
     def test_none_pattern_no_instances(self):
         contact = ContactFactory()
-        parent = AppointmentFactory(
-            contact=contact, recurrence_pattern="none"
-        )
+        parent = AppointmentFactory(contact=contact, recurrence_pattern="none")
         instances = generate_recurring_appointments(parent)
         assert instances == []
 

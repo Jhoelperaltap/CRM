@@ -7,19 +7,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contacts', '0004_add_vtiger_contact_fields'),
-        ('corporations', '0003_add_vtiger_organization_fields'),
+        ("contacts", "0004_add_vtiger_contact_fields"),
+        ("corporations", "0003_add_vtiger_organization_fields"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contact',
-            name='corporation',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='contacts', to='corporations.corporation', verbose_name='organization'),
+            model_name="contact",
+            name="corporation",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="contacts",
+                to="corporations.corporation",
+                verbose_name="organization",
+            ),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='phone',
-            field=models.CharField(blank=True, default='', max_length=20, verbose_name='office phone'),
+            model_name="contact",
+            name="phone",
+            field=models.CharField(
+                blank=True, default="", max_length=20, verbose_name="office phone"
+            ),
         ),
     ]

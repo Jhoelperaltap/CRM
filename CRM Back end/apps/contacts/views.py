@@ -58,12 +58,9 @@ class ContactViewSet(viewsets.ModelViewSet):
     # Queryset
     # ------------------------------------------------------------------
     def get_queryset(self):
-        qs = (
-            Contact.objects.select_related(
-                "corporation", "assigned_to", "created_by", "reports_to", "sla"
-            )
-            .all()
-        )
+        qs = Contact.objects.select_related(
+            "corporation", "assigned_to", "created_by", "reports_to", "sla"
+        ).all()
 
         # Annotate a boolean ``_is_starred`` so serializers can avoid N+1
         if self.request.user.is_authenticated:
@@ -172,7 +169,11 @@ class ContactViewSet(viewsets.ModelViewSet):
 
         for row_number, row in enumerate(reader, start=2):  # row 1 is header
             # Normalise keys: strip whitespace, lowercase
-            cleaned = {k.strip().lower().replace(" ", "_"): v.strip() for k, v in row.items() if k}
+            cleaned = {
+                k.strip().lower().replace(" ", "_"): v.strip()
+                for k, v in row.items()
+                if k
+            }
 
             serializer = ContactImportSerializer(data=cleaned)
             if not serializer.is_valid():
@@ -185,11 +186,13 @@ class ContactViewSet(viewsets.ModelViewSet):
             if data.get("email"):
                 match = Contact.objects.filter(email__iexact=data["email"]).first()
                 if match:
-                    skipped.append({
-                        "row": row_number,
-                        "reason": f"Duplicate email: {data['email']}",
-                        "matched_id": str(match.id),
-                    })
+                    skipped.append(
+                        {
+                            "row": row_number,
+                            "reason": f"Duplicate email: {data['email']}",
+                            "matched_id": str(match.id),
+                        }
+                    )
                     continue
 
             # Dedup by name + phone
@@ -200,11 +203,13 @@ class ContactViewSet(viewsets.ModelViewSet):
                     phone=data["phone"],
                 ).first()
                 if match:
-                    skipped.append({
-                        "row": row_number,
-                        "reason": "Duplicate name+phone",
-                        "matched_id": str(match.id),
-                    })
+                    skipped.append(
+                        {
+                            "row": row_number,
+                            "reason": "Duplicate name+phone",
+                            "matched_id": str(match.id),
+                        }
+                    )
                     continue
 
             Contact.objects.create(
@@ -220,7 +225,11 @@ class ContactViewSet(viewsets.ModelViewSet):
                 "errors": errors,
                 "total_processed": created_count + len(errors) + len(skipped),
             },
-            status=status.HTTP_201_CREATED if created_count else status.HTTP_400_BAD_REQUEST,
+            status=(
+                status.HTTP_201_CREATED
+                if created_count
+                else status.HTTP_400_BAD_REQUEST
+            ),
         )
 
     @action(detail=True, methods=["get"], url_path="emails")
@@ -278,29 +287,31 @@ class ContactViewSet(viewsets.ModelViewSet):
         writer.writerow(header)
 
         for contact in qs.iterator():
-            writer.writerow([
-                str(contact.id),
-                contact.salutation,
-                contact.first_name,
-                contact.last_name,
-                contact.email,
-                contact.phone,
-                contact.mobile,
-                contact.date_of_birth.isoformat() if contact.date_of_birth else "",
-                contact.ssn_last_four,
-                contact.street_address,
-                contact.city,
-                contact.state,
-                contact.zip_code,
-                contact.country,
-                contact.status,
-                contact.source,
-                contact.corporation.name if contact.corporation else "",
-                contact.assigned_to.get_full_name() if contact.assigned_to else "",
-                contact.description,
-                contact.tags,
-                contact.created_at.isoformat(),
-            ])
+            writer.writerow(
+                [
+                    str(contact.id),
+                    contact.salutation,
+                    contact.first_name,
+                    contact.last_name,
+                    contact.email,
+                    contact.phone,
+                    contact.mobile,
+                    contact.date_of_birth.isoformat() if contact.date_of_birth else "",
+                    contact.ssn_last_four,
+                    contact.street_address,
+                    contact.city,
+                    contact.state,
+                    contact.zip_code,
+                    contact.country,
+                    contact.status,
+                    contact.source,
+                    contact.corporation.name if contact.corporation else "",
+                    contact.assigned_to.get_full_name() if contact.assigned_to else "",
+                    contact.description,
+                    contact.tags,
+                    contact.created_at.isoformat(),
+                ]
+            )
 
         return response
 
@@ -317,9 +328,11 @@ class ContactViewSet(viewsets.ModelViewSet):
         from apps.portal.serializers import PortalMessageSerializer
 
         contact = self.get_object()
-        qs = PortalMessage.objects.filter(contact=contact).select_related(
-            "sender_user", "case"
-        ).order_by("-created_at")
+        qs = (
+            PortalMessage.objects.filter(contact=contact)
+            .select_related("sender_user", "case")
+            .order_by("-created_at")
+        )
 
         page = self.paginate_queryset(qs)
         if page is not None:
@@ -361,6 +374,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 
         if case_id:
             from apps.cases.models import TaxCase
+
             try:
                 case = TaxCase.objects.get(id=case_id, contact=contact)
                 message_data["case"] = case
@@ -406,6 +420,7 @@ class ContactViewSet(viewsets.ModelViewSet):
             pass
 
         from apps.portal.serializers import PortalMessageSerializer
+
         serializer = PortalMessageSerializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -435,8 +450,8 @@ class ContactTagViewSet(viewsets.ModelViewSet):
 
         user = self.request.user
         return ContactTag.objects.filter(
-            Q(tag_type=ContactTag.TagType.SHARED) |
-            Q(tag_type=ContactTag.TagType.PERSONAL, created_by=user)
+            Q(tag_type=ContactTag.TagType.SHARED)
+            | Q(tag_type=ContactTag.TagType.PERSONAL, created_by=user)
         )
 
 
@@ -457,7 +472,9 @@ class ContactTagAssignmentViewSet(viewsets.ModelViewSet):
     serializer_class = ContactTagAssignmentSerializer
 
     def get_queryset(self):
-        qs = ContactTagAssignment.objects.select_related("contact", "tag", "assigned_by")
+        qs = ContactTagAssignment.objects.select_related(
+            "contact", "tag", "assigned_by"
+        )
 
         # Filter by contact
         contact_id = self.request.query_params.get("contact")

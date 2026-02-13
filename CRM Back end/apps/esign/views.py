@@ -111,9 +111,9 @@ class EsignDocumentViewSet(viewsets.ModelViewSet):
         esign_doc.sent_at = timezone.now()
         esign_doc.save(update_fields=["status", "sent_at", "updated_at"])
 
-        esign_doc.signees.filter(
-            status=EsignSignee.SigneeStatus.PENDING
-        ).update(status=EsignSignee.SigneeStatus.SENT)
+        esign_doc.signees.filter(status=EsignSignee.SigneeStatus.PENDING).update(
+            status=EsignSignee.SigneeStatus.SENT
+        )
 
         return Response(
             EsignDocumentDetailSerializer(esign_doc).data,

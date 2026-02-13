@@ -21,7 +21,15 @@ class DocumentTagAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ["title", "doc_type", "status", "folder", "file_size", "uploaded_by", "created_at"]
+    list_display = [
+        "title",
+        "doc_type",
+        "status",
+        "folder",
+        "file_size",
+        "uploaded_by",
+        "created_at",
+    ]
     list_filter = ["doc_type", "status", "folder"]
     search_fields = ["title", "description"]
     raw_id_fields = ["contact", "corporation", "case", "uploaded_by", "folder"]

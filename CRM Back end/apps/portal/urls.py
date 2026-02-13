@@ -20,14 +20,20 @@ router = DefaultRouter()
 router.register(r"cases", PortalCaseViewSet, basename="portal-case")
 router.register(r"documents", PortalDocumentViewSet, basename="portal-document")
 router.register(r"messages", PortalMessageViewSet, basename="portal-message")
-router.register(r"appointments", PortalAppointmentViewSet, basename="portal-appointment")
-router.register(r"notifications", PortalNotificationViewSet, basename="portal-notification")
+router.register(
+    r"appointments", PortalAppointmentViewSet, basename="portal-appointment"
+)
+router.register(
+    r"notifications", PortalNotificationViewSet, basename="portal-notification"
+)
 
 urlpatterns = [
     path("auth/login/", PortalLoginView.as_view(), name="portal-login"),
     path("auth/logout/", PortalLogoutView.as_view(), name="portal-logout"),
     path("auth/me/", PortalMeView.as_view(), name="portal-me"),
-    path("auth/refresh/", PortalTokenRefreshView.as_view(), name="portal-token-refresh"),
+    path(
+        "auth/refresh/", PortalTokenRefreshView.as_view(), name="portal-token-refresh"
+    ),
     path(
         "auth/password-reset/",
         PortalPasswordResetRequestView.as_view(),

@@ -69,11 +69,13 @@ class BruteForceProtection:
         if user.failed_login_attempts >= policy.max_failed_login_attempts:
             # Lock the account
             user.locked_until = now + timedelta(minutes=policy.lockout_duration_minutes)
-            user.save(update_fields=[
-                "failed_login_attempts",
-                "last_failed_login",
-                "locked_until",
-            ])
+            user.save(
+                update_fields=[
+                    "failed_login_attempts",
+                    "last_failed_login",
+                    "locked_until",
+                ]
+            )
 
             remaining = int(policy.lockout_duration_minutes * 60)
             logger.warning(
@@ -105,11 +107,13 @@ class BruteForceProtection:
             user.failed_login_attempts = 0
             user.locked_until = None
             user.last_failed_login = None
-            user.save(update_fields=[
-                "failed_login_attempts",
-                "locked_until",
-                "last_failed_login",
-            ])
+            user.save(
+                update_fields=[
+                    "failed_login_attempts",
+                    "locked_until",
+                    "last_failed_login",
+                ]
+            )
 
     @staticmethod
     def get_remaining_attempts(user, policy) -> int:
@@ -152,11 +156,13 @@ class BruteForceProtection:
         user.failed_login_attempts = 0
         user.locked_until = None
         user.last_failed_login = None
-        user.save(update_fields=[
-            "failed_login_attempts",
-            "locked_until",
-            "last_failed_login",
-        ])
+        user.save(
+            update_fields=[
+                "failed_login_attempts",
+                "locked_until",
+                "last_failed_login",
+            ]
+        )
 
         logger.info(f"Account manually unlocked: user={user.email}")
         return True

@@ -17,7 +17,9 @@ class TestCaseSignals:
         mock_eval.reset_mock()
         case.status = "in_progress"
         case.save()
-        calls = [c for c in mock_eval.call_args_list if c[0][0] == "case_status_changed"]
+        calls = [
+            c for c in mock_eval.call_args_list if c[0][0] == "case_status_changed"
+        ]
         assert len(calls) >= 1
 
 

@@ -6,7 +6,9 @@ from apps.notifications.views import (
 )
 
 router = DefaultRouter()
-router.register(r"preferences", NotificationPreferenceViewSet, basename="notification-preferences")
+router.register(
+    r"preferences", NotificationPreferenceViewSet, basename="notification-preferences"
+)
 router.register(r"", NotificationViewSet, basename="notifications")
 
 urlpatterns = router.urls

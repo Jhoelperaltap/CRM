@@ -37,7 +37,9 @@ class AuditLog(models.Model):
     changes = models.JSONField(_("changes"), default=dict, blank=True)
     ip_address = models.GenericIPAddressField(_("IP address"), null=True, blank=True)
     user_agent = models.TextField(_("user agent"), blank=True, default="")
-    request_path = models.CharField(_("request path"), max_length=500, blank=True, default="")
+    request_path = models.CharField(
+        _("request path"), max_length=500, blank=True, default=""
+    )
     timestamp = models.DateTimeField(_("timestamp"), auto_now_add=True, db_index=True)
 
     class Meta:

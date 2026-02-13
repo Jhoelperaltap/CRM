@@ -29,8 +29,17 @@ class AuditLogAdmin(ReadOnlyAuditAdmin):
     search_fields = ["object_repr", "module", "user__email"]
     raw_id_fields = ["user"]
     readonly_fields = [
-        "id", "user", "action", "module", "object_id", "object_repr",
-        "changes", "ip_address", "user_agent", "request_path", "timestamp",
+        "id",
+        "user",
+        "action",
+        "module",
+        "object_id",
+        "object_repr",
+        "changes",
+        "ip_address",
+        "user_agent",
+        "request_path",
+        "timestamp",
     ]
 
 
@@ -41,8 +50,14 @@ class LoginHistoryAdmin(ReadOnlyAuditAdmin):
     search_fields = ["email_attempted", "ip_address"]
     raw_id_fields = ["user"]
     readonly_fields = [
-        "id", "user", "email_attempted", "status", "ip_address",
-        "user_agent", "failure_reason", "timestamp",
+        "id",
+        "user",
+        "email_attempted",
+        "status",
+        "ip_address",
+        "user_agent",
+        "failure_reason",
+        "timestamp",
     ]
 
 
@@ -53,18 +68,38 @@ class SettingsLogAdmin(ReadOnlyAuditAdmin):
     search_fields = ["setting_area", "setting_key", "user__email"]
     raw_id_fields = ["user"]
     readonly_fields = [
-        "id", "user", "setting_area", "setting_key",
-        "old_value", "new_value", "ip_address", "user_agent", "timestamp",
+        "id",
+        "user",
+        "setting_area",
+        "setting_key",
+        "old_value",
+        "new_value",
+        "ip_address",
+        "user_agent",
+        "timestamp",
     ]
 
 
 @admin.register(EncryptedFieldAccessLog)
 class EncryptedFieldAccessLogAdmin(ReadOnlyAuditAdmin):
-    list_display = ["timestamp", "user", "module", "field_name", "access_type", "ip_address"]
+    list_display = [
+        "timestamp",
+        "user",
+        "module",
+        "field_name",
+        "access_type",
+        "ip_address",
+    ]
     list_filter = ["access_type", "module"]
     search_fields = ["module", "field_name", "user__email"]
     raw_id_fields = ["user"]
     readonly_fields = [
-        "id", "user", "module", "object_id", "field_name",
-        "access_type", "ip_address", "timestamp",
+        "id",
+        "user",
+        "module",
+        "object_id",
+        "field_name",
+        "access_type",
+        "ip_address",
+        "timestamp",
     ]

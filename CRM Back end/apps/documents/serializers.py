@@ -72,7 +72,9 @@ class DocumentFolderTreeSerializer(serializers.ModelSerializer):
         children_qs = getattr(obj, "_prefetched_children", None)
         if children_qs is None:
             children_qs = obj.children.all()
-        return DocumentFolderTreeSerializer(children_qs, many=True, context=self.context).data
+        return DocumentFolderTreeSerializer(
+            children_qs, many=True, context=self.context
+        ).data
 
 
 class DocumentFolderCreateUpdateSerializer(serializers.ModelSerializer):
@@ -102,7 +104,9 @@ class DocumentFolderCreateUpdateSerializer(serializers.ModelSerializer):
             qs = qs.exclude(pk=instance.pk)
         if qs.exists():
             raise serializers.ValidationError(
-                {"name": "A folder with this name already exists in the selected parent."}
+                {
+                    "name": "A folder with this name already exists in the selected parent."
+                }
             )
         return attrs
 

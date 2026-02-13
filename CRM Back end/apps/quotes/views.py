@@ -74,7 +74,9 @@ class QuoteViewSet(viewsets.ModelViewSet):
         quote = self.get_object()
         if quote.stage not in (Quote.Stage.DRAFT,):
             return Response(
-                {"detail": f"Cannot send a quote in '{quote.get_stage_display()}' stage."},
+                {
+                    "detail": f"Cannot send a quote in '{quote.get_stage_display()}' stage."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         quote.stage = Quote.Stage.SENT
@@ -87,7 +89,9 @@ class QuoteViewSet(viewsets.ModelViewSet):
         quote = self.get_object()
         if quote.stage not in (Quote.Stage.SENT,):
             return Response(
-                {"detail": f"Cannot accept a quote in '{quote.get_stage_display()}' stage."},
+                {
+                    "detail": f"Cannot accept a quote in '{quote.get_stage_display()}' stage."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         quote.stage = Quote.Stage.ACCEPTED
@@ -100,7 +104,9 @@ class QuoteViewSet(viewsets.ModelViewSet):
         quote = self.get_object()
         if quote.stage not in (Quote.Stage.SENT,):
             return Response(
-                {"detail": f"Cannot reject a quote in '{quote.get_stage_display()}' stage."},
+                {
+                    "detail": f"Cannot reject a quote in '{quote.get_stage_display()}' stage."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         quote.stage = Quote.Stage.REJECTED

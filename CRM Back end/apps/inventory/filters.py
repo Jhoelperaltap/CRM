@@ -47,6 +47,7 @@ class ProductFilter(django_filters.FilterSet):
     def filter_low_stock(self, queryset, name, value):
         if value:
             from django.db.models import F
+
             return queryset.filter(qty_in_stock__lte=F("reorder_level"))
         return queryset
 

@@ -57,7 +57,10 @@ class TestAppointmentMonitor:
 
         # Should create a 24h reminder
         assert len(actions) >= 1
-        assert any(a.action_type == AgentAction.ActionType.APPOINTMENT_REMINDER for a in actions)
+        assert any(
+            a.action_type == AgentAction.ActionType.APPOINTMENT_REMINDER
+            for a in actions
+        )
 
     def test_no_duplicate_reminders(self, agent_config):
         """Test that duplicate reminders are not created."""
@@ -108,7 +111,9 @@ class TestTaskEnforcer:
         actions = enforcer.check_overdue_tasks()
 
         assert len(actions) >= 1
-        assert any(a.action_type == AgentAction.ActionType.TASK_REMINDER for a in actions)
+        assert any(
+            a.action_type == AgentAction.ActionType.TASK_REMINDER for a in actions
+        )
 
     def test_escalation_for_severely_overdue(self, agent_config):
         """Test escalation for tasks overdue by 3+ days."""
@@ -127,7 +132,9 @@ class TestTaskEnforcer:
         actions = enforcer.check_overdue_tasks()
 
         # Should have escalation
-        assert any(a.action_type == AgentAction.ActionType.TASK_ESCALATED for a in actions)
+        assert any(
+            a.action_type == AgentAction.ActionType.TASK_ESCALATED for a in actions
+        )
 
     def test_upcoming_deadline_reminders(self, agent_config):
         """Test reminders for upcoming deadlines."""
@@ -251,7 +258,11 @@ class TestLearningEngine:
         for i in range(10):
             AgentAction.objects.create(
                 action_type=AgentAction.ActionType.TASK_REMINDER,
-                status=AgentAction.Status.EXECUTED if i < 7 else AgentAction.Status.REJECTED,
+                status=(
+                    AgentAction.Status.EXECUTED
+                    if i < 7
+                    else AgentAction.Status.REJECTED
+                ),
                 title=f"Action {i}",
                 description="Test",
             )
@@ -271,7 +282,11 @@ class TestLearningEngine:
         for i in range(10):
             AgentAction.objects.create(
                 action_type=AgentAction.ActionType.EMAIL_NOTE_CREATED,
-                status=AgentAction.Status.REJECTED if i < 5 else AgentAction.Status.EXECUTED,
+                status=(
+                    AgentAction.Status.REJECTED
+                    if i < 5
+                    else AgentAction.Status.EXECUTED
+                ),
                 title=f"Action {i}",
                 description="Test",
             )

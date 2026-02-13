@@ -10,24 +10,46 @@ class CorporationImportSerializer(serializers.Serializer):
     """Validates a single row from a CSV import file."""
 
     name = serializers.CharField(max_length=255)
-    legal_name = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
+    legal_name = serializers.CharField(
+        max_length=255, required=False, allow_blank=True, default=""
+    )
     entity_type = serializers.ChoiceField(
         choices=Corporation.EntityType.choices,
         required=False,
         default=Corporation.EntityType.OTHER,
     )
-    ein = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
-    state_id = serializers.CharField(max_length=50, required=False, allow_blank=True, default="")
-    street_address = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
-    city = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    state = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
-    zip_code = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
-    country = serializers.CharField(max_length=100, required=False, allow_blank=True, default="United States")
-    phone = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
-    fax = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
+    ein = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
+    state_id = serializers.CharField(
+        max_length=50, required=False, allow_blank=True, default=""
+    )
+    street_address = serializers.CharField(
+        max_length=255, required=False, allow_blank=True, default=""
+    )
+    city = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    state = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
+    zip_code = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
+    country = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default="United States"
+    )
+    phone = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
+    fax = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, default=""
+    )
     email = serializers.EmailField(required=False, allow_blank=True, default="")
     website = serializers.URLField(required=False, allow_blank=True, default="")
-    industry = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    industry = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default=""
+    )
     status = serializers.ChoiceField(
         choices=Corporation.Status.choices,
         required=False,
@@ -120,8 +142,7 @@ class CorporationListSerializer(serializers.ModelSerializer):
     def get_primary_contact_name(self, obj):
         if obj.primary_contact_id and obj.primary_contact:
             return (
-                f"{obj.primary_contact.first_name} "
-                f"{obj.primary_contact.last_name}"
+                f"{obj.primary_contact.first_name} " f"{obj.primary_contact.last_name}"
             ).strip()
         return None
 
