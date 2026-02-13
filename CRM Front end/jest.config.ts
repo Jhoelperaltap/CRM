@@ -13,16 +13,19 @@ const config: Config = {
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
+  // IMPORTANT: Only look for tests in src/ directory
+  // This prevents Jest from finding e2e/ Playwright tests
+  roots: ['<rootDir>/src'],
+
   // Module name mapping for path aliases
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 
-  // Test patterns - only match tests in src/__tests__ directory
-  // This explicitly excludes e2e/ directory which uses Playwright
+  // Test patterns
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/src/**/*.test.[jt]s?(x)',
+    '**/__tests__/**/*.[jt]s?(x)',
+    '**/*.test.[jt]s?(x)',
   ],
 
   // Coverage configuration
