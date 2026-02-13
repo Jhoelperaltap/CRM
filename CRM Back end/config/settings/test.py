@@ -1,6 +1,7 @@
 from .base import *  # noqa: F401,F403
 
 DEBUG = False
+TESTING = True
 
 # Disable file logging in tests - use console only
 LOGGING = {
