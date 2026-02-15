@@ -119,14 +119,17 @@ class TestEncryptedCharField:
 
         # The raw database value should be the encrypted token, not plaintext
         # Use Django's raw() to bypass field decryption while staying in same transaction
-        from apps.contacts.models import Contact
-        from django.db.models import F
         from django.db.models.functions import Length
 
+        from apps.contacts.models import Contact
+
         # Use annotate to get the raw length - if encrypted, it will be much longer
-        result = Contact.objects.filter(id=contact.id).annotate(
-            raw_len=Length("ssn_last_four")
-        ).values_list("raw_len", flat=True).first()
+        result = (
+            Contact.objects.filter(id=contact.id)
+            .annotate(raw_len=Length("ssn_last_four"))
+            .values_list("raw_len", flat=True)
+            .first()
+        )
         assert result is not None
         # Encrypted value should be longer than the plaintext "1234" (4 chars)
         # Fernet encryption produces ~100+ character base64 strings
