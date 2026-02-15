@@ -1,0 +1,13 @@
+from django.apps import AppConfig
+
+
+class PlaybooksConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.playbooks"
+    verbose_name = "Playbooks"
+
+    def ready(self):
+        try:
+            import apps.playbooks.signals  # noqa
+        except ImportError:
+            pass
