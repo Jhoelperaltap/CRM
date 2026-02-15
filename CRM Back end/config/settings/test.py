@@ -34,16 +34,20 @@ LOGGING = {
     },
 }
 
-# Use PostgreSQL if DATABASE_URL is set (CI environment), otherwise use SQLite
-_database_url = os.environ.get("DATABASE_URL")
+# Use PostgreSQL in CI (GitHub Actions), otherwise use SQLite for local tests
+# Check for CI environment variable which GitHub Actions sets to "true"
+_is_ci = os.environ.get("CI") == "true"
+_database_url = os.environ.get("DATABASE_URL") if _is_ci else None
+
 if _database_url:
-    # Parse DATABASE_URL directly without relying on django-environ defaults
+    # Parse DATABASE_URL directly for CI environment
     import dj_database_url
 
     DATABASES = {
         "default": dj_database_url.parse(_database_url),
     }
 else:
+    # Use SQLite in-memory for local testing (fast, no external deps)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
