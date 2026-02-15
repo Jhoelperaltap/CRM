@@ -40,11 +40,12 @@ _is_ci = os.environ.get("CI") == "true"
 _database_url = os.environ.get("DATABASE_URL") if _is_ci else None
 
 if _database_url:
-    # Parse DATABASE_URL directly for CI environment
-    import dj_database_url
+    # Parse DATABASE_URL for CI environment using django-environ
+    import environ
 
+    env = environ.Env()
     DATABASES = {
-        "default": dj_database_url.parse(_database_url),
+        "default": env.db_url("DATABASE_URL"),
     }
 else:
     # Use SQLite in-memory for local testing (fast, no external deps)
