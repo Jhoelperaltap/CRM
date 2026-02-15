@@ -15,6 +15,11 @@ import {
   Loader2,
   ChevronDown,
   X,
+  Mail,
+  Paperclip,
+  Building2,
+  Users,
+  Folder,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -43,6 +48,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   getComments,
   createComment,
@@ -52,7 +66,9 @@ import {
   reactToComment,
   getMentionSuggestions,
 } from "@/lib/api/activities";
+import { getClientDepartmentFolders } from "@/lib/api/departments";
 import type { Comment, MentionSuggestion, ReactionType } from "@/types/activities";
+import type { DepartmentFolderGroup, DepartmentClientFolderTree } from "@/types/department";
 
 const REACTION_OPTIONS: { type: ReactionType; emoji: string; label: string }[] = [
   { type: "like", emoji: "👍", label: "Like" },
@@ -93,6 +109,13 @@ export function CommentsSection({
   const [mentionTargetRef, setMentionTargetRef] = useState<"new" | "reply" | "edit">("new");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Email and attachment options
+  const [sendEmail, setSendEmail] = useState(false);
+  const [attachToDepartment, setAttachToDepartment] = useState(false);
+  const [selectedDepartmentFolder, setSelectedDepartmentFolder] = useState<string>("");
+  const [departmentFolders, setDepartmentFolders] = useState<DepartmentFolderGroup[]>([]);
+  const [mentionedDepartments, setMentionedDepartments] = useState<MentionSuggestion[]>([]);
+
   const fetchComments = useCallback(async () => {
     setLoading(true);
     try {
@@ -113,6 +136,54 @@ export function CommentsSection({
     fetchComments();
   }, [fetchComments]);
 
+  // Fetch department folders when attach option is enabled and departments are mentioned
+  useEffect(() => {
+    const fetchDeptFolders = async () => {
+      if (attachToDepartment && mentionedDepartments.length > 0) {
+        try {
+          const data = await getClientDepartmentFolders({
+            contact: entityType === "contact" ? entityId : undefined,
+            corporation: entityType === "corporation" ? entityId : undefined,
+          });
+          setDepartmentFolders(data);
+        } catch (error) {
+          console.error("Error fetching department folders:", error);
+        }
+      }
+    };
+    fetchDeptFolders();
+  }, [attachToDepartment, mentionedDepartments, entityType, entityId]);
+
+  // Track mentioned departments in the comment
+  useEffect(() => {
+    const deptMentionPattern = /@(\w+)/g;
+    const matches = newComment.match(deptMentionPattern) || [];
+    const deptMentions = mentionSuggestions.filter(
+      (s) => s.suggestion_type === "department" && matches.some(m => m.toLowerCase() === `@${s.mention_key}`)
+    );
+    // Also check previous suggestions that were selected
+    const allDeptMentions = [...mentionedDepartments];
+    for (const match of matches) {
+      const key = match.slice(1).toLowerCase();
+      const existing = allDeptMentions.find(d => d.mention_key === key);
+      if (!existing) {
+        const found = mentionSuggestions.find(
+          s => s.suggestion_type === "department" && s.mention_key === key
+        );
+        if (found) {
+          allDeptMentions.push(found);
+        }
+      }
+    }
+    // Filter to only keep departments that are still in the comment
+    const filtered = allDeptMentions.filter(d =>
+      matches.some(m => m.toLowerCase() === `@${d.mention_key}`)
+    );
+    if (JSON.stringify(filtered) !== JSON.stringify(mentionedDepartments)) {
+      setMentionedDepartments(filtered);
+    }
+  }, [newComment, mentionSuggestions]);
+
   const handleSubmitComment = async () => {
     if (!newComment.trim()) return;
 
@@ -122,8 +193,14 @@ export function CommentsSection({
         content: newComment.trim(),
         entity_type: entityType,
         entity_id: entityId,
+        send_email: sendEmail,
+        department_folder: attachToDepartment && selectedDepartmentFolder ? selectedDepartmentFolder : undefined,
       });
       setNewComment("");
+      setSendEmail(false);
+      setAttachToDepartment(false);
+      setSelectedDepartmentFolder("");
+      setMentionedDepartments([]);
       fetchComments();
     } catch (error) {
       console.error("Error creating comment:", error);
@@ -279,6 +356,16 @@ export function CommentsSection({
     setter(newValue);
     setShowMentions(false);
     setMentionQuery("");
+
+    // Track department mentions
+    if (suggestion.suggestion_type === "department") {
+      setMentionedDepartments((prev) => {
+        if (!prev.find((d) => d.id === suggestion.id)) {
+          return [...prev, suggestion];
+        }
+        return prev;
+      });
+    }
   };
 
   const renderCommentCard = (comment: Comment, isReply: boolean = false) => (
@@ -384,14 +471,42 @@ export function CommentsSection({
                 )}
               </p>
 
-              {/* Mentioned users */}
-              {comment.mentioned_users.length > 0 && (
+              {/* Mentioned users and departments */}
+              {(comment.mentioned_users.length > 0 || comment.mentioned_departments?.length > 0) && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {comment.mentioned_users.map((user) => (
                     <Badge key={user.id} variant="secondary" className="text-xs">
                       @{user.first_name || user.email.split("@")[0]}
                     </Badge>
                   ))}
+                  {comment.mentioned_departments?.map((dept) => (
+                    <Badge
+                      key={dept.id}
+                      variant="outline"
+                      className="text-xs"
+                      style={{ borderColor: dept.color, color: dept.color }}
+                    >
+                      @{dept.code}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Email and attachment indicators */}
+              {(comment.email_sent || comment.department_folder_info) && (
+                <div className="flex flex-wrap gap-2 mt-2 text-xs text-muted-foreground">
+                  {comment.email_sent && (
+                    <span className="flex items-center gap-1">
+                      <Mail className="h-3 w-3" />
+                      Enviado por correo
+                    </span>
+                  )}
+                  {comment.department_folder_info && (
+                    <span className="flex items-center gap-1">
+                      <Folder className="h-3 w-3" />
+                      {comment.department_folder_info.department_name}: {comment.department_folder_info.name}
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -539,11 +654,93 @@ export function CommentsSection({
 
       {/* New comment input */}
       <div className="mb-4 relative">
+        {/* Comment options */}
+        <div className="flex flex-wrap items-center gap-4 mb-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="send-email"
+              checked={sendEmail}
+              onCheckedChange={(checked) => setSendEmail(checked === true)}
+            />
+            <Label
+              htmlFor="send-email"
+              className="text-sm font-normal cursor-pointer flex items-center gap-1"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              Enviar por correo
+            </Label>
+          </div>
+
+          {mentionedDepartments.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="attach-dept"
+                checked={attachToDepartment}
+                onCheckedChange={(checked) => {
+                  setAttachToDepartment(checked === true);
+                  if (!checked) {
+                    setSelectedDepartmentFolder("");
+                  }
+                }}
+              />
+              <Label
+                htmlFor="attach-dept"
+                className="text-sm font-normal cursor-pointer flex items-center gap-1"
+              >
+                <Paperclip className="h-3.5 w-3.5" />
+                Adjuntar a departamento
+              </Label>
+            </div>
+          )}
+        </div>
+
+        {/* Department folder selector */}
+        {attachToDepartment && mentionedDepartments.length > 0 && (
+          <div className="mb-2 p-3 bg-muted/50 rounded-lg border">
+            <Label className="text-sm font-medium mb-2 block">
+              Seleccionar carpeta de departamento:
+            </Label>
+            <Select
+              value={selectedDepartmentFolder}
+              onValueChange={setSelectedDepartmentFolder}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Seleccionar carpeta..." />
+              </SelectTrigger>
+              <SelectContent>
+                {departmentFolders
+                  .filter((dept) =>
+                    mentionedDepartments.some((md) => md.id === dept.id)
+                  )
+                  .map((dept) => (
+                    <div key={dept.id}>
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded"
+                          style={{ backgroundColor: dept.color }}
+                        />
+                        {dept.name}
+                      </div>
+                      {dept.folders.map((folder) => (
+                        <SelectItem key={folder.id} value={folder.id}>
+                          <div className="flex items-center gap-2">
+                            <Folder className="h-3.5 w-3.5" />
+                            {folder.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </div>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <Textarea
           ref={textareaRef}
           value={newComment}
           onChange={(e) => handleTextChange(e, setNewComment, "new")}
-          placeholder="Add a comment... (use @ to mention team members)"
+          placeholder="Add a comment... (use @ to mention team members or departments)"
           className="min-h-[80px] resize-none"
         />
         {showMentions && mentionTargetRef === "new" && mentionSuggestions.length > 0 && (
@@ -618,27 +815,70 @@ function MentionDropdown({
   onSelect: (suggestion: MentionSuggestion) => void;
   onClose: () => void;
 }) {
+  const users = suggestions.filter((s) => s.suggestion_type === "user");
+  const departments = suggestions.filter((s) => s.suggestion_type === "department");
+
   return (
-    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-popover border rounded-md shadow-lg max-h-48 overflow-y-auto">
+    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-popover border rounded-md shadow-lg max-h-64 overflow-y-auto">
       <div className="p-1">
-        {suggestions.map((suggestion) => (
-          <button
-            key={suggestion.id}
-            className="w-full flex items-center gap-2 px-2 py-1.5 text-left hover:bg-accent rounded-sm transition-colors"
-            onClick={() => onSelect(suggestion)}
-          >
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={suggestion.avatar || undefined} />
-              <AvatarFallback className="text-xs">
-                {suggestion.first_name?.[0] || suggestion.email[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{suggestion.display_name}</p>
-              <p className="text-xs text-muted-foreground truncate">@{suggestion.mention_key}</p>
+        {/* Users section */}
+        {users.length > 0 && (
+          <>
+            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              Usuarios
             </div>
-          </button>
-        ))}
+            {users.map((suggestion) => (
+              <button
+                key={suggestion.id}
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-left hover:bg-accent rounded-sm transition-colors"
+                onClick={() => onSelect(suggestion)}
+              >
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={suggestion.avatar || undefined} />
+                  <AvatarFallback className="text-xs">
+                    {suggestion.first_name?.[0] || suggestion.email?.[0] || "?"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{suggestion.display_name}</p>
+                  <p className="text-xs text-muted-foreground truncate">@{suggestion.mention_key}</p>
+                </div>
+              </button>
+            ))}
+          </>
+        )}
+
+        {/* Departments section */}
+        {departments.length > 0 && (
+          <>
+            {users.length > 0 && <div className="border-t my-1" />}
+            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground flex items-center gap-1">
+              <Building2 className="h-3 w-3" />
+              Departamentos
+            </div>
+            {departments.map((suggestion) => (
+              <button
+                key={suggestion.id}
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-left hover:bg-accent rounded-sm transition-colors"
+                onClick={() => onSelect(suggestion)}
+              >
+                <div
+                  className="h-6 w-6 rounded flex items-center justify-center text-white text-[10px] font-semibold"
+                  style={{ backgroundColor: suggestion.color || "#6366f1" }}
+                >
+                  {suggestion.code?.substring(0, 2) || "DP"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{suggestion.display_name}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    @{suggestion.mention_key} · {suggestion.user_count || 0} usuarios
+                  </p>
+                </div>
+              </button>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

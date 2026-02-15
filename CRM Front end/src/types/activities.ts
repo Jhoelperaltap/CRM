@@ -63,11 +63,26 @@ export interface CommentReaction {
   created_at: string;
 }
 
+export interface DepartmentMini {
+  id: string;
+  name: string;
+  code: string;
+  color: string;
+}
+
+export interface DepartmentFolderMini {
+  id: string;
+  name: string;
+  department: string;
+  department_name: string;
+}
+
 export interface Comment {
   id: string;
   content: string;
   author: UserMini;
   mentioned_users: UserMini[];
+  mentioned_departments: DepartmentMini[];
   parent: string | null;
   is_edited: boolean;
   edited_at: string | null;
@@ -76,6 +91,10 @@ export interface Comment {
   replies_count: number;
   entity_type: string;
   entity_id: string;
+  send_email: boolean;
+  email_sent: boolean;
+  department_folder: string | null;
+  department_folder_info: DepartmentFolderMini | null;
   created_at: string;
   time_ago: string;
   can_edit: boolean;
@@ -84,12 +103,19 @@ export interface Comment {
 
 export interface MentionSuggestion {
   id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
   display_name: string;
   mention_key: string;
-  avatar: string | null;
+  avatar?: string | null;
+  suggestion_type: "user" | "department";
+  // Department-specific fields
+  name?: string;
+  code?: string;
+  color?: string;
+  icon?: string;
+  user_count?: number;
 }
 
 // API payloads
@@ -110,6 +136,8 @@ export interface CreateCommentPayload {
   entity_type: "contact" | "corporation";
   entity_id: string;
   parent?: string;
+  send_email?: boolean;
+  department_folder?: string;
 }
 
 export interface UpdateCommentPayload {

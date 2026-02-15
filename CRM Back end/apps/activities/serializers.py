@@ -7,7 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
 from apps.activities.models import Activity, Comment, CommentReaction
-from apps.users.models import User
+from apps.users.models import User, Department
+from apps.documents.models import DepartmentClientFolder
 
 
 class UserMiniSerializer(serializers.ModelSerializer):
@@ -167,11 +168,29 @@ class CommentReactionSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "user", "created_at"]
 
 
+class DepartmentMiniSerializer(serializers.ModelSerializer):
+    """Minimal department info for comment display."""
+
+    class Meta:
+        model = Department
+        fields = ["id", "name", "code", "color"]
+
+
+class DepartmentFolderMiniSerializer(serializers.ModelSerializer):
+    """Minimal department folder info."""
+    department_name = serializers.CharField(source="department.name", read_only=True)
+
+    class Meta:
+        model = DepartmentClientFolder
+        fields = ["id", "name", "department", "department_name"]
+
+
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer for comments."""
 
     author = UserMiniSerializer(read_only=True)
     mentioned_users = UserMiniSerializer(many=True, read_only=True)
+    mentioned_departments = DepartmentMiniSerializer(many=True, read_only=True)
     reactions = CommentReactionSerializer(many=True, read_only=True)
     reaction_counts = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
@@ -180,6 +199,9 @@ class CommentSerializer(serializers.ModelSerializer):
     time_ago = serializers.SerializerMethodField()
     can_edit = serializers.SerializerMethodField()
     can_delete = serializers.SerializerMethodField()
+    department_folder_info = DepartmentFolderMiniSerializer(
+        source="department_folder", read_only=True
+    )
 
     class Meta:
         model = Comment
@@ -188,6 +210,7 @@ class CommentSerializer(serializers.ModelSerializer):
             "content",
             "author",
             "mentioned_users",
+            "mentioned_departments",
             "parent",
             "is_edited",
             "edited_at",
@@ -196,6 +219,10 @@ class CommentSerializer(serializers.ModelSerializer):
             "replies_count",
             "entity_type",
             "entity_id",
+            "send_email",
+            "email_sent",
+            "department_folder",
+            "department_folder_info",
             "created_at",
             "time_ago",
             "can_edit",
@@ -205,9 +232,12 @@ class CommentSerializer(serializers.ModelSerializer):
             "id",
             "author",
             "mentioned_users",
+            "mentioned_departments",
             "is_edited",
             "edited_at",
             "reactions",
+            "email_sent",
+            "department_folder_info",
             "created_at",
         ]
 
@@ -266,10 +296,23 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         choices=["contact", "corporation"], write_only=True
     )
     entity_id = serializers.UUIDField(write_only=True)
+    send_email = serializers.BooleanField(default=False, required=False)
+    department_folder = serializers.PrimaryKeyRelatedField(
+        queryset=DepartmentClientFolder.objects.all(),
+        required=False,
+        allow_null=True,
+    )
 
     class Meta:
         model = Comment
-        fields = ["content", "parent", "entity_type", "entity_id"]
+        fields = [
+            "content",
+            "parent",
+            "entity_type",
+            "entity_id",
+            "send_email",
+            "department_folder",
+        ]
 
     def create(self, validated_data):
         entity_type = validated_data.pop("entity_type")
@@ -317,10 +360,11 @@ class CommentUpdateSerializer(serializers.ModelSerializer):
 
 
 class MentionSuggestionSerializer(serializers.ModelSerializer):
-    """Serializer for @mention suggestions."""
+    """Serializer for @mention suggestions (users)."""
 
     display_name = serializers.SerializerMethodField()
     mention_key = serializers.SerializerMethodField()
+    suggestion_type = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -332,6 +376,7 @@ class MentionSuggestionSerializer(serializers.ModelSerializer):
             "display_name",
             "mention_key",
             "avatar",
+            "suggestion_type",
         ]
 
     def get_display_name(self, obj):
@@ -342,3 +387,42 @@ class MentionSuggestionSerializer(serializers.ModelSerializer):
         if obj.first_name:
             return obj.first_name.lower()
         return obj.email.split("@")[0].lower()
+
+    def get_suggestion_type(self, obj):
+        return "user"
+
+
+class DepartmentMentionSuggestionSerializer(serializers.ModelSerializer):
+    """Serializer for @mention suggestions (departments)."""
+
+    display_name = serializers.SerializerMethodField()
+    mention_key = serializers.SerializerMethodField()
+    suggestion_type = serializers.SerializerMethodField()
+    user_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Department
+        fields = [
+            "id",
+            "name",
+            "code",
+            "color",
+            "icon",
+            "display_name",
+            "mention_key",
+            "suggestion_type",
+            "user_count",
+        ]
+
+    def get_display_name(self, obj):
+        return obj.name
+
+    def get_mention_key(self, obj):
+        """Return the key to use for @mentions (department code)."""
+        return obj.code.lower()
+
+    def get_suggestion_type(self, obj):
+        return "department"
+
+    def get_user_count(self, obj):
+        return obj.users.filter(is_active=True).count()

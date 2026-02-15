@@ -17,8 +17,9 @@ from apps.activities.serializers import (
     CommentCreateSerializer,
     CommentUpdateSerializer,
     MentionSuggestionSerializer,
+    DepartmentMentionSuggestionSerializer,
 )
-from apps.users.models import User
+from apps.users.models import User, Department
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
@@ -183,26 +184,46 @@ class CommentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def mention_suggestions(self, request):
         """
-        Get user suggestions for @mentions.
+        Get user and department suggestions for @mentions.
 
         Query params:
-        - q: Search query (searches first name, last name, email)
+        - q: Search query (searches first name, last name, email for users; name, code for departments)
         - limit: Max results (default 10)
+        - type: Filter by type ('user', 'department', or 'all' - default)
         """
         query = request.query_params.get("q", "")
         limit = int(request.query_params.get("limit", 10))
+        suggestion_type = request.query_params.get("type", "all")
 
         if len(query) < 1:
             return Response([])
 
-        users = User.objects.filter(
-            Q(first_name__icontains=query)
-            | Q(last_name__icontains=query)
-            | Q(email__icontains=query)
-        ).filter(is_active=True)[:limit]
+        results = []
 
-        serializer = MentionSuggestionSerializer(users, many=True)
-        return Response(serializer.data)
+        # Get user suggestions
+        if suggestion_type in ["all", "user"]:
+            users = User.objects.filter(
+                Q(first_name__icontains=query)
+                | Q(last_name__icontains=query)
+                | Q(email__icontains=query)
+            ).filter(is_active=True)[:limit]
+
+            user_serializer = MentionSuggestionSerializer(users, many=True)
+            results.extend(user_serializer.data)
+
+        # Get department suggestions
+        if suggestion_type in ["all", "department"]:
+            departments = Department.objects.filter(
+                Q(name__icontains=query) | Q(code__icontains=query)
+            ).filter(is_active=True)[:limit]
+
+            dept_serializer = DepartmentMentionSuggestionSerializer(departments, many=True)
+            results.extend(dept_serializer.data)
+
+        # Sort by display_name and limit total results
+        results = sorted(results, key=lambda x: x.get("display_name", ""))[:limit]
+
+        return Response(results)
 
 
 def create_activity_for_email(email_message, activity_type="email_sent"):
