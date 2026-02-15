@@ -102,6 +102,12 @@ LOCAL_APPS = [
     "apps.activities",
     "apps.chatbot",
     "apps.ai_agent",
+    "apps.marketing",
+    "apps.knowledge_base",
+    "apps.live_chat",
+    "apps.calls",
+    "apps.playbooks",
+    "apps.video_meetings",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

@@ -22,7 +22,7 @@ class Branch(models.Model):
     city = models.CharField(_("city"), max_length=100, blank=True, default="")
     state = models.CharField(_("state"), max_length=100, blank=True, default="")
     zip_code = models.CharField(_("ZIP code"), max_length=20, blank=True, default="")
-    phone = models.CharField(_("phone"), max_length=20, blank=True, default="")
+    phone = models.CharField(_("phone"), max_length=30, blank=True, default="")
     is_active = models.BooleanField(_("active"), default=True)
     is_headquarters = models.BooleanField(
         _("headquarters"),

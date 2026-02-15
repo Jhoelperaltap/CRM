@@ -35,12 +35,13 @@ LOGGING = {
 }
 
 # Use PostgreSQL if DATABASE_URL is set (CI environment), otherwise use SQLite
-if os.environ.get("DATABASE_URL"):
-    import environ
+_database_url = os.environ.get("DATABASE_URL")
+if _database_url:
+    # Parse DATABASE_URL directly without relying on django-environ defaults
+    import dj_database_url
 
-    env = environ.Env()
     DATABASES = {
-        "default": env.db("DATABASE_URL"),
+        "default": dj_database_url.parse(_database_url),
     }
 else:
     DATABASES = {

@@ -130,25 +130,25 @@ class Contact(TimeStampedModel):
     )
     phone = models.CharField(
         _("office phone"),
-        max_length=20,
+        max_length=30,
         blank=True,
         default="",
     )
     mobile = models.CharField(
         _("mobile"),
-        max_length=20,
+        max_length=30,
         blank=True,
         default="",
     )
     home_phone = models.CharField(
         _("home phone"),
-        max_length=20,
+        max_length=30,
         blank=True,
         default="",
     )
     fax = models.CharField(
         _("fax"),
-        max_length=20,
+        max_length=30,
         blank=True,
         default="",
     )
@@ -160,7 +160,7 @@ class Contact(TimeStampedModel):
     )
     assistant_phone = models.CharField(
         _("assistant phone"),
-        max_length=20,
+        max_length=30,
         blank=True,
         default="",
     )
