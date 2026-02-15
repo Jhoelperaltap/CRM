@@ -9,6 +9,55 @@ from apps.users.managers import UserManager
 
 
 # ---------------------------------------------------------------------------
+# Department
+# ---------------------------------------------------------------------------
+class Department(models.Model):
+    """
+    Represents an organizational department (e.g., Accounting, Payroll).
+    Each department has its own folder structure per client for document organization.
+    """
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    name = models.CharField(_("name"), max_length=100, unique=True)
+    code = models.CharField(_("code"), max_length=20, unique=True)
+    description = models.TextField(_("description"), blank=True, default="")
+    color = models.CharField(
+        _("color"),
+        max_length=7,
+        default="#6366f1",
+        help_text=_("Hex color code for UI display"),
+    )
+    icon = models.CharField(
+        _("icon"),
+        max_length=50,
+        blank=True,
+        default="",
+        help_text=_("Lucide icon name for UI display"),
+    )
+    is_active = models.BooleanField(_("active"), default=True)
+    order = models.PositiveIntegerField(
+        _("display order"),
+        default=0,
+        help_text=_("Order in which departments appear in lists"),
+    )
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+
+    class Meta:
+        db_table = "crm_departments"
+        ordering = ["order", "name"]
+        verbose_name = _("department")
+        verbose_name_plural = _("departments")
+
+    def __str__(self):
+        return self.name
+
+
+# ---------------------------------------------------------------------------
 # Role
 # ---------------------------------------------------------------------------
 class Role(models.Model):
@@ -324,11 +373,13 @@ class User(AbstractUser):
         blank=True,
         default="",
     )
-    department = models.CharField(
-        _("department"),
-        max_length=100,
+    department = models.ForeignKey(
+        "Department",
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
-        default="",
+        related_name="users",
+        verbose_name=_("department"),
     )
     secondary_email = models.EmailField(
         _("secondary email"),

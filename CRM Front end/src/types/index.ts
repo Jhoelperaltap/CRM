@@ -8,6 +8,14 @@ export interface BusinessHoursSummary {
   name: string;
 }
 
+export interface DepartmentSummary {
+  id: string;
+  name: string;
+  code: string;
+  color: string;
+  icon: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -28,7 +36,7 @@ export interface User {
   branch_name: string | null;
   // Employee Information
   title: string;
-  department: string;
+  department: DepartmentSummary | null;
   secondary_email: string;
   other_email: string;
   phone: string;
@@ -222,6 +230,7 @@ export interface SLASummary {
 export interface Corporation {
   id: string;
   // Organization Details
+  account_number: string;
   name: string;
   legal_name: string;
   entity_type: string;
@@ -294,6 +303,7 @@ export interface Corporation {
 
 export interface CorporationListItem {
   id: string;
+  account_number: string;
   name: string;
   entity_type: string;
   organization_type: string;

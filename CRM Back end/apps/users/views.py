@@ -52,6 +52,7 @@ class UserViewSet(viewsets.ModelViewSet):
         "reports_to",
         "primary_group",
         "branch",
+        "department",
         "business_hours",
         "email_account",
     ).all()

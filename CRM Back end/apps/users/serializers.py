@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.emails.models import EmailAccount
-from apps.users.models import Branch, ModulePermission, Role, User, UserGroup
+from apps.users.models import Branch, Department, ModulePermission, Role, User, UserGroup
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +131,16 @@ class _BusinessHoursSummarySerializer(serializers.Serializer):
     name = serializers.CharField(read_only=True)
 
 
+class _DepartmentSummarySerializer(serializers.Serializer):
+    """Lightweight read-only representation of department."""
+
+    id = serializers.UUIDField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    code = serializers.CharField(read_only=True)
+    color = serializers.CharField(read_only=True)
+    icon = serializers.CharField(read_only=True)
+
+
 # ---------------------------------------------------------------------------
 # User serializers
 # ---------------------------------------------------------------------------
@@ -151,6 +161,7 @@ class UserSerializer(serializers.ModelSerializer):
     reports_to = _UserSummarySerializer(read_only=True)
     primary_group = _UserGroupSummarySerializer(read_only=True)
     business_hours = _BusinessHoursSummarySerializer(read_only=True)
+    department = _DepartmentSummarySerializer(read_only=True)
 
     class Meta:
         model = User
@@ -254,6 +265,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
     )
     email_account = serializers.PrimaryKeyRelatedField(
         queryset=EmailAccount.objects.all(),
+        required=False,
+        allow_null=True,
+    )
+    department = serializers.PrimaryKeyRelatedField(
+        queryset=Department.objects.all(),
         required=False,
         allow_null=True,
     )
@@ -371,6 +387,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     )
     email_account = serializers.PrimaryKeyRelatedField(
         queryset=EmailAccount.objects.all(),
+        required=False,
+        allow_null=True,
+    )
+    department = serializers.PrimaryKeyRelatedField(
+        queryset=Department.objects.all(),
         required=False,
         allow_null=True,
     )

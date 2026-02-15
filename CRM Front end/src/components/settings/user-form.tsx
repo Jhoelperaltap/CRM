@@ -19,8 +19,10 @@ import {
 import { getRolesTree, getGroups } from "@/lib/api/settings";
 import { getEmailAccounts } from "@/lib/api/emails";
 import { getUsers } from "@/lib/api/users";
+import { getDepartments } from "@/lib/api/departments";
 import type { RoleTree, UserGroup } from "@/types/settings";
 import type { EmailAccount } from "@/types/email";
+import type { Department } from "@/types/department";
 import type { User } from "@/types";
 
 const userCreateSchema = z.object({
@@ -199,6 +201,7 @@ export function UserForm({ initialData, onSubmit, isEdit = false, isLoading }: U
   const [groups, setGroups] = useState<UserGroup[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [emailAccounts, setEmailAccounts] = useState<EmailAccount[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -224,7 +227,7 @@ export function UserForm({ initialData, onSubmit, isEdit = false, isLoading }: U
       first_name: initialData?.first_name || "",
       last_name: initialData?.last_name || "",
       title: initialData?.title || "",
-      department: initialData?.department || "",
+      department: initialData?.department?.id || "",
       secondary_email: initialData?.secondary_email || "",
       other_email: initialData?.other_email || "",
       phone: initialData?.phone || "",
@@ -283,6 +286,9 @@ export function UserForm({ initialData, onSubmit, isEdit = false, isLoading }: U
     getEmailAccounts({ is_active: "true" })
       .then((res) => setEmailAccounts(res.results))
       .catch(console.error);
+    getDepartments({ is_active: "true" })
+      .then((res) => setDepartments(res))
+      .catch(console.error);
   }, []);
 
   // Auto-highlight active section on scroll
@@ -326,6 +332,7 @@ export function UserForm({ initialData, onSubmit, isEdit = false, isLoading }: U
     if (!cleanedData.primary_group) delete cleanedData.primary_group;
     if (!cleanedData.business_hours) delete cleanedData.business_hours;
     if (!cleanedData.email_account) cleanedData.email_account = null;
+    if (!cleanedData.department) cleanedData.department = null;
     onSubmit(cleanedData);
   };
 
@@ -544,7 +551,20 @@ export function UserForm({ initialData, onSubmit, isEdit = false, isLoading }: U
               </div>
               <div className="space-y-2">
                 <Label>Department</Label>
-                <Input {...register("department")} placeholder="Department" />
+                <Select
+                  value={watch("department") || ""}
+                  onValueChange={(v) => setValue("department", v === "__none__" ? "" : v)}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select a department" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

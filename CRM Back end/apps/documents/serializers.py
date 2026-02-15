@@ -1,7 +1,13 @@
 from rest_framework import serializers
 
 from apps.core.validators import validate_file_type
-from apps.documents.models import Document, DocumentFolder, DocumentLink, DocumentTag
+from apps.documents.models import (
+    DepartmentClientFolder,
+    Document,
+    DocumentFolder,
+    DocumentLink,
+    DocumentTag,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -169,6 +175,15 @@ class _FolderSummarySerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class _DepartmentFolderSummarySerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(source="department.name", read_only=True)
+
+    class Meta:
+        model = DepartmentClientFolder
+        fields = ["id", "name", "department", "department_name"]
+        read_only_fields = fields
+
+
 class DocumentLinkDetailSerializer(serializers.ModelSerializer):
     folder = _FolderSummarySerializer(read_only=True)
     tags = DocumentTagSerializer(many=True, read_only=True)
@@ -224,6 +239,7 @@ class DocumentLinkCreateUpdateSerializer(serializers.ModelSerializer):
 class DocumentListSerializer(serializers.ModelSerializer):
     uploaded_by_name = serializers.SerializerMethodField()
     folder_name = serializers.SerializerMethodField()
+    department_folder_name = serializers.SerializerMethodField()
     tag_ids = serializers.PrimaryKeyRelatedField(
         source="tags", many=True, read_only=True
     )
@@ -245,6 +261,8 @@ class DocumentListSerializer(serializers.ModelSerializer):
             "case",
             "folder",
             "folder_name",
+            "department_folder",
+            "department_folder_name",
             "tag_ids",
             "uploaded_by",
             "uploaded_by_name",
@@ -262,6 +280,11 @@ class DocumentListSerializer(serializers.ModelSerializer):
             return obj.folder.name
         return None
 
+    def get_department_folder_name(self, obj):
+        if obj.department_folder:
+            return obj.department_folder.name
+        return None
+
 
 class DocumentDetailSerializer(serializers.ModelSerializer):
     contact = _ContactSummarySerializer(read_only=True)
@@ -269,6 +292,7 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
     case = _CaseSummarySerializer(read_only=True)
     uploaded_by = _UserSummarySerializer(read_only=True)
     folder = _FolderSummarySerializer(read_only=True)
+    department_folder = _DepartmentFolderSummarySerializer(read_only=True)
     tags = DocumentTagSerializer(many=True, read_only=True)
 
     class Meta:
@@ -290,6 +314,7 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
             "corporation",
             "case",
             "folder",
+            "department_folder",
             "tags",
             "uploaded_by",
             "created_at",
@@ -302,6 +327,9 @@ class DocumentCreateUpdateSerializer(serializers.ModelSerializer):
     file = serializers.FileField(required=False)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=DocumentTag.objects.all(), many=True, required=False
+    )
+    department_folder = serializers.PrimaryKeyRelatedField(
+        queryset=DepartmentClientFolder.objects.all(), required=False, allow_null=True
     )
 
     class Meta:
@@ -316,6 +344,7 @@ class DocumentCreateUpdateSerializer(serializers.ModelSerializer):
             "corporation",
             "case",
             "folder",
+            "department_folder",
             "tags",
             "parent_document",
         ]

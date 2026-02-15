@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   ShieldBan,
   Building,
+  Briefcase,
   Blocks,
   Layout,
   List,
@@ -38,6 +39,10 @@ import {
   ExternalLink,
   Bot,
   Brain,
+  Timer,
+  MessageCircle,
+  Phone,
+  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -61,6 +66,7 @@ const groups: SidebarGroup[] = [
       { label: "Roles", href: "/settings/roles", icon: Shield, iconColor: "text-amber-500" },
       { label: "Profiles", href: "/settings/profiles", icon: Key, iconColor: "text-yellow-600" },
       { label: "Groups", href: "/settings/groups", icon: UserPlus, iconColor: "text-teal-500" },
+      { label: "Departments", href: "/settings/departments", icon: Briefcase, iconColor: "text-indigo-500" },
       { label: "Branches", href: "/settings/branches", icon: Building, iconColor: "text-slate-500" },
     ],
   },
@@ -80,6 +86,9 @@ const groups: SidebarGroup[] = [
       { label: "Accounts", href: "/settings/portal-accounts", icon: UserCheck, iconColor: "text-green-500" },
       { label: "Documents", href: "/settings/portal-documents", icon: FileCheck, iconColor: "text-blue-500" },
       { label: "Messages", href: "/settings/portal-messages", icon: MessageSquare, iconColor: "text-indigo-500" },
+      { label: "Live Chat", href: "/settings/live-chat", icon: MessageCircle, iconColor: "text-emerald-500" },
+      { label: "Calls", href: "/settings/calls", icon: Phone, iconColor: "text-blue-500" },
+      { label: "Video Meetings", href: "/settings/video-meetings", icon: Video, iconColor: "text-cyan-500" },
       { label: "AI Chatbot", href: "/settings/chatbot", icon: Bot, iconColor: "text-purple-500" },
     ],
   },
@@ -115,6 +124,7 @@ const groups: SidebarGroup[] = [
   {
     title: "Configuration",
     items: [
+      { label: "SLA Management", href: "/settings/sla", icon: Timer, iconColor: "text-rose-500" },
       { label: "Business Hours", href: "/settings/business-hours", icon: Clock, iconColor: "text-orange-500" },
       { label: "Customer Portal", href: "/settings/customer-portal", icon: ExternalLink, iconColor: "text-blue-500" },
     ],

@@ -10,6 +10,101 @@ from apps.core.models import TimeStampedModel
 
 
 # ---------------------------------------------------------------------------
+# Department Client Folder
+# ---------------------------------------------------------------------------
+class DepartmentClientFolder(TimeStampedModel):
+    """
+    Hierarchical folder structure for organizing documents per department per client.
+    Each department can have its own folder tree for each Contact or Corporation.
+    """
+
+    name = models.CharField(_("name"), max_length=255)
+    department = models.ForeignKey(
+        "users.Department",
+        on_delete=models.CASCADE,
+        related_name="client_folders",
+        verbose_name=_("department"),
+    )
+    # Link to ONE client (Contact OR Corporation, not both)
+    contact = models.ForeignKey(
+        "contacts.Contact",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="department_folders",
+        verbose_name=_("contact"),
+    )
+    corporation = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="department_folders",
+        verbose_name=_("corporation"),
+    )
+    # Hierarchical structure
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children",
+        verbose_name=_("parent folder"),
+    )
+    description = models.TextField(_("description"), blank=True, default="")
+    is_default = models.BooleanField(
+        _("default folder"),
+        default=False,
+        help_text=_("Default folders are created automatically and cannot be deleted."),
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_department_folders",
+        verbose_name=_("created by"),
+    )
+
+    class Meta:
+        db_table = "crm_department_client_folders"
+        ordering = ["name"]
+        verbose_name = _("department client folder")
+        verbose_name_plural = _("department client folders")
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(contact__isnull=False, corporation__isnull=True)
+                    | models.Q(contact__isnull=True, corporation__isnull=False)
+                ),
+                name="folder_linked_to_one_client_type",
+            ),
+        ]
+
+    def __str__(self):
+        client = self.contact or self.corporation
+        return f"{self.department.name} - {client} - {self.name}"
+
+    def get_ancestors(self):
+        """Return list of ancestor folders from immediate parent to root."""
+        ancestors = []
+        current = self.parent
+        visited = set()
+        while current and current.pk not in visited:
+            ancestors.append(current)
+            visited.add(current.pk)
+            current = current.parent
+        return ancestors
+
+    def get_path(self):
+        """Return full path string from root to this folder."""
+        ancestors = self.get_ancestors()
+        ancestors.reverse()
+        path_parts = [a.name for a in ancestors] + [self.name]
+        return " / ".join(path_parts)
+
+
+# ---------------------------------------------------------------------------
 # Document Folder
 # ---------------------------------------------------------------------------
 class DocumentFolder(TimeStampedModel):
@@ -191,6 +286,15 @@ class Document(TimeStampedModel):
         blank=True,
         related_name="documents",
         verbose_name=_("folder"),
+    )
+    department_folder = models.ForeignKey(
+        DepartmentClientFolder,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="documents",
+        verbose_name=_("department folder"),
+        help_text=_("Department-specific folder for this document."),
     )
     tags = models.ManyToManyField(
         DocumentTag,
