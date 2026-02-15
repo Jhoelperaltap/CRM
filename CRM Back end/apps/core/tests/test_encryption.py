@@ -118,20 +118,19 @@ class TestEncryptedCharField:
         assert contact.ssn_last_four == "1234"
 
         # The raw database value should be the encrypted token, not plaintext
-        # Bypass the from_db_value by reading via raw SQL
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT ssn_last_four FROM crm_contacts WHERE id = CAST(%s AS TEXT)",
-                [str(contact.id)],
-            )
-            row = cursor.fetchone()
-            if row is None:
-                # Fallback: try without CAST (some DB backends)
-                cursor.execute("SELECT ssn_last_four FROM crm_contacts LIMIT 1")
-                row = cursor.fetchone()
-            raw_value = row[0]
-        assert raw_value != "1234"
-        assert len(raw_value) > len("1234")
+        # Use Django's raw() to bypass field decryption while staying in same transaction
+        from apps.contacts.models import Contact
+        from django.db.models import F
+        from django.db.models.functions import Length
+
+        # Use annotate to get the raw length - if encrypted, it will be much longer
+        result = Contact.objects.filter(id=contact.id).annotate(
+            raw_len=Length("ssn_last_four")
+        ).values_list("raw_len", flat=True).first()
+        assert result is not None
+        # Encrypted value should be longer than the plaintext "1234" (4 chars)
+        # Fernet encryption produces ~100+ character base64 strings
+        assert result > 4, f"Expected encrypted length > 4, got {result}"
 
     def test_ssn_empty_stays_empty(self):
         """Empty ssn_last_four is stored and read as empty string."""
