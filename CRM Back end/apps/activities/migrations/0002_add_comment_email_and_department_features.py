@@ -7,35 +7,50 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('activities', '0001_initial'),
-        ('documents', '0004_departmentclientfolder_document_department_folder_and_more'),
-        ('users', '0013_department_alter_user_department'),
+        ("activities", "0001_initial"),
+        (
+            "documents",
+            "0004_departmentclientfolder_document_department_folder_and_more",
+        ),
+        ("users", "0013_department_alter_user_department"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='comment',
-            name='department_folder',
-            field=models.ForeignKey(blank=True, help_text='Department folder to attach files to', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='comments', to='documents.departmentclientfolder'),
+            model_name="comment",
+            name="department_folder",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Department folder to attach files to",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="comments",
+                to="documents.departmentclientfolder",
+            ),
         ),
         migrations.AddField(
-            model_name='comment',
-            name='email_sent',
+            model_name="comment",
+            name="email_sent",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='comment',
-            name='email_sent_at',
+            model_name="comment",
+            name="email_sent_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='comment',
-            name='mentioned_departments',
-            field=models.ManyToManyField(blank=True, related_name='comments_mentioned_in', to='users.department'),
+            model_name="comment",
+            name="mentioned_departments",
+            field=models.ManyToManyField(
+                blank=True, related_name="comments_mentioned_in", to="users.department"
+            ),
         ),
         migrations.AddField(
-            model_name='comment',
-            name='send_email',
-            field=models.BooleanField(default=False, help_text='Send this comment via email to mentioned users'),
+            model_name="comment",
+            name="send_email",
+            field=models.BooleanField(
+                default=False,
+                help_text="Send this comment via email to mentioned users",
+            ),
         ),
     ]

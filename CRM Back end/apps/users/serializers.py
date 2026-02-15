@@ -4,7 +4,14 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.emails.models import EmailAccount
-from apps.users.models import Branch, Department, ModulePermission, Role, User, UserGroup
+from apps.users.models import (
+    Branch,
+    Department,
+    ModulePermission,
+    Role,
+    User,
+    UserGroup,
+)
 
 
 # ---------------------------------------------------------------------------

@@ -26,7 +26,9 @@ urlpatterns = [
     path("api/v1/appointments/", include("apps.appointments.urls")),
     path("api/v1/appointment-pages/", include("apps.appointments.urls_pages")),
     path("api/v1/documents/", include("apps.documents.urls")),
-    path("api/v1/department-folders/", include("apps.documents.urls_department_folder")),
+    path(
+        "api/v1/department-folders/", include("apps.documents.urls_department_folder")
+    ),
     path("api/v1/tasks/", include("apps.tasks.urls")),
     path("api/v1/internal-tickets/", include("apps.internal_tickets.urls")),
     path("api/v1/preferences/", include("apps.dashboard.urls_preferences")),

@@ -178,6 +178,7 @@ class DepartmentMiniSerializer(serializers.ModelSerializer):
 
 class DepartmentFolderMiniSerializer(serializers.ModelSerializer):
     """Minimal department folder info."""
+
     department_name = serializers.CharField(source="department.name", read_only=True)
 
     class Meta:

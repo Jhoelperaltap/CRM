@@ -217,7 +217,9 @@ class CommentViewSet(viewsets.ModelViewSet):
                 Q(name__icontains=query) | Q(code__icontains=query)
             ).filter(is_active=True)[:limit]
 
-            dept_serializer = DepartmentMentionSuggestionSerializer(departments, many=True)
+            dept_serializer = DepartmentMentionSuggestionSerializer(
+                departments, many=True
+            )
             results.extend(dept_serializer.data)
 
         # Sort by display_name and limit total results

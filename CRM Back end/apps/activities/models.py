@@ -258,7 +258,9 @@ class Comment(TimeStampedModel):
                 for dept in matching_depts:
                     self.mentioned_departments.add(dept)
                     # Notify all users in this department
-                    for user in dept.users.filter(is_active=True).exclude(id=self.author_id):
+                    for user in dept.users.filter(is_active=True).exclude(
+                        id=self.author_id
+                    ):
                         entity_name = self._get_entity_name()
                         Notification.objects.create(
                             recipient=user,

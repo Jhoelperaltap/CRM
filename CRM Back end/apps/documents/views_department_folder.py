@@ -104,14 +104,18 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
         # Check for documents in this folder
         if instance.documents.exists():
             return Response(
-                {"detail": "Cannot delete folder with documents. Move or delete documents first."},
+                {
+                    "detail": "Cannot delete folder with documents. Move or delete documents first."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check for child folders
         if instance.children.exists():
             return Response(
-                {"detail": "Cannot delete folder with subfolders. Delete subfolders first."},
+                {
+                    "detail": "Cannot delete folder with subfolders. Delete subfolders first."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -133,25 +137,26 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
             )
 
         # Get root folders (no parent)
-        qs = DepartmentClientFolder.objects.filter(
-            parent__isnull=True
-        ).select_related(
-            "department"
-        ).annotate(
-            document_count=Count("documents"),
-        ).prefetch_related(
-            Prefetch(
-                "children",
-                queryset=DepartmentClientFolder.objects.annotate(
-                    document_count=Count("documents"),
-                ).prefetch_related(
-                    Prefetch(
-                        "children",
-                        queryset=DepartmentClientFolder.objects.annotate(
-                            document_count=Count("documents"),
-                        ),
-                    )
-                ),
+        qs = (
+            DepartmentClientFolder.objects.filter(parent__isnull=True)
+            .select_related("department")
+            .annotate(
+                document_count=Count("documents"),
+            )
+            .prefetch_related(
+                Prefetch(
+                    "children",
+                    queryset=DepartmentClientFolder.objects.annotate(
+                        document_count=Count("documents"),
+                    ).prefetch_related(
+                        Prefetch(
+                            "children",
+                            queryset=DepartmentClientFolder.objects.annotate(
+                                document_count=Count("documents"),
+                            ),
+                        )
+                    ),
+                )
             )
         )
 
@@ -184,12 +189,17 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
             )
 
         # Get all departments that have folders for this client
-        dept_filter = {"client_folders__contact_id": contact} if contact else {"client_folders__corporation_id": corporation}
+        dept_filter = (
+            {"client_folders__contact_id": contact}
+            if contact
+            else {"client_folders__corporation_id": corporation}
+        )
 
-        departments = Department.objects.filter(
-            is_active=True,
-            **dept_filter
-        ).distinct().order_by("order", "name")
+        departments = (
+            Department.objects.filter(is_active=True, **dept_filter)
+            .distinct()
+            .order_by("order", "name")
+        )
 
         # Permission filtering
         user = request.user
@@ -199,17 +209,21 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
         result = []
         for dept in departments:
             # Get root folders for this department and client
-            folder_qs = DepartmentClientFolder.objects.filter(
-                department=dept,
-                parent__isnull=True,
-            ).annotate(
-                document_count=Count("documents"),
-            ).prefetch_related(
-                Prefetch(
-                    "children",
-                    queryset=DepartmentClientFolder.objects.annotate(
-                        document_count=Count("documents"),
-                    ),
+            folder_qs = (
+                DepartmentClientFolder.objects.filter(
+                    department=dept,
+                    parent__isnull=True,
+                )
+                .annotate(
+                    document_count=Count("documents"),
+                )
+                .prefetch_related(
+                    Prefetch(
+                        "children",
+                        queryset=DepartmentClientFolder.objects.annotate(
+                            document_count=Count("documents"),
+                        ),
+                    )
                 )
             )
 
@@ -220,14 +234,16 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
 
             folders = DepartmentClientFolderTreeSerializer(folder_qs, many=True).data
 
-            result.append({
-                "id": str(dept.id),
-                "name": dept.name,
-                "code": dept.code,
-                "color": dept.color,
-                "icon": dept.icon,
-                "folders": folders,
-            })
+            result.append(
+                {
+                    "id": str(dept.id),
+                    "name": dept.name,
+                    "code": dept.code,
+                    "color": dept.color,
+                    "icon": dept.icon,
+                    "folders": folders,
+                }
+            )
 
         return Response(result)
 
@@ -287,7 +303,9 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
                 if was_created:
                     created_count += 1
 
-        return Response({
-            "message": f"Initialized {created_count} folders",
-            "created_count": created_count,
-        })
+        return Response(
+            {
+                "message": f"Initialized {created_count} folders",
+                "created_count": created_count,
+            }
+        )
