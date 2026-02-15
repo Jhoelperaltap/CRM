@@ -32,7 +32,7 @@ class TelephonyProvider(TimeStampedModel):
 
     # Configuration
     webhook_url = models.URLField(blank=True)
-    default_caller_id = models.CharField(max_length=20, blank=True)
+    default_caller_id = models.CharField(max_length=30, blank=True)
     recording_enabled = models.BooleanField(default=True)
 
     # Settings
@@ -66,7 +66,7 @@ class PhoneLine(TimeStampedModel):
     provider = models.ForeignKey(
         TelephonyProvider, on_delete=models.CASCADE, related_name="phone_lines"
     )
-    phone_number = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=30, unique=True)
     friendly_name = models.CharField(max_length=100, blank=True)
     line_type = models.CharField(
         max_length=10, choices=LineType.choices, default=LineType.BOTH
@@ -86,7 +86,7 @@ class PhoneLine(TimeStampedModel):
     # Settings
     voicemail_enabled = models.BooleanField(default=True)
     voicemail_greeting_url = models.URLField(blank=True)
-    forward_to = models.CharField(max_length=20, blank=True)
+    forward_to = models.CharField(max_length=30, blank=True)
     ring_timeout = models.IntegerField(default=30)  # seconds
 
     class Meta:
@@ -137,8 +137,8 @@ class Call(TimeStampedModel):
     )
 
     # Phone numbers
-    from_number = models.CharField(max_length=20)
-    to_number = models.CharField(max_length=20)
+    from_number = models.CharField(max_length=30)
+    to_number = models.CharField(max_length=30)
     phone_line = models.ForeignKey(
         PhoneLine,
         on_delete=models.SET_NULL,

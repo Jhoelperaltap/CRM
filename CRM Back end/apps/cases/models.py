@@ -67,7 +67,7 @@ class TaxCase(TimeStampedModel):
     # --- Fields ---
     case_number = models.CharField(
         _("case number"),
-        max_length=20,
+        max_length=30,
         unique=True,
         db_index=True,
     )

@@ -54,7 +54,7 @@ class Vendor(TimeStampedModel):
     name = models.CharField(max_length=255, db_index=True)
     vendor_code = models.CharField(max_length=50, blank=True, default="")
     email = models.EmailField(blank=True, default="")
-    phone = models.CharField(max_length=20, blank=True, default="")
+    phone = models.CharField(max_length=30, blank=True, default="")
     website = models.URLField(blank=True, default="")
     category = models.CharField(max_length=100, blank=True, default="")
     street = models.CharField(max_length=255, blank=True, default="")
