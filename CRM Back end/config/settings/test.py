@@ -1,3 +1,5 @@
+import os
+
 from .base import *  # noqa: F401,F403
 
 DEBUG = False
@@ -32,12 +34,21 @@ LOGGING = {
     },
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
+# Use PostgreSQL if DATABASE_URL is set (CI environment), otherwise use SQLite
+if os.environ.get("DATABASE_URL"):
+    import environ
+
+    env = environ.Env()
+    DATABASES = {
+        "default": env.db("DATABASE_URL"),
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
 
 CACHES = {
     "default": {
