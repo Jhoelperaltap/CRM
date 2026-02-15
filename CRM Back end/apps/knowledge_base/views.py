@@ -1,23 +1,21 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.views import APIView
-from django.db.models import Q, Sum, Avg
+from django.db.models import Avg, F, Q, Sum
 from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import Category, Article, ArticleAttachment, ArticleFeedback, FAQ
+from .models import FAQ, Article, ArticleAttachment, ArticleFeedback, Category
 from .serializers import (
-    CategorySerializer,
-    CategoryTreeSerializer,
-    ArticleSerializer,
+    ArticleAttachmentSerializer,
     ArticleListSerializer,
     ArticlePublicSerializer,
-    ArticleAttachmentSerializer,
-    ArticleFeedbackSerializer,
-    FAQSerializer,
+    ArticleSerializer,
+    CategorySerializer,
+    CategoryTreeSerializer,
     FAQPublicSerializer,
-    KBStatsSerializer,
+    FAQSerializer,
 )
 
 
@@ -415,7 +413,7 @@ class ArticleFeedbackView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        feedback = ArticleFeedback.objects.create(
+        ArticleFeedback.objects.create(
             article=article,
             user=user,
             session_key=session_key,
@@ -447,9 +445,9 @@ class KBStatsView(APIView):
         # Calculate average helpfulness
         articles_with_feedback = Article.objects.filter(helpful_count__gt=0).annotate(
             helpfulness=(
-                models.F("helpful_count")
+                F("helpful_count")
                 * 100.0
-                / (models.F("helpful_count") + models.F("not_helpful_count"))
+                / (F("helpful_count") + F("not_helpful_count"))
             )
         )
         avg_helpfulness = articles_with_feedback.aggregate(avg=Avg("helpfulness"))[

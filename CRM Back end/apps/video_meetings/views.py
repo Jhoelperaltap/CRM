@@ -1,28 +1,30 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.db.models import Count, Q
-from django.utils import timezone
 from datetime import timedelta
+
+from django.db.models import Q
+from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import (
-    VideoProvider,
-    UserVideoConnection,
-    VideoMeeting,
     MeetingParticipant,
     MeetingRecording,
+    UserVideoConnection,
+    VideoMeeting,
     VideoMeetingSettings,
+    VideoProvider,
 )
 from .serializers import (
-    VideoProviderSerializer,
-    VideoProviderWriteSerializer,
-    UserVideoConnectionSerializer,
-    VideoMeetingListSerializer,
-    VideoMeetingDetailSerializer,
+    CreateMeetingSerializer,
     MeetingParticipantSerializer,
     MeetingRecordingSerializer,
-    CreateMeetingSerializer,
+    UserVideoConnectionSerializer,
+    VideoMeetingDetailSerializer,
+    VideoMeetingListSerializer,
     VideoMeetingSettingsSerializer,
+    VideoProviderSerializer,
+    VideoProviderWriteSerializer,
 )
 
 
@@ -77,7 +79,7 @@ class UserVideoConnectionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def refresh_token(self, request, pk=None):
         """Refresh the OAuth token"""
-        connection = self.get_object()
+        self.get_object()  # Validate connection exists
         # TODO: Implement actual token refresh
         return Response({"status": "refreshed"})
 

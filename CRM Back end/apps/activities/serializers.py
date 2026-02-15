@@ -2,13 +2,13 @@
 Serializers for Activity Timeline and Comments.
 """
 
-from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+from rest_framework import serializers
 
 from apps.activities.models import Activity, Comment, CommentReaction
-from apps.users.models import User, Department
 from apps.documents.models import DepartmentClientFolder
+from apps.users.models import Department, User
 
 
 class UserMiniSerializer(serializers.ModelSerializer):

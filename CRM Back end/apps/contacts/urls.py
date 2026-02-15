@@ -2,9 +2,9 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from apps.contacts.views import (
-    ContactViewSet,
-    ContactTagViewSet,
     ContactTagAssignmentViewSet,
+    ContactTagViewSet,
+    ContactViewSet,
 )
 
 router = DefaultRouter()

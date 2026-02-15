@@ -7,5 +7,5 @@ class CasesConfig(AppConfig):
     verbose_name = "Tax Cases"
 
     def ready(self):
-        import apps.cases.signals  # noqa: F401
         import apps.cases.checklist_signals  # noqa: F401
+        import apps.cases.signals  # noqa: F401

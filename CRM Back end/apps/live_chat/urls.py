@@ -1,16 +1,17 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
 from .views import (
-    ChatDepartmentViewSet,
-    ChatAgentViewSet,
-    ChatSessionViewSet,
     CannedResponseViewSet,
-    OfflineMessageViewSet,
-    ChatWidgetSettingsView,
+    ChatAgentViewSet,
+    ChatDepartmentViewSet,
+    ChatSessionViewSet,
     ChatStatsView,
-    PublicChatView,
-    PublicChatSessionView,
+    ChatWidgetSettingsView,
+    OfflineMessageViewSet,
     PublicChatRatingView,
+    PublicChatSessionView,
+    PublicChatView,
 )
 
 router = DefaultRouter()

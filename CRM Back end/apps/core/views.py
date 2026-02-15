@@ -1,7 +1,7 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class GlobalSearchView(APIView):
@@ -12,12 +12,12 @@ class GlobalSearchView(APIView):
         if len(q) < 2:
             return Response({"contacts": [], "corporations": [], "cases": []})
 
+        from apps.cases.models import TaxCase
+        from apps.cases.serializers import TaxCaseListSerializer
         from apps.contacts.models import Contact
         from apps.contacts.serializers import ContactListSerializer
         from apps.corporations.models import Corporation
         from apps.corporations.serializers import CorporationListSerializer
-        from apps.cases.models import TaxCase
-        from apps.cases.serializers import TaxCaseListSerializer
 
         contacts = Contact.objects.filter(
             Q(first_name__icontains=q)

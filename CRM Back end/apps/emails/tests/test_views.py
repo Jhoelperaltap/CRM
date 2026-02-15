@@ -11,7 +11,6 @@ from tests.factories import (
     TaxCaseFactory,
 )
 
-
 MESSAGES_BASE = "/api/v1/emails/messages/"
 THREADS_BASE = "/api/v1/emails/threads/"
 TEMPLATES_BASE = "/api/v1/emails/templates/"

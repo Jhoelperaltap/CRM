@@ -4,7 +4,6 @@ from rest_framework import status
 
 from tests.factories import ContactFactory, CorporationFactory, TaxCaseFactory
 
-
 BASE = "/api/v1/corporations/"
 
 

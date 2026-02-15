@@ -4,22 +4,22 @@ Views for Activity Timeline and Comments.
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.activities.models import Activity, Comment, CommentReaction
 from apps.activities.serializers import (
-    ActivitySerializer,
     ActivityCreateSerializer,
-    CommentSerializer,
+    ActivitySerializer,
     CommentCreateSerializer,
+    CommentSerializer,
     CommentUpdateSerializer,
-    MentionSuggestionSerializer,
     DepartmentMentionSuggestionSerializer,
+    MentionSuggestionSerializer,
 )
-from apps.users.models import User, Department
+from apps.users.models import Department, User
 
 
 class ActivityViewSet(viewsets.ModelViewSet):

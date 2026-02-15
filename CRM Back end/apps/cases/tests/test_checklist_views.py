@@ -7,7 +7,6 @@ from tests.factories import (
     TaxCaseFactory,
 )
 
-
 TEMPLATES_BASE = "/api/v1/settings/checklist-templates/"
 
 

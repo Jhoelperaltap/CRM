@@ -1,21 +1,21 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .sla_models import SLA, SLABreach, CaseSLAStatus, EscalationRule
+from .sla_models import SLA, CaseSLAStatus, EscalationRule, SLABreach
 from .sla_serializers import (
-    SLASerializer,
-    SLAListSerializer,
-    EscalationRuleSerializer,
-    SLABreachSerializer,
     CaseSLAStatusSerializer,
-    SLAMetricsSerializer,
+    EscalationRuleSerializer,
     PauseSLASerializer,
+    SLABreachSerializer,
+    SLAListSerializer,
+    SLAMetricsSerializer,
+    SLASerializer,
 )
-from .sla_services import get_sla_metrics, check_sla_status
+from .sla_services import check_sla_status, get_sla_metrics
 
 
 class SLAViewSet(viewsets.ModelViewSet):
@@ -286,7 +286,7 @@ class SLADashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        from django.db.models import Count, Q
+        from django.db.models import Q
 
         # Cases at risk (within 2 hours of breach)
         at_risk = CaseSLAStatus.objects.filter(

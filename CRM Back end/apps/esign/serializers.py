@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from apps.esign.models import EsignDocument, EsignSignee
 
-
 # ── Signee ──────────────────────────────────────────────────────────────
 
 

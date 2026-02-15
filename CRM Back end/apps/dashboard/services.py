@@ -8,8 +8,8 @@ gracefully handle the case where those apps are not yet fully migrated.
 
 from datetime import timedelta
 
-from django.db.models import Count, DecimalField, Q, Sum, F, Value
-from django.db.models.functions import TruncMonth, Coalesce
+from django.db.models import Count, DecimalField, F, Q, Sum, Value
+from django.db.models.functions import Coalesce, TruncMonth
 from django.utils import timezone
 
 

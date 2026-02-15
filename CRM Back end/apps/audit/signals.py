@@ -1,8 +1,7 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from apps.core.utils import get_current_request
-
 
 # Models to audit — maps model class to module name
 AUDITED_MODELS = {}
@@ -75,10 +74,10 @@ def register_audit_signals():
     Register models that should produce audit trail entries.
     Called from AuditConfig.ready().
     """
+    from apps.appointments.models import Appointment
+    from apps.cases.models import TaxCase, TaxCaseNote
     from apps.contacts.models import Contact
     from apps.corporations.models import Corporation
-    from apps.cases.models import TaxCase, TaxCaseNote
-    from apps.appointments.models import Appointment
     from apps.documents.models import Document
     from apps.tasks.models import Task
     from apps.users.models import Role, SharingRule, User, UserGroup

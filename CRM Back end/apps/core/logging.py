@@ -35,11 +35,11 @@ Usage:
 
 import json
 import logging
-import traceback
 import time
+import traceback
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
 from threading import Lock
+from typing import Any, Dict, Optional
 
 from django.core.cache import cache
 

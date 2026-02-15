@@ -1,6 +1,7 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .sla_models import SLA, SLABreach, CaseSLAStatus, EscalationRule
+from rest_framework import serializers
+
+from .sla_models import SLA, CaseSLAStatus, EscalationRule, SLABreach
 
 User = get_user_model()
 

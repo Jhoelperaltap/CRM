@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from apps.notifications.models import Notification
 from apps.notifications.services import create_notification

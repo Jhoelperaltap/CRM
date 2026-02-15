@@ -1,14 +1,15 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
 from .views import (
-    EmailListViewSet,
-    CampaignTemplateViewSet,
-    CampaignViewSet,
     AutomationSequenceViewSet,
     AutomationStepViewSet,
     CampaignAnalyticsView,
-    TrackOpenView,
+    CampaignTemplateViewSet,
+    CampaignViewSet,
+    EmailListViewSet,
     TrackClickView,
+    TrackOpenView,
     UnsubscribeView,
 )
 

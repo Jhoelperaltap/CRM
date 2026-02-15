@@ -3,7 +3,6 @@ from rest_framework import status
 
 from apps.users.models import AuthenticationPolicy
 
-
 BASE = "/api/v1/settings/auth-policy/"
 
 

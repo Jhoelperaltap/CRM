@@ -1,13 +1,14 @@
 from django.contrib import admin
+
 from .models import (
-    TelephonyProvider,
-    PhoneLine,
     Call,
     CallQueue,
     CallQueueMember,
-    Voicemail,
     CallScript,
     CallSettings,
+    PhoneLine,
+    TelephonyProvider,
+    Voicemail,
 )
 
 

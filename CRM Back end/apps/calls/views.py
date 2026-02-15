@@ -1,34 +1,36 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.db.models import Count, Sum, Avg, Q
-from django.utils import timezone
 from datetime import timedelta
+
+from django.db.models import Avg, Sum
+from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import (
-    TelephonyProvider,
-    PhoneLine,
     Call,
     CallQueue,
     CallQueueMember,
-    Voicemail,
     CallScript,
     CallSettings,
+    PhoneLine,
+    TelephonyProvider,
+    Voicemail,
 )
 from .serializers import (
-    TelephonyProviderSerializer,
-    TelephonyProviderWriteSerializer,
-    PhoneLineSerializer,
-    CallSerializer,
     CallCreateSerializer,
-    CallUpdateSerializer,
-    CallQueueSerializer,
     CallQueueMemberSerializer,
-    VoicemailSerializer,
+    CallQueueSerializer,
     CallScriptSerializer,
+    CallSerializer,
     CallSettingsSerializer,
     CallStatsSerializer,
+    CallUpdateSerializer,
     ClickToCallSerializer,
+    PhoneLineSerializer,
+    TelephonyProviderSerializer,
+    TelephonyProviderWriteSerializer,
+    VoicemailSerializer,
 )
 
 
@@ -46,7 +48,7 @@ class TelephonyProviderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def test_connection(self, request, pk=None):
         """Test connection to the telephony provider"""
-        provider = self.get_object()
+        self.get_object()  # Validate provider exists
         # TODO: Implement actual provider connection test
         return Response({"status": "success", "message": "Connection test successful"})
 

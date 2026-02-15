@@ -3,11 +3,10 @@ from rest_framework import serializers
 
 from apps.business_hours.models import (
     BusinessHours,
+    Holiday,
     WorkingDay,
     WorkingInterval,
-    Holiday,
 )
-
 
 # ── Nested serializers ──────────────────────────────────────────────
 

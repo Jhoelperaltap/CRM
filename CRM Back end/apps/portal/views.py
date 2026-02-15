@@ -229,6 +229,7 @@ class PortalTokenRefreshView(APIView):
 
     def post(self, request):
         import jwt
+
         from apps.portal.auth import decode_portal_token
 
         refresh_token = request.data.get("refresh")
@@ -410,6 +411,7 @@ class PortalDocumentViewSet(viewsets.ViewSet):
             token: Portal JWT token (for browser/app access without headers)
         """
         from django.http import FileResponse
+
         from apps.documents.models import Document
         from apps.portal.auth import decode_portal_token
 
@@ -537,10 +539,11 @@ class PortalMessageViewSet(viewsets.ViewSet):
 
     def _notify_staff_of_client_message(self, message):
         """Create notifications for staff when a client sends a message."""
-        from apps.notifications.models import Notification
-        from apps.users.models import User, Role
-        from apps.contacts.models import Contact
         import logging
+
+        from apps.contacts.models import Contact
+        from apps.notifications.models import Notification
+        from apps.users.models import Role, User
 
         logger = logging.getLogger(__name__)
         print(

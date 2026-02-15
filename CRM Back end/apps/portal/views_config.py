@@ -3,12 +3,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.users.permissions import IsAdminRole
 from apps.portal.models import PortalConfiguration
 from apps.portal.serializers_config import (
-    PortalConfigurationDetailSerializer,
     PortalConfigurationCreateUpdateSerializer,
+    PortalConfigurationDetailSerializer,
 )
+from apps.users.permissions import IsAdminRole
 
 
 class PortalConfigurationViewSet(viewsets.ModelViewSet):

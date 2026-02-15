@@ -2,9 +2,9 @@ from django.contrib import admin
 
 from apps.business_hours.models import (
     BusinessHours,
+    Holiday,
     WorkingDay,
     WorkingInterval,
-    Holiday,
 )
 
 

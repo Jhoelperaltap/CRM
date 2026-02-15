@@ -7,12 +7,12 @@ Security: Field names are validated against actual model fields to prevent
 ORM injection attacks via malicious field traversal.
 """
 
+import re
 from datetime import datetime
 from decimal import Decimal
-import re
 
 from django.apps import apps
-from django.db.models import DecimalField, DateField, DateTimeField
+from django.db.models import DateField, DateTimeField, DecimalField
 from django.utils import timezone
 
 from apps.reports.models import Report

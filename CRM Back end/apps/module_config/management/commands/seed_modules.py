@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 
 from apps.module_config.models import CRMModule, Picklist, PicklistValue
 
-
 MODULE_SEED = [
     {
         "name": "contacts",

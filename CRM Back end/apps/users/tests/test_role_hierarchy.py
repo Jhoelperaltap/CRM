@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import RoleFactory, UserFactory
 
-
 BASE = "/api/v1/roles/"
 
 

@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import ContactFactory, TaxCaseFactory
 
-
 BASE_DASHBOARD = "/api/v1/dashboard/"
 BASE_PREFS = "/api/v1/preferences/"
 

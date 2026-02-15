@@ -5,7 +5,6 @@ from rest_framework import status
 
 from tests.factories import ContactFactory, TaxCaseFactory, TaxCaseNoteFactory
 
-
 BASE = "/api/v1/cases/"
 
 

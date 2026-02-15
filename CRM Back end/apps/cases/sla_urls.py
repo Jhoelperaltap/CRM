@@ -1,12 +1,13 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
 from .sla_views import (
-    SLAViewSet,
+    CaseSLAStatusViewSet,
     EscalationRuleViewSet,
     SLABreachViewSet,
-    CaseSLAStatusViewSet,
-    SLAMetricsView,
     SLADashboardView,
+    SLAMetricsView,
+    SLAViewSet,
 )
 
 router = DefaultRouter()

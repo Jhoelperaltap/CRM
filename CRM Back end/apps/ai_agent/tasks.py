@@ -223,8 +223,8 @@ def update_metrics():
     Update daily metrics.
     Runs at the end of each day.
     """
-    from apps.ai_agent.services.learning_engine import LearningEngine
     from apps.ai_agent.models import AgentConfiguration
+    from apps.ai_agent.services.learning_engine import LearningEngine
 
     try:
         config = AgentConfiguration.get_config()
@@ -250,8 +250,8 @@ def backfill_metrics(days: int = 30):
     Args:
         days: Number of days to backfill
     """
-    from apps.ai_agent.services.learning_engine import LearningEngine
     from apps.ai_agent.models import AgentConfiguration
+    from apps.ai_agent.services.learning_engine import LearningEngine
 
     try:
         config = AgentConfiguration.get_config()

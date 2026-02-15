@@ -225,8 +225,8 @@ class TaxCaseNote(TimeStampedModel):
 
 # Import checklist models so they are discovered by Django
 from apps.cases.checklist_models import (  # noqa: E402, F401
-    ChecklistTemplate,
-    ChecklistTemplateItem,
     CaseChecklist,
     CaseChecklistItem,
+    ChecklistTemplate,
+    ChecklistTemplateItem,
 )

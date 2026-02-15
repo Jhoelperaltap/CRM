@@ -5,7 +5,7 @@ Signals for live chat notifications and updates.
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import ChatSession, ChatMessage, OfflineMessage
+from .models import ChatMessage, ChatSession, OfflineMessage
 
 
 @receiver(post_save, sender=ChatSession)
@@ -52,8 +52,9 @@ def on_chat_message_created(sender, instance, created, **kwargs):
 def on_offline_message_created(sender, instance, created, **kwargs):
     """Handle new offline message."""
     if created:
-        from apps.notifications.models import Notification
         from django.contrib.auth import get_user_model
+
+        from apps.notifications.models import Notification
 
         User = get_user_model()
 

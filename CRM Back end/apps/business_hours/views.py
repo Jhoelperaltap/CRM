@@ -2,13 +2,13 @@ from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from apps.users.permissions import IsAdminRole
 from apps.business_hours.models import BusinessHours
 from apps.business_hours.serializers import (
     BusinessHoursCreateUpdateSerializer,
     BusinessHoursDetailSerializer,
     BusinessHoursListSerializer,
 )
+from apps.users.permissions import IsAdminRole
 
 
 class BusinessHoursViewSet(viewsets.ModelViewSet):

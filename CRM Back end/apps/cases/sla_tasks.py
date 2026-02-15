@@ -3,10 +3,11 @@ Celery tasks for SLA management.
 """
 
 import logging
-from celery import shared_task
-from django.utils import timezone
-from django.db.models import Q
 from datetime import timedelta
+
+from celery import shared_task
+from django.db.models import Q
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ def check_sla_statuses():
     Runs every 5 minutes.
     """
     from .sla_models import CaseSLAStatus
-    from .sla_services import check_sla_status, record_sla_breach
+    from .sla_services import record_sla_breach
 
     # Get all active (non-resolved) case SLA statuses
     active_statuses = (
@@ -144,11 +145,13 @@ def send_sla_summary_report():
     Send daily SLA summary report to managers.
     Runs daily at 8 AM.
     """
-    from .sla_services import get_sla_metrics
-    from .sla_models import SLABreach
-    from django.core.mail import send_mail
-    from django.conf import settings
     from datetime import date, timedelta
+
+    from django.conf import settings
+    from django.core.mail import send_mail
+
+    from .sla_models import SLABreach
+    from .sla_services import get_sla_metrics
 
     yesterday = date.today() - timedelta(days=1)
 
@@ -210,8 +213,9 @@ def cleanup_old_sla_data(days: int = 365):
     Archive or delete old SLA data.
     Runs weekly.
     """
-    from .sla_models import SLABreach
     from datetime import timedelta
+
+    from .sla_models import SLABreach
 
     cutoff = timezone.now() - timedelta(days=days)
 

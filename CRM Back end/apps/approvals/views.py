@@ -4,9 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from apps.approvals.models import Approval
 from apps.approvals.serializers import (
-    ApprovalListSerializer,
-    ApprovalDetailSerializer,
     ApprovalCreateUpdateSerializer,
+    ApprovalDetailSerializer,
+    ApprovalListSerializer,
 )
 
 

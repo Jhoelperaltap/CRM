@@ -7,7 +7,6 @@ from apps.cases.checklist_models import (
     ChecklistTemplateItem,
 )
 
-
 # ---------------------------------------------------------------------------
 # Template serializers (admin settings)
 # ---------------------------------------------------------------------------

@@ -2,12 +2,12 @@
 SLA Management Services
 """
 
-from datetime import timedelta
-from django.utils import timezone
-from django.db import transaction
-from django.core.mail import send_mail
-from django.conf import settings
 import logging
+from datetime import timedelta
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ def initialize_case_sla(case):
     """
     Initialize SLA tracking for a new case.
     """
-    from .sla_models import SLA, CaseSLAStatus
+    from .sla_models import CaseSLAStatus
 
     sla = get_sla_for_case(case)
     if not sla:
@@ -290,8 +290,6 @@ def recalculate_sla_targets(case):
         return
 
     # Only recalculate if not yet met
-    now = timezone.now()
-
     if not sla_status.response_met_at:
         response_hours = sla_status.sla.get_response_time(case.priority)
         sla_status.response_target = (
@@ -350,8 +348,9 @@ def get_sla_metrics(start_date=None, end_date=None, assigned_to=None):
     """
     Get SLA performance metrics for reporting.
     """
-    from .sla_models import CaseSLAStatus, SLABreach
-    from django.db.models import Count, Avg, Q
+    from django.db.models import Avg
+
+    from .sla_models import CaseSLAStatus
 
     filters = {}
     if start_date:

@@ -1,15 +1,16 @@
 from rest_framework import serializers
+
 from .models import (
-    EmailList,
-    EmailListSubscriber,
-    CampaignTemplate,
-    Campaign,
-    CampaignRecipient,
-    CampaignLink,
+    AutomationEnrollment,
     AutomationSequence,
     AutomationStep,
-    AutomationEnrollment,
     AutomationStepLog,
+    Campaign,
+    CampaignLink,
+    CampaignRecipient,
+    CampaignTemplate,
+    EmailList,
+    EmailListSubscriber,
 )
 
 

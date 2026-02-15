@@ -2,9 +2,9 @@
 Tests for AI Agent services.
 """
 
-import pytest
 from datetime import timedelta
 
+import pytest
 from django.utils import timezone
 
 from apps.ai_agent.models import (

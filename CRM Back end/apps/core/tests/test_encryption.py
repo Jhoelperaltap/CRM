@@ -2,15 +2,14 @@ import pytest
 from cryptography.fernet import Fernet
 from django.db import connection
 
-from tests.factories import ContactFactory, CorporationFactory
-
 import apps.core.encryption as encryption_module
 from apps.core.encryption import (
+    _NOT_INITIALIZED,
     decrypt_value,
     encrypt_value,
     generate_encryption_key,
-    _NOT_INITIALIZED,
 )
+from tests.factories import ContactFactory, CorporationFactory
 
 pytestmark = pytest.mark.django_db
 

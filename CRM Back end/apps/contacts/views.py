@@ -16,8 +16,8 @@ from apps.contacts.serializers import (
     ContactDetailSerializer,
     ContactImportSerializer,
     ContactListSerializer,
-    ContactTagSerializer,
     ContactTagAssignmentSerializer,
+    ContactTagSerializer,
 )
 from apps.users.permissions import ModulePermission
 
@@ -400,8 +400,8 @@ class ContactViewSet(viewsets.ModelViewSet):
 
         # Send push notification to client if they have a device token
         try:
-            from apps.portal.models import PortalDeviceToken
             from apps.notifications.services import send_push_notification
+            from apps.portal.models import PortalDeviceToken
 
             device_tokens = PortalDeviceToken.objects.filter(
                 contact=contact,

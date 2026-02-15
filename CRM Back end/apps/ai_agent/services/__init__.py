@@ -1,9 +1,9 @@
 from .agent_brain import AgentBrain
-from .email_analyzer import EmailAnalyzer
 from .appointment_monitor import AppointmentMonitor
-from .task_enforcer import TaskEnforcer
-from .market_analyzer import MarketAnalyzer
+from .email_analyzer import EmailAnalyzer
 from .learning_engine import LearningEngine
+from .market_analyzer import MarketAnalyzer
+from .task_enforcer import TaskEnforcer
 
 __all__ = [
     "AgentBrain",

@@ -12,7 +12,6 @@ from rest_framework import status
 from apps.users.models import AuthenticationPolicy
 from tests.factories import AuthenticationPolicyFactory
 
-
 BASE = "/api/v1/settings/auth-policy/"
 
 

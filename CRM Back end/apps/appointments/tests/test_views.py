@@ -6,7 +6,6 @@ from rest_framework import status
 
 from tests.factories import AppointmentFactory, ContactFactory
 
-
 BASE = "/api/v1/appointments/"
 
 

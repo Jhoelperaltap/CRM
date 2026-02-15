@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.approvals.models import Approval, ApprovalRule, ApprovalAction
+from apps.approvals.models import Approval, ApprovalAction, ApprovalRule
 
 
 class ApprovalRuleInline(admin.TabularInline):

@@ -1,15 +1,16 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
 from .views import (
-    CategoryViewSet,
-    ArticleViewSet,
     ArticleAttachmentViewSet,
+    ArticleFeedbackView,
+    ArticleViewSet,
+    CategoryViewSet,
     FAQViewSet,
+    KBStatsView,
     PublicArticleView,
     PublicCategoryView,
     PublicFAQView,
-    ArticleFeedbackView,
-    KBStatsView,
     SearchView,
 )
 

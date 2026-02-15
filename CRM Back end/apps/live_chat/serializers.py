@@ -1,11 +1,12 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
 from .models import (
-    ChatDepartment,
-    ChatAgent,
-    ChatSession,
-    ChatMessage,
     CannedResponse,
+    ChatAgent,
+    ChatDepartment,
+    ChatMessage,
+    ChatSession,
     ChatWidgetSettings,
     OfflineMessage,
 )

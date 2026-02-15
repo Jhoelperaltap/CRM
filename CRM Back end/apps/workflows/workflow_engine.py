@@ -227,10 +227,10 @@ def _action_send_notification(rule, instance, context):
 
 def _action_send_email(rule, instance, context):
     """Send an email using an EmailTemplate."""
-    from apps.emails.models import EmailTemplate
-    from apps.emails.tasks import send_email_task
-    from apps.emails.models import EmailAccount, EmailMessage
     import uuid
+
+    from apps.emails.models import EmailAccount, EmailMessage, EmailTemplate
+    from apps.emails.tasks import send_email_task
 
     config = rule.action_config
     template_id = config.get("template_id")

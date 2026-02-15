@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import LoginHistoryFactory
 
-
 BASE = "/api/v1/settings/login-history/"
 
 

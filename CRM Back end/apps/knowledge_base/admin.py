@@ -1,11 +1,12 @@
 from django.contrib import admin
+
 from .models import (
-    Category,
+    FAQ,
     Article,
     ArticleAttachment,
     ArticleFeedback,
     ArticleView,
-    FAQ,
+    Category,
 )
 
 

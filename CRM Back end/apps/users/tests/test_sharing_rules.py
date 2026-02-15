@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import SharingRuleFactory
 
-
 BASE = "/api/v1/settings/sharing-rules/"
 
 

@@ -16,7 +16,6 @@ from apps.dashboard.services import (
 )
 from tests.factories import ContactFactory, TaxCaseFactory
 
-
 BASE_DASHBOARD = "/api/v1/dashboard/"
 
 

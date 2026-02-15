@@ -1,7 +1,9 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from apps.contacts.models import Contact
-from .models import AutomationSequence, AutomationEnrollment
+
+from .models import AutomationEnrollment, AutomationSequence
 
 
 @receiver(post_save, sender=Contact)

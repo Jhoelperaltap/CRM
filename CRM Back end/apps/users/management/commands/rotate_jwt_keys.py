@@ -29,8 +29,9 @@ For immediate rotation (emergency):
 """
 
 import secrets
-from django.core.management.base import BaseCommand, CommandError
+
 from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
@@ -157,9 +158,10 @@ class Command(BaseCommand):
 
         try:
             from rest_framework_simplejwt.token_blacklist.models import (
-                OutstandingToken,
                 BlacklistedToken,
+                OutstandingToken,
             )
+
             from apps.users.models import UserSession
 
             # Blacklist all outstanding tokens

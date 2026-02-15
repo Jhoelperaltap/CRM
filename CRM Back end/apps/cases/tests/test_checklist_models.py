@@ -1,9 +1,9 @@
 import pytest
 
 from tests.factories import (
+    CaseChecklistFactory,
     ChecklistTemplateFactory,
     ChecklistTemplateItemFactory,
-    CaseChecklistFactory,
 )
 
 

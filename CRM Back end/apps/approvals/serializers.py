@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from apps.approvals.models import Approval, ApprovalRule, ApprovalAction
-
+from apps.approvals.models import Approval, ApprovalAction, ApprovalRule
 
 # ── Action ──────────────────────────────────────────────────────────────
 

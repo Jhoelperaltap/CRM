@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import LoginIPWhitelistFactory
 
-
 BASE = "/api/v1/settings/ip-whitelist/"
 
 

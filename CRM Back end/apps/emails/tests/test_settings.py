@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import EmailAccountFactory, EmailSyncLogFactory
 
-
 ACCOUNTS_BASE = "/api/v1/settings/email-accounts/"
 LOGS_BASE = "/api/v1/settings/email-logs/"
 

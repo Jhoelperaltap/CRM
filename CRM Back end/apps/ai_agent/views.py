@@ -226,8 +226,8 @@ class AgentActionViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = AgentActionOutcomeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        from apps.ai_agent.services.learning_engine import LearningEngine
         from apps.ai_agent.models import AgentConfiguration
+        from apps.ai_agent.services.learning_engine import LearningEngine
 
         config = AgentConfiguration.get_config()
         engine = LearningEngine(config)
@@ -260,6 +260,7 @@ class AgentLogViewSet(viewsets.ReadOnlyModelViewSet):
     def export(self, request):
         """Export logs as CSV."""
         import csv
+
         from django.http import HttpResponse
 
         queryset = self.filter_queryset(self.get_queryset())
@@ -375,8 +376,8 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
         """Get performance summary."""
         days = int(request.query_params.get("days", 30))
 
-        from apps.ai_agent.services.learning_engine import LearningEngine
         from apps.ai_agent.models import AgentConfiguration
+        from apps.ai_agent.services.learning_engine import LearningEngine
 
         config = AgentConfiguration.get_config()
         engine = LearningEngine(config)
@@ -388,8 +389,8 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"])
     def learning(self, request):
         """Get learning progress metrics."""
-        from apps.ai_agent.services.learning_engine import LearningEngine
         from apps.ai_agent.models import AgentConfiguration
+        from apps.ai_agent.services.learning_engine import LearningEngine
 
         config = AgentConfiguration.get_config()
         engine = LearningEngine(config)
@@ -403,8 +404,8 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
         """Get recommendations for improving AI performance."""
         import logging
 
-        from apps.ai_agent.services.learning_engine import LearningEngine
         from apps.ai_agent.models import AgentConfiguration
+        from apps.ai_agent.services.learning_engine import LearningEngine
 
         logger = logging.getLogger(__name__)
 
@@ -424,8 +425,8 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
         """Get daily trend data."""
         days = int(request.query_params.get("days", 30))
 
-        from apps.ai_agent.services.learning_engine import LearningEngine
         from apps.ai_agent.models import AgentConfiguration
+        from apps.ai_agent.services.learning_engine import LearningEngine
 
         config = AgentConfiguration.get_config()
         engine = LearningEngine(config)

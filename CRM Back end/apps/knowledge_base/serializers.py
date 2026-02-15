@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Category, Article, ArticleAttachment, ArticleFeedback, FAQ
+
+from .models import FAQ, Article, ArticleAttachment, ArticleFeedback, Category
 
 
 class CategorySerializer(serializers.ModelSerializer):

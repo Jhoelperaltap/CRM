@@ -1,8 +1,7 @@
 import pytest
 from rest_framework import status
 
-from tests.factories import WorkflowRuleFactory, WorkflowExecutionLogFactory
-
+from tests.factories import WorkflowExecutionLogFactory, WorkflowRuleFactory
 
 WORKFLOWS_BASE = "/api/v1/settings/workflows/"
 WORKFLOW_LOGS_BASE = "/api/v1/settings/workflow-logs/"

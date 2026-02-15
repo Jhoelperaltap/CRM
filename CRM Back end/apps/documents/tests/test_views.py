@@ -4,7 +4,6 @@ from rest_framework import status
 
 from tests.factories import DocumentFactory
 
-
 BASE = "/api/v1/documents/"
 
 # Valid PDF magic bytes (minimal PDF structure)

@@ -7,9 +7,10 @@ This module provides:
 """
 
 import re
-from django.db import models
+
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
@@ -242,8 +243,8 @@ class Comment(TimeStampedModel):
 
     def _parse_mentions(self):
         """Parse @username and @department mentions from content."""
-        from apps.users.models import User, Department
         from apps.notifications.models import Notification
+        from apps.users.models import Department, User
 
         # Find all @mentions
         mention_pattern = r"@(\w+)"
@@ -318,8 +319,8 @@ class Comment(TimeStampedModel):
 
     def _send_email_notification(self):
         """Send email notification to mentioned users."""
-        from django.core.mail import send_mail
         from django.conf import settings
+        from django.core.mail import send_mail
         from django.utils import timezone
 
         entity_name = self._get_entity_name()

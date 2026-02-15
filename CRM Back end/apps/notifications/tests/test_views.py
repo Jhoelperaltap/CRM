@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import NotificationFactory, UserFactory
 
-
 NOTIFICATIONS_BASE = "/api/v1/notifications/"
 PREFERENCES_BASE = "/api/v1/notifications/preferences/"
 

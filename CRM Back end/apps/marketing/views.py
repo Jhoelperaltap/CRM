@@ -1,42 +1,40 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from django.db.models import Count, Q, Avg
-from django.utils import timezone
-from django.http import HttpResponse
-from django.shortcuts import redirect
 from datetime import timedelta
 
+from django.db.models import Count, F, Q, Sum
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import (
-    EmailList,
-    EmailListSubscriber,
-    CampaignTemplate,
-    Campaign,
-    CampaignRecipient,
-    CampaignLink,
-    CampaignLinkClick,
+    AutomationEnrollment,
     AutomationSequence,
     AutomationStep,
-    AutomationEnrollment,
-    AutomationStepLog,
+    Campaign,
+    CampaignLink,
+    CampaignLinkClick,
+    CampaignRecipient,
+    CampaignTemplate,
+    EmailList,
+    EmailListSubscriber,
 )
 from .serializers import (
-    EmailListSerializer,
-    EmailListSubscriberSerializer,
-    CampaignTemplateSerializer,
-    CampaignListSerializer,
-    CampaignSerializer,
-    CampaignRecipientSerializer,
-    CampaignLinkSerializer,
+    AutomationEnrollmentSerializer,
     AutomationSequenceListSerializer,
     AutomationSequenceSerializer,
     AutomationStepSerializer,
-    AutomationEnrollmentSerializer,
-    AutomationStepLogSerializer,
-    CampaignStatsSerializer,
     BulkSubscribeSerializer,
+    CampaignLinkSerializer,
+    CampaignListSerializer,
+    CampaignRecipientSerializer,
+    CampaignSerializer,
+    CampaignTemplateSerializer,
+    EmailListSerializer,
+    EmailListSubscriberSerializer,
 )
 from .tasks import send_campaign, update_campaign_stats
 
@@ -403,6 +401,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
             )
 
         from django.core.mail import EmailMultiAlternatives
+
         from .tasks import render_template_string, strip_html_tags
 
         context = {
@@ -436,7 +435,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
                 msg.attach_alternative(html_content, "text/html")
                 msg.send()
                 sent_to.append(email)
-            except Exception as e:
+            except Exception:
                 pass
 
         return Response(
@@ -505,6 +504,7 @@ class AutomationSequenceViewSet(viewsets.ModelViewSet):
         contact_ids = request.data.get("contact_ids", [])
 
         from apps.contacts.models import Contact
+
         from .tasks import process_automation_enrollment
 
         contacts = Contact.objects.filter(id__in=contact_ids)
@@ -567,12 +567,12 @@ class AutomationStepViewSet(viewsets.ModelViewSet):
             # Moving up
             AutomationStep.objects.filter(
                 sequence=step.sequence, order__gte=new_order, order__lt=step.order
-            ).update(order=models.F("order") + 1)
+            ).update(order=F("order") + 1)
         else:
             # Moving down
             AutomationStep.objects.filter(
                 sequence=step.sequence, order__gt=step.order, order__lte=new_order
-            ).update(order=models.F("order") - 1)
+            ).update(order=F("order") - 1)
 
         step.order = new_order
         step.save()
@@ -595,13 +595,9 @@ class CampaignAnalyticsView(APIView):
         # Overall stats
         campaigns = Campaign.objects.filter(created_at__gte=start_date)
 
-        total_sent = campaigns.aggregate(total=models.Sum("total_sent"))["total"] or 0
-        total_opened = (
-            campaigns.aggregate(total=models.Sum("total_opened"))["total"] or 0
-        )
-        total_clicked = (
-            campaigns.aggregate(total=models.Sum("total_clicked"))["total"] or 0
-        )
+        total_sent = campaigns.aggregate(total=Sum("total_sent"))["total"] or 0
+        total_opened = campaigns.aggregate(total=Sum("total_opened"))["total"] or 0
+        total_clicked = campaigns.aggregate(total=Sum("total_clicked"))["total"] or 0
 
         avg_open_rate = (total_opened / total_sent * 100) if total_sent > 0 else 0
         avg_click_rate = (total_clicked / total_sent * 100) if total_sent > 0 else 0
@@ -619,8 +615,8 @@ class CampaignAnalyticsView(APIView):
             .values("date")
             .annotate(
                 count=Count("id"),
-                sent=models.Sum("total_sent"),
-                opened=models.Sum("total_opened"),
+                sent=Sum("total_sent"),
+                opened=Sum("total_opened"),
             )
             .order_by("date")
         )

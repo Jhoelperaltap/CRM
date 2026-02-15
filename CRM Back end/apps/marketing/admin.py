@@ -1,16 +1,16 @@
 from django.contrib import admin
+
 from .models import (
-    EmailList,
-    EmailListSubscriber,
-    CampaignTemplate,
-    Campaign,
-    CampaignRecipient,
-    CampaignLink,
-    CampaignLinkClick,
+    AutomationEnrollment,
     AutomationSequence,
     AutomationStep,
-    AutomationEnrollment,
     AutomationStepLog,
+    Campaign,
+    CampaignLink,
+    CampaignRecipient,
+    CampaignTemplate,
+    EmailList,
+    EmailListSubscriber,
 )
 
 

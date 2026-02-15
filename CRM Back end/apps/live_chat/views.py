@@ -1,37 +1,37 @@
 import uuid
 from datetime import timedelta
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.views import APIView
-from django.db.models import Q, Avg, Count
+
+from django.db.models import Avg, F, Q
 from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import (
-    ChatDepartment,
-    ChatAgent,
-    ChatSession,
-    ChatMessage,
     CannedResponse,
+    ChatAgent,
+    ChatDepartment,
+    ChatMessage,
+    ChatSession,
     ChatWidgetSettings,
     OfflineMessage,
 )
 from .serializers import (
-    ChatDepartmentSerializer,
+    CannedResponseSerializer,
     ChatAgentSerializer,
     ChatAgentStatusSerializer,
-    ChatSessionSerializer,
-    ChatSessionListSerializer,
+    ChatDepartmentSerializer,
     ChatMessageSerializer,
-    StartChatSerializer,
-    SendMessageSerializer,
-    TransferChatSerializer,
-    RateChatSerializer,
-    CannedResponseSerializer,
+    ChatSessionListSerializer,
+    ChatSessionSerializer,
     ChatWidgetSettingsSerializer,
     OfflineMessageSerializer,
-    ChatStatsSerializer,
+    RateChatSerializer,
+    SendMessageSerializer,
+    StartChatSerializer,
+    TransferChatSerializer,
 )
 
 
@@ -657,7 +657,7 @@ class PublicChatView(APIView):
                     is_available=True,
                     status=ChatAgent.Status.ONLINE,
                     departments=department,
-                    current_chat_count__lt=models.F("max_concurrent_chats"),
+                    current_chat_count__lt=F("max_concurrent_chats"),
                 )
                 .order_by("current_chat_count")
                 .first()

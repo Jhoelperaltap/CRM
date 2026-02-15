@@ -4,10 +4,11 @@ Usage: python manage.py populate_demo_data
 """
 
 import random
+from datetime import date, time, timedelta
 from decimal import Decimal
-from datetime import timedelta, date, time
-from django.core.management.base import BaseCommand
+
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
@@ -201,7 +202,7 @@ class Command(BaseCommand):
         )
 
     def create_roles(self):
-        from apps.users.models import Role, ModulePermission
+        from apps.users.models import ModulePermission, Role
 
         roles_data = [
             {
@@ -321,7 +322,7 @@ class Command(BaseCommand):
         return created
 
     def create_users(self, roles, branches):
-        from apps.users.models import Role, Branch
+        from apps.users.models import Branch, Role
 
         if not roles:
             roles = list(Role.objects.exclude(slug="admin"))
@@ -1012,8 +1013,8 @@ class Command(BaseCommand):
         return created
 
     def create_tasks(self, users, contacts, cases, groups):
-        from apps.tasks.models import Task
         from apps.cases.models import TaxCase
+        from apps.tasks.models import Task
         from apps.users.models import UserGroup
 
         if not users:
@@ -1078,8 +1079,8 @@ class Command(BaseCommand):
         return created
 
     def create_documents(self, users, contacts, corporations, cases):
-        from apps.documents.models import DocumentFolder, Document, DocumentTag
         from apps.cases.models import TaxCase
+        from apps.documents.models import Document, DocumentFolder, DocumentTag
 
         if not users:
             users = list(User.objects.exclude(is_superuser=True))
@@ -1297,8 +1298,8 @@ class Command(BaseCommand):
         return created
 
     def create_quotes(self, users, contacts, corporations, cases):
-        from apps.quotes.models import Quote, QuoteLineItem
         from apps.cases.models import TaxCase
+        from apps.quotes.models import Quote, QuoteLineItem
 
         if not users:
             users = list(User.objects.exclude(is_superuser=True))
@@ -1579,8 +1580,8 @@ class Command(BaseCommand):
     def create_invoices(
         self, users, contacts, corporations, products, services, tax_rates
     ):
-        from apps.inventory.models import Invoice, InvoiceLineItem, TaxRate, Service
         from apps.contacts.models import Contact
+        from apps.inventory.models import Invoice, InvoiceLineItem, Service, TaxRate
 
         if not users:
             users = list(User.objects.exclude(is_superuser=True))
@@ -1934,9 +1935,9 @@ class Command(BaseCommand):
     def create_business_hours(self):
         from apps.business_hours.models import (
             BusinessHours,
+            Holiday,
             WorkingDay,
             WorkingInterval,
-            Holiday,
         )
 
         bh, was_created = BusinessHours.objects.get_or_create(
@@ -2067,9 +2068,10 @@ class Command(BaseCommand):
         return created
 
     def create_portal_access(self, contacts):
-        from apps.portal.models import ClientPortalAccess
-        from apps.contacts.models import Contact
         from django.contrib.auth.hashers import make_password
+
+        from apps.contacts.models import Contact
+        from apps.portal.models import ClientPortalAccess
 
         if not contacts:
             contacts = list(Contact.objects.filter(status="ACTIVE")[:10])
@@ -2087,7 +2089,7 @@ class Command(BaseCommand):
         return created
 
     def create_sales_quotas(self, users):
-        from apps.forecasts.models import SalesQuota, ForecastEntry
+        from apps.forecasts.models import ForecastEntry, SalesQuota
 
         if not users:
             users = list(User.objects.exclude(is_superuser=True))
@@ -2122,7 +2124,7 @@ class Command(BaseCommand):
         return created
 
     def create_approvals(self, users, roles):
-        from apps.approvals.models import Approval, ApprovalRule, ApprovalAction
+        from apps.approvals.models import Approval, ApprovalAction, ApprovalRule
         from apps.users.models import Role
 
         if not users:

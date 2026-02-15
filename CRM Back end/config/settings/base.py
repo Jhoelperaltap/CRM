@@ -1,7 +1,7 @@
-import environ
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
 
+import environ
 from celery.schedules import crontab
 
 env = environ.Env()

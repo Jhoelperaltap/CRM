@@ -1,6 +1,6 @@
 import pytest
 
-from tests.factories import WorkflowRuleFactory, WorkflowExecutionLogFactory
+from tests.factories import WorkflowExecutionLogFactory, WorkflowRuleFactory
 
 
 @pytest.mark.django_db

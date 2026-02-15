@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from apps.workflows.models import WorkflowExecutionLog
 from apps.workflows.workflow_engine import (

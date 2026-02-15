@@ -3,7 +3,6 @@ from rest_framework import status
 
 from tests.factories import ContactFactory, TaxCaseFactory
 
-
 REVENUE_URL = "/api/v1/reports/analytics/revenue/"
 CASES_URL = "/api/v1/reports/analytics/cases/"
 PREPARERS_URL = "/api/v1/reports/analytics/preparers/"

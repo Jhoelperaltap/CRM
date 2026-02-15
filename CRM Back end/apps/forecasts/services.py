@@ -1,9 +1,9 @@
 from decimal import Decimal
+
 from django.db.models import Sum
 
 from apps.cases.models import TaxCase
 from apps.forecasts.models import ForecastEntry, SalesQuota
-
 
 CLOSED_WON_STATUSES = [TaxCase.Status.FILED, TaxCase.Status.COMPLETED]
 PIPELINE_STATUSES = [

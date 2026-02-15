@@ -3,8 +3,9 @@ Tests for security event logging with pattern detection.
 """
 
 from unittest.mock import patch
-from django.test import TestCase
+
 from django.core.cache import cache
+from django.test import TestCase
 
 from apps.core.logging import (
     SecurityEvent,

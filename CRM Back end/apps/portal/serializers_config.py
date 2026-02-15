@@ -4,10 +4,9 @@ from rest_framework import serializers
 from apps.portal.models import (
     PortalConfiguration,
     PortalMenuItem,
-    PortalShortcut,
     PortalModuleFieldConfig,
+    PortalShortcut,
 )
-
 
 # ── Nested Serializers ──────────────────────────────────────────────
 

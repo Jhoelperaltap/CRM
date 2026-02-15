@@ -7,7 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.users.models import PasswordHistory
 from tests.factories import AuthenticationPolicyFactory, UserFactory
 
-
 # Passwords that meet the complexity requirements:
 # - At least 12 characters
 # - Uppercase, lowercase, digit, special character

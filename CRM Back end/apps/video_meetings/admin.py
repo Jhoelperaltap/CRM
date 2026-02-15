@@ -1,11 +1,12 @@
 from django.contrib import admin
+
 from .models import (
-    VideoProvider,
-    UserVideoConnection,
-    VideoMeeting,
     MeetingParticipant,
     MeetingRecording,
+    UserVideoConnection,
+    VideoMeeting,
     VideoMeetingSettings,
+    VideoProvider,
 )
 
 

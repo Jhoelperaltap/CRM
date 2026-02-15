@@ -1,11 +1,11 @@
 import logging
 import re
 from datetime import timedelta
+
 from celery import shared_task
-from django.utils import timezone
-from django.core.mail import EmailMultiAlternatives
-from django.template import Template, Context
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -310,8 +310,9 @@ def update_campaign_stats(campaign_id: str):
     """
     Update denormalized campaign statistics.
     """
-    from .models import Campaign, CampaignRecipient
     from django.db.models import Count, Q
+
+    from .models import Campaign
 
     try:
         campaign = Campaign.objects.get(id=campaign_id)

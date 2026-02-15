@@ -2,12 +2,12 @@ from django.contrib import admin
 
 from apps.portal.models import (
     ClientPortalAccess,
-    PortalDocumentUpload,
-    PortalMessage,
     PortalConfiguration,
+    PortalDocumentUpload,
     PortalMenuItem,
-    PortalShortcut,
+    PortalMessage,
     PortalModuleFieldConfig,
+    PortalShortcut,
 )
 
 

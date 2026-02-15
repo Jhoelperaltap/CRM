@@ -1,10 +1,11 @@
 from django.contrib import admin
+
 from .models import (
-    ChatDepartment,
-    ChatAgent,
-    ChatSession,
-    ChatMessage,
     CannedResponse,
+    ChatAgent,
+    ChatDepartment,
+    ChatMessage,
+    ChatSession,
     ChatWidgetSettings,
     OfflineMessage,
 )

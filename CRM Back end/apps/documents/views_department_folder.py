@@ -17,7 +17,6 @@ from apps.documents.serializers_department_folder import (
 )
 from apps.users.models import Department
 
-
 DEFAULT_FOLDER_NAMES = [
     "Tax Returns",
     "Correspondence",
