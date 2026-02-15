@@ -6,11 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0002_add_sticky_notes'),
+        ("dashboard", "0002_add_sticky_notes"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='StickyNote',
+            name="StickyNote",
         ),
     ]

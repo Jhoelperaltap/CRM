@@ -6,33 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contacts', '0007_contacttag_contacttagassignment'),
+        ("contacts", "0007_contacttag_contacttagassignment"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contact',
-            name='assistant_phone',
-            field=models.CharField(blank=True, default='', max_length=30, verbose_name='assistant phone'),
+            model_name="contact",
+            name="assistant_phone",
+            field=models.CharField(
+                blank=True, default="", max_length=30, verbose_name="assistant phone"
+            ),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='fax',
-            field=models.CharField(blank=True, default='', max_length=30, verbose_name='fax'),
+            model_name="contact",
+            name="fax",
+            field=models.CharField(
+                blank=True, default="", max_length=30, verbose_name="fax"
+            ),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='home_phone',
-            field=models.CharField(blank=True, default='', max_length=30, verbose_name='home phone'),
+            model_name="contact",
+            name="home_phone",
+            field=models.CharField(
+                blank=True, default="", max_length=30, verbose_name="home phone"
+            ),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='mobile',
-            field=models.CharField(blank=True, default='', max_length=30, verbose_name='mobile'),
+            model_name="contact",
+            name="mobile",
+            field=models.CharField(
+                blank=True, default="", max_length=30, verbose_name="mobile"
+            ),
         ),
         migrations.AlterField(
-            model_name='contact',
-            name='phone',
-            field=models.CharField(blank=True, default='', max_length=30, verbose_name='office phone'),
+            model_name="contact",
+            name="phone",
+            field=models.CharField(
+                blank=True, default="", max_length=30, verbose_name="office phone"
+            ),
         ),
     ]
