@@ -629,3 +629,35 @@ class PortalDocumentUploadFactory(DjangoModelFactory):
     contact = factory.SubFactory(ContactFactory)
     document = factory.SubFactory(DocumentFactory)
     status = "pending"
+
+
+# ---------------------------------------------------------------------------
+# Departments
+# ---------------------------------------------------------------------------
+
+
+class DepartmentFactory(DjangoModelFactory):
+    class Meta:
+        model = "users.Department"
+
+    name = factory.Sequence(lambda n: f"Department {n}")
+    code = factory.Sequence(lambda n: f"DEPT{n}")
+    description = factory.Faker("sentence")
+    color = "#3B82F6"
+    icon = "Briefcase"
+    is_active = True
+    order = factory.Sequence(lambda n: n)
+
+
+class DepartmentClientFolderFactory(DjangoModelFactory):
+    class Meta:
+        model = "documents.DepartmentClientFolder"
+
+    name = factory.Sequence(lambda n: f"Folder {n}")
+    department = factory.SubFactory(DepartmentFactory)
+    contact = factory.SubFactory(ContactFactory)  # Required by CHECK constraint
+    corporation = None
+    parent = None
+    description = ""
+    is_default = False
+    created_by = factory.SubFactory(UserFactory)

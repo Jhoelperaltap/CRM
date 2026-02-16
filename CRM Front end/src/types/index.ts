@@ -532,6 +532,8 @@ export interface DocumentListItem {
   case: string | null;
   folder: string | null;
   folder_name: string | null;
+  department_folder: string | null;
+  department_folder_name: string | null;
   tag_ids: string[];
   uploaded_by: string | null;
   uploaded_by_name: string;

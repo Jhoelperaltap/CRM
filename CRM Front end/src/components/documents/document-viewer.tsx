@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +19,22 @@ import {
   ExternalLink
 } from "lucide-react";
 import { getDocumentDownloadUrl, getDocumentViewUrl } from "@/lib/api/documents";
+
+// Helper function to detect mime type from file extension
+function getMimeTypeFromExtension(filename: string): string | null {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  const mimeMap: Record<string, string> = {
+    pdf: "application/pdf",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    gif: "image/gif",
+    webp: "image/webp",
+    svg: "image/svg+xml",
+    bmp: "image/bmp",
+  };
+  return mimeMap[ext || ""] || null;
+}
 
 interface DocumentViewerProps {
   documentId: string;
@@ -41,6 +57,14 @@ export function DocumentViewer({
   const [viewUrl, setViewUrl] = useState<string | null>(null);
   const [urlLoading, setUrlLoading] = useState(false);
 
+  // Detect mime type from extension if not provided
+  const effectiveMimeType = useMemo(() => {
+    if (mimeType && mimeType !== "application/octet-stream") {
+      return mimeType;
+    }
+    return getMimeTypeFromExtension(title) || mimeType;
+  }, [mimeType, title]);
+
   // Fetch secure download token when dialog opens
   useEffect(() => {
     if (open && !viewUrl && !urlLoading) {
@@ -61,8 +85,8 @@ export function DocumentViewer({
     }
   }, [open, documentId, viewUrl, urlLoading]);
 
-  const isPdf = mimeType === "application/pdf";
-  const isImage = mimeType?.startsWith("image/");
+  const isPdf = effectiveMimeType === "application/pdf";
+  const isImage = effectiveMimeType?.startsWith("image/");
   const isViewable = isPdf || isImage;
 
   const handleLoad = () => {
@@ -152,7 +176,7 @@ export function DocumentViewer({
       <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground">
         <FileText className="h-16 w-16" />
         <p>This file type cannot be previewed</p>
-        <p className="text-sm">{mimeType || "Unknown type"}</p>
+        <p className="text-sm">{effectiveMimeType || "Unknown type"}</p>
         <Button onClick={handleDownload}>
           <Download className="h-4 w-4 mr-2" />
           Download to view
@@ -252,8 +276,16 @@ export function InlineDocumentViewer({
   const [viewUrl, setViewUrl] = useState<string | null>(null);
   const [urlLoading, setUrlLoading] = useState(true);
 
-  const isPdf = mimeType === "application/pdf";
-  const isImage = mimeType?.startsWith("image/");
+  // Detect mime type from extension if not provided
+  const effectiveMimeType = useMemo(() => {
+    if (mimeType && mimeType !== "application/octet-stream") {
+      return mimeType;
+    }
+    return getMimeTypeFromExtension(title) || mimeType;
+  }, [mimeType, title]);
+
+  const isPdf = effectiveMimeType === "application/pdf";
+  const isImage = effectiveMimeType?.startsWith("image/");
 
   // Fetch secure download token on mount
   useEffect(() => {
@@ -351,7 +383,7 @@ export function InlineDocumentViewer({
     <div className={`flex flex-col items-center justify-center gap-4 text-muted-foreground border rounded-lg bg-muted/10 ${className}`}>
       <FileText className="h-12 w-12" />
       <p>Preview not available for this file type</p>
-      <p className="text-sm">{mimeType || "Unknown type"}</p>
+      <p className="text-sm">{effectiveMimeType || "Unknown type"}</p>
       <Button onClick={handleDownload} size="sm">
         <Download className="h-4 w-4 mr-2" />
         Download

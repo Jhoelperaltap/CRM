@@ -246,6 +246,77 @@ class DepartmentClientFolderViewSet(viewsets.ModelViewSet):
 
         return Response(result)
 
+    @action(detail=False, methods=["get"], url_path="all-departments-tree")
+    def all_departments_tree(self, request):
+        """
+        Return all department folders grouped by department.
+        Used in the documents page to show all department folders.
+        """
+        # Get all departments that have folders
+        departments = (
+            Department.objects.filter(
+                is_active=True,
+                client_folders__isnull=False,
+            )
+            .distinct()
+            .order_by("order", "name")
+        )
+
+        # Permission filtering
+        user = request.user
+        if not user.is_admin and user.department_id:
+            departments = departments.filter(id=user.department_id)
+
+        result = []
+        for dept in departments:
+            # Get root folders for this department (all clients)
+            folder_qs = (
+                DepartmentClientFolder.objects.filter(
+                    department=dept,
+                    parent__isnull=True,
+                )
+                .select_related("contact", "corporation")
+                .annotate(
+                    document_count=Count("documents"),
+                )
+                .prefetch_related(
+                    Prefetch(
+                        "children",
+                        queryset=DepartmentClientFolder.objects.annotate(
+                            document_count=Count("documents"),
+                        ),
+                    )
+                )
+                .order_by("name")
+            )
+
+            folders_data = []
+            for folder in folder_qs:
+                # Build folder name with client info
+                client_name = ""
+                if folder.contact:
+                    client_name = folder.contact.full_name
+                elif folder.corporation:
+                    client_name = folder.corporation.name
+
+                folder_data = DepartmentClientFolderTreeSerializer(folder).data
+                folder_data["client_name"] = client_name
+                folders_data.append(folder_data)
+
+            if folders_data:  # Only add departments that have folders
+                result.append(
+                    {
+                        "id": str(dept.id),
+                        "name": dept.name,
+                        "code": dept.code,
+                        "color": dept.color,
+                        "icon": dept.icon,
+                        "folders": folders_data,
+                    }
+                )
+
+        return Response(result)
+
     @action(detail=False, methods=["post"], url_path="initialize")
     def initialize(self, request):
         """

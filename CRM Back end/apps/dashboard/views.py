@@ -1,14 +1,21 @@
 from django.utils.dateparse import parse_datetime
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.cases.serializers import TaxCaseListSerializer
-from apps.dashboard.models import DashboardWidget, UserDashboardConfig, UserPreference
+from apps.dashboard.models import (
+    DashboardWidget,
+    StickyNote,
+    UserDashboardConfig,
+    UserPreference,
+)
 from apps.dashboard.serializers import (
     DashboardWidgetSerializer,
+    StickyNoteCreateSerializer,
+    StickyNoteSerializer,
     UserDashboardConfigSerializer,
     UserDashboardConfigUpdateSerializer,
     UserPreferenceSerializer,
@@ -151,3 +158,28 @@ class UserPreferenceView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class StickyNoteViewSet(viewsets.ModelViewSet):
+    """
+    CRUD for user's sticky notes.
+    Users can only see and manage their own notes.
+    """
+
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return StickyNoteCreateSerializer
+        return StickyNoteSerializer
+
+    def get_queryset(self):
+        qs = StickyNote.objects.filter(user=self.request.user)
+
+        # Filter by completion status
+        show_completed = self.request.query_params.get("show_completed", "true")
+        if show_completed.lower() == "false":
+            qs = qs.filter(is_completed=False)
+
+        return qs

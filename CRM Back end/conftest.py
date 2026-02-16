@@ -16,6 +16,8 @@ from tests.factories import (
     ChecklistTemplateItemFactory,
     ClientPortalAccessFactory,
     ContactFactory,
+    DepartmentClientFolderFactory,
+    DepartmentFactory,
     DocumentAccessLogFactory,
     DocumentFactory,
     EmailAccountFactory,
@@ -257,3 +259,25 @@ def user_with_2fa(admin_role, db):
     user.save()
     user._raw_recovery_codes = raw_codes
     return user
+
+
+# ---------------------------------------------------------------------------
+# Department fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def department(db):
+    """A sample department for testing."""
+    return DepartmentFactory(name="Accounting", code="ACCT")
+
+
+@pytest.fixture
+def department_folder(department, db):
+    """A sample department client folder for testing."""
+    contact = ContactFactory()
+    return DepartmentClientFolderFactory(
+        name="Tax Documents",
+        department=department,
+        contact=contact,
+    )

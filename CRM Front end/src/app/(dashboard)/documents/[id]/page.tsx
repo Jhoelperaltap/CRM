@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getDocument, deleteDocument, getDocumentDownloadUrl } from "@/lib/api/documents";
 import type { Document } from "@/types";
@@ -18,6 +18,22 @@ function formatBytes(bytes: number) {
   const k = 1024; const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+// Helper to detect mime type from file extension
+function getMimeTypeFromExtension(filename: string): string | null {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  const mimeMap: Record<string, string> = {
+    pdf: "application/pdf",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    gif: "image/gif",
+    webp: "image/webp",
+    svg: "image/svg+xml",
+    bmp: "image/bmp",
+  };
+  return mimeMap[ext || ""] || null;
 }
 
 export default function DocumentDetailPage() {
@@ -43,11 +59,20 @@ export default function DocumentDetailPage() {
     }
   };
 
+  // Detect mime type from extension if not provided
+  const effectiveMimeType = useMemo(() => {
+    if (!doc) return null;
+    if (doc.mime_type && doc.mime_type !== "application/octet-stream") {
+      return doc.mime_type;
+    }
+    return getMimeTypeFromExtension(doc.title) || doc.mime_type;
+  }, [doc]);
+
   if (loading) return <LoadingSpinner />;
   if (!doc) return <div>Document not found</div>;
 
-  const isPdf = doc.mime_type === "application/pdf";
-  const isImage = doc.mime_type?.startsWith("image/");
+  const isPdf = effectiveMimeType === "application/pdf";
+  const isImage = effectiveMimeType?.startsWith("image/");
   const isViewable = isPdf || isImage;
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   getDocuments,
   getFolderTree,
@@ -9,6 +9,7 @@ import {
   getLinks,
   deleteFolder,
 } from "@/lib/api/documents";
+import { getClientDepartmentFolders, getAllDepartmentFolders } from "@/lib/api/departments";
 import type {
   DocumentListItem,
   DocumentLink,
@@ -16,6 +17,7 @@ import type {
   DocumentFolderTreeNode,
   DocumentTag,
 } from "@/types";
+import type { DepartmentFolderGroup } from "@/types/department";
 import type { PaginatedResponse } from "@/types/api";
 
 import { FolderSidebar } from "@/components/documents/folder-sidebar";
@@ -72,6 +74,12 @@ function formatBytes(bytes: number) {
 
 export default function DocumentsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // URL params for client filtering
+  const corporationId = searchParams.get("corporation");
+  const contactId = searchParams.get("contact");
+  const hasClientFilter = !!(corporationId || contactId);
 
   // Data
   const [folderTree, setFolderTree] = useState<DocumentFolderTreeNode[]>([]);
@@ -80,9 +88,11 @@ export default function DocumentsPage() {
   const [personalTags, setPersonalTags] = useState<DocumentTag[]>([]);
   const [docData, setDocData] = useState<PaginatedResponse<DocumentListItem> | null>(null);
   const [links, setLinks] = useState<DocumentLink[]>([]);
+  const [departmentFolders, setDepartmentFolders] = useState<DepartmentFolderGroup[]>([]);
 
   // Selections
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [selectedDeptFolderId, setSelectedDeptFolderId] = useState<string | null>(null);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [search, setSearch] = useState("");
@@ -119,6 +129,27 @@ export default function DocumentsPage() {
     }
   }, []);
 
+  // ---- Fetch department folders ----
+  const fetchDepartmentFolders = useCallback(async () => {
+    try {
+      let data;
+      if (hasClientFilter) {
+        // Fetch folders for specific client
+        data = await getClientDepartmentFolders({
+          contact: contactId || undefined,
+          corporation: corporationId || undefined,
+        });
+      } else {
+        // Fetch all department folders
+        data = await getAllDepartmentFolders();
+      }
+      setDepartmentFolders(data);
+    } catch (err) {
+      console.error("Failed to load department folders", err);
+      setDepartmentFolders([]);
+    }
+  }, [hasClientFilter, contactId, corporationId]);
+
   // ---- Fetch documents + links ----
   const fetchContent = useCallback(async () => {
     setLoading(true);
@@ -126,11 +157,16 @@ export default function DocumentsPage() {
       const params: Record<string, string> = { page: String(page) };
       if (search) params.search = search;
       if (selectedFolderId) params.folder = selectedFolderId;
+      if (selectedDeptFolderId) params.department_folder = selectedDeptFolderId;
       if (selectedTagId) params.tags = selectedTagId;
+      if (corporationId) params.corporation = corporationId;
+      if (contactId) params.contact = contactId;
 
       const linkParams: Record<string, string> = { page_size: "100" };
       if (selectedFolderId) linkParams.folder = selectedFolderId;
       if (selectedTagId) linkParams.tags = selectedTagId;
+      if (corporationId) linkParams.corporation = corporationId;
+      if (contactId) linkParams.contact = contactId;
 
       const [docs, linksRes] = await Promise.all([
         getDocuments(params),
@@ -143,11 +179,15 @@ export default function DocumentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, selectedFolderId, selectedTagId]);
+  }, [page, search, selectedFolderId, selectedDeptFolderId, selectedTagId, corporationId, contactId]);
 
   useEffect(() => {
     fetchSidebar();
   }, [fetchSidebar]);
+
+  useEffect(() => {
+    fetchDepartmentFolders();
+  }, [fetchDepartmentFolders]);
 
   useEffect(() => {
     fetchContent();
@@ -156,10 +196,11 @@ export default function DocumentsPage() {
   // Reset page when filters change
   useEffect(() => {
     setPage(1);
-  }, [selectedFolderId, selectedTagId, search]);
+  }, [selectedFolderId, selectedDeptFolderId, selectedTagId, search]);
 
   const refreshAll = () => {
     fetchSidebar();
+    fetchDepartmentFolders();
     fetchContent();
   };
 
@@ -168,6 +209,28 @@ export default function DocumentsPage() {
     const f = flatFolders.find((f) => f.id === id);
     return f?.name || "";
   };
+
+  // Find department folder name and department name for breadcrumb
+  const findDeptFolderInfo = (id: string): { folderName: string; deptName: string } | null => {
+    for (const dept of departmentFolders) {
+      const folder = findInDeptTree(dept.folders, id);
+      if (folder) {
+        return { folderName: folder.name, deptName: dept.name };
+      }
+    }
+    return null;
+  };
+
+  function findInDeptTree(folders: any[], id: string): any | null {
+    for (const folder of folders) {
+      if (folder.id === id) return folder;
+      if (folder.children) {
+        const found = findInDeptTree(folder.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
 
   const isEmpty =
     !loading &&
@@ -207,11 +270,14 @@ export default function DocumentsPage() {
       {/* Sidebar */}
       <FolderSidebar
         folderTree={folderTree}
+        departmentFolders={departmentFolders}
         sharedTags={sharedTags}
         personalTags={personalTags}
         selectedFolderId={selectedFolderId}
+        selectedDeptFolderId={selectedDeptFolderId}
         selectedTagId={selectedTagId}
         onSelectFolder={setSelectedFolderId}
+        onSelectDeptFolder={setSelectedDeptFolderId}
         onSelectTag={setSelectedTagId}
         onNewFolder={() => {
           setEditFolder(null);
@@ -321,6 +387,26 @@ export default function DocumentsPage() {
           </div>
         )}
 
+        {selectedDeptFolderId && (
+          <div className="flex items-center gap-1 border-b px-4 py-2 text-sm text-muted-foreground">
+            <button
+              className="hover:text-foreground"
+              onClick={() => setSelectedDeptFolderId(null)}
+            >
+              All Documents
+            </button>
+            <ChevronRight className="h-3.5 w-3.5" />
+            {(() => {
+              const info = findDeptFolderInfo(selectedDeptFolderId);
+              return info ? (
+                <span className="text-foreground font-medium">
+                  {info.deptName} / {info.folderName}
+                </span>
+              ) : null;
+            })()}
+          </div>
+        )}
+
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {loading ? (
@@ -385,7 +471,7 @@ export default function DocumentsPage() {
                         <TableCell className="font-medium">{d.title}</TableCell>
                         <TableCell>{d.doc_type.replace(/_/g, " ")}</TableCell>
                         <TableCell><StatusBadge status={d.status} /></TableCell>
-                        <TableCell>{d.folder_name || "-"}</TableCell>
+                        <TableCell>{d.department_folder_name || d.folder_name || "-"}</TableCell>
                         <TableCell>{formatBytes(d.file_size)}</TableCell>
                         <TableCell>{d.uploaded_by_name || "-"}</TableCell>
                         <TableCell>{new Date(d.created_at).toLocaleDateString()}</TableCell>

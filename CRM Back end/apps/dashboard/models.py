@@ -165,3 +165,83 @@ class UserPreference(models.Model):
 
     def __str__(self):
         return f"Preferences for {self.user}"
+
+
+# ---------------------------------------------------------------------------
+# Sticky Note
+# ---------------------------------------------------------------------------
+class StickyNote(models.Model):
+    """
+    Personal sticky notes / reminders for users.
+    Displayed on the dashboard as colorful note cards.
+    """
+
+    class Color(models.TextChoices):
+        YELLOW = "yellow", _("Yellow")
+        BLUE = "blue", _("Blue")
+        GREEN = "green", _("Green")
+        PINK = "pink", _("Pink")
+        PURPLE = "purple", _("Purple")
+        ORANGE = "orange", _("Orange")
+
+    class Priority(models.TextChoices):
+        LOW = "low", _("Low")
+        MEDIUM = "medium", _("Medium")
+        HIGH = "high", _("High")
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="sticky_notes",
+        verbose_name=_("user"),
+    )
+    title = models.CharField(_("title"), max_length=100, blank=True, default="")
+    content = models.TextField(
+        _("content"),
+        help_text=_("The note content/reminder text"),
+    )
+    color = models.CharField(
+        _("color"),
+        max_length=10,
+        choices=Color.choices,
+        default=Color.YELLOW,
+    )
+    priority = models.CharField(
+        _("priority"),
+        max_length=10,
+        choices=Priority.choices,
+        default=Priority.MEDIUM,
+    )
+    is_pinned = models.BooleanField(
+        _("pinned"),
+        default=False,
+        help_text=_("Pinned notes appear at the top"),
+    )
+    reminder_date = models.DateTimeField(
+        _("reminder date"),
+        null=True,
+        blank=True,
+        help_text=_("Optional date/time for reminder"),
+    )
+    is_completed = models.BooleanField(_("completed"), default=False)
+    position = models.PositiveIntegerField(
+        _("position"),
+        default=0,
+        help_text=_("Order in which notes appear"),
+    )
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+
+    class Meta:
+        db_table = "crm_sticky_notes"
+        ordering = ["-is_pinned", "position", "-created_at"]
+        verbose_name = _("sticky note")
+        verbose_name_plural = _("sticky notes")
+
+    def __str__(self):
+        return self.title or f"Note {self.id}"

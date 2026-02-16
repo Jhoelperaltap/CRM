@@ -72,6 +72,7 @@ export interface DepartmentClientFolderTree {
   is_default: boolean;
   document_count: number;
   children: DepartmentClientFolderTree[];
+  client_name?: string; // Added when fetching all folders (not client-specific)
 }
 
 /**

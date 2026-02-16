@@ -67,3 +67,54 @@ export async function updateUserPreferences(payload: Record<string, unknown>) {
   const { data } = await api.put("/preferences/", payload);
   return data;
 }
+
+// ---------------------------------------------------------------------------
+// Sticky Notes
+// ---------------------------------------------------------------------------
+export interface StickyNote {
+  id: string;
+  title: string;
+  content: string;
+  color: "yellow" | "blue" | "green" | "pink" | "purple" | "orange";
+  priority: "low" | "medium" | "high";
+  is_pinned: boolean;
+  reminder_date: string | null;
+  is_completed: boolean;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StickyNotePayload {
+  title?: string;
+  content: string;
+  color?: StickyNote["color"];
+  priority?: StickyNote["priority"];
+  is_pinned?: boolean;
+  is_completed?: boolean;
+  reminder_date?: string | null;
+}
+
+export async function getStickyNotes(showCompleted = true): Promise<StickyNote[]> {
+  const { data } = await api.get<StickyNote[]>("/dashboard/sticky-notes/", {
+    params: { show_completed: showCompleted ? "true" : "false" },
+  });
+  return data;
+}
+
+export async function createStickyNote(payload: StickyNotePayload): Promise<StickyNote> {
+  const { data } = await api.post<StickyNote>("/dashboard/sticky-notes/", payload);
+  return data;
+}
+
+export async function updateStickyNote(
+  id: string,
+  payload: Partial<StickyNotePayload>
+): Promise<StickyNote> {
+  const { data } = await api.patch<StickyNote>(`/dashboard/sticky-notes/${id}/`, payload);
+  return data;
+}
+
+export async function deleteStickyNote(id: string): Promise<void> {
+  await api.delete(`/dashboard/sticky-notes/${id}/`);
+}

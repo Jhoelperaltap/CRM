@@ -102,7 +102,17 @@ export async function getComment(id: string): Promise<Comment> {
   return data;
 }
 
-export async function createComment(payload: CreateCommentPayload): Promise<Comment> {
+export async function createComment(payload: CreateCommentPayload | FormData): Promise<Comment> {
+  // If payload is FormData, send as multipart/form-data
+  if (payload instanceof FormData) {
+    const { data } = await api.post<Comment>("/comments/", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  }
+
   const { data } = await api.post<Comment>("/comments/", payload);
   return data;
 }

@@ -14,6 +14,7 @@ class DocumentFilter(django_filters.FilterSet):
         field_name="folder", lookup_expr="isnull"
     )
     tags = django_filters.UUIDFilter(field_name="tags__id")
+    department_folder = django_filters.UUIDFilter(field_name="department_folder__id")
 
     class Meta:
         model = Document
@@ -25,6 +26,7 @@ class DocumentFilter(django_filters.FilterSet):
             "case",
             "folder",
             "tags",
+            "department_folder",
         ]
 
 

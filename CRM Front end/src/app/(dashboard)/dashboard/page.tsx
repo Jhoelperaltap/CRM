@@ -10,6 +10,7 @@ import { AppointmentsToday } from "@/components/dashboard/charts/appointments-to
 import { MissingDocs } from "@/components/dashboard/charts/missing-docs";
 import { TasksByUser } from "@/components/dashboard/charts/tasks-by-user";
 import { UpcomingDeadlines } from "@/components/dashboard/charts/upcoming-deadlines";
+import { StickyNotes } from "@/components/dashboard/charts/sticky-notes";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -31,6 +32,9 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground text-sm">Overview of your CRM activity</p>
       </div>
+
+      {/* Sticky Notes - Full width at top for visibility */}
+      <StickyNotes />
 
       <StatCards stats={data.stats} />
 

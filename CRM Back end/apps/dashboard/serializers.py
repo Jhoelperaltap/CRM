@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from apps.dashboard.models import DashboardWidget, UserDashboardConfig, UserPreference
+from apps.dashboard.models import (
+    DashboardWidget,
+    StickyNote,
+    UserDashboardConfig,
+    UserPreference,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -128,3 +133,42 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
             "timezone",
         ]
         read_only_fields = ["id", "user"]
+
+
+# ---------------------------------------------------------------------------
+# Sticky Note
+# ---------------------------------------------------------------------------
+class StickyNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StickyNote
+        fields = [
+            "id",
+            "title",
+            "content",
+            "color",
+            "priority",
+            "is_pinned",
+            "reminder_date",
+            "is_completed",
+            "position",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class StickyNoteCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StickyNote
+        fields = [
+            "title",
+            "content",
+            "color",
+            "priority",
+            "is_pinned",
+            "reminder_date",
+        ]
+
+    def create(self, validated_data):
+        validated_data["user"] = self.context["request"].user
+        return super().create(validated_data)

@@ -77,6 +77,12 @@ export interface DepartmentFolderMini {
   department_name: string;
 }
 
+export interface CommentAttachment {
+  id: string;
+  title: string;
+  file_url: string | null;
+}
+
 export interface Comment {
   id: string;
   content: string;
@@ -95,6 +101,7 @@ export interface Comment {
   email_sent: boolean;
   department_folder: string | null;
   department_folder_info: DepartmentFolderMini | null;
+  attachments: CommentAttachment[];
   created_at: string;
   time_ago: string;
   can_edit: boolean;

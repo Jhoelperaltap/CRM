@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -103,15 +104,17 @@ class CommentViewSet(viewsets.ModelViewSet):
     - Editing/deleting own comments
     - Replying to comments
     - Adding reactions
+    - Attaching files to department folders
     """
 
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     serializer_class = CommentSerializer
 
     def get_queryset(self):
         queryset = (
-            Comment.objects.select_related("author", "content_type", "parent")
-            .prefetch_related("mentioned_users", "reactions", "replies")
+            Comment.objects.select_related("author", "content_type", "parent", "department_folder", "department_folder__department")
+            .prefetch_related("mentioned_users", "mentioned_departments", "reactions", "replies")
             .filter(is_deleted=False)
         )
 

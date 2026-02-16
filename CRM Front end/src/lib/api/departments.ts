@@ -162,3 +162,14 @@ export async function initializeDepartmentFolders(payload: InitializeFoldersPayl
   );
   return data;
 }
+
+/**
+ * Get all department folders grouped by department (for all clients).
+ * Used in the documents page to show all department folders.
+ */
+export async function getAllDepartmentFolders() {
+  const { data } = await api.get<DepartmentFolderGroup[]>(
+    "/department-folders/all-departments-tree/"
+  );
+  return data;
+}

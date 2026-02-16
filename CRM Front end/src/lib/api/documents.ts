@@ -28,6 +28,13 @@ export async function getDocuments(params?: Record<string, string>) {
   return data;
 }
 
+export async function getDocumentsByDepartmentFolder(folderId: string) {
+  const { data } = await api.get<PaginatedResponse<DocumentListItem>>("/documents/", {
+    params: { department_folder: folderId },
+  });
+  return data;
+}
+
 export async function getDocument(id: string) {
   const { data } = await api.get<Document>(`/documents/${id}/`);
   return data;

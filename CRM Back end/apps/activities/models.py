@@ -213,6 +213,9 @@ class Comment(TimeStampedModel):
         help_text=_("Department folder to attach files to"),
     )
 
+    # Additional metadata (for attachments, etc.)
+    metadata = models.JSONField(default=dict, blank=True)
+
     # Soft delete
     is_deleted = models.BooleanField(default=False)
 

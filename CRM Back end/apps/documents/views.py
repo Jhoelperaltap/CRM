@@ -163,7 +163,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return (
             Document.objects.select_related(
-                "contact", "corporation", "case", "uploaded_by", "folder"
+                "contact", "corporation", "case", "uploaded_by", "folder", "department_folder"
             )
             .prefetch_related("tags")
             .all()
@@ -297,9 +297,15 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 {"detail": "No file attached to this document."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        # Determine mime type with fallback to detection from filename
+        content_type = document.mime_type
+        if not content_type or content_type == "application/octet-stream":
+            # Try to detect from filename
+            guessed = mimetypes.guess_type(document.file.name)[0]
+            content_type = guessed or "application/octet-stream"
         response = FileResponse(
             document.file.open("rb"),
-            content_type=document.mime_type or "application/octet-stream",
+            content_type=content_type,
         )
         filename = document.file.name.split("/")[-1]
         if inline_view:

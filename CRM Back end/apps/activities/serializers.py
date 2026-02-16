@@ -203,6 +203,7 @@ class CommentSerializer(serializers.ModelSerializer):
     department_folder_info = DepartmentFolderMiniSerializer(
         source="department_folder", read_only=True
     )
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -224,6 +225,7 @@ class CommentSerializer(serializers.ModelSerializer):
             "email_sent",
             "department_folder",
             "department_folder_info",
+            "attachments",
             "created_at",
             "time_ago",
             "can_edit",
@@ -289,6 +291,12 @@ class CommentSerializer(serializers.ModelSerializer):
             return obj.author_id == request.user.id or request.user.role == "admin"
         return False
 
+    def get_attachments(self, obj):
+        """Return list of attachments from metadata."""
+        if obj.metadata and "attachments" in obj.metadata:
+            return obj.metadata["attachments"]
+        return []
+
 
 class CommentCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating comments."""
@@ -303,6 +311,11 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
+    attachments = serializers.ListField(
+        child=serializers.FileField(),
+        required=False,
+        write_only=True,
+    )
 
     class Meta:
         model = Comment
@@ -313,11 +326,16 @@ class CommentCreateSerializer(serializers.ModelSerializer):
             "entity_id",
             "send_email",
             "department_folder",
+            "attachments",
         ]
 
     def create(self, validated_data):
         entity_type = validated_data.pop("entity_type")
         entity_id = validated_data.pop("entity_id")
+        attachments = validated_data.pop("attachments", [])
+
+        # Get department_folder before it's consumed by super().create()
+        department_folder = validated_data.get("department_folder")
 
         # Get content type for entity
         content_type = ContentType.objects.get(model=entity_type)
@@ -328,6 +346,44 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         validated_data["author"] = self.context["request"].user
 
         comment = super().create(validated_data)
+
+        # Handle file attachments
+        if attachments and department_folder:
+            import mimetypes
+            from apps.documents.models import Document
+
+            user = self.context["request"].user
+
+            for uploaded_file in attachments:
+                # Detect mime type
+                mime_type = uploaded_file.content_type
+                if not mime_type or mime_type == "application/octet-stream":
+                    guessed = mimetypes.guess_type(uploaded_file.name)[0]
+                    mime_type = guessed or "application/octet-stream"
+
+                # Create document linked to department folder
+                doc = Document.objects.create(
+                    title=uploaded_file.name,
+                    file=uploaded_file,
+                    uploaded_by=user,
+                    department_folder=department_folder,
+                    contact_id=entity_id if entity_type == "contact" else None,
+                    corporation_id=entity_id if entity_type == "corporation" else None,
+                    file_size=uploaded_file.size,
+                    mime_type=mime_type,
+                )
+
+                # Add document reference to comment metadata
+                if not comment.metadata:
+                    comment.metadata = {}
+                if "attachments" not in comment.metadata:
+                    comment.metadata["attachments"] = []
+                comment.metadata["attachments"].append({
+                    "id": str(doc.id),
+                    "title": doc.title,
+                    "file_url": doc.file.url if doc.file else None,
+                })
+            comment.save()
 
         # Create activity for this comment
         Activity.objects.create(

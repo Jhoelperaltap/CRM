@@ -20,6 +20,11 @@ import {
   Building2,
   Users,
   Folder,
+  Upload,
+  FileText,
+  Image as ImageIcon,
+  File,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -116,6 +121,11 @@ export function CommentsSection({
   const [departmentFolders, setDepartmentFolders] = useState<DepartmentFolderGroup[]>([]);
   const [mentionedDepartments, setMentionedDepartments] = useState<MentionSuggestion[]>([]);
 
+  // File upload state
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const fetchComments = useCallback(async () => {
     setLoading(true);
     try {
@@ -184,23 +194,73 @@ export function CommentsSection({
     }
   }, [newComment, mentionSuggestions]);
 
+  // File upload handlers
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setSelectedFiles((prev) => [...prev, ...files]);
+    if (e.target) e.target.value = "";
+  };
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    setSelectedFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type.startsWith("image/")) return <ImageIcon className="h-4 w-4" />;
+    if (file.type.includes("pdf")) return <FileText className="h-4 w-4 text-red-500" />;
+    return <File className="h-4 w-4" />;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   const handleSubmitComment = async () => {
-    if (!newComment.trim()) return;
+    if (!newComment.trim() && selectedFiles.length === 0) return;
 
     setSubmitting(true);
     try {
-      await createComment({
-        content: newComment.trim(),
-        entity_type: entityType,
-        entity_id: entityId,
-        send_email: sendEmail,
-        department_folder: attachToDepartment && selectedDepartmentFolder ? selectedDepartmentFolder : undefined,
-      });
+      // Create FormData if we have files
+      const formData = new FormData();
+      formData.append("content", newComment.trim() || "(archivo adjunto)");
+      formData.append("entity_type", entityType);
+      formData.append("entity_id", entityId);
+      if (sendEmail) formData.append("send_email", "true");
+      if (attachToDepartment && selectedDepartmentFolder) {
+        formData.append("department_folder", selectedDepartmentFolder);
+      }
+
+      // Add files
+      for (const file of selectedFiles) {
+        formData.append("attachments", file);
+      }
+
+      await createComment(formData);
       setNewComment("");
       setSendEmail(false);
       setAttachToDepartment(false);
       setSelectedDepartmentFolder("");
       setMentionedDepartments([]);
+      setSelectedFiles([]);
       fetchComments();
     } catch (error) {
       console.error("Error creating comment:", error);
@@ -510,6 +570,35 @@ export function CommentsSection({
                 </div>
               )}
 
+              {/* Attached files */}
+              {comment.attachments && comment.attachments.length > 0 && (
+                <div className="mt-3 space-y-1.5">
+                  <div className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                    <Paperclip className="h-3 w-3" />
+                    Archivos adjuntos ({comment.attachments.length})
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {comment.attachments.map((attachment) => (
+                      <a
+                        key={attachment.id}
+                        href={attachment.file_url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/50 hover:bg-muted transition-colors text-sm group",
+                          !attachment.file_url && "pointer-events-none opacity-50"
+                        )}
+                      >
+                        <FileText className="h-4 w-4 shrink-0" />
+                        <span className="truncate max-w-[150px]">{attachment.title}</span>
+                        <Download className="h-3.5 w-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex items-center gap-3 mt-3">
                 {/* Reactions */}
@@ -733,6 +822,71 @@ export function CommentsSection({
                   ))}
               </SelectContent>
             </Select>
+
+            {/* File upload area */}
+            <div
+              className={cn(
+                "mt-3 border-2 border-dashed rounded-lg p-4 text-center transition-colors",
+                isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-muted-foreground/50"
+              )}
+              onDrop={handleFileDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground mb-2">
+                Arrastra archivos aquí o{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  selecciona archivos
+                </button>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Los archivos se guardarán en la carpeta seleccionada
+              </p>
+            </div>
+
+            {/* Selected files list */}
+            {selectedFiles.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <Label className="text-sm font-medium">
+                  Archivos seleccionados ({selectedFiles.length}):
+                </Label>
+                <div className="space-y-1">
+                  {selectedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 p-2 bg-muted/50 rounded-md text-sm"
+                    >
+                      {getFileIcon(file)}
+                      <span className="flex-1 truncate">{file.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatFileSize(file.size)}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => removeFile(index)}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -753,7 +907,7 @@ export function CommentsSection({
         <div className="flex justify-end mt-2">
           <Button
             onClick={handleSubmitComment}
-            disabled={submitting || !newComment.trim()}
+            disabled={submitting || (!newComment.trim() && selectedFiles.length === 0)}
           >
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
