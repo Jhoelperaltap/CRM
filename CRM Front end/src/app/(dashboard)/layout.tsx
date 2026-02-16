@@ -1,9 +1,8 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
-import { Sidebar } from "@/components/layout/sidebar";
+import { MegaMenuSidebar } from "@/components/layout/mega-menu-sidebar";
 import { Topbar } from "@/components/layout/topbar";
-import { useUIStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 import { SessionTimeoutProvider } from "@/providers/session-timeout-provider";
 
@@ -13,7 +12,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { isAuthenticated, isLoading } = useAuth();
-  const sidebarCollapsed = useUIStore((state) => state.sidebarCollapsed);
 
   // Show nothing while hydrating auth state
   if (isLoading) {
@@ -32,14 +30,14 @@ export default function DashboardLayout({
   return (
     <SessionTimeoutProvider>
       <div className="relative flex min-h-screen bg-background">
-        {/* Sidebar */}
-        <Sidebar />
+        {/* Mega Menu Sidebar */}
+        <MegaMenuSidebar />
 
         {/* Main content area */}
         <div
           className={cn(
             "flex flex-1 flex-col transition-all duration-300 ease-in-out",
-            sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+            "lg:ml-[68px]" // Fixed width for mega-menu sidebar (desktop only)
           )}
         >
           {/* Top bar */}

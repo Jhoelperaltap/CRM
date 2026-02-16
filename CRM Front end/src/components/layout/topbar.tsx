@@ -9,8 +9,7 @@ import { useUIStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 
 export function Topbar() {
-  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
-  const sidebarCollapsed = useUIStore((state) => state.sidebarCollapsed);
+  const toggleMobileMenu = useUIStore((state) => state.toggleSidebar);
 
   return (
     <header
@@ -19,29 +18,22 @@ export function Topbar() {
       )}
     >
       <div className="flex w-full items-center gap-4 px-4 md:px-6">
-        {/* Left section: mobile menu toggle + logo */}
+        {/* Left section: mobile menu toggle + title */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             className="lg:hidden"
-            onClick={toggleSidebar}
-            aria-label="Toggle sidebar"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
           >
             <Menu className="size-5" />
           </Button>
 
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-md bg-primary">
-              <span className="text-sm font-bold text-primary-foreground">
-                E
-              </span>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-sm font-semibold leading-tight tracking-tight">
-                Ebenezer Tax Services
-              </h1>
-            </div>
+          <div className="hidden lg:flex items-center gap-2">
+            <h1 className="text-sm font-semibold leading-tight tracking-tight">
+              Ebenezer Tax Services
+            </h1>
           </div>
         </div>
 
