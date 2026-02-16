@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('activities', '0002_add_comment_email_and_department_features'),
+        ("activities", "0002_add_comment_email_and_department_features"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='comment',
-            name='metadata',
+            model_name="comment",
+            name="metadata",
             field=models.JSONField(blank=True, default=dict),
         ),
     ]

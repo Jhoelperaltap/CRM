@@ -379,11 +379,13 @@ class CommentCreateSerializer(serializers.ModelSerializer):
                     comment.metadata = {}
                 if "attachments" not in comment.metadata:
                     comment.metadata["attachments"] = []
-                comment.metadata["attachments"].append({
-                    "id": str(doc.id),
-                    "title": doc.title,
-                    "file_url": doc.file.url if doc.file else None,
-                })
+                comment.metadata["attachments"].append(
+                    {
+                        "id": str(doc.id),
+                        "title": doc.title,
+                        "file_url": doc.file.url if doc.file else None,
+                    }
+                )
             comment.save()
 
         # Create activity for this comment

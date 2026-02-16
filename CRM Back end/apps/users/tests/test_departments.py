@@ -1,6 +1,7 @@
 """
 Tests for Department model and API endpoints.
 """
+
 import pytest
 from rest_framework import status
 

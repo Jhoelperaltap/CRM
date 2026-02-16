@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MANUAL-PDF-USUARIO.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="ebenezer-tax-services-crm">Ebenezer Tax Services CRM</h1>
+<h2 id="manual-del-usuario">Manual del Usuario</h2>
+<p><strong>Versión:</strong> 1.1
+<strong>Fecha:</strong> Febrero 2026</p>
+<hr>
+<h2 id="tabla-de-contenidos">Tabla de Contenidos</h2>
+<ol>
+<li><a href="#introducci%C3%B3n">Introducción</a></li>
+<li><a href="#acceso-al-sistema">Acceso al Sistema</a></li>
+<li><a href="#dashboard-principal">Dashboard Principal</a></li>
+<li><a href="#gesti%C3%B3n-de-contactos">Gestión de Contactos</a></li>
+<li><a href="#gesti%C3%B3n-de-casos">Gestión de Casos</a></li>
+<li><a href="#documentos-y-carpetas">Documentos y Carpetas</a></li>
+<li><a href="#calendario-y-citas">Calendario y Citas</a></li>
+<li><a href="#comunicaciones">Comunicaciones</a></li>
+<li><a href="#configuraci%C3%B3n">Configuración</a></li>
+</ol>
+<hr>
+<h2 id="introducci%C3%B3n">Introducción</h2>
+<p>El CRM de Ebenezer Tax Services es un sistema integral diseñado para gestionar todos los aspectos de su práctica de servicios de impuestos. Este manual le guiará a través de las principales funcionalidades del sistema.</p>
+<h3 id="roles-del-sistema">Roles del Sistema</h3>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Admin</strong></td>
+<td>Acceso completo a todas las funcionalidades</td>
+</tr>
+<tr>
+<td><strong>Manager</strong></td>
+<td>Gestión de equipo y reportes</td>
+</tr>
+<tr>
+<td><strong>Preparer</strong></td>
+<td>Preparación de casos de impuestos</td>
+</tr>
+<tr>
+<td><strong>Receptionist</strong></td>
+<td>Atención al cliente y citas</td>
+</tr>
+</tbody>
+</table>
+<!-- IMAGEN: Captura de pantalla de la página de login -->
+<p><strong>Figura 1:</strong> Pantalla de inicio de sesión</p>
+<hr>
+<h2 id="acceso-al-sistema">Acceso al Sistema</h2>
+<h3 id="inicio-de-sesi%C3%B3n">Inicio de Sesión</h3>
+<ol>
+<li>Navegue a la URL del sistema</li>
+<li>Ingrese su correo electrónico</li>
+<li>Ingrese su contraseña</li>
+<li>Haga clic en &quot;Iniciar Sesión&quot;</li>
+</ol>
+<!-- IMAGEN: Captura del formulario de login con campos marcados -->
+<p><strong>Figura 2:</strong> Formulario de inicio de sesión</p>
+<h3 id="autenticaci%C3%B3n-de-dos-factores-2fa">Autenticación de Dos Factores (2FA)</h3>
+<p>Si tiene 2FA habilitado:</p>
+<ol>
+<li>Abra su aplicación autenticadora (Google Authenticator, Authy, etc.)</li>
+<li>Ingrese el código de 6 dígitos mostrado</li>
+<li>El código cambia cada 30 segundos</li>
+</ol>
+<!-- IMAGEN: Pantalla de ingreso de código 2FA -->
+<p><strong>Figura 3:</strong> Verificación de dos factores</p>
+<h3 id="recuperar-contrase%C3%B1a">Recuperar Contraseña</h3>
+<ol>
+<li>Haga clic en &quot;¿Olvidó su contraseña?&quot;</li>
+<li>Ingrese su correo electrónico</li>
+<li>Revise su bandeja de entrada</li>
+<li>Siga el enlace para crear nueva contraseña</li>
+</ol>
+<hr>
+<h2 id="dashboard-principal">Dashboard Principal</h2>
+<p>Al iniciar sesión, verá el panel de control con información relevante de su trabajo.</p>
+<!-- IMAGEN: Captura del dashboard completo -->
+<p><strong>Figura 4:</strong> Dashboard principal</p>
+<h3 id="widgets-del-dashboard">Widgets del Dashboard</h3>
+<table>
+<thead>
+<tr>
+<th>Widget</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casos Activos</td>
+<td>Número de casos en proceso</td>
+</tr>
+<tr>
+<td>Citas de Hoy</td>
+<td>Reuniones programadas</td>
+</tr>
+<tr>
+<td>Tareas Pendientes</td>
+<td>Items por completar</td>
+</tr>
+<tr>
+<td>Sticky Notes</td>
+<td>Notas rápidas personales</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sticky-notes-notas-adhesivas">Sticky Notes (Notas Adhesivas)</h3>
+<p>Las notas adhesivas le permiten guardar recordatorios personales:</p>
+<ol>
+<li>Haga clic en &quot;Nueva Nota&quot; (+)</li>
+<li>Escriba su contenido</li>
+<li>La nota se guarda automáticamente</li>
+<li>Use el ícono de papelera para eliminar</li>
+</ol>
+<!-- IMAGEN: Panel de sticky notes con ejemplo de notas -->
+<p><strong>Figura 5:</strong> Sticky Notes en el dashboard</p>
+<hr>
+<h2 id="gesti%C3%B3n-de-contactos">Gestión de Contactos</h2>
+<h3 id="lista-de-contactos">Lista de Contactos</h3>
+<!-- IMAGEN: Lista de contactos con filtros visibles -->
+<p><strong>Figura 6:</strong> Lista de contactos</p>
+<p>Para ver contactos:</p>
+<ol>
+<li>Navegue a <strong>Contactos</strong> en el menú lateral</li>
+<li>Use los filtros para buscar</li>
+<li>Haga clic en un contacto para ver detalles</li>
+</ol>
+<h3 id="crear-nuevo-contacto">Crear Nuevo Contacto</h3>
+<ol>
+<li>Haga clic en &quot;Nuevo Contacto&quot;</li>
+<li>Complete los campos requeridos:
+<ul>
+<li>Nombre y apellido</li>
+<li>Correo electrónico</li>
+<li>Teléfono</li>
+</ul>
+</li>
+<li>Haga clic en &quot;Guardar&quot;</li>
+</ol>
+<!-- IMAGEN: Formulario de nuevo contacto -->
+<p><strong>Figura 7:</strong> Formulario de nuevo contacto</p>
+<h3 id="detalle-del-contacto">Detalle del Contacto</h3>
+<p>La página de detalle del contacto muestra:</p>
+<ul>
+<li>Información personal</li>
+<li>Historial de casos</li>
+<li>Documentos asociados</li>
+<li>Notas y comentarios</li>
+<li>Carpetas por departamento</li>
+</ul>
+<!-- IMAGEN: Vista de detalle de un contacto -->
+<p><strong>Figura 8:</strong> Detalle del contacto</p>
+<hr>
+<h2 id="gesti%C3%B3n-de-casos">Gestión de Casos</h2>
+<h3 id="lista-de-casos">Lista de Casos</h3>
+<!-- IMAGEN: Lista de casos con diferentes estados -->
+<p><strong>Figura 9:</strong> Lista de casos de impuestos</p>
+<h3 id="estados-del-caso">Estados del Caso</h3>
+<table>
+<thead>
+<tr>
+<th>Estado</th>
+<th>Color</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New</td>
+<td>Azul</td>
+<td>Caso recién creado</td>
+</tr>
+<tr>
+<td>In Progress</td>
+<td>Amarillo</td>
+<td>En proceso</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>Naranja</td>
+<td>En revisión</td>
+</tr>
+<tr>
+<td>Ready to File</td>
+<td>Morado</td>
+<td>Listo para enviar</td>
+</tr>
+<tr>
+<td>Filed</td>
+<td>Verde</td>
+<td>Enviado al IRS</td>
+</tr>
+<tr>
+<td>Completed</td>
+<td>Gris</td>
+<td>Finalizado</td>
+</tr>
+</tbody>
+</table>
+<h3 id="crear-nuevo-caso">Crear Nuevo Caso</h3>
+<ol>
+<li>Haga clic en &quot;Nuevo Caso&quot;</li>
+<li>Seleccione el contacto</li>
+<li>Complete la información fiscal:
+<ul>
+<li>Año fiscal</li>
+<li>Tipo de declaración</li>
+<li>Formularios requeridos</li>
+</ul>
+</li>
+<li>Haga clic en &quot;Crear&quot;</li>
+</ol>
+<!-- IMAGEN: Formulario de nuevo caso -->
+<p><strong>Figura 10:</strong> Formulario de nuevo caso</p>
+<h3 id="detalle-del-caso">Detalle del Caso</h3>
+<!-- IMAGEN: Vista de detalle de un caso -->
+<p><strong>Figura 11:</strong> Detalle del caso</p>
+<p>En el detalle del caso puede:</p>
+<ul>
+<li>Ver información general</li>
+<li>Gestionar documentos</li>
+<li>Agregar notas</li>
+<li>Ver historial de actividades</li>
+</ul>
+<hr>
+<h2 id="documentos-y-carpetas">Documentos y Carpetas</h2>
+<h3 id="sistema-de-carpetas-por-departamento">Sistema de Carpetas por Departamento</h3>
+<p>Los documentos se organizan en carpetas por departamento para cada cliente:</p>
+<table>
+<thead>
+<tr>
+<th>Departamento</th>
+<th>Color</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accounting</td>
+<td>Azul</td>
+<td>Contabilidad general</td>
+</tr>
+<tr>
+<td>Payroll</td>
+<td>Verde</td>
+<td>Nóminas y W-2</td>
+</tr>
+<tr>
+<td>Billing</td>
+<td>Amarillo</td>
+<td>Facturación</td>
+</tr>
+<tr>
+<td>Audit</td>
+<td>Rojo</td>
+<td>Auditorías</td>
+</tr>
+<tr>
+<td>Representation</td>
+<td>Púrpura</td>
+<td>Representación ante IRS</td>
+</tr>
+<tr>
+<td>Client Visit</td>
+<td>Cyan</td>
+<td>Visitas a clientes</td>
+</tr>
+</tbody>
+</table>
+<!-- IMAGEN: Vista de árbol de carpetas por departamento -->
+<p><strong>Figura 12:</strong> Carpetas por departamento</p>
+<h3 id="ver-carpetas-de-un-cliente">Ver Carpetas de un Cliente</h3>
+<ol>
+<li>Abra el contacto o corporación</li>
+<li>Vaya a la pestaña &quot;Documentos&quot;</li>
+<li>Verá las carpetas organizadas por departamento</li>
+<li>Haga clic en una carpeta para ver su contenido</li>
+</ol>
+<h3 id="subir-documentos">Subir Documentos</h3>
+<ol>
+<li>Navegue a la carpeta deseada</li>
+<li>Haga clic en &quot;Subir Documento&quot;</li>
+<li>Seleccione el archivo (PDF, imagen, etc.)</li>
+<li>El documento se guarda automáticamente</li>
+</ol>
+<!-- IMAGEN: Diálogo de subida de documentos -->
+<p><strong>Figura 13:</strong> Subir documento</p>
+<h3 id="vista-previa-de-documentos">Vista Previa de Documentos</h3>
+<ul>
+<li>Haga clic en un documento para verlo</li>
+<li>Los PDFs se muestran directamente en el navegador</li>
+<li>Las imágenes se muestran en un visor</li>
+<li>Use los controles para zoom y navegación</li>
+</ul>
+<!-- IMAGEN: Vista previa de un documento PDF -->
+<p><strong>Figura 14:</strong> Vista previa de documento</p>
+<h3 id="descargar-documentos">Descargar Documentos</h3>
+<ol>
+<li>Haga clic en el ícono de descarga</li>
+<li>El archivo se guardará en su carpeta de descargas</li>
+</ol>
+<hr>
+<h2 id="calendario-y-citas">Calendario y Citas</h2>
+<h3 id="vista-del-calendario">Vista del Calendario</h3>
+<!-- IMAGEN: Vista del calendario mensual -->
+<p><strong>Figura 15:</strong> Calendario de citas</p>
+<p>El calendario muestra:</p>
+<ul>
+<li>Vista mensual, semanal o diaria</li>
+<li>Citas codificadas por color según tipo</li>
+<li>Indicadores de disponibilidad</li>
+</ul>
+<h3 id="crear-nueva-cita">Crear Nueva Cita</h3>
+<ol>
+<li>Haga clic en la fecha/hora deseada</li>
+<li>Complete los campos:
+<ul>
+<li>Título</li>
+<li>Contacto</li>
+<li>Fecha y hora</li>
+<li>Ubicación o enlace virtual</li>
+</ul>
+</li>
+<li>Configure recordatorios</li>
+<li>Haga clic en &quot;Guardar&quot;</li>
+</ol>
+<!-- IMAGEN: Formulario de nueva cita -->
+<p><strong>Figura 16:</strong> Formulario de nueva cita</p>
+<h3 id="tipos-de-citas">Tipos de Citas</h3>
+<table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consulta Inicial</td>
+<td>Primera reunión con cliente</td>
+</tr>
+<tr>
+<td>Revisión de Documentos</td>
+<td>Revisar documentación</td>
+</tr>
+<tr>
+<td>Firma</td>
+<td>Firmar documentos</td>
+</tr>
+<tr>
+<td>Virtual</td>
+<td>Reunión por videoconferencia</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="comunicaciones">Comunicaciones</h2>
+<h3 id="comentarios-en-contactoscasos">Comentarios en Contactos/Casos</h3>
+<p>Puede agregar comentarios a contactos y casos para mantener un historial de comunicaciones:</p>
+<ol>
+<li>Abra el contacto o caso</li>
+<li>Desplácese a la sección &quot;Comentarios&quot;</li>
+<li>Escriba su comentario</li>
+<li>Opcionalmente adjunte archivos</li>
+<li>Haga clic en &quot;Enviar&quot;</li>
+</ol>
+<!-- IMAGEN: Sección de comentarios con archivo adjunto -->
+<p><strong>Figura 17:</strong> Comentarios con archivos adjuntos</p>
+<h3 id="adjuntar-archivos-en-comentarios">Adjuntar Archivos en Comentarios</h3>
+<p>Los archivos adjuntos en comentarios se guardan automáticamente en la carpeta del departamento seleccionado:</p>
+<ol>
+<li>Al crear un comentario, seleccione &quot;Adjuntar archivo&quot;</li>
+<li>Seleccione la carpeta de departamento destino</li>
+<li>Suba el archivo</li>
+<li>El archivo quedará vinculado al comentario Y guardado en la carpeta</li>
+</ol>
+<!-- IMAGEN: Adjuntar archivo a comentario -->
+<p><strong>Figura 18:</strong> Adjuntar archivo a comentario</p>
+<h3 id="mensajes-del-portal">Mensajes del Portal</h3>
+<p>Puede ver y responder mensajes enviados por clientes desde el portal:</p>
+<ol>
+<li>Vaya a <strong>Mensajes</strong> en el menú</li>
+<li>Vea mensajes entrantes</li>
+<li>Haga clic para responder</li>
+</ol>
+<hr>
+<h2 id="configuraci%C3%B3n">Configuración</h2>
+<h3 id="perfil-de-usuario">Perfil de Usuario</h3>
+<ol>
+<li>Haga clic en su nombre (esquina superior derecha)</li>
+<li>Seleccione &quot;Mi Perfil&quot;</li>
+<li>Actualice su información</li>
+<li>Guarde los cambios</li>
+</ol>
+<!-- IMAGEN: Página de perfil de usuario -->
+<p><strong>Figura 19:</strong> Perfil de usuario</p>
+<h3 id="preferencias">Preferencias</h3>
+<p>En <strong>Configuración</strong> &gt; <strong>Preferencias</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Opción</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tema</td>
+<td>Claro / Oscuro / Auto</td>
+</tr>
+<tr>
+<td>Idioma</td>
+<td>Español / English</td>
+</tr>
+<tr>
+<td>Zona Horaria</td>
+<td>Su zona horaria local</td>
+</tr>
+<tr>
+<td>Notificaciones</td>
+<td>Qué alertas recibir</td>
+</tr>
+</tbody>
+</table>
+<!-- IMAGEN: Página de preferencias -->
+<p><strong>Figura 20:</strong> Preferencias del sistema</p>
+<h3 id="cambiar-contrase%C3%B1a">Cambiar Contraseña</h3>
+<ol>
+<li>Vaya a <strong>Configuración</strong> &gt; <strong>Seguridad</strong></li>
+<li>Haga clic en &quot;Cambiar Contraseña&quot;</li>
+<li>Ingrese contraseña actual</li>
+<li>Ingrese nueva contraseña (2 veces)</li>
+<li>Guarde los cambios</li>
+</ol>
+<hr>
+<h2 id="soporte">Soporte</h2>
+<h3 id="contacto">Contacto</h3>
+<ul>
+<li><strong>Email:</strong> soporte@ebenezer-crm.com</li>
+<li><strong>Teléfono:</strong> (XXX) XXX-XXXX</li>
+<li><strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM EST</li>
+</ul>
+<h3 id="recursos-adicionales">Recursos Adicionales</h3>
+<ul>
+<li>Manual del Administrador: <code>MANUAL-ADMINISTRADOR.md</code></li>
+<li>Documentación de API: <code>/api/docs/</code></li>
+</ul>
+<hr>
+<p><strong>© 2026 Ebenezer Tax Services. Todos los derechos reservados.</strong></p>
+<hr>
+<h2 id="instrucciones-para-generar-pdf">Instrucciones para Generar PDF</h2>
+<p>Para convertir este documento a PDF con imágenes:</p>
+<h3 id="opci%C3%B3n-1-pandoc-l%C3%ADnea-de-comandos">Opción 1: Pandoc (Línea de comandos)</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Instalar pandoc y wkhtmltopdf</span>
+<span class="hljs-comment"># Reemplazar los comentarios &lt;!-- IMAGEN --&gt; con imágenes reales</span>
+pandoc MANUAL-PDF-USUARIO.md -o MANUAL-USUARIO.pdf --pdf-engine=wkhtmltopdf
+</div></code></pre>
+<h3 id="opci%C3%B3n-2-visual-studio-code">Opción 2: Visual Studio Code</h3>
+<ol>
+<li>Instalar extensión &quot;Markdown PDF&quot;</li>
+<li>Abrir este archivo</li>
+<li>Presionar Ctrl+Shift+P</li>
+<li>Seleccionar &quot;Markdown PDF: Export (pdf)&quot;</li>
+</ol>
+<h3 id="opci%C3%B3n-3-online">Opción 3: Online</h3>
+<ol>
+<li>Ir a https://dillinger.io/ o https://stackedit.io/</li>
+<li>Pegar el contenido</li>
+<li>Exportar como PDF</li>
+</ol>
+<h3 id="agregar-im%C3%A1genes">Agregar Imágenes</h3>
+<p>Reemplace cada comentario <code>&lt;!-- IMAGEN: descripción --&gt;</code> con:</p>
+<pre class="hljs"><code><div>![<span class="hljs-string">Descripción</span>](<span class="hljs-link">ruta/a/imagen.png</span>)
+</div></code></pre>
+<p>Ejemplo:</p>
+<pre class="hljs"><code><div>![<span class="hljs-string">Pantalla de login</span>](<span class="hljs-link">images/login-screen.png</span>)
+</div></code></pre>
+
+</body>
+</html>

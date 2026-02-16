@@ -163,7 +163,12 @@ class DocumentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return (
             Document.objects.select_related(
-                "contact", "corporation", "case", "uploaded_by", "folder", "department_folder"
+                "contact",
+                "corporation",
+                "case",
+                "uploaded_by",
+                "folder",
+                "department_folder",
             )
             .prefetch_related("tags")
             .all()

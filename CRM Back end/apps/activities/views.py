@@ -113,8 +113,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = (
-            Comment.objects.select_related("author", "content_type", "parent", "department_folder", "department_folder__department")
-            .prefetch_related("mentioned_users", "mentioned_departments", "reactions", "replies")
+            Comment.objects.select_related(
+                "author",
+                "content_type",
+                "parent",
+                "department_folder",
+                "department_folder__department",
+            )
+            .prefetch_related(
+                "mentioned_users", "mentioned_departments", "reactions", "replies"
+            )
             .filter(is_deleted=False)
         )
 

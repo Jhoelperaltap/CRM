@@ -1,6 +1,7 @@
 """
 Tests for Comment model and API endpoints, including file attachments.
 """
+
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
@@ -41,6 +42,7 @@ class TestCommentCreate:
         assert resp.data["content"] == "This is a test comment"
         # Create serializer may not include author - just verify comment was created
         from apps.activities.models import Comment
+
         comment = Comment.objects.filter(content="This is a test comment").first()
         assert comment is not None
         assert comment.author == preparer_user
