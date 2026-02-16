@@ -50,6 +50,14 @@ def generate_recurring_appointments(parent, days_ahead=30):
         start_dt = datetime.datetime.combine(
             d, parent.start_datetime.time(), tzinfo=parent.start_datetime.tzinfo
         )
+
+        # Final check: ensure no duplicate exists for this exact datetime
+        # This handles race conditions and timezone edge cases
+        if Appointment.objects.filter(
+            parent_appointment=parent, start_datetime=start_dt
+        ).exists():
+            continue
+
         instance = Appointment.objects.create(
             title=parent.title,
             description=parent.description,
