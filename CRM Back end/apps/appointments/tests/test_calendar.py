@@ -55,19 +55,19 @@ class TestCalendarEndpoint:
 
         appt1 = AppointmentFactory(
             contact=contact,
-            start_datetime=now + datetime.timedelta(hours=1),
-            end_datetime=now + datetime.timedelta(hours=2),
+            start_datetime=now + datetime.timedelta(days=1),
+            end_datetime=now + datetime.timedelta(days=1, hours=1),
             assigned_to=preparer_user,
         )
         AppointmentFactory(
             contact=contact,
-            start_datetime=now + datetime.timedelta(hours=1),
-            end_datetime=now + datetime.timedelta(hours=2),
+            start_datetime=now + datetime.timedelta(days=1),
+            end_datetime=now + datetime.timedelta(days=1, hours=1),
             assigned_to=admin_user,
         )
 
         start_date = now.strftime("%Y-%m-%d")
-        end_date = (now + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (now + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
 
         resp = authenticated_client.get(
             self.URL,
@@ -88,12 +88,12 @@ class TestCalendarEndpoint:
         AppointmentFactory(
             contact=contact,
             status="confirmed",
-            start_datetime=now + datetime.timedelta(hours=1),
-            end_datetime=now + datetime.timedelta(hours=2),
+            start_datetime=now + datetime.timedelta(days=1),
+            end_datetime=now + datetime.timedelta(days=1, hours=1),
         )
 
         start_date = now.strftime("%Y-%m-%d")
-        end_date = (now + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (now + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
 
         resp = authenticated_client.get(
             self.URL, {"start_date": start_date, "end_date": end_date}

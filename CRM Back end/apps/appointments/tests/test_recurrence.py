@@ -92,17 +92,22 @@ class TestGenerateRecurring:
     def test_no_duplicates(self):
         contact = ContactFactory()
         now = timezone.now()
+        # Start the parent further in the past to avoid date boundary issues
         parent = AppointmentFactory(
             contact=contact,
             recurrence_pattern="daily",
-            start_datetime=now - datetime.timedelta(days=1),
-            end_datetime=now - datetime.timedelta(days=1) + datetime.timedelta(hours=1),
+            start_datetime=now - datetime.timedelta(days=7),
+            end_datetime=now - datetime.timedelta(days=7) + datetime.timedelta(hours=1),
         )
 
-        generate_recurring_appointments(parent, days_ahead=5)
+        # First call creates instances
+        first_instances = generate_recurring_appointments(parent, days_ahead=5)
+        # Second call with same range should create no new instances
         instances2 = generate_recurring_appointments(parent, days_ahead=5)
-        # Second call should create no new instances
-        assert len(instances2) == 0
+        # Second call should create no new instances since all dates already exist
+        assert (
+            len(instances2) == 0
+        ), f"Expected 0 new instances, got {len(instances2)}. First call created {len(first_instances)} instances."
 
     def test_none_pattern_no_instances(self):
         contact = ContactFactory()
