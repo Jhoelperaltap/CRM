@@ -1,6 +1,6 @@
 # Manual de la Aplicación Móvil - Portal del Cliente
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Febrero 2026
 **Plataformas:** iOS y Android
 
@@ -214,6 +214,17 @@ Documentos Requeridos:
 
 1. Toque el ícono **📄 Documents**
 2. Verá todos los documentos de sus casos
+
+### Organización de Documentos
+
+Sus documentos están organizados por el equipo de Ebenezer en carpetas por departamento:
+- **Accounting:** Documentos contables
+- **Payroll:** Nóminas y W-2
+- **Billing:** Facturas
+- **Audit:** Documentos de auditoría
+- **Representation:** Correspondencia con IRS
+
+Usted verá todos sus documentos sin importar en qué carpeta interna estén.
 
 ### Filtrar Documentos
 

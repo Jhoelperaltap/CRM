@@ -1,6 +1,6 @@
 # Manual de IT - Ebenezer Tax Services CRM
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Febrero 2026
 **Audiencia:** Personal de Tecnología de Información
 
@@ -272,16 +272,48 @@ ebenezer_crm
 ├── auth_* (Django auth)
 ├── django_* (Django admin, sessions)
 ├── crm_users (Usuarios del sistema)
+├── crm_departments (Departamentos)
 ├── crm_contacts (Contactos/Clientes)
 ├── crm_corporations (Empresas)
 ├── crm_tax_cases (Casos de impuestos)
 ├── crm_documents (Documentos)
+├── crm_department_client_folders (Carpetas por departamento/cliente)
+├── crm_document_access_logs (Logs de acceso a documentos)
 ├── crm_appointments (Citas)
 ├── crm_tasks (Tareas)
 ├── crm_emails (Correos)
 ├── crm_portal_* (Portal del cliente)
 ├── crm_audit_logs (Auditoría)
 └── celery_* (Tareas programadas)
+```
+
+### Modelo de Departamentos
+
+El sistema utiliza departamentos para organizar usuarios y documentos:
+
+```
+Department (crm_departments)
+├── id (UUID)           # Identificador único
+├── name                # Nombre (ej: "Accounting")
+├── code                # Código corto (ej: "ACCT")
+├── color               # Color hex para UI (ej: "#3B82F6")
+├── icon                # Icono Lucide (ej: "Calculator")
+├── is_active           # Si está activo
+├── order               # Orden de visualización
+└── created_at/updated_at
+
+DepartmentClientFolder (crm_department_client_folders)
+├── id (UUID)           # Identificador único
+├── name                # Nombre de la carpeta
+├── department_id       # FK a Department
+├── contact_id          # FK a Contact (opcional)
+├── corporation_id      # FK a Corporation (opcional)
+├── parent_id           # FK a sí mismo (jerarquía)
+├── is_default          # Si es carpeta predeterminada
+├── created_by_id       # Usuario que la creó
+└── created_at/updated_at
+
+CONSTRAINT: contact_id OR corporation_id (no ambos)
 ```
 
 ### Conexión
@@ -342,11 +374,11 @@ CRM Back end/
 │   └── wsgi.py              # WSGI entry point
 ├── apps/
 │   ├── core/                # Utilidades compartidas
-│   ├── users/               # Usuarios y autenticación
+│   ├── users/               # Usuarios, autenticación, departamentos
 │   ├── contacts/            # Contactos
 │   ├── corporations/        # Corporaciones
 │   ├── cases/               # Casos de impuestos
-│   ├── documents/           # Documentos
+│   ├── documents/           # Documentos y carpetas de departamento
 │   ├── appointments/        # Citas
 │   ├── tasks/               # Tareas
 │   ├── emails/              # Integración email
@@ -524,6 +556,19 @@ eas build --profile preview
 | IP Blacklisting | Middleware personalizado |
 | Audit Logging | Middleware completo |
 | HTTPS | Obligatorio en producción |
+| Permisos Departamento | Acceso basado en departamento del usuario |
+
+### Permisos de Departamento
+
+El sistema implementa control de acceso basado en departamentos:
+
+| Rol | Acceso a Carpetas |
+|-----|-------------------|
+| Admin | Todas las carpetas de todos los departamentos |
+| Manager | Todas las carpetas de su departamento |
+| Preparer/Receptionist | Solo carpetas de su departamento |
+
+Los documentos heredan permisos de la carpeta de departamento donde están ubicados.
 
 ### Headers de Seguridad (Next.js)
 

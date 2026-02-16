@@ -1,6 +1,6 @@
 # Manual del Usuario - Ebenezer Tax Services CRM
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Febrero 2026
 
 ---
@@ -14,11 +14,13 @@
 5. [Contactos](#contactos)
 6. [Casos de Impuestos](#casos-de-impuestos)
 7. [Documentos](#documentos)
-8. [Citas y Calendario](#citas-y-calendario)
-9. [Tareas](#tareas)
-10. [Mensajes y Correo](#mensajes-y-correo)
-11. [Mi Perfil](#mi-perfil)
-12. [Atajos de Teclado](#atajos-de-teclado)
+8. [Carpetas por Departamento](#carpetas-por-departamento)
+9. [Citas y Calendario](#citas-y-calendario)
+10. [Tareas](#tareas)
+11. [Mensajes y Correo](#mensajes-y-correo)
+12. [Comentarios y Archivos Adjuntos](#comentarios-y-archivos-adjuntos)
+13. [Mi Perfil](#mi-perfil)
+14. [Atajos de Teclado](#atajos-de-teclado)
 
 ---
 
@@ -111,6 +113,21 @@ El dashboard muestra un resumen de su actividad:
 #### Gráficos
 - **Casos por Estado:** Distribución de casos
 - **Actividad Reciente:** Timeline de acciones
+
+### Notas Adhesivas (Sticky Notes)
+
+El dashboard incluye un widget de notas adhesivas para recordatorios rápidos:
+
+1. Haga clic en **"+ Nueva Nota"** en el widget de Sticky Notes
+2. Escriba su nota (máximo 500 caracteres)
+3. Seleccione un color para la nota
+4. La nota se guarda automáticamente
+
+#### Acciones de Notas
+- **Editar:** Haga clic en la nota para modificar el texto
+- **Cambiar color:** Haga clic en la paleta de colores
+- **Eliminar:** Haga clic en el ícono de papelera
+- **Reordenar:** Arrastre y suelte las notas
 
 ### Personalizar Dashboard
 
@@ -297,6 +314,54 @@ En la vista de detalle, use los botones de acción:
 
 ---
 
+## Carpetas por Departamento
+
+El sistema organiza documentos por departamento para cada cliente. Cada departamento (Contabilidad, Nómina, Facturación, etc.) tiene su propia estructura de carpetas.
+
+### Ver Carpetas de Departamento
+
+1. Vaya a **"Documentos"** en el menú lateral
+2. En la barra lateral izquierda, verá:
+   - **Todas las Carpetas:** Carpetas generales
+   - **Carpetas de Departamento:** Organizadas por departamento
+
+### Estructura de Carpetas
+
+```
+📁 Departamento (ej: Contabilidad)
+├── 📁 Cliente: Juan Pérez
+│   ├── 📁 Tax Returns
+│   ├── 📁 Correspondence
+│   ├── 📁 Forms
+│   └── 📁 Supporting Documents
+└── 📁 Cliente: María García
+    ├── 📁 Tax Returns
+    └── 📁 Forms
+```
+
+### Navegar por Carpetas de Departamento
+
+1. Expanda el departamento haciendo clic en la flecha
+2. Verá los clientes con carpetas en ese departamento
+3. Haga clic en una carpeta para ver los documentos
+4. El número junto a cada carpeta indica la cantidad de documentos
+
+### Subir a Carpeta de Departamento
+
+1. Desde la vista de contacto/corporación
+2. Vaya a la pestaña **"Documentos"**
+3. Seleccione el departamento destino
+4. Haga clic en **"Subir"**
+5. Seleccione el archivo y complete la información
+
+### Ver Documentos por Carpeta
+
+1. En la página de Documentos, seleccione una carpeta en el sidebar
+2. La lista se filtrará mostrando solo documentos de esa carpeta
+3. Puede ver el nombre del cliente junto al nombre de la carpeta
+
+---
+
 ## Citas y Calendario
 
 ### Ver Calendario
@@ -427,6 +492,66 @@ Las citas envían recordatorios automáticos:
 
 - Los correos se vinculan automáticamente si el remitente es un contacto
 - Puede vincular manualmente usando el menú **"Acciones"**
+
+---
+
+## Comentarios y Archivos Adjuntos
+
+### Sistema de Comentarios
+
+Puede agregar comentarios a contactos y corporaciones para mantener un historial de comunicaciones.
+
+#### Agregar un Comentario
+
+1. Abra el detalle de un contacto o corporación
+2. Vaya a la sección **"Comentarios"** o **"Actividad"**
+3. Escriba su comentario en el área de texto
+4. Haga clic en **"Publicar"**
+
+#### Menciones (@)
+
+- Escriba `@` seguido del nombre para mencionar a un usuario
+- El usuario mencionado recibirá una notificación
+- También puede mencionar departamentos con `@Departamento`
+
+### Adjuntar Archivos a Comentarios
+
+Puede adjuntar documentos directamente desde los comentarios:
+
+1. En el área de comentarios, haga clic en el ícono de **📎 clip**
+2. Seleccione el archivo de su computadora
+3. **Importante:** Seleccione la carpeta de departamento donde guardar el archivo
+4. Escriba su comentario (opcional)
+5. Haga clic en **"Publicar"**
+
+#### Seleccionar Carpeta de Departamento
+
+Al adjuntar archivos, verá un selector de carpeta:
+
+1. Seleccione el **Departamento** (ej: Contabilidad, Nómina)
+2. El archivo se guardará en la carpeta de ese departamento para el cliente actual
+3. El documento aparecerá tanto en el comentario como en la sección de Documentos
+
+#### Ver Archivos Adjuntos
+
+- Los archivos adjuntos aparecen debajo del comentario
+- Haga clic en el nombre del archivo para verlo
+- Haga clic en el ícono de descarga para guardarlo
+
+### Vista Previa de Documentos
+
+El sistema permite ver documentos directamente sin descargarlos:
+
+- **PDFs:** Se muestran con visor integrado con herramientas de navegación
+- **Imágenes:** Se muestran en tamaño completo con zoom
+- **Otros archivos:** Opción de descarga disponible
+
+#### Vista en Pantalla Completa
+
+1. Abra un documento
+2. Haga clic en **"Ver Pantalla Completa"** o el ícono de expansión
+3. Use las herramientas del visor para navegar
+4. Presione **Escape** o el botón **X** para cerrar
 
 ---
 

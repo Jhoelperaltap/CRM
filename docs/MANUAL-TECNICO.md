@@ -1,6 +1,6 @@
 # Manual Técnico - Ebenezer Tax Services CRM
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Febrero 2026
 **Documento Confidencial**
 
@@ -159,9 +159,11 @@ CRM Back end/
 │   │   ├── exceptions.py         # Manejador de excepciones
 │   │   └── encryption.py         # Encriptación de campos
 │   ├── users/                    # Gestión de usuarios
-│   │   ├── models.py             # User, Role, ModulePermission
+│   │   ├── models.py             # User, Role, ModulePermission, Department
 │   │   ├── views.py              # UserViewSet
+│   │   ├── views_department.py   # DepartmentViewSet
 │   │   ├── serializers.py
+│   │   ├── serializers_department.py
 │   │   ├── permissions.py        # ModulePermission
 │   │   ├── middleware.py         # Session, IP middleware
 │   │   └── password_validators.py
@@ -174,8 +176,10 @@ CRM Back end/
 │   │   ├── models.py             # TaxCase, TaxCaseNote
 │   │   └── views.py
 │   ├── documents/                # Gestión de documentos
-│   │   ├── models.py             # Document, Folder, Tag, DownloadToken
+│   │   ├── models.py             # Document, Folder, Tag, DownloadToken, DepartmentClientFolder
 │   │   ├── views.py
+│   │   ├── views_department_folder.py  # DepartmentClientFolderViewSet
+│   │   ├── serializers_department_folder.py
 │   │   └── tasks.py              # Limpieza de tokens
 │   ├── appointments/             # Citas
 │   │   ├── models.py             # Appointment
@@ -251,6 +255,7 @@ CRM Front end/
 │   │   │   ├── index.ts          # Cliente Axios
 │   │   │   ├── contacts.ts
 │   │   │   ├── cases.ts
+│   │   │   ├── departments.ts    # CRUD departamentos y carpetas
 │   │   │   └── ...
 │   │   └── utils.ts
 │   ├── stores/                   # Zustand stores
@@ -259,6 +264,7 @@ CRM Front end/
 │   ├── types/                    # TypeScript types
 │   │   ├── index.ts
 │   │   ├── api.ts
+│   │   ├── department.ts         # Department, DepartmentClientFolder
 │   │   └── ...
 │   └── hooks/                    # Custom hooks
 ├── public/
@@ -316,11 +322,11 @@ crm-mobile/
 | Módulo | App Django | Descripción |
 |--------|-----------|-------------|
 | **Core** | `apps.core` | Modelos base, utilidades, paginación |
-| **Users** | `apps.users` | Usuarios, roles, permisos, 2FA |
+| **Users** | `apps.users` | Usuarios, roles, permisos, 2FA, departamentos |
 | **Contacts** | `apps.contacts` | Gestión de clientes |
 | **Corporations** | `apps.corporations` | Empresas/entidades |
 | **Cases** | `apps.cases` | Casos de impuestos |
-| **Documents** | `apps.documents` | Gestión de archivos |
+| **Documents** | `apps.documents` | Gestión de archivos, carpetas por departamento |
 | **Appointments** | `apps.appointments` | Citas y calendario |
 | **Tasks** | `apps.tasks` | Asignación de tareas |
 | **Emails** | `apps.emails` | Integración email |
@@ -350,11 +356,12 @@ crm-mobile/
 │ email           │     │ first_name      │     │ name            │
 │ password        │     │ last_name       │     │ ein             │
 │ role_id ────────┼──┐  │ email           │     │ type            │
-│ is_active       │  │  │ phone           │     │ address         │
-│ created_at      │  │  │ address         │     │ created_at      │
-└─────────────────┘  │  │ assigned_to ────┼──┐  └────────┬────────┘
-                     │  │ created_at      │  │           │
-┌─────────────────┐  │  └────────┬────────┘  │           │
+│ department_id ──┼──┼─►│ phone           │     │ address         │
+│ is_active       │  │  │ address         │     │ created_at      │
+│ created_at      │  │  │ assigned_to ────┼──┐  └────────┬────────┘
+└─────────────────┘  │  │ created_at      │  │           │
+                     │  └────────┬────────┘  │           │
+┌─────────────────┐  │           │           │           │
 │      Role       │  │           │           │           │
 ├─────────────────┤  │           │           │           │
 │ id (UUID)       │◄─┘           │           │           │
@@ -373,6 +380,26 @@ crm-mobile/
 │ can_delete      │     │ assigned_to ────┼──► User
 └─────────────────┘     │ created_at      │
                         └────────┬────────┘
+
+┌─────────────────┐     ┌─────────────────────────┐
+│   Department    │     │  DepartmentClientFolder │
+├─────────────────┤     ├─────────────────────────┤
+│ id (UUID)       │◄────│ department_id           │
+│ name            │     │ id (UUID)               │
+│ code            │     │ name                    │
+│ color           │     │ contact_id ──────────────┼──► Contact
+│ icon            │     │ corporation_id ──────────┼──► Corporation
+│ is_active       │     │ parent_id ──────────────┼──► Self (Hierarchy)
+│ order           │     │ is_default              │
+│ created_at      │     │ created_by_id           │
+└─────────────────┘     │ created_at              │
+        │               └───────────┬─────────────┘
+        │                           │
+        ▼                           ▼
+┌─────────────────┐     ┌─────────────────┐
+│ User.department │     │    Document     │
+│ (FK opcional)   │     │ department_folder│
+└─────────────────┘     └─────────────────┘
                                  │
          ┌───────────────────────┼───────────────────────┐
          │                       │                       │
@@ -418,6 +445,10 @@ CREATE INDEX idx_contacts_assigned ON crm_contacts(assigned_to_id);
 CREATE INDEX idx_cases_status ON crm_tax_cases(status);
 CREATE INDEX idx_cases_contact ON crm_tax_cases(contact_id);
 CREATE INDEX idx_documents_contact ON crm_documents(contact_id);
+CREATE INDEX idx_documents_dept_folder ON crm_documents(department_folder_id);
+CREATE INDEX idx_dept_folders_department ON crm_department_client_folders(department_id);
+CREATE INDEX idx_dept_folders_contact ON crm_department_client_folders(contact_id);
+CREATE INDEX idx_dept_folders_corporation ON crm_department_client_folders(corporation_id);
 CREATE INDEX idx_audit_user_date ON crm_audit_logs(user_id, created_at);
 ```
 
@@ -440,6 +471,17 @@ CREATE INDEX idx_audit_user_date ON crm_audit_logs(user_id, created_at);
 │   ├── {id}/                     GET, PUT, DELETE
 │   └── me/                       GET - Usuario actual
 ├── roles/                        GET, POST, PUT, DELETE
+├── departments/
+│   ├── /                         GET, POST
+│   ├── {id}/                     GET, PUT, DELETE
+│   └── with-folders/             GET - Deps con carpetas
+├── department-folders/
+│   ├── /                         GET, POST
+│   ├── {id}/                     GET, PUT, DELETE
+│   ├── tree/                     GET - Árbol de carpetas
+│   ├── client-tree/              GET - Árbol por cliente
+│   ├── all-departments-tree/     GET - Árbol completo
+│   └── initialize/               POST - Crear carpetas default
 ├── contacts/
 │   ├── /                         GET, POST
 │   ├── {id}/                     GET, PUT, DELETE

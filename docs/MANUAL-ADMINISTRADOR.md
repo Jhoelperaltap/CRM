@@ -1,6 +1,6 @@
 # Manual del Administrador - Ebenezer Tax Services CRM
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Febrero 2026
 **Sistema:** CRM para Servicios de Impuestos
 
@@ -13,13 +13,14 @@
 3. [Panel de Control](#panel-de-control)
 4. [Gestión de Usuarios](#gestión-de-usuarios)
 5. [Gestión de Roles y Permisos](#gestión-de-roles-y-permisos)
-6. [Configuración del Sistema](#configuración-del-sistema)
-7. [Gestión de Módulos](#gestión-de-módulos)
-8. [Auditoría y Seguridad](#auditoría-y-seguridad)
-9. [Reportes y Análisis](#reportes-y-análisis)
-10. [Portal del Cliente](#portal-del-cliente)
-11. [Configuración de IA](#configuración-de-ia)
-12. [Respaldos y Mantenimiento](#respaldos-y-mantenimiento)
+6. [Gestión de Departamentos](#gestión-de-departamentos)
+7. [Configuración del Sistema](#configuración-del-sistema)
+8. [Gestión de Módulos](#gestión-de-módulos)
+9. [Auditoría y Seguridad](#auditoría-y-seguridad)
+10. [Reportes y Análisis](#reportes-y-análisis)
+11. [Portal del Cliente](#portal-del-cliente)
+12. [Configuración de IA](#configuración-de-ia)
+13. [Respaldos y Mantenimiento](#respaldos-y-mantenimiento)
 
 ---
 
@@ -162,6 +163,80 @@ Módulo: Contactos
 ├── Puede importar CSV
 └── Puede exportar CSV
 ```
+
+---
+
+## Gestión de Departamentos
+
+Los departamentos organizan a los usuarios y los documentos de los clientes. Cada departamento tiene su propia estructura de carpetas por cliente.
+
+### Departamentos Predefinidos
+
+| Departamento | Código | Color | Descripción |
+|--------------|--------|-------|-------------|
+| Accounting | ACCT | 🔵 Azul | Contabilidad general |
+| Payroll | PAY | 🟢 Verde | Nómina y salarios |
+| Billing | BILL | 🟡 Amarillo | Facturación |
+| Audit | AUD | 🔴 Rojo | Auditoría |
+| Representation | REP | 🟣 Púrpura | Representación ante IRS |
+| Client Visit | VISIT | 🔷 Cyan | Visitas a clientes |
+
+### Crear Nuevo Departamento
+
+1. Vaya a **Configuración** → **Departamentos**
+2. Haga clic en **"Nuevo Departamento"**
+3. Complete los campos:
+   - **Nombre:** Nombre del departamento
+   - **Código:** Código corto (ej: ACCT)
+   - **Color:** Color para identificación visual
+   - **Icono:** Icono de Lucide (opcional)
+   - **Descripción:** Descripción del departamento
+4. Haga clic en **"Guardar"**
+
+### Editar Departamento
+
+1. En la lista de departamentos, haga clic en el nombre
+2. Modifique los campos necesarios
+3. Haga clic en **"Guardar"**
+
+### Desactivar Departamento
+
+1. Abra el departamento
+2. Cambie **"Activo"** a **No**
+3. Los usuarios del departamento no podrán ver sus carpetas
+
+### Asignar Usuario a Departamento
+
+1. Vaya a **Configuración** → **Usuarios**
+2. Seleccione el usuario
+3. En el campo **"Departamento"**, seleccione el departamento
+4. Guarde los cambios
+
+### Permisos de Carpetas de Departamento
+
+- **Administradores:** Acceso a todas las carpetas de todos los departamentos
+- **Usuarios regulares:** Solo acceso a las carpetas de su propio departamento
+
+### Carpetas por Cliente
+
+Cuando se crea un cliente (contacto o corporación), se pueden inicializar carpetas automáticamente:
+
+1. Abra el contacto/corporación
+2. Vaya a la pestaña **"Documentos"**
+3. Haga clic en **"Inicializar Carpetas"**
+4. Se crearán carpetas predeterminadas para cada departamento activo:
+   - Tax Returns
+   - Correspondence
+   - Forms
+   - Supporting Documents
+
+### Crear Subcarpeta
+
+1. En la vista de carpetas del cliente
+2. Haga clic en el menú (⋮) de una carpeta
+3. Seleccione **"Nueva Subcarpeta"**
+4. Nombre la subcarpeta
+5. Haga clic en **"Crear"**
 
 ---
 
