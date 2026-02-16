@@ -17,7 +17,7 @@ import type {
   DocumentFolderTreeNode,
   DocumentTag,
 } from "@/types";
-import type { DepartmentFolderGroup } from "@/types/department";
+import type { DepartmentFolderGroup, DepartmentClientFolderTree } from "@/types/department";
 import type { PaginatedResponse } from "@/types/api";
 
 import { FolderSidebar } from "@/components/documents/folder-sidebar";
@@ -221,7 +221,7 @@ export default function DocumentsPage() {
     return null;
   };
 
-  function findInDeptTree(folders: any[], id: string): any | null {
+  function findInDeptTree(folders: DepartmentClientFolderTree[], id: string): DepartmentClientFolderTree | null {
     for (const folder of folders) {
       if (folder.id === id) return folder;
       if (folder.children) {

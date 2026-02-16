@@ -350,6 +350,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         # Handle file attachments
         if attachments and department_folder:
             import mimetypes
+
             from apps.documents.models import Document
 
             user = self.context["request"].user

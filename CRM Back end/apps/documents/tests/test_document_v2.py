@@ -120,6 +120,7 @@ class TestDocumentMimeTypeDetection:
     def test_download_detects_mime_from_filename(self, admin_client, admin_user):
         """Test that mime type is detected from filename when not set."""
         from django.core.files.uploadedfile import SimpleUploadedFile
+
         from apps.documents.models import Document
 
         # Create document with missing mime_type
@@ -138,6 +139,7 @@ class TestDocumentMimeTypeDetection:
     def test_download_detects_image_mime_type(self, admin_client, admin_user):
         """Test that image mime type is detected from filename."""
         from django.core.files.uploadedfile import SimpleUploadedFile
+
         from apps.documents.models import Document
 
         # Create document with generic mime_type

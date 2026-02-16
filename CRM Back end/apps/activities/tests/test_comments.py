@@ -11,9 +11,7 @@ from tests.factories import (
     CorporationFactory,
     DepartmentClientFolderFactory,
     DepartmentFactory,
-    UserFactory,
 )
-
 
 # Valid PDF magic bytes (minimal PDF structure)
 VALID_PDF_CONTENT = (

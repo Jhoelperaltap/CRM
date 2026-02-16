@@ -10,9 +10,7 @@ from tests.factories import (
     DepartmentClientFolderFactory,
     DepartmentFactory,
     DocumentFactory,
-    UserFactory,
 )
-
 
 BASE = "/api/v1/department-folders/"
 
