@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from django.core.cache import cache
 from django.utils import timezone
 
 from apps.appointments.models import Appointment
@@ -15,6 +16,13 @@ from tests.factories import AppointmentFactory, ContactFactory
 @pytest.mark.django_db
 class TestGenerateRecurring:
     """Tests for generate_recurring_appointments()."""
+
+    @pytest.fixture(autouse=True)
+    def clear_cache(self):
+        """Clear cache before each test."""
+        cache.clear()
+        yield
+        cache.clear()
 
     def test_daily_generates_instances(self):
         contact = ContactFactory()
