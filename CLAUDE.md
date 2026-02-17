@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Ebenezer Tax Services CRM — a full-stack tax management CRM with a Django REST Framework backend and Next.js frontend. The backend lives in `CRM Back end/`, the frontend in `CRM Front end/`.
+**EJFLOW** — An enterprise CRM platform with a Django REST Framework backend and Next.js frontend. The backend lives in `CRM Back end/`, the frontend in `CRM Front end/`.
+
+### Branding
+- **Platform**: EJFLOW (registered trademark)
+- **Mobile App**: EJFLOW Client
+- **Logo**: "EJ" with blue gradient (#2563eb to #1d4ed8)
+- **Branding Config**: `CRM Front end/src/config/branding.ts`
 
 ## Common Commands
 
@@ -39,6 +45,13 @@ pytest --cov=apps                 # With coverage
 ```
 
 pytest.ini defaults: `--reuse-db --tb=short -q` with `DJANGO_SETTINGS_MODULE=config.settings.test`.
+
+### Frontend Testing (E2E)
+
+```bash
+cd "CRM Front end"
+npm run test:e2e                  # Run Playwright E2E tests
+```
 
 ### Linting & Formatting
 
@@ -75,6 +88,32 @@ CRM Back end/
     └── development.txt     # Dev tools (pytest-django, black, ruff, factory-boy, etc.)
 ```
 
+### Frontend Structure
+
+```
+CRM Front end/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── (dashboard)/        # Protected dashboard routes
+│   │   ├── portal/             # Client portal (EJFLOW Client)
+│   │   └── login/              # Authentication pages
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── mega-menu-sidebar.tsx  # VTiger-style navigation
+│   │   │   ├── sidebar.tsx            # Classic sidebar (fallback)
+│   │   │   └── topbar.tsx             # Header with branding
+│   │   ├── auth/               # Login, 2FA components
+│   │   └── ui/                 # shadcn/ui components
+│   ├── config/
+│   │   └── branding.ts         # Centralized branding configuration
+│   ├── stores/                 # Zustand state stores
+│   └── lib/                    # API clients, utilities
+├── e2e/                        # Playwright E2E tests
+│   ├── auth.spec.ts            # Authentication tests
+│   └── navigation.spec.ts      # Navigation tests
+└── public/                     # Static assets
+```
+
 ### Key Design Decisions
 
 - **UUID primary keys** on all models for distributed system compatibility
@@ -84,6 +123,7 @@ CRM Back end/
 - **TimeStampedModel** base class — all domain models inherit `created_at`/`updated_at`
 - **Settings split** — `base.py` has all config; env-specific files only override what differs
 - **Test settings** use SQLite in-memory, MD5 hasher for speed, eager Celery, no throttling
+- **VTiger-style navigation** — Mega menu sidebar with flyout panels
 
 ### API Layout
 
@@ -114,3 +154,25 @@ All endpoints under `/api/v1/`. Key route groups:
 
 - Anonymous: 20/min, Authenticated: 200/min, Login: 5/min
 - Disabled in test settings
+
+## UI/UX Guidelines
+
+### Mega Menu Sidebar
+The application uses a VTiger-style mega menu sidebar:
+- **Desktop**: Narrow icon bar (68px) with flyout panels on hover
+- **Mobile**: Full-width drawer
+- **Features**: Pin/unpin panels, multi-column categories, blue gradient theme
+
+### Branding
+All branding is centralized in `src/config/branding.ts`:
+```typescript
+export const branding = {
+  platform: { name: "EJFLOW", shortName: "EJF" },
+  client: { name: "Client Name" },  // Customizable
+};
+```
+
+### Theme
+- Blue gradient sidebar: `from-[#1e5a99] via-[#336daa] to-[#4887bf]`
+- Logo gradient: `from-blue-600 to-blue-700`
+- Supports dark/light mode
