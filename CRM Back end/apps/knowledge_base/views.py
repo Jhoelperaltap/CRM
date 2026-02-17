@@ -7,18 +7,6 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
-
-class PublicKBRateThrottle(AnonRateThrottle):
-    """Rate limit for public knowledge base endpoints."""
-
-    rate = "60/minute"
-
-
-class FeedbackRateThrottle(AnonRateThrottle):
-    """Rate limit for feedback submissions to prevent spam."""
-
-    rate = "10/hour"
-
 from .models import FAQ, Article, ArticleAttachment, ArticleFeedback, Category
 from .serializers import (
     ArticleAttachmentSerializer,
@@ -30,6 +18,18 @@ from .serializers import (
     FAQPublicSerializer,
     FAQSerializer,
 )
+
+
+class PublicKBRateThrottle(AnonRateThrottle):
+    """Rate limit for public knowledge base endpoints."""
+
+    rate = "60/minute"
+
+
+class FeedbackRateThrottle(AnonRateThrottle):
+    """Rate limit for feedback submissions to prevent spam."""
+
+    rate = "10/hour"
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

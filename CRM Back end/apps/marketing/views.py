@@ -12,26 +12,6 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
-
-class TrackingRateThrottle(AnonRateThrottle):
-    """Rate limit for tracking pixel and click endpoints.
-
-    SECURITY: Prevents enumeration attacks against tracking tokens.
-    High rate since legitimate email opens are expected in volume.
-    """
-
-    rate = "120/minute"
-
-
-class UnsubscribeRateThrottle(AnonRateThrottle):
-    """Rate limit for unsubscribe endpoint.
-
-    SECURITY: Prevents mass unsubscribe attacks.
-    Lower rate than tracking since unsubscribes are less frequent.
-    """
-
-    rate = "30/minute"
-
 from .models import (
     AutomationEnrollment,
     AutomationSequence,
@@ -59,6 +39,26 @@ from .serializers import (
     EmailListSubscriberSerializer,
 )
 from .tasks import send_campaign, update_campaign_stats
+
+
+class TrackingRateThrottle(AnonRateThrottle):
+    """Rate limit for tracking pixel and click endpoints.
+
+    SECURITY: Prevents enumeration attacks against tracking tokens.
+    High rate since legitimate email opens are expected in volume.
+    """
+
+    rate = "120/minute"
+
+
+class UnsubscribeRateThrottle(AnonRateThrottle):
+    """Rate limit for unsubscribe endpoint.
+
+    SECURITY: Prevents mass unsubscribe attacks.
+    Lower rate than tracking since unsubscribes are less frequent.
+    """
+
+    rate = "30/minute"
 
 
 class EmailListViewSet(viewsets.ModelViewSet):

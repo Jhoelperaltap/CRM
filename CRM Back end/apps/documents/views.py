@@ -15,8 +15,6 @@ from rest_framework.response import Response
 
 from apps.core.throttling import FileUploadRateThrottle
 from apps.core.validators import validate_file_type
-
-logger = logging.getLogger(__name__)
 from apps.documents.filters import DocumentFilter, DocumentLinkFilter
 from apps.documents.models import (
     Document,
@@ -40,6 +38,8 @@ from apps.documents.serializers import (
     DocumentTagSerializer,
 )
 from apps.users.permissions import ModulePermission
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------

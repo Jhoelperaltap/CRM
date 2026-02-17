@@ -10,24 +10,6 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
-
-class PublicChatRateThrottle(AnonRateThrottle):
-    """Rate limit for public chat endpoints to prevent abuse."""
-
-    rate = "30/minute"
-
-
-class ChatSessionCreationThrottle(AnonRateThrottle):
-    """Stricter rate limit for creating new chat sessions."""
-
-    rate = "5/minute"
-
-
-class ChatMessageThrottle(AnonRateThrottle):
-    """Rate limit for sending chat messages."""
-
-    rate = "20/minute"
-
 from .models import (
     CannedResponse,
     ChatAgent,
@@ -52,6 +34,24 @@ from .serializers import (
     StartChatSerializer,
     TransferChatSerializer,
 )
+
+
+class PublicChatRateThrottle(AnonRateThrottle):
+    """Rate limit for public chat endpoints to prevent abuse."""
+
+    rate = "30/minute"
+
+
+class ChatSessionCreationThrottle(AnonRateThrottle):
+    """Stricter rate limit for creating new chat sessions."""
+
+    rate = "5/minute"
+
+
+class ChatMessageThrottle(AnonRateThrottle):
+    """Rate limit for sending chat messages."""
+
+    rate = "20/minute"
 
 
 class ChatDepartmentViewSet(viewsets.ModelViewSet):
