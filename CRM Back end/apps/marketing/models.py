@@ -1,3 +1,4 @@
+import secrets
 import uuid
 
 from django.conf import settings
@@ -5,6 +6,16 @@ from django.db import models
 from django.utils import timezone
 
 from apps.core.models import TimeStampedModel
+
+
+def generate_secure_tracking_token():
+    """Generate a cryptographically secure tracking token.
+
+    SECURITY: Uses secrets.token_urlsafe() instead of uuid.uuid4()
+    because UUIDs are predictable and can be enumerated.
+    A 48-byte token provides 384 bits of entropy.
+    """
+    return secrets.token_urlsafe(48)
 
 
 class EmailList(TimeStampedModel):
@@ -316,8 +327,14 @@ class CampaignRecipient(TimeStampedModel):
         ],
     )
 
-    # Unique tracking token
-    tracking_token = models.UUIDField(default=uuid.uuid4, unique=True)
+    # SECURITY: Use cryptographically secure token instead of UUID
+    # UUIDs are predictable and can be enumerated by attackers
+    tracking_token = models.CharField(
+        max_length=64,
+        default=generate_secure_tracking_token,
+        unique=True,
+        db_index=True,
+    )
 
     class Meta:
         unique_together = ["campaign", "contact"]

@@ -9,7 +9,28 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
+
+
+class TrackingRateThrottle(AnonRateThrottle):
+    """Rate limit for tracking pixel and click endpoints.
+
+    SECURITY: Prevents enumeration attacks against tracking tokens.
+    High rate since legitimate email opens are expected in volume.
+    """
+
+    rate = "120/minute"
+
+
+class UnsubscribeRateThrottle(AnonRateThrottle):
+    """Rate limit for unsubscribe endpoint.
+
+    SECURITY: Prevents mass unsubscribe attacks.
+    Lower rate than tracking since unsubscribes are less frequent.
+    """
+
+    rate = "30/minute"
 
 from .models import (
     AutomationEnrollment,
@@ -644,6 +665,7 @@ class TrackOpenView(APIView):
     """
 
     permission_classes = []  # Public endpoint
+    throttle_classes = [TrackingRateThrottle]
 
     def get(self, request, tracking_token):
         try:
@@ -667,6 +689,7 @@ class TrackClickView(APIView):
     """
 
     permission_classes = []  # Public endpoint
+    throttle_classes = [TrackingRateThrottle]
 
     def get(self, request, tracking_token, link_id):
         try:
@@ -713,6 +736,7 @@ class UnsubscribeView(APIView):
     """
 
     permission_classes = []  # Public endpoint
+    throttle_classes = [UnsubscribeRateThrottle]
 
     def get(self, request, tracking_token):
         """Show unsubscribe confirmation page."""

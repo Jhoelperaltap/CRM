@@ -54,10 +54,12 @@ def send_campaign(campaign_id: str):
 
                 # Assign A/B variant if needed
                 if campaign.is_ab_test:
-                    import random
+                    # SECURITY: Use cryptographically secure random for A/B assignment
+                    # to prevent prediction of variant assignment
+                    import secrets
 
                     recipient.ab_variant = (
-                        "A" if random.randint(1, 100) <= campaign.ab_test_split else "B"
+                        "A" if secrets.randbelow(100) < campaign.ab_test_split else "B"
                     )
                     recipient.save()
 
@@ -168,11 +170,14 @@ def send_campaign_email(recipient_id: str):
     except CampaignRecipient.DoesNotExist:
         logger.error(f"Recipient {recipient_id} not found")
     except Exception as e:
+        # SECURITY: Log full error details but don't expose to users
+        # Exception details could contain sensitive info (DB queries, file paths, etc.)
         logger.error(f"Error sending email to recipient {recipient_id}: {str(e)}")
         try:
             recipient = CampaignRecipient.objects.get(id=recipient_id)
             recipient.status = "failed"
-            recipient.error_message = str(e)
+            # Store generic message for user, not the actual exception
+            recipient.error_message = "Failed to send email. Please contact support."
             recipient.save()
         except Exception:
             pass
