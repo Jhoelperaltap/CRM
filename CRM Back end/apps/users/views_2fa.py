@@ -326,7 +326,11 @@ class TwoFactorStatusView(APIView):
         # This was a security vulnerability - exposing current TOTP codes defeats 2FA
         from django.conf import settings
 
-        if settings.DEBUG and request.query_params.get("debug") == "true" and user.is_2fa_enabled:
+        if (
+            settings.DEBUG
+            and request.query_params.get("debug") == "true"
+            and user.is_2fa_enabled
+        ):
             now = timezone.now()
             response_data["debug"] = {
                 "server_time": now.isoformat(),

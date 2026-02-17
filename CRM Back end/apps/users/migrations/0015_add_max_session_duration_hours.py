@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0014_increase_phone_field_length'),
+        ("users", "0014_increase_phone_field_length"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='authenticationpolicy',
-            name='max_session_duration_hours',
-            field=models.PositiveIntegerField(default=24, help_text='Maximum session duration in hours. Sessions older than this will be terminated regardless of activity. Set to 0 to disable.', verbose_name='max session duration (hours)'),
+            model_name="authenticationpolicy",
+            name="max_session_duration_hours",
+            field=models.PositiveIntegerField(
+                default=24,
+                help_text="Maximum session duration in hours. Sessions older than this will be terminated regardless of activity. Set to 0 to disable.",
+                verbose_name="max session duration (hours)",
+            ),
         ),
     ]

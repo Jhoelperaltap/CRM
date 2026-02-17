@@ -7,13 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('marketing', '0001_initial'),
+        ("marketing", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignrecipient',
-            name='tracking_token',
-            field=models.CharField(db_index=True, default=apps.marketing.models.generate_secure_tracking_token, max_length=64, unique=True),
+            model_name="campaignrecipient",
+            name="tracking_token",
+            field=models.CharField(
+                db_index=True,
+                default=apps.marketing.models.generate_secure_tracking_token,
+                max_length=64,
+                unique=True,
+            ),
         ),
     ]

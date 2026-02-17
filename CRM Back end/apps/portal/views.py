@@ -601,9 +601,7 @@ class PortalMessageViewSet(viewsets.ViewSet):
                 recipients = list(User.objects.filter(is_active=True)[:3])
 
             if not recipients:
-                logger.warning(
-                    "No recipients found for client message notification"
-                )
+                logger.warning("No recipients found for client message notification")
                 return
 
             for recipient in recipients:

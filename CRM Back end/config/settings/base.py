@@ -49,7 +49,7 @@ if not DEBUG:
         warnings.warn(
             "SECURITY WARNING: FIELD_ENCRYPTION_KEY is not set! "
             "PII data (SSN, etc.) will NOT be encrypted. "
-            "Generate with: python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\"",
+            'Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"',
             UserWarning,
         )
     if not DOCUMENT_ENCRYPTION_KEY:
@@ -58,7 +58,7 @@ if not DEBUG:
         warnings.warn(
             "SECURITY WARNING: DOCUMENT_ENCRYPTION_KEY is not set! "
             "Uploaded documents will NOT be encrypted at rest. "
-            "Generate with: python -c \"import secrets, base64; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())\"",
+            'Generate with: python -c "import secrets, base64; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())"',
             UserWarning,
         )
 

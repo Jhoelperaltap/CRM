@@ -134,7 +134,9 @@ def set_portal_auth_cookies(response, access_token: str, refresh_token: str = No
 
     if refresh_token:
         refresh_settings = get_portal_cookie_settings(is_access_token=False)
-        response.set_cookie(PORTAL_REFRESH_TOKEN_COOKIE, refresh_token, **refresh_settings)
+        response.set_cookie(
+            PORTAL_REFRESH_TOKEN_COOKIE, refresh_token, **refresh_settings
+        )
 
     return response
 

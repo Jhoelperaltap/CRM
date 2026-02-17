@@ -268,10 +268,8 @@ def validate_csv_import(
     """
     # Check file extension
     filename = uploaded_file.name.lower()
-    if not filename.endswith('.csv'):
-        raise ValidationError(
-            _("Invalid file type. Only CSV files are allowed.")
-        )
+    if not filename.endswith(".csv"):
+        raise ValidationError(_("Invalid file type. Only CSV files are allowed."))
 
     # Check file size
     max_size_bytes = max_file_size_mb * 1024 * 1024
@@ -289,12 +287,10 @@ def validate_csv_import(
         except UnicodeDecodeError:
             decoded = content.decode("utf-8")
     except UnicodeDecodeError:
-        raise ValidationError(
-            _("File must be UTF-8 encoded.")
-        )
+        raise ValidationError(_("File must be UTF-8 encoded."))
 
     # Count rows (roughly by newlines to avoid parsing overhead)
-    line_count = decoded.count('\n')
+    line_count = decoded.count("\n")
     if line_count > max_rows:
         raise ValidationError(
             _("File has too many rows. Maximum is %(max)s rows.") % {"max": max_rows}
