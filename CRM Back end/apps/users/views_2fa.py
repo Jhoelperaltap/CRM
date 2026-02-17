@@ -322,8 +322,11 @@ class TwoFactorStatusView(APIView):
             "enforce_required": policy.enforce_2fa,
         }
 
-        # If 2FA is enabled and user wants to debug, include diagnostic info
-        if request.query_params.get("debug") == "true" and user.is_2fa_enabled:
+        # SECURITY: Debug mode with TOTP codes is only available in development
+        # This was a security vulnerability - exposing current TOTP codes defeats 2FA
+        from django.conf import settings
+
+        if settings.DEBUG and request.query_params.get("debug") == "true" and user.is_2fa_enabled:
             now = timezone.now()
             response_data["debug"] = {
                 "server_time": now.isoformat(),

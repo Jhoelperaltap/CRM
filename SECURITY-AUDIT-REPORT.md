@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.8 (Actualizado con validación de JWT_SIGNING_KEY)
+**Versión:** 1.9 (Actualizado con corrección de debug TOTP)
 
 ---
 
@@ -17,11 +17,11 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 
 | Severidad | Encontradas | Corregidas | Pendientes |
 |-----------|-------------|------------|------------|
-| **CRÍTICA** | 15 | 10 | **5** |
+| **CRÍTICA** | 15 | 11 | **4** |
 | **ALTA** | 14 | 9 | **5** |
 | **MEDIA** | 13 | 4 | **9** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 23 | **21** |
+| **TOTAL** | 44 | 24 | **20** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -45,6 +45,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 16 | Sin validación de tamaño en CSV Import | MEDIA | ✅ Corregido |
 | 17 | Credenciales DB en código por defecto | MEDIA | ✅ Corregido |
 | 18 | JWT_SIGNING_KEY con valor por defecto | CRÍTICA | ✅ Corregido |
+| 19 | Debug endpoint expone código TOTP | CRÍTICA | ✅ Corregido |
 
 ---
 
@@ -272,6 +273,21 @@ default="postgres://ebenezer:ebenezer_dev_2025@localhost:5432/ebenezer_crm"
 - Warning si PORTAL_JWT_SIGNING_KEY es igual a JWT_SIGNING_KEY
 - Instrucciones de generación de claves en mensajes de error
 - Mismo patrón de validación que SECRET_KEY
+
+### ✅ CORREGIDO: Debug endpoint expone código TOTP
+**Riesgo CRÍTICO:** El parámetro `?debug=true` en `/auth/2fa/status/` exponía el código TOTP actual, derrotando completamente el propósito de 2FA
+**Archivo modificado:** `apps/users/views_2fa.py`
+
+**Antes (INSEGURO):**
+```python
+if request.query_params.get("debug") == "true" and user.is_2fa_enabled:
+    response_data["debug"]["current_code"] = totp.now()  # ¡EXPONE CÓDIGO!
+```
+
+**Solución implementada:**
+- Debug solo disponible cuando `settings.DEBUG = True` (desarrollo)
+- En producción (`DEBUG=False`), el parámetro debug es completamente ignorado
+- Un atacante con acceso a la sesión ya no puede obtener códigos TOTP
 
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
