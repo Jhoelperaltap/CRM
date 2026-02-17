@@ -386,28 +386,30 @@ Dado que es un CRM de servicios fiscales que maneja SSN:
 
 | Normativa | Estado | Notas |
 |-----------|--------|-------|
-| **GDPR** | ⚠️ Parcial | localStorage viola minimización de datos |
-| **SOC 2** | ⚠️ Parcial | Faltan algunos headers de seguridad |
-| **IRS Pub 4557** | ⚠️ Parcial | SSN requiere encriptación y auditoría |
+| **GDPR** | ✅ Mejorado | Tokens migrados a httpOnly cookies |
+| **SOC 2** | ✅ Mejorado | Security headers implementados |
+| **IRS Pub 4557** | ✅ Mejorado | SSN encriptado con EncryptedCharField + audit logging |
 
 ---
 
 ## Próximos Pasos
 
-### Inmediato (24-48 horas)
+### ✅ Completados
+1. ~~Migrar tokens de localStorage a cookies httpOnly~~ ✅
+2. ~~Separar claves JWT de portal y staff~~ ✅
+3. ~~Implementar middleware de auth server-side~~ ✅
+4. ~~Agregar CSP headers~~ ✅
+5. ~~Forzar HTTPS en mobile~~ ✅
+6. ~~Validación de JWT keys en producción~~ ✅
+
+### Pendientes - Corto Plazo
 1. Configurar variables de entorno de producción
-2. Migrar tokens de localStorage a cookies httpOnly
-3. Implementar HTTPS en todos los entornos
+2. Implementar certificate pinning en mobile (requiere certificado SSL)
+3. Auditoría de dependencias con `pip-audit` y `npm audit`
 
-### Corto Plazo (1-2 semanas)
-4. Separar claves JWT de portal y staff
-5. Implementar middleware de auth server-side
-6. Agregar CSP headers
-
-### Mediano Plazo (1 mes)
-7. Implementar certificate pinning en mobile
-8. Auditoría de dependencias completa
-9. Penetration testing profesional
+### Pendientes - Mediano Plazo
+4. Penetration testing profesional
+5. Integración con servicio de monitoreo (Sentry)
 
 ---
 
