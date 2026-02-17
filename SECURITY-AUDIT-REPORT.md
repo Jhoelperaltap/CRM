@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.9 (Actualizado con corrección de debug TOTP)
+**Versión:** 2.0 (Actualizado con SSL Certificate Pinning)
 
 ---
 
@@ -19,9 +19,9 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 11 | **4** |
 | **ALTA** | 14 | 9 | **5** |
-| **MEDIA** | 13 | 4 | **9** |
+| **MEDIA** | 13 | 5 | **8** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 24 | **20** |
+| **TOTAL** | 44 | 25 | **19** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -46,6 +46,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 17 | Credenciales DB en código por defecto | MEDIA | ✅ Corregido |
 | 18 | JWT_SIGNING_KEY con valor por defecto | CRÍTICA | ✅ Corregido |
 | 19 | Debug endpoint expone código TOTP | CRÍTICA | ✅ Corregido |
+| 20 | No hay Certificate Pinning (Mobile) | MEDIA | ✅ Corregido |
 
 ---
 
@@ -289,6 +290,30 @@ if request.query_params.get("debug") == "true" and user.is_2fa_enabled:
 - En producción (`DEBUG=False`), el parámetro debug es completamente ignorado
 - Un atacante con acceso a la sesión ya no puede obtener códigos TOTP
 
+### ✅ CORREGIDO: Certificate Pinning (Mobile)
+**Riesgo:** Sin SSL pinning, ataques Man-in-the-Middle pueden interceptar tráfico aunque use HTTPS
+**Archivos creados:**
+- `crm-mobile/src/config/ssl-pins.ts` - Configuración de pines SSL
+- `crm-mobile/plugins/withSSLPinning.js` - Expo Config Plugin nativo
+- `crm-mobile/app.config.js` - Configuración dinámica de Expo
+- `crm-mobile/SSL-PINNING-SETUP.md` - Documentación completa
+
+**Solución implementada:**
+- **Android:** Network Security Config (`network_security_config.xml`) con pin-set
+- **iOS:** App Transport Security + configuración TrustKit
+- Plugin de Expo que genera configuración nativa automáticamente
+- Soporte para múltiples hashes (rotación de certificados)
+- Expiration date configurable para pines
+- Validación automática: solo se habilita con hashes reales (no placeholders)
+
+**Pasos para producción:**
+1. Obtener hash del certificado: `openssl s_client -connect api.ejflow.com:443 ...`
+2. Actualizar hashes en `app.config.js`
+3. Ejecutar `expo prebuild --clean`
+4. Build con `expo run:android` / `expo run:ios`
+
+**Nota:** SSL Pinning NO funciona en Expo Go, requiere development build.
+
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
 **Estado:** CSP ya estaba configurado con:
@@ -308,11 +333,6 @@ if request.query_params.get("debug") == "true" and user.is_2fa_enabled:
 **Ubicación:** `config/settings/base.py:13`
 **Solución:** Remover default, requerir variable de entorno
 **Estado:** ✅ Ya tiene validación en producción - lanza error si usa default
-
-### 🟡 MEDIAS - Corregir este mes
-
-#### 4. No hay Certificate Pinning (Mobile)
-**Solución:** Implementar SSL pinning
 
 ---
 
@@ -401,10 +421,11 @@ Dado que es un CRM de servicios fiscales que maneja SSN:
 4. ~~Agregar CSP headers~~ ✅
 5. ~~Forzar HTTPS en mobile~~ ✅
 6. ~~Validación de JWT keys en producción~~ ✅
+7. ~~Implementar certificate pinning en mobile~~ ✅
 
 ### Pendientes - Corto Plazo
 1. Configurar variables de entorno de producción
-2. Implementar certificate pinning en mobile (requiere certificado SSL)
+2. Configurar hashes de certificado real en `crm-mobile/app.config.js`
 3. Auditoría de dependencias con `pip-audit` y `npm audit`
 
 ### Pendientes - Mediano Plazo
