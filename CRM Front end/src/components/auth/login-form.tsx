@@ -94,11 +94,19 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-lg shadow-lg">
+            EJ
+          </div>
+        </div>
         <CardTitle className="text-2xl font-bold">
-          Ebenezer Tax Services
+          EJFLOW
         </CardTitle>
         <p className="text-muted-foreground text-sm">
-          Sign in to your CRM account
+          Enterprise CRM Platform
+        </p>
+        <p className="text-muted-foreground text-xs mt-1">
+          Sign in to your account
         </p>
       </CardHeader>
       <CardContent>

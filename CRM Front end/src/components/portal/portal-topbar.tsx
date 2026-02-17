@@ -23,7 +23,12 @@ export function PortalTopbar() {
 
   return (
     <header className="flex h-14 items-center justify-between border-b bg-card px-4 lg:px-6">
-      <div className="text-sm font-medium lg:hidden">Client Portal</div>
+      <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-xs">
+          EJ
+        </div>
+        <span className="text-sm font-medium">EJFLOW Client</span>
+      </div>
       <div className="flex items-center gap-4">
         {contact && (
           <span className="text-sm text-muted-foreground">

@@ -27,7 +27,7 @@ export function Sidebar() {
           "text-sidebar-foreground",
           "border-r border-sidebar-border",
           "transition-all duration-300 ease-in-out",
-          // Gradient background matching Ebenezer brand
+          // Gradient background matching EJFLOW brand
           "bg-gradient-to-b from-[#1e5a99] via-[#336daa] to-[#4887bf]",
           // Desktop: controlled by collapsed state
           sidebarCollapsed ? "lg:w-[68px]" : "lg:w-64",
@@ -47,20 +47,20 @@ export function Sidebar() {
           )}
         >
           {sidebarCollapsed ? (
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white font-bold text-sm shadow-sm">
-              E
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white font-bold text-xs shadow-sm">
+              EJ
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white font-bold text-sm shadow-sm">
-                E
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white font-bold text-xs shadow-sm">
+                EJ
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-white">
-                  Ebenezer CRM
+                  EJFLOW
                 </span>
                 <span className="text-xs text-white/70">
-                  Tax Services
+                  Enterprise CRM
                 </span>
               </div>
             </div>

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ebenezer Tax Services CRM",
-  description: "Tax management CRM system",
+  title: "EJFLOW | Enterprise CRM Platform",
+  description: "EJFLOW - Enterprise CRM Platform for modern businesses",
 };
 
 export default function RootLayout({

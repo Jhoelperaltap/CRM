@@ -315,9 +315,9 @@ export function MegaMenuSidebar() {
         <div className="flex h-16 items-center justify-between px-4 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold text-lg shadow-lg">
-              E
+              EJ
             </div>
-            <span className="text-white font-semibold">Ebenezer CRM</span>
+            <span className="text-white font-semibold">EJFLOW</span>
           </div>
           <button
             onClick={toggleMobileMenu}
@@ -386,8 +386,8 @@ export function MegaMenuSidebar() {
         >
         {/* Logo */}
         <div className="flex h-16 items-center justify-center border-b border-white/10">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/25">
-            E
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25">
+            EJ
           </div>
         </div>
 

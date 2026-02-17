@@ -31,9 +31,11 @@ export function Topbar() {
           </Button>
 
           <div className="hidden lg:flex items-center gap-2">
-            <h1 className="text-sm font-semibold leading-tight tracking-tight">
-              Ebenezer Tax Services
-            </h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">EJFLOW</span>
+              <span className="text-slate-300 dark:text-slate-600">|</span>
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Ebenezer Tax Services</span>
+            </div>
           </div>
         </div>
 

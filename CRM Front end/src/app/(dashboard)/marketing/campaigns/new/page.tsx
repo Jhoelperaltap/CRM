@@ -77,8 +77,8 @@ export default function NewCampaignPage() {
   } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
     defaultValues: {
-      from_name: "Ebenezer Tax Services",
-      from_email: "info@ebenezertax.com",
+      from_name: "",
+      from_email: "",
       track_opens: true,
       track_clicks: true,
       email_list_ids: [],
