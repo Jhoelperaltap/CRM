@@ -570,64 +570,44 @@ class PortalMessageViewSet(viewsets.ViewSet):
         from apps.users.models import Role, User
 
         logger = logging.getLogger(__name__)
-        print(
-            f"[NOTIFICATION DEBUG] Starting notification creation for message: {message.id}"
-        )
-        print(f"[NOTIFICATION DEBUG] Message contact_id: {message.contact_id}")
 
         try:
             contact = Contact.objects.get(id=message.contact_id)
-            print(f"[NOTIFICATION DEBUG] Found contact: {contact}")
             contact_name = (
                 f"{contact.first_name} {contact.last_name}".strip() or "Client"
             )
 
             # Notify the assigned user if exists
             recipients = []
-            print(
-                f"[NOTIFICATION DEBUG] Contact assigned_to_id: {contact.assigned_to_id}"
-            )
 
             if contact.assigned_to_id:
                 recipients.append(contact.assigned_to)
-                print(
-                    f"[NOTIFICATION DEBUG] Using assigned user: {contact.assigned_to}"
-                )
 
             # If no assigned user, try admins
             if not recipients:
                 admin_users = User.objects.filter(
                     is_active=True, role__slug=Role.RoleSlug.ADMIN
                 )
-                print(f"[NOTIFICATION DEBUG] Admin query: {admin_users.query}")
                 recipients = list(admin_users)
-                print(f"[NOTIFICATION DEBUG] Found {len(recipients)} admins")
 
             # If still no recipients, try superusers
             if not recipients:
                 recipients = list(
                     User.objects.filter(is_active=True, is_superuser=True)
                 )
-                print(f"[NOTIFICATION DEBUG] Found {len(recipients)} superusers")
 
             # Last resort: any active user
             if not recipients:
                 recipients = list(User.objects.filter(is_active=True)[:3])
-                print(
-                    f"[NOTIFICATION DEBUG] Using first {len(recipients)} active users"
-                )
-
-            print(f"[NOTIFICATION DEBUG] Total recipients: {len(recipients)}")
 
             if not recipients:
-                print("[NOTIFICATION DEBUG] ERROR: No recipients found!")
+                logger.warning(
+                    "No recipients found for client message notification"
+                )
                 return
 
             for recipient in recipients:
-                print(
-                    f"[NOTIFICATION DEBUG] Creating notification for: {recipient.email}"
-                )
-                notif = Notification.objects.create(
+                Notification.objects.create(
                     recipient=recipient,
                     notification_type=Notification.Type.CLIENT_MESSAGE,
                     title=f"New message from {contact_name}",
@@ -637,15 +617,10 @@ class PortalMessageViewSet(viewsets.ViewSet):
                     related_object_id=contact.id,
                     action_url=f"/contacts/{contact.id}?tab=client-messages",
                 )
-                print(f"[NOTIFICATION DEBUG] Created notification ID: {notif.id}")
 
         except Exception as e:
-            print(f"[NOTIFICATION DEBUG] EXCEPTION: {e}")
-            import traceback
-
-            traceback.print_exc()
             logger.error(
-                f"Failed to create staff notification for client message: {e}",
+                "Failed to create staff notification for client message",
                 exc_info=True,
             )
 
