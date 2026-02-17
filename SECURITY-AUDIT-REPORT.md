@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.5 (Actualizado con corrección de Session Timeout absoluto)
+**Versión:** 1.6 (Actualizado con validación de tamaño en CSV Import)
 
 ---
 
@@ -19,9 +19,9 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 9 | **6** |
 | **ALTA** | 14 | 9 | **5** |
-| **MEDIA** | 13 | 2 | **11** |
+| **MEDIA** | 13 | 3 | **10** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 20 | **24** |
+| **TOTAL** | 44 | 21 | **23** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -42,6 +42,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 13 | HTTP en lugar de HTTPS (Mobile) | ALTA | ✅ Corregido |
 | 14 | Console.log con errores sensibles | ALTA | ✅ Corregido |
 | 15 | Session Timeout puede ser evitado | MEDIA | ✅ Corregido |
+| 16 | Sin validación de tamaño en CSV Import | MEDIA | ✅ Corregido |
 
 ---
 
@@ -228,6 +229,22 @@ class PortalPasswordResetRequestView(APIView):
 - Complementa el idle timeout existente (240 min por defecto)
 - Previene sesiones perpetuas por actividad automatizada
 
+### ✅ CORREGIDO: Sin validación de tamaño en CSV Import
+**Riesgo:** Ataques de denegación de servicio mediante archivos CSV muy grandes
+**Archivos modificados:**
+- `apps/core/validators.py` - Nueva función `validate_csv_import()`
+- `apps/contacts/views.py` - Validación en import_csv
+- `apps/corporations/views.py` - Validación en import_csv
+- `apps/users/views.py` - Validación en import_csv
+
+**Solución implementada:**
+- Límite de tamaño de archivo: 10 MB máximo
+- Límite de filas: 10,000 filas máximo
+- Validación de extensión .csv
+- Validación de codificación UTF-8
+- Logging de imports grandes (>1000 filas)
+- Mensajes de error claros para el usuario
+
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
 **Estado:** CSP ya estaba configurado con:
@@ -258,11 +275,7 @@ class PortalPasswordResetRequestView(APIView):
 #### 4. No hay Certificate Pinning (Mobile)
 **Solución:** Implementar SSL pinning
 
-#### 5. Sin validación de tamaño en CSV Import
-**Ubicación:** `apps/users/views.py`
-**Solución:** Agregar límites de tamaño
-
-#### 6. Credenciales DB en código por defecto
+#### 5. Credenciales DB en código por defecto
 **Ubicación:** `config/settings/base.py:134`
 **Solución:** Usar sqlite para desarrollo local
 

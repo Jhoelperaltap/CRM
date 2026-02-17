@@ -3,6 +3,7 @@ import io
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.sessions.backends.base import CreateError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -12,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.core.validators import validate_csv_import
 from apps.users.authentication import (
     clear_auth_cookies,
     get_refresh_token_from_cookie,
@@ -102,7 +104,11 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated, IsAdminRole],
     )
     def import_csv(self, request):
-        """Import users from a CSV file."""
+        """
+        Import users from a CSV file.
+
+        Limits: Max 10MB file size, max 10000 rows.
+        """
         if not has_action_permission(request.user, "users", "import"):
             return Response(
                 {"detail": "You do not have import permission."},
@@ -115,7 +121,15 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        decoded = csv_file.read().decode("utf-8-sig")
+        # Validate file size and format
+        try:
+            decoded, _row_count = validate_csv_import(csv_file)
+        except DjangoValidationError as e:
+            return Response(
+                {"detail": str(e.message)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         reader = csv.DictReader(io.StringIO(decoded))
         created = 0
         errors = []

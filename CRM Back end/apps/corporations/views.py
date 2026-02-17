@@ -1,6 +1,7 @@
 import csv
 import io
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -8,6 +9,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from apps.core.validators import validate_csv_import
 from apps.corporations.filters import CorporationFilter
 from apps.corporations.models import Corporation
 from apps.corporations.serializers import (
@@ -136,6 +138,8 @@ class CorporationViewSet(viewsets.ModelViewSet):
         """
         Bulk-create corporations from an uploaded CSV file.
         Dedup: skip rows that match an existing EIN or name.
+
+        Limits: Max 10MB file size, max 10000 rows.
         """
         csv_file = request.FILES.get("file")
         if not csv_file:
@@ -144,11 +148,12 @@ class CorporationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Validate file size and format
         try:
-            decoded = csv_file.read().decode("utf-8-sig")
-        except UnicodeDecodeError:
+            decoded, _row_count = validate_csv_import(csv_file)
+        except DjangoValidationError as e:
             return Response(
-                {"detail": "File must be UTF-8 encoded."},
+                {"detail": str(e.message)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

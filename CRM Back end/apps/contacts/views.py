@@ -1,6 +1,7 @@
 import csv
 import io
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from rest_framework import status, viewsets
@@ -19,6 +20,7 @@ from apps.contacts.serializers import (
     ContactTagAssignmentSerializer,
     ContactTagSerializer,
 )
+from apps.core.validators import validate_csv_import
 from apps.users.permissions import ModulePermission
 
 
@@ -144,6 +146,8 @@ class ContactViewSet(viewsets.ModelViewSet):
             country, status, source, description, tags
 
         Returns a summary with counts of created and errored rows.
+
+        Limits: Max 10MB file size, max 10000 rows.
         """
         csv_file = request.FILES.get("file")
         if not csv_file:
@@ -152,12 +156,12 @@ class ContactViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Attempt to decode as UTF-8
+        # Validate file size and format
         try:
-            decoded = csv_file.read().decode("utf-8-sig")
-        except UnicodeDecodeError:
+            decoded, _row_count = validate_csv_import(csv_file)
+        except DjangoValidationError as e:
             return Response(
-                {"detail": "File must be UTF-8 encoded."},
+                {"detail": str(e.message)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

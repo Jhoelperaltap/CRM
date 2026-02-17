@@ -234,6 +234,79 @@ def validate_file_extension(
     return True
 
 
+# ---------------------------------------------------------------------------
+# CSV Import Limits
+# ---------------------------------------------------------------------------
+
+# Default limits for CSV imports (can be overridden in settings)
+CSV_MAX_FILE_SIZE_MB = 10  # Maximum file size in megabytes
+CSV_MAX_ROWS = 10000  # Maximum number of rows per import
+
+
+def validate_csv_import(
+    uploaded_file,
+    max_file_size_mb: int = CSV_MAX_FILE_SIZE_MB,
+    max_rows: int = CSV_MAX_ROWS,
+) -> Tuple[str, int]:
+    """
+    Validate a CSV file for import operations.
+
+    SECURITY: Prevents resource exhaustion attacks by limiting:
+    - File size (prevents memory exhaustion)
+    - Row count (prevents database exhaustion)
+
+    Args:
+        uploaded_file: Django UploadedFile instance
+        max_file_size_mb: Maximum file size in megabytes
+        max_rows: Maximum number of rows allowed
+
+    Returns:
+        Tuple of (decoded content, row count)
+
+    Raises:
+        ValidationError: If file exceeds limits or is invalid
+    """
+    # Check file extension
+    filename = uploaded_file.name.lower()
+    if not filename.endswith('.csv'):
+        raise ValidationError(
+            _("Invalid file type. Only CSV files are allowed.")
+        )
+
+    # Check file size
+    max_size_bytes = max_file_size_mb * 1024 * 1024
+    if uploaded_file.size > max_size_bytes:
+        raise ValidationError(
+            _("File too large. Maximum size is %(max)s MB.") % {"max": max_file_size_mb}
+        )
+
+    # Read and decode content
+    try:
+        content = uploaded_file.read()
+        # Try UTF-8 with BOM first, then without
+        try:
+            decoded = content.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            decoded = content.decode("utf-8")
+    except UnicodeDecodeError:
+        raise ValidationError(
+            _("File must be UTF-8 encoded.")
+        )
+
+    # Count rows (roughly by newlines to avoid parsing overhead)
+    line_count = decoded.count('\n')
+    if line_count > max_rows:
+        raise ValidationError(
+            _("File has too many rows. Maximum is %(max)s rows.") % {"max": max_rows}
+        )
+
+    # Log large imports
+    if line_count > 1000:
+        logger.info(f"Large CSV import: {line_count} rows from {filename}")
+
+    return decoded, line_count
+
+
 def validate_path_traversal(path: str) -> str:
     """
     Validate that a path doesn't contain traversal attacks.
