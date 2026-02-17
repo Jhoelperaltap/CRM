@@ -7,8 +7,15 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+# SECURITY: Admin URL is configurable via environment variable
+# Default to a non-standard path to make automated attacks harder
+# Set DJANGO_ADMIN_URL in production to a unique, random path
+ADMIN_URL = getattr(settings, "ADMIN_URL", "ejflow-admin-secure/")
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    # SECURITY: Using non-standard admin URL to prevent automated attacks
+    # Configure DJANGO_ADMIN_URL environment variable for custom path
+    path(ADMIN_URL, admin.site.urls),
     # Auth
     path("api/v1/auth/", include("apps.users.urls_auth")),
     # CRM modules

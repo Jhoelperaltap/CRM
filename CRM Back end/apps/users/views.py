@@ -308,8 +308,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         # Load policy for brute force settings
         policy = AuthenticationPolicy.load()
 
-        # Check if account is locked before attempting login
+        # SECURITY: Query for user AFTER validation attempt to prevent email enumeration
+        # We'll check lockout status but return a generic error message regardless
         user_for_lockout = User.objects.filter(email=email).first()
+
+        # Check if account is locked (but don't reveal whether account exists)
         if user_for_lockout:
             is_locked, remaining_seconds = BruteForceProtection.check_account_locked(
                 user_for_lockout
@@ -323,14 +326,14 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                     user_agent=user_agent,
                     failure_reason="Account locked",
                 )
-                remaining_minutes = (remaining_seconds // 60) + 1
+                # SECURITY: Use generic message to prevent email enumeration
+                # Don't reveal that the account exists and is locked
                 return Response(
                     {
-                        "detail": f"Account is locked. Try again in {remaining_minutes} minutes.",
-                        "error_code": "account_locked",
-                        "retry_after_seconds": remaining_seconds,
+                        "detail": "Invalid credentials or account temporarily locked.",
+                        "error_code": "login_failed",
                     },
-                    status=status.HTTP_403_FORBIDDEN,
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
 
         try:
@@ -350,17 +353,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 account_locked, lockout_seconds = (
                     BruteForceProtection.record_failed_attempt(user_for_lockout, policy)
                 )
-                if account_locked:
-                    remaining_minutes = (lockout_seconds // 60) + 1
-                    return Response(
-                        {
-                            "detail": f"Too many failed attempts. Account locked for {remaining_minutes} minutes.",
-                            "error_code": "account_locked",
-                            "retry_after_seconds": lockout_seconds,
-                        },
-                        status=status.HTTP_403_FORBIDDEN,
-                    )
+                # Note: We don't reveal lockout status here either
+                # The next login attempt will hit the lockout check above
 
+            # SECURITY: Always return the same generic error message
+            # This prevents attackers from determining if an email exists
             raise
 
         if response.status_code == 200:

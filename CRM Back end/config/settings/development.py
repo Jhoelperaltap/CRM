@@ -51,4 +51,7 @@ CORS_ALLOWED_ORIGINS = [  # noqa: F405
     "http://192.168.20.159:3000",
     "http://192.168.1.156:3000",
 ]
-CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins in development
+# SECURITY WARNING: This setting allows ANY website to make requests to the API.
+# This is acceptable in development but NEVER use this in production!
+# The base.py has a guard that raises an error if this is True in production.
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins in development ONLY

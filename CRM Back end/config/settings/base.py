@@ -72,6 +72,22 @@ if not DEBUG and ALLOWED_HOSTS == ["localhost", "127.0.0.1"]:
     warnings.warn("ALLOWED_HOSTS should be configured in production!", UserWarning)
 
 # ---------------------------------------------------------------------------
+# Admin URL Configuration
+# ---------------------------------------------------------------------------
+# SECURITY: Use a non-standard admin URL to prevent automated attacks
+# Set DJANGO_ADMIN_URL to a unique, random path in production
+# Example: DJANGO_ADMIN_URL=my-secret-admin-abc123/
+ADMIN_URL = env("DJANGO_ADMIN_URL", default="ejflow-admin-secure/")
+
+# ---------------------------------------------------------------------------
+# Trusted Proxy Configuration
+# ---------------------------------------------------------------------------
+# SECURITY: Only trust X-Forwarded-For from these IP addresses
+# Configure this when behind a load balancer or reverse proxy
+# Example: TRUSTED_PROXY_IPS=10.0.0.1,10.0.0.2
+TRUSTED_PROXY_IPS = env.list("TRUSTED_PROXY_IPS", default=[])
+
+# ---------------------------------------------------------------------------
 # Application definition
 # ---------------------------------------------------------------------------
 DJANGO_APPS = [
@@ -456,6 +472,13 @@ if not DEBUG and CORS_ALLOW_ALL_ORIGINS and CORS_ALLOW_CREDENTIALS:
         "authenticated requests to your API. Set CORS_ALLOW_ALL_ORIGINS=False and "
         "configure CORS_ALLOWED_ORIGINS with your specific domains."
     )
+
+# CSRF Trusted Origins - required for cross-origin form submissions
+# Defaults to CORS_ALLOWED_ORIGINS for consistency
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=CORS_ALLOWED_ORIGINS if not CORS_ALLOW_ALL_ORIGINS else [],
+)
 
 # ---------------------------------------------------------------------------
 # DRF Spectacular (OpenAPI docs)
