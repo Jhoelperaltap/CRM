@@ -11,8 +11,8 @@ test.describe('Authentication', () => {
     test('should display login form', async ({ page }) => {
       await page.goto('/login');
 
-      // Check for form elements - actual heading is "Ebenezer Tax Services"
-      await expect(page.getByText(/ebenezer tax services/i)).toBeVisible();
+      // Check for form elements - heading is "EJFLOW"
+      await expect(page.getByText(/ejflow/i)).toBeVisible();
       await expect(page.getByLabel(/email/i)).toBeVisible();
       await expect(page.getByLabel(/password/i)).toBeVisible();
       await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();

@@ -20,7 +20,7 @@ test.describe('Public Pages', () => {
     await page.goto('/login');
 
     // CardTitle renders as div, check for the title text instead
-    await expect(page.getByText('Ebenezer Tax Services')).toBeVisible();
+    await expect(page.getByText('EJFLOW')).toBeVisible();
   });
 
   test('login page should be keyboard navigable', async ({ page }) => {
