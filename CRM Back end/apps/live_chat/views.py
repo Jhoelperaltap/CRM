@@ -7,7 +7,26 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
+
+
+class PublicChatRateThrottle(AnonRateThrottle):
+    """Rate limit for public chat endpoints to prevent abuse."""
+
+    rate = "30/minute"
+
+
+class ChatSessionCreationThrottle(AnonRateThrottle):
+    """Stricter rate limit for creating new chat sessions."""
+
+    rate = "5/minute"
+
+
+class ChatMessageThrottle(AnonRateThrottle):
+    """Rate limit for sending chat messages."""
+
+    rate = "20/minute"
 
 from .models import (
     CannedResponse,
@@ -562,6 +581,12 @@ class PublicChatView(APIView):
 
     permission_classes = [AllowAny]
 
+    def get_throttles(self):
+        """Use different throttle for GET vs POST."""
+        if self.request.method == "POST":
+            return [ChatSessionCreationThrottle()]
+        return [PublicChatRateThrottle()]
+
     def get(self, request):
         """Get widget configuration and availability."""
         settings, _ = ChatWidgetSettings.objects.get_or_create(pk=1)
@@ -685,6 +710,12 @@ class PublicChatSessionView(APIView):
 
     permission_classes = [AllowAny]
 
+    def get_throttles(self):
+        """Use different throttle for GET vs POST."""
+        if self.request.method == "POST":
+            return [ChatMessageThrottle()]
+        return [PublicChatRateThrottle()]
+
     def get(self, request, session_id):
         """Get chat session messages."""
         try:
@@ -749,6 +780,7 @@ class PublicChatRatingView(APIView):
     """Public API for rating a chat."""
 
     permission_classes = [AllowAny]
+    throttle_classes = [PublicChatRateThrottle]
 
     def post(self, request, session_id):
         """Submit chat rating."""

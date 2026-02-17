@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.db.models import Count, F, Q, Sum
+from django.db.models.functions import TruncDay, TruncHour
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -342,16 +343,18 @@ class CampaignViewSet(viewsets.ModelViewSet):
         seven_days_ago = timezone.now() - timedelta(days=7)
         hourly_opens = (
             campaign.recipients.filter(opened_at__gte=seven_days_ago)
-            .extra(select={"hour": "date_trunc('hour', opened_at)"})
+            .annotate(hour=TruncHour("opened_at"))
             .values("hour")
             .annotate(count=Count("id"))
+            .order_by("hour")
         )
 
         hourly_clicks = (
             campaign.recipients.filter(clicked_at__gte=seven_days_ago)
-            .extra(select={"hour": "date_trunc('hour', clicked_at)"})
+            .annotate(hour=TruncHour("clicked_at"))
             .values("hour")
             .annotate(count=Count("id"))
+            .order_by("hour")
         )
 
         # A/B test results
@@ -611,7 +614,7 @@ class CampaignAnalyticsView(APIView):
 
         # Campaigns over time
         campaigns_over_time = list(
-            campaigns.extra(select={"date": "date_trunc('day', created_at)"})
+            campaigns.annotate(date=TruncDay("created_at"))
             .values("date")
             .annotate(
                 count=Count("id"),

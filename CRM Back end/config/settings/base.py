@@ -41,6 +41,27 @@ FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY", default="")
 # Generate with: python -c "import secrets, base64; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())"
 DOCUMENT_ENCRYPTION_KEY = env("DOCUMENT_ENCRYPTION_KEY", default="")
 
+# Security: Validate encryption keys in production
+if not DEBUG:
+    if not FIELD_ENCRYPTION_KEY:
+        import warnings
+
+        warnings.warn(
+            "SECURITY WARNING: FIELD_ENCRYPTION_KEY is not set! "
+            "PII data (SSN, etc.) will NOT be encrypted. "
+            "Generate with: python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\"",
+            UserWarning,
+        )
+    if not DOCUMENT_ENCRYPTION_KEY:
+        import warnings
+
+        warnings.warn(
+            "SECURITY WARNING: DOCUMENT_ENCRYPTION_KEY is not set! "
+            "Uploaded documents will NOT be encrypted at rest. "
+            "Generate with: python -c \"import secrets, base64; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())\"",
+            UserWarning,
+        )
+
 # Allowed hosts configuration
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
@@ -425,6 +446,16 @@ CORS_ALLOW_HEADERS = [
 # For development - allow all origins (comment out in production)
 # SECURITY: Default to False - only allow specified origins
 CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=False)
+
+# SECURITY: Prevent CORS misconfiguration in production
+# Having CORS_ALLOW_ALL_ORIGINS=True with CORS_ALLOW_CREDENTIALS=True is dangerous
+if not DEBUG and CORS_ALLOW_ALL_ORIGINS and CORS_ALLOW_CREDENTIALS:
+    raise ValueError(
+        "SECURITY ERROR: CORS_ALLOW_ALL_ORIGINS=True with CORS_ALLOW_CREDENTIALS=True "
+        "is a critical security vulnerability! This allows any website to make "
+        "authenticated requests to your API. Set CORS_ALLOW_ALL_ORIGINS=False and "
+        "configure CORS_ALLOWED_ORIGINS with your specific domains."
+    )
 
 # ---------------------------------------------------------------------------
 # DRF Spectacular (OpenAPI docs)

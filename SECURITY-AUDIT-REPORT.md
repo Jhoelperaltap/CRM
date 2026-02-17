@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 2.0 (Actualizado con SSL Certificate Pinning)
+**Versión:** 2.1 (Actualizado con validaciones adicionales)
 
 ---
 
@@ -19,9 +19,9 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 11 | **4** |
 | **ALTA** | 14 | 9 | **5** |
-| **MEDIA** | 13 | 5 | **8** |
+| **MEDIA** | 13 | 12 | **1** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 25 | **19** |
+| **TOTAL** | 44 | 32 | **12** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -47,6 +47,13 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 18 | JWT_SIGNING_KEY con valor por defecto | CRÍTICA | ✅ Corregido |
 | 19 | Debug endpoint expone código TOTP | CRÍTICA | ✅ Corregido |
 | 20 | No hay Certificate Pinning (Mobile) | MEDIA | ✅ Corregido |
+| 21 | Pagination sin validación de input | MEDIA | ✅ Corregido |
+| 22 | SQL .extra() deprecated (marketing) | MEDIA | ✅ Corregido |
+| 23 | Rate limiting KB públicos | MEDIA | ✅ Corregido |
+| 24 | Rate limiting Live Chat públicos | MEDIA | ✅ Corregido |
+| 25 | CORS misconfiguration validation | MEDIA | ✅ Corregido |
+| 26 | Encryption keys sin validar | MEDIA | ✅ Corregido |
+| 27 | File upload sin validar magic bytes | MEDIA | ✅ Corregido |
 
 ---
 
@@ -313,6 +320,69 @@ if request.query_params.get("debug") == "true" and user.is_2fa_enabled:
 4. Build con `expo run:android` / `expo run:ios`
 
 **Nota:** SSL Pinning NO funciona en Expo Go, requiere development build.
+
+### ✅ CORREGIDO: Pagination sin validación de input
+**Riesgo:** Excepciones no manejadas al recibir valores inválidos en limit/offset
+**Archivo modificado:** `apps/knowledge_base/views.py`
+
+**Solución implementada:**
+- Validación try-except para conversión a int
+- Límites razonables: limit máximo 100, offset mínimo 0
+- Response 400 con mensaje claro si valores inválidos
+
+### ✅ CORREGIDO: SQL .extra() deprecated
+**Riesgo:** .extra() es deprecated y puede ser vulnerable a SQL injection si se modifica incorrectamente
+**Archivo modificado:** `apps/marketing/views.py`
+
+**Solución implementada:**
+- Reemplazado `.extra(select={"hour": "date_trunc(...)"})` con `TruncHour()` y `TruncDay()`
+- Uso de funciones ORM seguras y portables de Django
+
+### ✅ CORREGIDO: Rate limiting endpoints públicos KB
+**Riesgo:** Endpoints públicos de knowledge base sin límite pueden ser abusados
+**Archivo modificado:** `apps/knowledge_base/views.py`
+
+**Solución implementada:**
+- `PublicKBRateThrottle`: 60 requests/minuto para consultas públicas
+- `FeedbackRateThrottle`: 10 requests/hora para feedback (más estricto)
+- Aplicado a: PublicArticleView, PublicCategoryView, PublicFAQView, ArticleFeedbackView, SearchView
+
+### ✅ CORREGIDO: Rate limiting endpoints públicos Live Chat
+**Riesgo:** Chat widget público sin límite permite spam y abuso
+**Archivo modificado:** `apps/live_chat/views.py`
+
+**Solución implementada:**
+- `PublicChatRateThrottle`: 30 requests/minuto para consultas
+- `ChatSessionCreationThrottle`: 5 requests/minuto para crear sesiones
+- `ChatMessageThrottle`: 20 mensajes/minuto por IP
+- Aplicado a: PublicChatView, PublicChatSessionView, PublicChatRatingView
+
+### ✅ CORREGIDO: CORS misconfiguration validation
+**Riesgo:** Configurar CORS_ALLOW_ALL_ORIGINS=True con credentials en producción es crítico
+**Archivo modificado:** `config/settings/base.py`
+
+**Solución implementada:**
+- Validación en startup: lanza ValueError si CORS_ALLOW_ALL_ORIGINS=True + CORS_ALLOW_CREDENTIALS=True en producción
+- Previene configuración accidental que permite cualquier sitio hacer requests autenticados
+
+### ✅ CORREGIDO: Encryption keys sin validar
+**Riesgo:** Si FIELD_ENCRYPTION_KEY o DOCUMENT_ENCRYPTION_KEY no están configuradas, datos sensibles no se encriptan
+**Archivo modificado:** `config/settings/base.py`
+
+**Solución implementada:**
+- Warnings en producción si las claves no están configuradas
+- Instrucciones de generación incluidas en el mensaje de warning
+- No bloquea el startup pero alerta claramente del riesgo
+
+### ✅ CORREGIDO: File upload sin validar magic bytes
+**Riesgo:** Archivos pueden subirse con extensión/content-type falsos
+**Archivo modificado:** `apps/documents/views.py`
+
+**Solución implementada:**
+- Validación de magic bytes usando `validate_file_type()` del módulo validators
+- Solo acepta archivos cuyo contenido coincide con la extensión
+- Logging de uploads rechazados para monitoreo de seguridad
+- Filename sanitizado para headers HTTP (RFC 5987)
 
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`

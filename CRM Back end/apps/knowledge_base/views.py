@@ -4,7 +4,20 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
+
+
+class PublicKBRateThrottle(AnonRateThrottle):
+    """Rate limit for public knowledge base endpoints."""
+
+    rate = "60/minute"
+
+
+class FeedbackRateThrottle(AnonRateThrottle):
+    """Rate limit for feedback submissions to prevent spam."""
+
+    rate = "10/hour"
 
 from .models import FAQ, Article, ArticleAttachment, ArticleFeedback, Category
 from .serializers import (
@@ -274,6 +287,7 @@ class PublicArticleView(APIView):
     """
 
     permission_classes = [AllowAny]
+    throttle_classes = [PublicKBRateThrottle]
 
     def get(self, request, slug=None):
         if slug:
@@ -312,9 +326,18 @@ class PublicArticleView(APIView):
                     | Q(content__icontains=search)
                 )
 
-            # Pagination
-            limit = int(request.query_params.get("limit", 20))
-            offset = int(request.query_params.get("offset", 0))
+            # Pagination with input validation
+            try:
+                limit = int(request.query_params.get("limit", 20))
+                offset = int(request.query_params.get("offset", 0))
+                # Enforce reasonable limits to prevent abuse
+                limit = max(1, min(limit, 100))  # Between 1 and 100
+                offset = max(0, offset)  # Non-negative
+            except (ValueError, TypeError):
+                return Response(
+                    {"error": "Invalid limit or offset value"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             total = articles.count()
             articles = articles[offset : offset + limit]
@@ -336,6 +359,7 @@ class PublicCategoryView(APIView):
     """
 
     permission_classes = [AllowAny]
+    throttle_classes = [PublicKBRateThrottle]
 
     def get(self, request):
         categories = Category.objects.filter(
@@ -352,6 +376,7 @@ class PublicFAQView(APIView):
     """
 
     permission_classes = [AllowAny]
+    throttle_classes = [PublicKBRateThrottle]
 
     def get(self, request):
         faqs = (
@@ -382,6 +407,7 @@ class ArticleFeedbackView(APIView):
     """
 
     permission_classes = [AllowAny]
+    throttle_classes = [FeedbackRateThrottle]
 
     def post(self, request, article_id):
         try:
@@ -479,6 +505,7 @@ class SearchView(APIView):
     """
 
     permission_classes = [AllowAny]
+    throttle_classes = [PublicKBRateThrottle]
 
     def get(self, request):
         query = request.query_params.get("q", "").strip()

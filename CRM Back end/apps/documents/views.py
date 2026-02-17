@@ -1,5 +1,8 @@
+import logging
 import mimetypes
+from urllib.parse import quote
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Count, Q
 from django.http import FileResponse
 from django.utils.decorators import method_decorator
@@ -11,6 +14,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.core.throttling import FileUploadRateThrottle
+from apps.core.validators import validate_file_type
+
+logger = logging.getLogger(__name__)
 from apps.documents.filters import DocumentFilter, DocumentLinkFilter
 from apps.documents.models import (
     Document,
@@ -186,11 +192,17 @@ class DocumentViewSet(viewsets.ModelViewSet):
         extra = {"uploaded_by": self.request.user}
         if uploaded_file:
             extra["file_size"] = uploaded_file.size
-            extra["mime_type"] = (
-                uploaded_file.content_type
-                or mimetypes.guess_type(uploaded_file.name)[0]
-                or "application/octet-stream"
-            )
+            # SECURITY: Validate file content using magic bytes, not just extension/content-type
+            # This prevents file type spoofing attacks
+            try:
+                validated_mime = validate_file_type(uploaded_file)
+                extra["mime_type"] = validated_mime
+            except DjangoValidationError as e:
+                # Log the rejected upload for security monitoring
+                logger.warning(
+                    f"Document upload rejected for user {self.request.user.id}: {e.message}"
+                )
+                raise
         serializer.save(**extra)
 
     # ---- custom actions --------------------------------------------------
@@ -312,11 +324,21 @@ class DocumentViewSet(viewsets.ModelViewSet):
             document.file.open("rb"),
             content_type=content_type,
         )
+        # SECURITY: Properly sanitize filename for HTTP headers
+        # Use RFC 5987 encoding to handle special characters safely
         filename = document.file.name.split("/")[-1]
+        # Remove any control characters or null bytes
+        filename = "".join(c for c in filename if c.isprintable() and c != "\x00")
+        # Encode for Content-Disposition header (RFC 5987)
+        encoded_filename = quote(filename, safe="")
         if inline_view:
-            response["Content-Disposition"] = f'inline; filename="{filename}"'
+            response["Content-Disposition"] = (
+                f"inline; filename*=UTF-8''{encoded_filename}"
+            )
         else:
-            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            response["Content-Disposition"] = (
+                f"attachment; filename*=UTF-8''{encoded_filename}"
+            )
         # Allow embedding in iframes (for PDF preview)
         response["X-Frame-Options"] = "SAMEORIGIN"
         response["Content-Security-Policy"] = (
