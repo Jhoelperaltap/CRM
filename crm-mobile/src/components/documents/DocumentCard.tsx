@@ -1,28 +1,41 @@
 import React from 'react';
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet, Pressable, View, useColorScheme } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PortalDocument, DOCUMENT_TYPE_LABELS } from '../../types/documents';
 import { StatusBadge } from '../ui/StatusBadge';
 import { formatSmartTime } from '../../utils/date';
+import { iconColors, darkIconColors } from '../../constants/colors';
 
 interface DocumentCardProps {
   document: PortalDocument;
   onPress?: () => void;
 }
 
-// Get icon based on document type or mime type
-function getDocumentIcon(doc: PortalDocument): keyof typeof MaterialCommunityIcons.glyphMap {
+type DocIconType = 'pdf' | 'image' | 'word' | 'excel' | 'text' | 'generic';
+
+// Get icon and color based on document type or mime type
+function getDocumentIconInfo(doc: PortalDocument): { icon: keyof typeof MaterialCommunityIcons.glyphMap; type: DocIconType } {
   const mime = doc.mime_type?.toLowerCase() || '';
 
-  if (mime.includes('pdf')) return 'file-pdf-box';
-  if (mime.includes('image')) return 'file-image';
-  if (mime.includes('word') || mime.includes('document')) return 'file-word';
-  if (mime.includes('excel') || mime.includes('spreadsheet')) return 'file-excel';
-  if (mime.includes('text')) return 'file-document-outline';
+  if (mime.includes('pdf')) return { icon: 'file-pdf-box', type: 'pdf' };
+  if (mime.includes('image')) return { icon: 'file-image', type: 'image' };
+  if (mime.includes('word') || mime.includes('document')) return { icon: 'file-word', type: 'word' };
+  if (mime.includes('excel') || mime.includes('spreadsheet')) return { icon: 'file-excel', type: 'excel' };
+  if (mime.includes('text')) return { icon: 'file-document-outline', type: 'text' };
 
-  return 'file-outline';
+  return { icon: 'file-outline', type: 'generic' };
 }
+
+// Background colors for icon circles
+const iconBackgrounds: Record<DocIconType, string> = {
+  pdf: '#FFEBEE',
+  image: '#E8F5E9',
+  word: '#E3F2FD',
+  excel: '#E8F5E9',
+  text: '#F5F5F5',
+  generic: '#ECEFF1',
+};
 
 // Format file size for display
 function formatFileSize(bytes: number): string {
@@ -35,18 +48,23 @@ function formatFileSize(bytes: number): string {
 
 export function DocumentCard({ document, onPress }: DocumentCardProps) {
   const theme = useTheme();
-  const icon = getDocumentIcon(document);
+  const colorScheme = useColorScheme();
+  const icons = colorScheme === 'dark' ? darkIconColors : iconColors;
+  const { icon, type } = getDocumentIconInfo(document);
+  const iconColor = icons[type];
+  const bgColor = iconBackgrounds[type];
 
   return (
     <Pressable onPress={onPress}>
       <Card style={styles.card} mode="elevated">
         <Card.Content style={styles.content}>
-          <MaterialCommunityIcons
-            name={icon}
-            size={40}
-            color={theme.colors.primary}
-            style={styles.icon}
-          />
+          <View style={[styles.iconCircle, { backgroundColor: bgColor }]}>
+            <MaterialCommunityIcons
+              name={icon}
+              size={32}
+              color={iconColor}
+            />
+          </View>
 
           <Text variant="titleMedium" style={styles.title} numberOfLines={2}>
             {document.title}
@@ -97,12 +115,18 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
+    borderRadius: 12,
   },
   content: {
     gap: 6,
   },
-  icon: {
-    marginBottom: 4,
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   title: {
     fontWeight: '600',

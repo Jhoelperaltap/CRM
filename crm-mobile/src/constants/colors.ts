@@ -147,3 +147,123 @@ export const statusColors = {
 } as const;
 
 export type StatusColorKey = keyof typeof statusColors;
+
+// Vibrant icon colors for a more lively UI
+export const iconColors = {
+  // Navigation tab icons
+  home: '#4CAF50',        // Green
+  cases: '#FF9800',       // Orange
+  documents: '#2196F3',   // Blue
+  messages: '#9C27B0',    // Purple
+  chat: '#00BCD4',        // Cyan
+  appointments: '#E91E63', // Pink
+  notifications: '#F44336', // Red
+  profile: '#607D8B',     // Blue Gray
+
+  // Dashboard stat icons
+  activeCases: '#FF5722',    // Deep Orange
+  unreadMessages: '#673AB7', // Deep Purple
+  upcomingAppointments: '#009688', // Teal
+
+  // Document type icons
+  pdf: '#F44336',         // Red
+  image: '#4CAF50',       // Green
+  word: '#2196F3',        // Blue
+  excel: '#4CAF50',       // Green
+  text: '#9E9E9E',        // Gray
+  generic: '#757575',     // Dark Gray
+
+  // Action icons
+  upload: '#00BCD4',      // Cyan
+  download: '#4CAF50',    // Green
+  send: '#2196F3',        // Blue
+  edit: '#FF9800',        // Orange
+  delete: '#F44336',      // Red
+  add: '#4CAF50',         // Green
+
+  // Status icons
+  success: '#4CAF50',     // Green
+  warning: '#FF9800',     // Orange
+  error: '#F44336',       // Red
+  info: '#2196F3',        // Blue
+
+  // Profile icons
+  phone: '#4CAF50',       // Green
+  address: '#E91E63',     // Pink
+  birthday: '#FF9800',    // Orange
+  security: '#607D8B',    // Blue Gray
+  logout: '#F44336',      // Red
+  lock: '#9C27B0',        // Purple
+
+  // Notification type icons
+  newMessage: '#9C27B0',  // Purple
+  caseUpdate: '#FF9800',  // Orange
+  documentStatus: '#2196F3', // Blue
+  appointmentReminder: '#E91E63', // Pink
+  system: '#607D8B',      // Blue Gray
+
+  // Checklist icons
+  completed: '#4CAF50',   // Green
+  pending: '#FF9800',     // Orange
+  overdue: '#F44336',     // Red
+} as const;
+
+// Dark mode icon colors (slightly brighter for visibility)
+export const darkIconColors = {
+  // Navigation tab icons
+  home: '#66BB6A',        // Light Green
+  cases: '#FFB74D',       // Light Orange
+  documents: '#64B5F6',   // Light Blue
+  messages: '#BA68C8',    // Light Purple
+  chat: '#4DD0E1',        // Light Cyan
+  appointments: '#F06292', // Light Pink
+  notifications: '#EF5350', // Light Red
+  profile: '#90A4AE',     // Light Blue Gray
+
+  // Dashboard stat icons
+  activeCases: '#FF7043',    // Light Deep Orange
+  unreadMessages: '#9575CD', // Light Deep Purple
+  upcomingAppointments: '#4DB6AC', // Light Teal
+
+  // Document type icons
+  pdf: '#EF5350',         // Light Red
+  image: '#66BB6A',       // Light Green
+  word: '#64B5F6',        // Light Blue
+  excel: '#66BB6A',       // Light Green
+  text: '#BDBDBD',        // Light Gray
+  generic: '#9E9E9E',     // Gray
+
+  // Action icons
+  upload: '#4DD0E1',      // Light Cyan
+  download: '#66BB6A',    // Light Green
+  send: '#64B5F6',        // Light Blue
+  edit: '#FFB74D',        // Light Orange
+  delete: '#EF5350',      // Light Red
+  add: '#66BB6A',         // Light Green
+
+  // Status icons
+  success: '#66BB6A',     // Light Green
+  warning: '#FFB74D',     // Light Orange
+  error: '#EF5350',       // Light Red
+  info: '#64B5F6',        // Light Blue
+
+  // Profile icons
+  phone: '#66BB6A',       // Light Green
+  address: '#F06292',     // Light Pink
+  birthday: '#FFB74D',    // Light Orange
+  security: '#90A4AE',    // Light Blue Gray
+  logout: '#EF5350',      // Light Red
+  lock: '#BA68C8',        // Light Purple
+
+  // Notification type icons
+  newMessage: '#BA68C8',  // Light Purple
+  caseUpdate: '#FFB74D',  // Light Orange
+  documentStatus: '#64B5F6', // Light Blue
+  appointmentReminder: '#F06292', // Light Pink
+  system: '#90A4AE',      // Light Blue Gray
+
+  // Checklist icons
+  completed: '#66BB6A',   // Light Green
+  pending: '#FFB74D',     // Light Orange
+  overdue: '#EF5350',     // Light Red
+} as const;

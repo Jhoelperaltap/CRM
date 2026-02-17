@@ -1,14 +1,17 @@
 import { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, useColorScheme } from 'react-native';
 import { Tabs, Redirect } from 'expo-router';
 import { useTheme, Badge } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore, selectIsAuthenticated, selectIsHydrated } from '../../src/stores/auth-store';
 import { usePushNotifications } from '../../src/hooks/usePushNotifications';
 import { getUnreadCount } from '../../src/api/notifications';
+import { iconColors, darkIconColors } from '../../src/constants/colors';
 
 export default function TabsLayout() {
   const theme = useTheme();
+  const colorScheme = useColorScheme();
+  const icons = colorScheme === 'dark' ? darkIconColors : iconColors;
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const isHydrated = useAuthStore(selectIsHydrated);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -59,8 +62,12 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "home" : "home-outline"}
+              size={size}
+              color={focused ? icons.home : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />
@@ -69,8 +76,12 @@ export default function TabsLayout() {
         options={{
           title: 'Cases',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="folder" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "folder" : "folder-outline"}
+              size={size}
+              color={focused ? icons.cases : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />
@@ -79,8 +90,12 @@ export default function TabsLayout() {
         options={{
           title: 'Documents',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="file-document" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "file-document" : "file-document-outline"}
+              size={size}
+              color={focused ? icons.documents : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />
@@ -89,8 +104,12 @@ export default function TabsLayout() {
         options={{
           title: 'Messages',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="message" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "message" : "message-outline"}
+              size={size}
+              color={focused ? icons.messages : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />
@@ -99,8 +118,12 @@ export default function TabsLayout() {
         options={{
           title: 'Chat',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="robot" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "robot" : "robot-outline"}
+              size={size}
+              color={focused ? icons.chat : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />
@@ -108,8 +131,12 @@ export default function TabsLayout() {
         name="appointments"
         options={{
           title: 'Appointments',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "calendar" : "calendar-outline"}
+              size={size}
+              color={focused ? icons.appointments : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />
@@ -118,15 +145,19 @@ export default function TabsLayout() {
         options={{
           title: 'Alerts',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ focused, size }) => (
             <View>
-              <MaterialCommunityIcons name="bell" size={size} color={color} />
+              <MaterialCommunityIcons
+                name={focused ? "bell" : "bell-outline"}
+                size={size}
+                color={focused ? icons.notifications : theme.colors.onSurfaceVariant}
+              />
               {unreadCount > 0 && (
                 <Badge
                   size={16}
                   style={[
                     styles.badge,
-                    { backgroundColor: theme.colors.error },
+                    { backgroundColor: icons.notifications },
                   ]}
                 >
                   {unreadCount > 9 ? '9+' : unreadCount}
@@ -141,8 +172,12 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" size={size} color={color} />
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "account" : "account-outline"}
+              size={size}
+              color={focused ? icons.profile : theme.colors.onSurfaceVariant}
+            />
           ),
         }}
       />

@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, useColorScheme } from 'react-native';
 import { Text, Card, Button, useTheme, Divider } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -10,9 +10,12 @@ import { getMessages } from '../../src/api/messages';
 import { getAppointments } from '../../src/api/appointments';
 import { LoadingSpinner } from '../../src/components/ui/LoadingSpinner';
 import { formatDate } from '../../src/utils/date';
+import { iconColors, darkIconColors } from '../../src/constants/colors';
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const colorScheme = useColorScheme();
+  const icons = colorScheme === 'dark' ? darkIconColors : iconColors;
   const contactName = useAuthStore(selectContactName);
 
   // Fetch summary data
@@ -86,16 +89,18 @@ export default function HomeScreen() {
             {/* Summary Cards */}
             <View style={styles.summaryGrid}>
               <Card
-                style={[styles.summaryCard, { backgroundColor: theme.colors.primaryContainer }]}
+                style={[styles.summaryCard, { backgroundColor: '#FFF3E0' }]}
                 onPress={() => router.push('/(tabs)/cases')}
               >
                 <Card.Content style={styles.summaryCardContent}>
-                  <MaterialCommunityIcons
-                    name="folder-open"
-                    size={32}
-                    color={theme.colors.primary}
-                  />
-                  <Text variant="headlineMedium" style={styles.summaryNumber}>
+                  <View style={[styles.iconCircle, { backgroundColor: '#FFCCBC' }]}>
+                    <MaterialCommunityIcons
+                      name="folder-open"
+                      size={28}
+                      color={icons.activeCases}
+                    />
+                  </View>
+                  <Text variant="headlineMedium" style={[styles.summaryNumber, { color: icons.activeCases }]}>
                     {activeCasesCount}
                   </Text>
                   <Text variant="bodySmall">Active Cases</Text>
@@ -103,16 +108,18 @@ export default function HomeScreen() {
               </Card>
 
               <Card
-                style={[styles.summaryCard, { backgroundColor: theme.colors.secondaryContainer }]}
+                style={[styles.summaryCard, { backgroundColor: '#EDE7F6' }]}
                 onPress={() => router.push('/(tabs)/messages')}
               >
                 <Card.Content style={styles.summaryCardContent}>
-                  <MaterialCommunityIcons
-                    name="email"
-                    size={32}
-                    color={theme.colors.secondary}
-                  />
-                  <Text variant="headlineMedium" style={styles.summaryNumber}>
+                  <View style={[styles.iconCircle, { backgroundColor: '#D1C4E9' }]}>
+                    <MaterialCommunityIcons
+                      name="email"
+                      size={28}
+                      color={icons.unreadMessages}
+                    />
+                  </View>
+                  <Text variant="headlineMedium" style={[styles.summaryNumber, { color: icons.unreadMessages }]}>
                     {unreadMessagesCount}
                   </Text>
                   <Text variant="bodySmall">Unread Messages</Text>
@@ -120,16 +127,18 @@ export default function HomeScreen() {
               </Card>
 
               <Card
-                style={[styles.summaryCard, { backgroundColor: theme.colors.tertiaryContainer }]}
+                style={[styles.summaryCard, { backgroundColor: '#E0F2F1' }]}
                 onPress={() => router.push('/(tabs)/appointments')}
               >
                 <Card.Content style={styles.summaryCardContent}>
-                  <MaterialCommunityIcons
-                    name="calendar-clock"
-                    size={32}
-                    color={theme.colors.tertiary}
-                  />
-                  <Text variant="headlineMedium" style={styles.summaryNumber}>
+                  <View style={[styles.iconCircle, { backgroundColor: '#B2DFDB' }]}>
+                    <MaterialCommunityIcons
+                      name="calendar-clock"
+                      size={28}
+                      color={icons.upcomingAppointments}
+                    />
+                  </View>
+                  <Text variant="headlineMedium" style={[styles.summaryNumber, { color: icons.upcomingAppointments }]}>
                     {upcomingAppointmentsCount}
                   </Text>
                   <Text variant="bodySmall">Appointments</Text>
@@ -139,15 +148,17 @@ export default function HomeScreen() {
 
             {/* Next Appointment */}
             {nextAppointment && (
-              <Card style={styles.appointmentCard}>
+              <Card style={[styles.appointmentCard, { borderLeftWidth: 4, borderLeftColor: icons.appointments }]}>
                 <Card.Content>
                   <View style={styles.appointmentHeader}>
-                    <MaterialCommunityIcons
-                      name="calendar"
-                      size={24}
-                      color={theme.colors.primary}
-                    />
-                    <Text variant="titleMedium" style={styles.appointmentTitle}>
+                    <View style={[styles.smallIconCircle, { backgroundColor: '#FCE4EC' }]}>
+                      <MaterialCommunityIcons
+                        name="calendar"
+                        size={20}
+                        color={icons.appointments}
+                      />
+                    </View>
+                    <Text variant="titleMedium" style={[styles.appointmentTitle, { color: icons.appointments }]}>
                       Next Appointment
                     </Text>
                   </View>
@@ -223,14 +234,31 @@ const styles = StyleSheet.create({
   summaryCard: {
     flex: 1,
     minWidth: '30%',
+    borderRadius: 16,
+    elevation: 2,
   },
   summaryCardContent: {
     alignItems: 'center',
     paddingVertical: 16,
   },
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  smallIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   summaryNumber: {
     fontWeight: '700',
-    marginVertical: 8,
+    marginVertical: 4,
   },
   appointmentCard: {
     marginBottom: 24,

@@ -1,12 +1,15 @@
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, useColorScheme } from 'react-native';
 import { Text, Card, Button, Divider, List, useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../../src/hooks/useAuth';
 import { useAuthStore, selectContact } from '../../../src/stores/auth-store';
+import { iconColors, darkIconColors } from '../../../src/constants/colors';
 
 export default function ProfileScreen() {
   const theme = useTheme();
+  const colorScheme = useColorScheme();
+  const icons = colorScheme === 'dark' ? darkIconColors : iconColors;
   const { logout, isLoggingOut } = useAuth();
   const contact = useAuthStore(selectContact);
 
@@ -64,11 +67,13 @@ export default function ProfileScreen() {
 
           {contact.phone && (
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons
-                name="phone"
-                size={20}
-                color={theme.colors.onSurfaceVariant}
-              />
+              <View style={[styles.iconCircle, { backgroundColor: '#E8F5E9' }]}>
+                <MaterialCommunityIcons
+                  name="phone"
+                  size={18}
+                  color={icons.phone}
+                />
+              </View>
               <View style={styles.infoContent}>
                 <Text
                   variant="bodySmall"
@@ -83,11 +88,13 @@ export default function ProfileScreen() {
 
           {contact.address && (
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={20}
-                color={theme.colors.onSurfaceVariant}
-              />
+              <View style={[styles.iconCircle, { backgroundColor: '#FCE4EC' }]}>
+                <MaterialCommunityIcons
+                  name="map-marker"
+                  size={18}
+                  color={icons.address}
+                />
+              </View>
               <View style={styles.infoContent}>
                 <Text
                   variant="bodySmall"
@@ -107,11 +114,13 @@ export default function ProfileScreen() {
 
           {contact.date_of_birth && (
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons
-                name="cake"
-                size={20}
-                color={theme.colors.onSurfaceVariant}
-              />
+              <View style={[styles.iconCircle, { backgroundColor: '#FFF3E0' }]}>
+                <MaterialCommunityIcons
+                  name="cake"
+                  size={18}
+                  color={icons.birthday}
+                />
+              </View>
               <View style={styles.infoContent}>
                 <Text
                   variant="bodySmall"
@@ -126,11 +135,13 @@ export default function ProfileScreen() {
 
           {contact.ssn_last_four && (
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons
-                name="shield-account"
-                size={20}
-                color={theme.colors.onSurfaceVariant}
-              />
+              <View style={[styles.iconCircle, { backgroundColor: '#ECEFF1' }]}>
+                <MaterialCommunityIcons
+                  name="shield-account"
+                  size={18}
+                  color={icons.security}
+                />
+              </View>
               <View style={styles.infoContent}>
                 <Text
                   variant="bodySmall"
@@ -149,7 +160,11 @@ export default function ProfileScreen() {
       <Card style={styles.settingsCard}>
         <List.Item
           title="Change Password"
-          left={(props) => <List.Icon {...props} icon="lock" />}
+          left={() => (
+            <View style={[styles.settingsIconCircle, { backgroundColor: '#F3E5F5' }]}>
+              <MaterialCommunityIcons name="lock" size={20} color={icons.lock} />
+            </View>
+          )}
           right={(props) => <List.Icon {...props} icon="chevron-right" />}
           onPress={() => router.push('/(tabs)/profile/change-password')}
         />
@@ -217,11 +232,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 12,
   },
+  iconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
   infoContent: {
     flex: 1,
   },
   settingsCard: {
     marginBottom: 24,
+    borderRadius: 12,
   },
   logoutButton: {
     marginBottom: 24,

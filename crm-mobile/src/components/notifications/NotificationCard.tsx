@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Pressable, View } from 'react-native';
+import { StyleSheet, Pressable, View, useColorScheme } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
@@ -8,18 +8,33 @@ import {
   NOTIFICATION_TYPE_LABELS,
 } from '../../types/notifications';
 import { formatSmartTime } from '../../utils/date';
+import { iconColors, darkIconColors } from '../../constants/colors';
 
 interface NotificationCardProps {
   notification: PortalNotification;
   onPress: () => void;
 }
 
+// Map notification types to icon colors
+const notificationColorMap: Record<string, { icon: keyof typeof iconColors; bg: string }> = {
+  new_message: { icon: 'newMessage', bg: '#F3E5F5' },
+  case_update: { icon: 'caseUpdate', bg: '#FFF3E0' },
+  document_status: { icon: 'documentStatus', bg: '#E3F2FD' },
+  appointment_reminder: { icon: 'appointmentReminder', bg: '#FCE4EC' },
+  system: { icon: 'system', bg: '#ECEFF1' },
+};
+
 export function NotificationCard({ notification, onPress }: NotificationCardProps) {
   const theme = useTheme();
+  const colorScheme = useColorScheme();
+  const icons = colorScheme === 'dark' ? darkIconColors : iconColors;
   const isUnread = !notification.is_read;
 
   const iconName = NOTIFICATION_TYPE_ICONS[notification.notification_type] || 'bell';
   const typeLabel = NOTIFICATION_TYPE_LABELS[notification.notification_type] || 'Notification';
+
+  const colorConfig = notificationColorMap[notification.notification_type] || notificationColorMap.system;
+  const iconColor = icons[colorConfig.icon as keyof typeof icons] || icons.system;
 
   return (
     <Pressable onPress={onPress}>
@@ -37,21 +52,19 @@ export function NotificationCard({ notification, onPress }: NotificationCardProp
                 style={[
                   styles.iconBackground,
                   {
-                    backgroundColor: isUnread
-                      ? theme.colors.primary
-                      : theme.colors.surfaceVariant,
+                    backgroundColor: isUnread ? colorConfig.bg : theme.colors.surfaceVariant,
                   },
                 ]}
               >
                 <MaterialCommunityIcons
                   name={iconName as any}
                   size={20}
-                  color={isUnread ? theme.colors.onPrimary : theme.colors.onSurfaceVariant}
+                  color={isUnread ? iconColor : theme.colors.onSurfaceVariant}
                 />
               </View>
               {isUnread && (
                 <View
-                  style={[styles.unreadDot, { backgroundColor: theme.colors.error }]}
+                  style={[styles.unreadDot, { backgroundColor: iconColor }]}
                 />
               )}
             </View>
