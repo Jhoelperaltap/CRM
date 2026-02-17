@@ -331,15 +331,31 @@ REST_FRAMEWORK = {
 # ---------------------------------------------------------------------------
 # Simple JWT
 # ---------------------------------------------------------------------------
+_default_jwt_key = "jwt-secret-change-in-production-key-32bytes"
+_jwt_signing_key = env("JWT_SIGNING_KEY", default=_default_jwt_key)
+
+# SECURITY: Validate JWT key in production
+if not DEBUG:
+    if _jwt_signing_key == _default_jwt_key:
+        raise ValueError(
+            "SECURITY ERROR: JWT_SIGNING_KEY must be set in production! "
+            'Generate one with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
+        )
+    if len(_jwt_signing_key) < 32:
+        import warnings
+
+        warnings.warn(
+            "JWT_SIGNING_KEY should be at least 32 characters for security",
+            UserWarning,
+        )
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": env(
-        "JWT_SIGNING_KEY", default="jwt-secret-change-in-production-key-32bytes"
-    ),
+    "SIGNING_KEY": _jwt_signing_key,
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
@@ -355,18 +371,17 @@ SIMPLE_JWT = {
 # In PRODUCTION, set a DIFFERENT key via PORTAL_JWT_SIGNING_KEY environment variable!
 PORTAL_JWT_SIGNING_KEY = env(
     "PORTAL_JWT_SIGNING_KEY",
-    default=SIMPLE_JWT[
-        "SIGNING_KEY"
-    ],  # Default to staff key for dev backwards compatibility
+    default=SIMPLE_JWT["SIGNING_KEY"],  # Default to staff key for dev backwards compat
 )
 
-# Security validation for production
+# SECURITY: Validate portal JWT key in production
 if not DEBUG:
-    if PORTAL_JWT_SIGNING_KEY == "portal-jwt-secret-change-in-production-key-32b":
+    # Warn if portal uses the same key as staff (not critical but recommended to separate)
+    if PORTAL_JWT_SIGNING_KEY == SIMPLE_JWT["SIGNING_KEY"]:
         import warnings
 
         warnings.warn(
-            "PORTAL_JWT_SIGNING_KEY should be set in production! "
+            "PORTAL_JWT_SIGNING_KEY should be different from JWT_SIGNING_KEY in production! "
             'Generate one with: python -c "import secrets; print(secrets.token_urlsafe(32))"',
             UserWarning,
         )

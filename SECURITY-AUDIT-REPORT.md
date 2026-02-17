@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.7 (Actualizado con corrección de credenciales DB)
+**Versión:** 1.8 (Actualizado con validación de JWT_SIGNING_KEY)
 
 ---
 
@@ -17,11 +17,11 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 
 | Severidad | Encontradas | Corregidas | Pendientes |
 |-----------|-------------|------------|------------|
-| **CRÍTICA** | 15 | 9 | **6** |
+| **CRÍTICA** | 15 | 10 | **5** |
 | **ALTA** | 14 | 9 | **5** |
 | **MEDIA** | 13 | 4 | **9** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 22 | **22** |
+| **TOTAL** | 44 | 23 | **21** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -44,6 +44,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 15 | Session Timeout puede ser evitado | MEDIA | ✅ Corregido |
 | 16 | Sin validación de tamaño en CSV Import | MEDIA | ✅ Corregido |
 | 17 | Credenciales DB en código por defecto | MEDIA | ✅ Corregido |
+| 18 | JWT_SIGNING_KEY con valor por defecto | CRÍTICA | ✅ Corregido |
 
 ---
 
@@ -261,6 +262,17 @@ default="postgres://ebenezer:ebenezer_dev_2025@localhost:5432/ebenezer_crm"
 - DATABASE_URL requerido en producción (sin default con credenciales)
 - Documentación clara en código sobre configuración
 
+### ✅ CORREGIDO: JWT_SIGNING_KEY con valor por defecto
+**Riesgo:** Tokens JWT pueden ser falsificados si se usa el default inseguro
+**Archivo modificado:** `config/settings/base.py`
+
+**Solución implementada:**
+- Validación estricta en producción: lanza ValueError si usa default
+- Verificación de longitud mínima (32 caracteres)
+- Warning si PORTAL_JWT_SIGNING_KEY es igual a JWT_SIGNING_KEY
+- Instrucciones de generación de claves en mensajes de error
+- Mismo patrón de validación que SECRET_KEY
+
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
 **Estado:** CSP ya estaba configurado con:
@@ -279,12 +291,7 @@ default="postgres://ebenezer:ebenezer_dev_2025@localhost:5432/ebenezer_crm"
 **Riesgo:** Compromete toda la seguridad criptográfica
 **Ubicación:** `config/settings/base.py:13`
 **Solución:** Remover default, requerir variable de entorno
-**Estado:** Ya tiene validación en producción - lanza error si usa default
-
-#### 2. JWT_SIGNING_KEY con valor por defecto
-**Riesgo:** Tokens JWT pueden ser falsificados
-**Ubicación:** `config/settings/base.py:261`
-**Solución:** Configurar en variables de entorno de producción
+**Estado:** ✅ Ya tiene validación en producción - lanza error si usa default
 
 ### 🟡 MEDIAS - Corregir este mes
 
