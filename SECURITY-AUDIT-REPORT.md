@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.6 (Actualizado con validación de tamaño en CSV Import)
+**Versión:** 1.7 (Actualizado con corrección de credenciales DB)
 
 ---
 
@@ -19,9 +19,9 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 9 | **6** |
 | **ALTA** | 14 | 9 | **5** |
-| **MEDIA** | 13 | 3 | **10** |
+| **MEDIA** | 13 | 4 | **9** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 21 | **23** |
+| **TOTAL** | 44 | 22 | **22** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -43,6 +43,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 14 | Console.log con errores sensibles | ALTA | ✅ Corregido |
 | 15 | Session Timeout puede ser evitado | MEDIA | ✅ Corregido |
 | 16 | Sin validación de tamaño en CSV Import | MEDIA | ✅ Corregido |
+| 17 | Credenciales DB en código por defecto | MEDIA | ✅ Corregido |
 
 ---
 
@@ -245,6 +246,21 @@ class PortalPasswordResetRequestView(APIView):
 - Logging de imports grandes (>1000 filas)
 - Mensajes de error claros para el usuario
 
+### ✅ CORREGIDO: Credenciales DB en código por defecto
+**Riesgo:** Credenciales PostgreSQL expuestas en código fuente
+**Archivo modificado:** `config/settings/base.py`
+
+**Antes (inseguro):**
+```python
+default="postgres://ebenezer:ebenezer_dev_2025@localhost:5432/ebenezer_crm"
+```
+
+**Solución implementada:**
+- Cambio de default a SQLite: `default="sqlite:///db.sqlite3"`
+- SQLite no requiere credenciales para desarrollo local
+- DATABASE_URL requerido en producción (sin default con credenciales)
+- Documentación clara en código sobre configuración
+
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
 **Estado:** CSP ya estaba configurado con:
@@ -274,10 +290,6 @@ class PortalPasswordResetRequestView(APIView):
 
 #### 4. No hay Certificate Pinning (Mobile)
 **Solución:** Implementar SSL pinning
-
-#### 5. Credenciales DB en código por defecto
-**Ubicación:** `config/settings/base.py:134`
-**Solución:** Usar sqlite para desarrollo local
 
 ---
 

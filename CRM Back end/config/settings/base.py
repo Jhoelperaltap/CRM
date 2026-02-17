@@ -185,10 +185,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
+# SECURITY: Use SQLite by default for local development (no credentials needed).
+# In production, set DATABASE_URL environment variable to your PostgreSQL connection.
+# Example: DATABASE_URL=postgres://user:password@host:5432/dbname
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="postgres://ebenezer:ebenezer_dev_2025@localhost:5432/ebenezer_crm",
+        default="sqlite:///db.sqlite3",
     )
 }
 
