@@ -8,10 +8,15 @@ import { Label } from "@/components/ui/label";
 import { usePortalAuthStore } from "@/stores/portal-auth-store";
 import { portalLogin } from "@/lib/api/portal";
 
+/**
+ * Portal Login Form
+ *
+ * SECURITY: JWT tokens are stored in httpOnly cookies by the server.
+ * We only store the contact profile locally for UI display.
+ */
 export function PortalLoginForm() {
   const router = useRouter();
   const setContact = usePortalAuthStore((s) => s.setContact);
-  const setTokens = usePortalAuthStore((s) => s.setTokens);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +30,7 @@ export function PortalLoginForm() {
 
     try {
       const data = await portalLogin(email, password);
-      setTokens({ access: data.access, refresh: data.refresh });
+      // Only store contact info (tokens are in httpOnly cookies)
       setContact(data.contact);
       router.push("/portal/dashboard");
     } catch {

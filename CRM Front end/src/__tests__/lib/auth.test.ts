@@ -6,12 +6,17 @@ import { useAuthStore } from '@/stores/auth-store';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+/**
+ * Auth Functions Tests
+ *
+ * SECURITY NOTE: JWT tokens are stored in httpOnly cookies, not in the store.
+ * These tests verify that only user profile data is stored locally.
+ */
 describe('Auth Functions', () => {
   beforeEach(() => {
     // Reset store before each test
     useAuthStore.setState({
       user: null,
-      tokens: null,
       tempToken: null,
       requires2FA: false,
       _hasHydrated: true,
@@ -20,11 +25,11 @@ describe('Auth Functions', () => {
   });
 
   describe('login', () => {
-    it('should login successfully and store user', async () => {
+    it('should login successfully and store user (not tokens)', async () => {
       const mockResponse = {
         data: {
-          access: 'access-token',
-          refresh: 'refresh-token',
+          access: 'access-token', // Sent by server but not stored
+          refresh: 'refresh-token', // Sent by server but not stored
           user: {
             id: '123',
             email: 'test@example.com',
@@ -41,11 +46,12 @@ describe('Auth Functions', () => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.stringContaining('/auth/login/'),
         { email: 'test@example.com', password: 'password123' },
-        { withCredentials: true }
+        { withCredentials: true } // Required for httpOnly cookies
       );
 
       expect(result).toEqual(mockResponse.data);
       expect(useAuthStore.getState().user).toEqual(mockResponse.data.user);
+      // Tokens should NOT be stored (they're in httpOnly cookies)
     });
 
     it('should handle 2FA requirement', async () => {
@@ -76,7 +82,7 @@ describe('Auth Functions', () => {
   });
 
   describe('verify2FA', () => {
-    it('should verify 2FA and store user', async () => {
+    it('should verify 2FA and store user (not tokens)', async () => {
       const mockResponse = {
         data: {
           access: 'access-token',
@@ -113,7 +119,6 @@ describe('Auth Functions', () => {
     it('should logout and clear store', async () => {
       // Set up authenticated state
       useAuthStore.getState().setUser({ id: '123' } as never);
-      useAuthStore.getState().setTokens({ access: 'a', refresh: 'r' });
 
       mockedAxios.post.mockResolvedValueOnce({ data: {} });
 
@@ -121,12 +126,11 @@ describe('Auth Functions', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.stringContaining('/auth/logout/'),
-        { refresh: 'r' },
+        {}, // Empty body - refresh token is in httpOnly cookie
         { withCredentials: true }
       );
 
       expect(useAuthStore.getState().user).toBeNull();
-      expect(useAuthStore.getState().tokens).toBeNull();
     });
 
     it('should clear store even if server call fails', async () => {
@@ -141,9 +145,7 @@ describe('Auth Functions', () => {
   });
 
   describe('refreshToken', () => {
-    it('should refresh token successfully', async () => {
-      useAuthStore.getState().setTokens({ access: 'old-access', refresh: 'refresh' });
-
+    it('should refresh token successfully using cookies', async () => {
       const mockResponse = {
         data: {
           access: 'new-access',
@@ -156,14 +158,14 @@ describe('Auth Functions', () => {
       const result = await refreshToken();
 
       expect(result).toBe(true);
-      expect(useAuthStore.getState().tokens).toEqual({
-        access: 'new-access',
-        refresh: 'new-refresh',
-      });
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect.stringContaining('/auth/refresh/'),
+        {}, // Empty body - refresh token is in httpOnly cookie
+        { withCredentials: true }
+      );
     });
 
     it('should return false and clear store on refresh failure', async () => {
-      useAuthStore.getState().setTokens({ access: 'old-access', refresh: 'refresh' });
       useAuthStore.getState().setUser({ id: '123' } as never);
 
       mockedAxios.post.mockRejectedValueOnce(new Error('Token expired'));
@@ -172,7 +174,6 @@ describe('Auth Functions', () => {
 
       expect(result).toBe(false);
       expect(useAuthStore.getState().user).toBeNull();
-      expect(useAuthStore.getState().tokens).toBeNull();
     });
   });
 });

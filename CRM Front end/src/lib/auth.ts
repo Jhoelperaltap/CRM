@@ -7,8 +7,10 @@ const API_BASE_URL =
 
 /**
  * Login with email and password.
- * On success, the server sets httpOnly cookies with JWT tokens.
- * We only store the user profile in the local store (not the tokens).
+ *
+ * SECURITY: JWT tokens are stored in httpOnly cookies by the server.
+ * This prevents XSS attacks from stealing authentication tokens.
+ * We only store the user profile locally for UI display.
  */
 export async function login(
   email: string,
@@ -17,7 +19,7 @@ export async function login(
   const response = await axios.post<LoginResponse | TwoFactorRequiredResponse>(
     `${API_BASE_URL}/auth/login/`,
     { email, password },
-    { withCredentials: true } // Enable cookies
+    { withCredentials: true } // Required for httpOnly cookies
   );
 
   const data = response.data;
@@ -29,26 +31,18 @@ export async function login(
     return data;
   }
 
-  // Normal login - cookies are set by server automatically
+  // Normal login - httpOnly cookies are set automatically by browser
   const loginData = data as LoginResponse;
 
-  // Store user profile (NOT tokens - those are in httpOnly cookies now)
+  // Store user profile only (NOT tokens - those are in httpOnly cookies)
   useAuthStore.getState().setUser(loginData.user as never);
-
-  // For backwards compatibility with mobile apps, also store tokens if present
-  // Mobile apps need these because they can't use httpOnly cookies
-  if (loginData.access && loginData.refresh) {
-    useAuthStore.getState().setTokens({
-      access: loginData.access,
-      refresh: loginData.refresh,
-    });
-  }
 
   return loginData;
 }
 
 /**
  * Complete 2FA verification with TOTP code.
+ * Tokens are set as httpOnly cookies by the server.
  */
 export async function verify2FA(
   tempToken: string,
@@ -60,25 +54,21 @@ export async function verify2FA(
     { withCredentials: true }
   );
 
-  const { access, refresh, user } = response.data;
+  const { user } = response.data;
 
-  // Store user profile
+  // Store user profile only (tokens are in httpOnly cookies)
   useAuthStore.getState().setUser(user as never);
 
   // Clear 2FA state
   useAuthStore.getState().setTempToken(null);
   useAuthStore.getState().setRequires2FA(false);
 
-  // For mobile backwards compatibility
-  if (access && refresh) {
-    useAuthStore.getState().setTokens({ access, refresh });
-  }
-
   return response.data;
 }
 
 /**
  * Complete 2FA with recovery code.
+ * Tokens are set as httpOnly cookies by the server.
  */
 export async function verify2FARecovery(
   tempToken: string,
@@ -90,46 +80,29 @@ export async function verify2FARecovery(
     { withCredentials: true }
   );
 
-  const { access, refresh, user } = response.data;
+  const { user } = response.data;
 
-  // Store user profile
+  // Store user profile only (tokens are in httpOnly cookies)
   useAuthStore.getState().setUser(user as never);
 
   // Clear 2FA state
   useAuthStore.getState().setTempToken(null);
   useAuthStore.getState().setRequires2FA(false);
 
-  // For mobile backwards compatibility
-  if (access && refresh) {
-    useAuthStore.getState().setTokens({ access, refresh });
-  }
-
   return response.data;
 }
 
 /**
  * Refresh the access token.
- * With httpOnly cookies, this is mostly handled automatically by the API interceptor.
+ * The server reads the refresh token from httpOnly cookie and sets new cookies.
  */
 export async function refreshToken(): Promise<boolean> {
   try {
-    const tokens = useAuthStore.getState().tokens;
-    const refreshPayload = tokens?.refresh ? { refresh: tokens.refresh } : {};
-
-    const response = await axios.post(
+    await axios.post(
       `${API_BASE_URL}/auth/refresh/`,
-      refreshPayload,
+      {}, // Empty body - refresh token is in httpOnly cookie
       { withCredentials: true }
     );
-
-    // For mobile backwards compatibility
-    if (response.data.access && response.data.refresh) {
-      useAuthStore.getState().setTokens({
-        access: response.data.access,
-        refresh: response.data.refresh,
-      });
-    }
-
     return true;
   } catch {
     useAuthStore.getState().clear();
@@ -138,23 +111,20 @@ export async function refreshToken(): Promise<boolean> {
 }
 
 /**
- * Logout - clears cookies and local state.
+ * Logout - clears httpOnly cookies and local state.
  */
 export async function logout(): Promise<void> {
   try {
-    const tokens = useAuthStore.getState().tokens;
-    const refreshPayload = tokens?.refresh ? { refresh: tokens.refresh } : {};
-
     await axios.post(
       `${API_BASE_URL}/auth/logout/`,
-      refreshPayload,
+      {}, // Empty body - refresh token is in httpOnly cookie
       { withCredentials: true }
     );
   } catch {
     // Best-effort logout - continue even if server call fails
   }
 
-  // Clear local state
+  // Clear local state (user profile)
   useAuthStore.getState().clear();
 }
 

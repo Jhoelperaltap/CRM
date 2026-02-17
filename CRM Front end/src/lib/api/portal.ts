@@ -9,21 +9,20 @@ import type {
   PortalMessage,
 } from "@/types/portal";
 
+/**
+ * Portal API Client
+ *
+ * SECURITY: Uses httpOnly cookies for JWT authentication.
+ * Tokens are never stored in localStorage or JavaScript-accessible storage.
+ */
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 const portalApi = axios.create({
   baseURL: `${API_BASE_URL}/portal`,
   headers: { "Content-Type": "application/json" },
-});
-
-// Attach portal access token
-portalApi.interceptors.request.use((config) => {
-  const tokens = usePortalAuthStore.getState().tokens;
-  if (tokens?.access) {
-    config.headers.Authorization = `Bearer ${tokens.access}`;
-  }
-  return config;
+  withCredentials: true, // Required for httpOnly cookies
 });
 
 // Handle 401 — redirect to portal login

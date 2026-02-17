@@ -2,30 +2,37 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { PortalContact } from "@/types/portal";
 
-interface PortalTokens {
-  access: string;
-  refresh: string;
-}
+/**
+ * Portal Auth Store - Client Portal Only
+ *
+ * SECURITY: This store does NOT persist JWT tokens.
+ * JWT tokens are stored in httpOnly cookies (set by the backend),
+ * which prevents XSS attacks from stealing authentication tokens.
+ *
+ * The store only persists the contact profile for UI display.
+ */
 
 interface PortalAuthState {
   contact: PortalContact | null;
-  tokens: PortalTokens | null;
   setContact: (contact: PortalContact | null) => void;
-  setTokens: (tokens: PortalTokens | null) => void;
   clear: () => void;
+  isAuthenticated: () => boolean;
 }
 
 export const usePortalAuthStore = create<PortalAuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       contact: null,
-      tokens: null,
       setContact: (contact) => set({ contact }),
-      setTokens: (tokens) => set({ tokens }),
-      clear: () => set({ contact: null, tokens: null }),
+      clear: () => set({ contact: null }),
+      isAuthenticated: () => get().contact !== null,
     }),
     {
       name: "portal-auth-storage",
+      // SECURITY: Only persist contact info, NOT tokens
+      partialize: (state) => ({
+        contact: state.contact,
+      }),
     }
   )
 );

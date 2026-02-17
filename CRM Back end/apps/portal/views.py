@@ -10,8 +10,10 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
 from apps.portal.auth import (
+    clear_portal_auth_cookies,
     create_portal_tokens,
     hash_portal_password,
+    set_portal_auth_cookies,
     verify_portal_password,
 )
 from apps.portal.models import (
@@ -89,6 +91,14 @@ class PortalPasswordResetThrottle(AnonRateThrottle):
 
 
 class PortalLoginView(APIView):
+    """
+    Portal login endpoint.
+
+    SECURITY: JWT tokens are set as httpOnly cookies to prevent XSS attacks.
+    The response also includes tokens in the body for backwards compatibility
+    with mobile apps that cannot use httpOnly cookies.
+    """
+
     permission_classes = [AllowAny]
     authentication_classes = []
     throttle_classes = [PortalLoginThrottle]
@@ -122,21 +132,35 @@ class PortalLoginView(APIView):
         tokens = create_portal_tokens(portal_access)
         contact_data = PortalContactSerializer(portal_access.contact).data
 
-        return Response(
+        response = Response(
             {
                 **tokens,
                 "contact": contact_data,
+                "cookies_set": True,
             }
         )
 
+        # Set tokens as httpOnly cookies (XSS protection)
+        set_portal_auth_cookies(response, tokens["access"], tokens["refresh"])
+
+        return response
+
 
 class PortalLogoutView(APIView):
+    """
+    Portal logout endpoint.
+
+    SECURITY: Clears httpOnly cookies in addition to client-side state.
+    """
+
     permission_classes = [IsPortalAuthenticated]
     authentication_classes = []
 
     def post(self, request):
-        # Portal tokens are stateless — client discards them.
-        return Response({"detail": "Logged out."})
+        response = Response({"detail": "Logged out."})
+        # Clear httpOnly cookies
+        clear_portal_auth_cookies(response)
+        return response
 
 
 class PortalMeView(APIView):

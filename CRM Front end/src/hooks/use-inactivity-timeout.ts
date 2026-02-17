@@ -37,8 +37,8 @@ export function useInactivityTimeout(options: UseInactivityTimeoutOptions = {}) 
   } = options;
 
   const router = useRouter();
-  const tokens = useAuthStore((state) => state.tokens);
-  const isAuthenticated = !!tokens?.access;
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = user !== null;
 
   const [timeoutMinutes, setTimeoutMinutes] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);

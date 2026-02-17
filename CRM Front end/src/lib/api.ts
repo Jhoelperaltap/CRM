@@ -13,17 +13,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor - no longer need to manually attach tokens
+// Request interceptor - tokens are in httpOnly cookies
 // Cookies are sent automatically with withCredentials: true
-api.interceptors.request.use((config) => {
-  // For backwards compatibility with mobile apps that still use localStorage tokens
-  // Check if we have tokens in store (mobile) and attach them
-  const tokens = useAuthStore.getState().tokens;
-  if (tokens?.access) {
-    config.headers.Authorization = `Bearer ${tokens.access}`;
-  }
-  return config;
-});
+// No need to manually attach Authorization header for web clients
 
 // Handle 401 — attempt token refresh via cookie
 let isRefreshing = false;
@@ -82,19 +74,14 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Refresh using cookies - no need to send token in body
-        // The httpOnly cookie is sent automatically
-        const tokens = useAuthStore.getState().tokens;
-        const refreshPayload = tokens?.refresh ? { refresh: tokens.refresh } : {};
-
+        // Refresh using httpOnly cookies - browser sends them automatically
         await axios.post(
           `${API_BASE_URL}/auth/refresh/`,
-          refreshPayload,
+          {}, // Empty body - refresh token is in httpOnly cookie
           { withCredentials: true }
         );
 
-        // If refresh succeeded, cookies are updated automatically
-        // For backwards compatibility, update store if tokens were in response
+        // If refresh succeeded, new cookies are set automatically
         processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {

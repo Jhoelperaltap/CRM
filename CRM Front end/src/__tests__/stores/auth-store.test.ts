@@ -1,11 +1,17 @@
 import { useAuthStore } from '@/stores/auth-store';
 
+/**
+ * Auth Store Tests
+ *
+ * SECURITY NOTE: The auth store no longer stores JWT tokens.
+ * Tokens are stored in httpOnly cookies to prevent XSS attacks.
+ * The store only manages user profile and 2FA state.
+ */
 describe('Auth Store', () => {
   beforeEach(() => {
     // Reset store before each test
     useAuthStore.setState({
       user: null,
-      tokens: null,
       tempToken: null,
       requires2FA: false,
       _hasHydrated: false,
@@ -16,11 +22,6 @@ describe('Auth Store', () => {
     it('should have null user initially', () => {
       const { user } = useAuthStore.getState();
       expect(user).toBeNull();
-    });
-
-    it('should have null tokens initially', () => {
-      const { tokens } = useAuthStore.getState();
-      expect(tokens).toBeNull();
     });
 
     it('should not require 2FA initially', () => {
@@ -63,20 +64,6 @@ describe('Auth Store', () => {
     });
   });
 
-  describe('setTokens', () => {
-    it('should set tokens correctly', () => {
-      const mockTokens = {
-        access: 'access-token-123',
-        refresh: 'refresh-token-456',
-      };
-
-      useAuthStore.getState().setTokens(mockTokens);
-      const { tokens } = useAuthStore.getState();
-
-      expect(tokens).toEqual(mockTokens);
-    });
-  });
-
   describe('2FA flow', () => {
     it('should set temp token for 2FA', () => {
       const tempToken = 'temp-2fa-token';
@@ -106,7 +93,6 @@ describe('Auth Store', () => {
     it('should clear all auth state', () => {
       // Set up state
       useAuthStore.getState().setUser({ id: '123' } as never);
-      useAuthStore.getState().setTokens({ access: 'a', refresh: 'r' });
       useAuthStore.getState().setTempToken('temp');
       useAuthStore.getState().setRequires2FA(true);
 
@@ -115,7 +101,6 @@ describe('Auth Store', () => {
 
       const state = useAuthStore.getState();
       expect(state.user).toBeNull();
-      expect(state.tokens).toBeNull();
       expect(state.tempToken).toBeNull();
       expect(state.requires2FA).toBe(false);
     });

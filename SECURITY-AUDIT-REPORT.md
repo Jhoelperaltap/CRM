@@ -1,8 +1,8 @@
-# Security Audit Report - Ebenezer Tax Services CRM
+# Security Audit Report - EJFLOW CRM
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.1 (Actualizado con correcciones)
+**Versión:** 1.2 (Actualizado con corrección de JWT en localStorage)
 
 ---
 
@@ -17,11 +17,11 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 
 | Severidad | Encontradas | Corregidas | Pendientes |
 |-----------|-------------|------------|------------|
-| **CRÍTICA** | 15 | 8 | **7** |
+| **CRÍTICA** | 15 | 9 | **6** |
 | **ALTA** | 14 | 6 | **8** |
 | **MEDIA** | 13 | 0 | **13** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 14 | **30** |
+| **TOTAL** | 44 | 15 | **29** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -36,6 +36,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 7 | Portal/Staff comparten JWT Key | CRÍTICA | ✅ Corregido |
 | 8 | XSS en Webforms | ALTA | ✅ Corregido |
 | 9 | Reset Token en texto plano | ALTA | ✅ Corregido |
+| 10 | JWT Tokens en localStorage | CRÍTICA | ✅ Corregido |
 
 ---
 
@@ -134,55 +135,77 @@ class PortalPasswordResetRequestView(APIView):
 - El token sin hashear se envía al usuario por email
 - La validación compara el hash del token entrante con el hash almacenado
 
+### ✅ CORREGIDO: JWT Tokens en localStorage
+**Riesgo:** Ataques XSS pueden robar tokens de autenticación almacenados en localStorage
+**Archivos modificados:**
+
+**Backend:**
+- `apps/users/authentication.py` - Ya tenía soporte de cookies httpOnly
+- `apps/users/views.py` - Ya configuraba cookies en login/refresh
+- `apps/portal/auth.py` - Añadidas funciones para cookies de portal
+- `apps/portal/views.py` - PortalLoginView y PortalLogoutView ahora usan cookies
+
+**Frontend:**
+- `src/stores/auth-store.ts` - Removido almacenamiento de tokens
+- `src/stores/portal-auth-store.ts` - Removido almacenamiento de tokens
+- `src/lib/auth.ts` - Actualizado para no guardar tokens
+- `src/lib/api.ts` - Removido interceptor que añadía header de Authorization
+- `src/lib/api/portal.ts` - Añadido withCredentials para cookies
+- `src/hooks/use-inactivity-timeout.ts` - Usa user en lugar de tokens
+- `src/hooks/use-portal-auth.ts` - Usa contact en lugar de tokens
+- `src/components/portal/portal-login-form.tsx` - No guarda tokens
+
+**Solución implementada:**
+- JWT tokens se almacenan SOLO en cookies httpOnly (no accesibles via JavaScript)
+- Frontend solo almacena perfil de usuario para UI (no tokens)
+- Todas las peticiones API usan `withCredentials: true`
+- Backend verifica token desde cookie (con fallback a header para mobile)
+- Cookies tienen flags: httpOnly, SameSite=Lax, Secure (en producción)
+
 ---
 
 ## Vulnerabilidades Pendientes (Por Prioridad)
 
 ### 🔴 CRÍTICAS - Corregir Inmediatamente
 
-#### 1. JWT Tokens en localStorage (Frontend + Mobile Web)
-**Riesgo:** XSS puede robar tokens de autenticación
-**Ubicación:** `src/stores/auth-store.ts`, `src/stores/portal-auth-store.ts`
-**Solución:** Migrar a cookies httpOnly
-
-#### 2. SECRET_KEY con valor por defecto
+#### 1. SECRET_KEY con valor por defecto
 **Riesgo:** Compromete toda la seguridad criptográfica
 **Ubicación:** `config/settings/base.py:13`
 **Solución:** Remover default, requerir variable de entorno
 **Estado:** Ya tiene validación en producción - lanza error si usa default
 
-#### 3. JWT_SIGNING_KEY con valor por defecto
+#### 2. JWT_SIGNING_KEY con valor por defecto
 **Riesgo:** Tokens JWT pueden ser falsificados
 **Ubicación:** `config/settings/base.py:261`
 **Solución:** Configurar en variables de entorno de producción
 
 ### 🟠 ALTAS - Corregir esta semana
 
-#### 4. No hay middleware de autenticación server-side (Frontend)
+#### 3. No hay middleware de autenticación server-side (Frontend)
 **Ubicación:** Next.js middleware faltante
 **Solución:** Implementar middleware de Next.js para auth
 
-#### 5. HTTP en lugar de HTTPS (Mobile)
+#### 4. HTTP en lugar de HTTPS (Mobile)
 **Ubicación:** `.env`, `src/constants/api.ts`
 **Solución:** Forzar HTTPS en producción
 
-#### 6. Console.log con errores sensibles
+#### 5. Console.log con errores sensibles
 **Ubicación:** Múltiples archivos
 **Solución:** Remover en producción o usar servicio de logging
 
 ### 🟡 MEDIAS - Corregir este mes
 
-#### 7. No hay Content Security Policy
+#### 6. No hay Content Security Policy
 **Solución:** Agregar CSP headers
 
-#### 8. No hay Certificate Pinning (Mobile)
+#### 7. No hay Certificate Pinning (Mobile)
 **Solución:** Implementar SSL pinning
 
-#### 9. Session Timeout puede ser evitado
+#### 8. Session Timeout puede ser evitado
 **Ubicación:** `apps/users/middleware.py`
 **Solución:** Agregar timeout absoluto además de idle
 
-#### 10. Sin validación de tamaño en CSV Import
+#### 9. Sin validación de tamaño en CSV Import
 **Ubicación:** `apps/users/views.py`
 **Solución:** Agregar límites de tamaño
 
