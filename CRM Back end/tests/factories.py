@@ -56,11 +56,12 @@ class UserFactory(DjangoModelFactory):
 
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
-    username = factory.LazyAttribute(
-        lambda obj: f"{obj.first_name.lower()}.{obj.last_name.lower()}"
+    # Use sequence to ensure unique usernames even if Faker generates duplicate names
+    username = factory.LazyAttributeSequence(
+        lambda obj, n: f"{obj.first_name.lower()}.{obj.last_name.lower()}.{n}"
     )
-    email = factory.LazyAttribute(
-        lambda obj: f"{obj.first_name.lower()}.{obj.last_name.lower()}@example.com"
+    email = factory.LazyAttributeSequence(
+        lambda obj, n: f"{obj.first_name.lower()}.{obj.last_name.lower()}.{n}@example.com"
     )
     phone = factory.Faker("phone_number")
     role = factory.SubFactory(RoleFactory)
