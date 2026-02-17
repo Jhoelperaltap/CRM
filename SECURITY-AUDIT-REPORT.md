@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.4 (Actualizado con corrección de Console.log sensibles)
+**Versión:** 1.5 (Actualizado con corrección de Session Timeout absoluto)
 
 ---
 
@@ -19,9 +19,9 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 9 | **6** |
 | **ALTA** | 14 | 9 | **5** |
-| **MEDIA** | 13 | 1 | **12** |
+| **MEDIA** | 13 | 2 | **11** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 19 | **25** |
+| **TOTAL** | 44 | 20 | **24** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -41,6 +41,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 12 | Content Security Policy | MEDIA | ✅ Ya implementado |
 | 13 | HTTP en lugar de HTTPS (Mobile) | ALTA | ✅ Corregido |
 | 14 | Console.log con errores sensibles | ALTA | ✅ Corregido |
+| 15 | Session Timeout puede ser evitado | MEDIA | ✅ Corregido |
 
 ---
 
@@ -213,6 +214,20 @@ class PortalPasswordResetRequestView(APIView):
 - Backend: removidos print() de debug, usar logging.getLogger() apropiado
 - Soporte para integración con servicios externos (Sentry, LogRocket)
 
+### ✅ CORREGIDO: Session Timeout puede ser evitado
+**Riesgo:** Atacante puede mantener sesión activa indefinidamente con requests periódicos
+**Archivos modificados:**
+- `apps/users/models.py` - Añadido campo `max_session_duration_hours`
+- `apps/users/middleware.py` - Verificación de timeout absoluto
+- `apps/users/serializers_settings.py` - Campo en API
+
+**Solución implementada:**
+- Timeout absoluto de sesión (default: 24 horas)
+- La sesión expira después de X horas sin importar la actividad
+- Configurable en AuthenticationPolicy (0 = deshabilitado)
+- Complementa el idle timeout existente (240 min por defecto)
+- Previene sesiones perpetuas por actividad automatizada
+
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
 **Estado:** CSP ya estaba configurado con:
@@ -243,15 +258,11 @@ class PortalPasswordResetRequestView(APIView):
 #### 4. No hay Certificate Pinning (Mobile)
 **Solución:** Implementar SSL pinning
 
-#### 5. Session Timeout puede ser evitado
-**Ubicación:** `apps/users/middleware.py`
-**Solución:** Agregar timeout absoluto además de idle
-
-#### 6. Sin validación de tamaño en CSV Import
+#### 5. Sin validación de tamaño en CSV Import
 **Ubicación:** `apps/users/views.py`
 **Solución:** Agregar límites de tamaño
 
-#### 7. Credenciales DB en código por defecto
+#### 6. Credenciales DB en código por defecto
 **Ubicación:** `config/settings/base.py:134`
 **Solución:** Usar sqlite para desarrollo local
 

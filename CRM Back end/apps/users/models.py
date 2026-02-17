@@ -826,6 +826,14 @@ class AuthenticationPolicy(models.Model):
     max_concurrent_sessions = models.PositiveIntegerField(
         _("max concurrent sessions"), default=4
     )
+    max_session_duration_hours = models.PositiveIntegerField(
+        _("max session duration (hours)"),
+        default=24,
+        help_text=_(
+            "Maximum session duration in hours. Sessions older than this "
+            "will be terminated regardless of activity. Set to 0 to disable."
+        ),
+    )
     enforce_password_complexity = models.BooleanField(
         _("enforce password complexity"), default=True
     )

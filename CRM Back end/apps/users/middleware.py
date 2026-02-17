@@ -123,8 +123,13 @@ class IPWhitelistMiddleware:
 class SessionTimeoutMiddleware:
     """
     Checks the UserSession associated with the JWT's jti claim.
-    If idle for longer than the configured timeout, deactivates the session
-    and returns 401.  Otherwise updates last_activity.
+
+    SECURITY: Enforces TWO timeout mechanisms:
+    1. Idle timeout - session expires after period of inactivity
+    2. Absolute timeout - session expires after max duration regardless of activity
+
+    The absolute timeout prevents attackers from keeping sessions alive
+    indefinitely by making periodic requests.
 
     NOTE: Token refresh endpoints are excluded from activity tracking to ensure
     that automatic token refreshes don't reset the inactivity timer.
@@ -154,10 +159,28 @@ class SessionTimeoutMiddleware:
                     return self.get_response(request)
 
                 policy = AuthenticationPolicy.load()
+                now = timezone.now()
+
+                # Check absolute session duration (prevents indefinite session extension)
+                if policy.max_session_duration_hours > 0:
+                    max_duration = timezone.timedelta(
+                        hours=policy.max_session_duration_hours
+                    )
+                    if now - session.created_at > max_duration:
+                        session.is_active = False
+                        session.save(update_fields=["is_active"])
+                        return JsonResponse(
+                            {
+                                "detail": "Session expired: maximum session duration exceeded. Please log in again."
+                            },
+                            status=401,
+                        )
+
+                # Check idle timeout
                 idle_limit = timezone.timedelta(
                     minutes=policy.idle_session_timeout_minutes
                 )
-                if timezone.now() - session.last_activity > idle_limit:
+                if now - session.last_activity > idle_limit:
                     session.is_active = False
                     session.save(update_fields=["is_active"])
                     return JsonResponse(
