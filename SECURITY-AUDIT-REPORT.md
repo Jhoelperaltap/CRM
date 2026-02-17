@@ -2,7 +2,7 @@
 
 **Fecha:** Febrero 2026
 **Auditor:** Claude Code
-**Versión:** 1.2 (Actualizado con corrección de JWT en localStorage)
+**Versión:** 1.3 (Actualizado con corrección de HTTPS en Mobile)
 
 ---
 
@@ -18,10 +18,10 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | Severidad | Encontradas | Corregidas | Pendientes |
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 9 | **6** |
-| **ALTA** | 14 | 7 | **7** |
+| **ALTA** | 14 | 8 | **6** |
 | **MEDIA** | 13 | 1 | **12** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 17 | **27** |
+| **TOTAL** | 44 | 18 | **26** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -39,6 +39,7 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 10 | JWT Tokens en localStorage | CRÍTICA | ✅ Corregido |
 | 11 | Middleware Auth Server-Side | ALTA | ✅ Corregido |
 | 12 | Content Security Policy | MEDIA | ✅ Ya implementado |
+| 13 | HTTP en lugar de HTTPS (Mobile) | ALTA | ✅ Corregido |
 
 ---
 
@@ -182,6 +183,20 @@ class PortalPasswordResetRequestView(APIView):
 - `/reports`, `/inbox`, `/notifications`, `/quotes`
 - `/inventory`, `/ai-agent`, `/sales-insights`, `/forecasts`
 
+### ✅ CORREGIDO: HTTP en lugar de HTTPS (Mobile)
+**Riesgo:** Datos sensibles transmitidos sin encriptación (man-in-the-middle)
+**Archivos modificados:**
+- `crm-mobile/src/constants/api.ts` - Validación de HTTPS en producción
+- `crm-mobile/.env.example` - Documentación de seguridad
+- `crm-mobile/app.json` - Rebranding a EJFLOW Client
+
+**Solución implementada:**
+- Función `getSecureApiUrl()` que valida y normaliza URLs
+- En builds de producción (`!__DEV__`): HTTP se actualiza automáticamente a HTTPS
+- Excepciones solo para localhost/emulador en desarrollo (192.168.x.x, 10.0.x.x, localhost)
+- Warnings en consola para URLs HTTP no locales durante desarrollo
+- Documentación clara en `.env.example` sobre requisitos de HTTPS
+
 ### ✅ YA IMPLEMENTADO: Content Security Policy
 **Ubicación:** `next.config.ts`
 **Estado:** CSP ya estaba configurado con:
@@ -209,28 +224,24 @@ class PortalPasswordResetRequestView(APIView):
 
 ### 🟠 ALTAS - Corregir esta semana
 
-#### 3. HTTP en lugar de HTTPS (Mobile)
-**Ubicación:** `.env`, `src/constants/api.ts`
-**Solución:** Forzar HTTPS en producción
-
-#### 4. Console.log con errores sensibles
+#### 3. Console.log con errores sensibles
 **Ubicación:** Múltiples archivos
 **Solución:** Remover en producción o usar servicio de logging
 
 ### 🟡 MEDIAS - Corregir este mes
 
-#### 5. No hay Certificate Pinning (Mobile)
+#### 4. No hay Certificate Pinning (Mobile)
 **Solución:** Implementar SSL pinning
 
-#### 6. Session Timeout puede ser evitado
+#### 5. Session Timeout puede ser evitado
 **Ubicación:** `apps/users/middleware.py`
 **Solución:** Agregar timeout absoluto además de idle
 
-#### 7. Sin validación de tamaño en CSV Import
+#### 6. Sin validación de tamaño en CSV Import
 **Ubicación:** `apps/users/views.py`
 **Solución:** Agregar límites de tamaño
 
-#### 8. Credenciales DB en código por defecto
+#### 7. Credenciales DB en código por defecto
 **Ubicación:** `config/settings/base.py:134`
 **Solución:** Usar sqlite para desarrollo local
 

@@ -1,28 +1,28 @@
 {
   "expo": {
-    "name": "Ebenezer Client Portal",
-    "slug": "ebenezer-client-portal",
+    "name": "EJFLOW Client",
+    "slug": "ejflow-client",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "scheme": "ebenezer-portal",
+    "scheme": "ejflow-portal",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1976D2"
+      "backgroundColor": "#2563eb"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ebenezertax.clientportal"
+      "bundleIdentifier": "com.ejflow.client"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1976D2"
+        "backgroundColor": "#2563eb"
       },
-      "package": "com.ebenezertax.clientportal",
+      "package": "com.ejflow.client",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
@@ -37,7 +37,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#1976D2"
+          "color": "#2563eb"
         }
       ]
     ],

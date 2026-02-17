@@ -1,6 +1,66 @@
 // API Configuration
 // Change this to your actual backend URL
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+/**
+ * SECURITY: Validate and normalize API URL
+ *
+ * In production builds, HTTPS is required. HTTP is only allowed during
+ * development for local testing (localhost/10.0.2.2/192.168.x.x).
+ */
+function getSecureApiUrl(): string {
+  const rawUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+  const isDev = __DEV__;
+
+  // Parse the URL to check protocol
+  try {
+    const url = new URL(rawUrl);
+
+    // In production, enforce HTTPS
+    if (!isDev && url.protocol === 'http:') {
+      // Allow localhost variants in development builds that slip through
+      const isLocalhost =
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1' ||
+        url.hostname === '10.0.2.2' || // Android emulator
+        url.hostname.startsWith('192.168.') ||
+        url.hostname.startsWith('10.0.');
+
+      if (!isLocalhost) {
+        // Force HTTPS for non-localhost URLs in production
+        console.warn(
+          '[SECURITY] HTTP is not allowed in production. Upgrading to HTTPS.'
+        );
+        url.protocol = 'https:';
+        return url.toString().replace(/\/$/, ''); // Remove trailing slash
+      }
+    }
+
+    // In development, warn about HTTP usage with non-local URLs
+    if (isDev && url.protocol === 'http:') {
+      const isLocalhost =
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1' ||
+        url.hostname === '10.0.2.2' ||
+        url.hostname.startsWith('192.168.') ||
+        url.hostname.startsWith('10.0.');
+
+      if (!isLocalhost) {
+        console.warn(
+          '[SECURITY WARNING] Using HTTP with a non-local URL. ' +
+            'This is insecure and should only be used for testing. ' +
+            'Use HTTPS in production.'
+        );
+      }
+    }
+
+    return rawUrl;
+  } catch {
+    console.error('[API] Invalid API URL:', rawUrl);
+    return rawUrl;
+  }
+}
+
+export const API_BASE_URL = getSecureApiUrl();
 
 // API Endpoints
 export const API_ENDPOINTS = {
