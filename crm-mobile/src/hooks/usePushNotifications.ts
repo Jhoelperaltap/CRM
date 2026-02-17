@@ -105,11 +105,63 @@ export function usePushNotifications() {
 
     // Android-specific channel setup
     if (Platform.OS === 'android') {
+      // Default channel for general notifications
       await Notifications.setNotificationChannelAsync('default', {
         name: 'Default',
+        description: 'General notifications',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#1976D2',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        bypassDnd: false,
+        showBadge: true,
+      });
+
+      // Messages channel - high priority
+      await Notifications.setNotificationChannelAsync('messages', {
+        name: 'Messages',
+        description: 'New message notifications',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#9C27B0',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        bypassDnd: false,
+        showBadge: true,
+        sound: 'default',
+      });
+
+      // Cases channel - high priority
+      await Notifications.setNotificationChannelAsync('cases', {
+        name: 'Case Updates',
+        description: 'Tax case status updates',
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF9800',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        showBadge: true,
+      });
+
+      // Appointments channel - high priority
+      await Notifications.setNotificationChannelAsync('appointments', {
+        name: 'Appointments',
+        description: 'Appointment reminders',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 500, 250, 500],
+        lightColor: '#E91E63',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        bypassDnd: true, // Important reminders can bypass DND
+        showBadge: true,
+        sound: 'default',
+      });
+
+      // Documents channel
+      await Notifications.setNotificationChannelAsync('documents', {
+        name: 'Documents',
+        description: 'Document status updates',
+        importance: Notifications.AndroidImportance.HIGH,
+        lightColor: '#2196F3',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        showBadge: true,
       });
     }
 

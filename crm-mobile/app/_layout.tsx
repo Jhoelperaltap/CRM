@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import { PaperProvider, MD3LightTheme, MD3DarkTheme, Portal } from 'react-native-paper';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useColorScheme, View, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { colors, darkColors } from '../src/constants/colors';
 import { hydrateAuthStore } from '../src/stores/auth-store';
+import { hydrateSecurityStore, useSecurityStore, selectIsLocked, selectIsAppLockEnabled } from '../src/stores/security-store';
 import { LoadingSpinner } from '../src/components/ui/LoadingSpinner';
+import { LockScreen } from '../src/components/security/LockScreen';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -61,9 +63,16 @@ export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 
+  // Security state
+  const isLocked = useSecurityStore(selectIsLocked);
+  const isAppLockEnabled = useSecurityStore(selectIsAppLockEnabled);
+
   useEffect(() => {
-    // Hydrate auth store from secure storage
-    hydrateAuthStore().finally(() => {
+    // Hydrate both auth and security stores from secure storage
+    Promise.all([
+      hydrateAuthStore(),
+      hydrateSecurityStore(),
+    ]).finally(() => {
       setIsReady(true);
     });
   }, []);
@@ -82,11 +91,16 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <PaperProvider theme={theme}>
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-            </Stack>
+            {/* Show lock screen if app is locked */}
+            {isAppLockEnabled && isLocked ? (
+              <LockScreen />
+            ) : (
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(tabs)" />
+              </Stack>
+            )}
           </PaperProvider>
         </QueryClientProvider>
       </SafeAreaProvider>

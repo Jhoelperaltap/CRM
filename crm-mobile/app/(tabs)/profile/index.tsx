@@ -159,7 +159,20 @@ export default function ProfileScreen() {
       {/* Account Settings */}
       <Card style={styles.settingsCard}>
         <List.Item
+          title="Security"
+          description="App lock, PIN & biometrics"
+          left={() => (
+            <View style={[styles.settingsIconCircle, { backgroundColor: '#E3F2FD' }]}>
+              <MaterialCommunityIcons name="shield-lock" size={20} color={icons.security} />
+            </View>
+          )}
+          right={(props) => <List.Icon {...props} icon="chevron-right" />}
+          onPress={() => router.push('/(tabs)/profile/security')}
+        />
+        <Divider />
+        <List.Item
           title="Change Password"
+          description="Update your account password"
           left={() => (
             <View style={[styles.settingsIconCircle, { backgroundColor: '#F3E5F5' }]}>
               <MaterialCommunityIcons name="lock" size={20} color={icons.lock} />

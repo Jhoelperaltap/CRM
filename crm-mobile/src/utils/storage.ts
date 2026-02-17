@@ -6,6 +6,11 @@ export const STORAGE_KEYS = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
   USER_DATA: 'user_data',
+  // App lock settings
+  APP_LOCK_ENABLED: 'app_lock_enabled',
+  APP_LOCK_TYPE: 'app_lock_type', // 'biometric' | 'pin' | 'both'
+  APP_PIN_HASH: 'app_pin_hash',
+  BIOMETRIC_ENABLED: 'biometric_enabled',
 } as const;
 
 /**
