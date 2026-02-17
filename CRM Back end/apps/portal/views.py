@@ -618,7 +618,7 @@ class PortalMessageViewSet(viewsets.ViewSet):
                     action_url=f"/contacts/{contact.id}?tab=client-messages",
                 )
 
-        except Exception as e:
+        except Exception:
             logger.error(
                 "Failed to create staff notification for client message",
                 exc_info=True,
