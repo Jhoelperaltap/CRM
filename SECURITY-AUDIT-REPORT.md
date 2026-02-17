@@ -18,10 +18,10 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | Severidad | Encontradas | Corregidas | Pendientes |
 |-----------|-------------|------------|------------|
 | **CRÍTICA** | 15 | 9 | **6** |
-| **ALTA** | 14 | 6 | **8** |
-| **MEDIA** | 13 | 0 | **13** |
+| **ALTA** | 14 | 7 | **7** |
+| **MEDIA** | 13 | 1 | **12** |
 | **BAJA** | 2 | 0 | **2** |
-| **TOTAL** | 44 | 15 | **29** |
+| **TOTAL** | 44 | 17 | **27** |
 
 ### Correcciones Aplicadas en esta Sesión
 
@@ -37,6 +37,8 @@ Se realizó una auditoría de seguridad completa del sistema CRM incluyendo:
 | 8 | XSS en Webforms | ALTA | ✅ Corregido |
 | 9 | Reset Token en texto plano | ALTA | ✅ Corregido |
 | 10 | JWT Tokens en localStorage | CRÍTICA | ✅ Corregido |
+| 11 | Middleware Auth Server-Side | ALTA | ✅ Corregido |
+| 12 | Content Security Policy | MEDIA | ✅ Ya implementado |
 
 ---
 
@@ -162,6 +164,32 @@ class PortalPasswordResetRequestView(APIView):
 - Backend verifica token desde cookie (con fallback a header para mobile)
 - Cookies tienen flags: httpOnly, SameSite=Lax, Secure (en producción)
 
+### ✅ CORREGIDO: Middleware de Autenticación Server-Side
+**Riesgo:** Sin validación server-side, contenido protegido era visible brevemente antes del redirect del cliente
+**Archivo creado:** `src/middleware.ts`
+
+**Solución implementada:**
+- Middleware Next.js que corre en Edge Runtime antes de renderizar
+- Verifica presencia de cookie `access_token` para rutas protegidas
+- Redirige a `/login` si no está autenticado
+- Redirige a `/dashboard` si ya está autenticado y accede a `/login`
+- Soporte separado para rutas del portal (`/portal/*`)
+- Preserva URL de origen para redirect post-login (`?from=`)
+
+**Rutas protegidas:**
+- `/dashboard`, `/contacts`, `/corporations`, `/cases`
+- `/appointments`, `/documents`, `/tasks`, `/settings`
+- `/reports`, `/inbox`, `/notifications`, `/quotes`
+- `/inventory`, `/ai-agent`, `/sales-insights`, `/forecasts`
+
+### ✅ YA IMPLEMENTADO: Content Security Policy
+**Ubicación:** `next.config.ts`
+**Estado:** CSP ya estaba configurado con:
+- `default-src 'self'`
+- `frame-ancestors 'self'`
+- `form-action 'self'`
+- HSTS en producción
+
 ---
 
 ## Vulnerabilidades Pendientes (Por Prioridad)
@@ -181,35 +209,28 @@ class PortalPasswordResetRequestView(APIView):
 
 ### 🟠 ALTAS - Corregir esta semana
 
-#### 3. No hay middleware de autenticación server-side (Frontend)
-**Ubicación:** Next.js middleware faltante
-**Solución:** Implementar middleware de Next.js para auth
-
-#### 4. HTTP en lugar de HTTPS (Mobile)
+#### 3. HTTP en lugar de HTTPS (Mobile)
 **Ubicación:** `.env`, `src/constants/api.ts`
 **Solución:** Forzar HTTPS en producción
 
-#### 5. Console.log con errores sensibles
+#### 4. Console.log con errores sensibles
 **Ubicación:** Múltiples archivos
 **Solución:** Remover en producción o usar servicio de logging
 
 ### 🟡 MEDIAS - Corregir este mes
 
-#### 6. No hay Content Security Policy
-**Solución:** Agregar CSP headers
-
-#### 7. No hay Certificate Pinning (Mobile)
+#### 5. No hay Certificate Pinning (Mobile)
 **Solución:** Implementar SSL pinning
 
-#### 8. Session Timeout puede ser evitado
+#### 6. Session Timeout puede ser evitado
 **Ubicación:** `apps/users/middleware.py`
 **Solución:** Agregar timeout absoluto además de idle
 
-#### 9. Sin validación de tamaño en CSV Import
+#### 7. Sin validación de tamaño en CSV Import
 **Ubicación:** `apps/users/views.py`
 **Solución:** Agregar límites de tamaño
 
-#### 11. Credenciales DB en código por defecto
+#### 8. Credenciales DB en código por defecto
 **Ubicación:** `config/settings/base.py:134`
 **Solución:** Usar sqlite para desarrollo local
 
