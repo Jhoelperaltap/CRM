@@ -119,6 +119,7 @@ services:
     build:
       context: ../CRM Front end
       dockerfile: Dockerfile
+      target: runner
       args:
         - NEXT_PUBLIC_API_URL=https://ebenezertaxservices1.od2.ejsupportit.com/api/v1
     restart: always
