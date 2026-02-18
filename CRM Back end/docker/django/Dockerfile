@@ -16,6 +16,9 @@ RUN pip install --upgrade pip && \
 
 COPY . /app/
 
+# Create logs directory
+RUN mkdir -p /app/logs && chmod 755 /app/logs
+
 COPY docker/django/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
