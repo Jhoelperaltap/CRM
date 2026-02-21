@@ -111,8 +111,9 @@ class PortalLoginView(APIView):
         password = serializer.validated_data["password"]
 
         try:
+            # Case-insensitive email lookup for better UX
             portal_access = ClientPortalAccess.objects.select_related("contact").get(
-                email=email, is_active=True
+                email__iexact=email, is_active=True
             )
         except ClientPortalAccess.DoesNotExist:
             return Response(
@@ -183,7 +184,8 @@ class PortalPasswordResetRequestView(APIView):
 
         email = serializer.validated_data["email"]
         try:
-            portal_access = ClientPortalAccess.objects.get(email=email, is_active=True)
+            # Case-insensitive email lookup for better UX
+            portal_access = ClientPortalAccess.objects.get(email__iexact=email, is_active=True)
         except ClientPortalAccess.DoesNotExist:
             # Don't reveal whether the email exists
             return Response(

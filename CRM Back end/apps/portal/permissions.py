@@ -15,17 +15,31 @@ from apps.portal.models import ClientPortalAccess
 class IsPortalAuthenticated(BasePermission):
     """
     Allows access only to authenticated portal users.
-    Extracts the portal JWT from the Authorization header and attaches
-    ``request.portal_access`` and ``request.portal_contact_id`` for
+    Extracts the portal JWT from either:
+    1. Authorization header (Bearer token) - for mobile apps
+    2. httpOnly cookies - for web browsers (XSS protection)
+
+    Attaches ``request.portal_access`` and ``request.portal_contact_id`` for
     downstream views.
     """
 
     def has_permission(self, request, view):
+        from apps.portal.auth import PORTAL_ACCESS_TOKEN_COOKIE
+
+        token = None
+
+        # Try Authorization header first (mobile apps)
         auth_header = request.headers.get("Authorization", "")
-        if not auth_header.startswith("Bearer "):
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+
+        # Fall back to httpOnly cookie (web browsers)
+        if not token:
+            token = request.COOKIES.get(PORTAL_ACCESS_TOKEN_COOKIE)
+
+        if not token:
             return False
 
-        token = auth_header[7:]
         try:
             payload = decode_portal_token(token)
         except (jwt.InvalidTokenError, jwt.ExpiredSignatureError):

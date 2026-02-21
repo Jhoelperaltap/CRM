@@ -33,8 +33,14 @@ export function PortalLoginForm() {
       // Only store contact info (tokens are in httpOnly cookies)
       setContact(data.contact);
       router.push("/portal/dashboard");
-    } catch {
-      setError("Invalid email or password.");
+    } catch (err: unknown) {
+      // Extract error message from API response
+      if (err && typeof err === "object" && "response" in err) {
+        const axiosError = err as { response?: { data?: { detail?: string } } };
+        setError(axiosError.response?.data?.detail || "Invalid email or password.");
+      } else {
+        setError("Unable to connect to server. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

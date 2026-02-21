@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { usePortalAuth } from "@/hooks/use-portal-auth";
 import { PortalSidebar } from "@/components/portal/portal-sidebar";
 import { PortalTopbar } from "@/components/portal/portal-topbar";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function PortalLayout({
   children,
@@ -14,7 +15,7 @@ export default function PortalLayout({
   const isLoginPage = pathname === "/portal/login";
 
   // Don't require auth on the login page
-  const { isAuthenticated } = usePortalAuth(
+  const { isAuthenticated, hasHydrated } = usePortalAuth(
     isLoginPage ? "" : "/portal/login"
   );
 
@@ -23,9 +24,22 @@ export default function PortalLayout({
     return <>{children}</>;
   }
 
+  // Wait for hydration to complete to prevent hydration mismatch
+  if (!hasHydrated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   // Redirect is in progress
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (

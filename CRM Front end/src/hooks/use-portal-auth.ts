@@ -14,12 +14,14 @@ export function usePortalAuth(redirectTo = "/portal/login") {
   const router = useRouter();
   const contact = usePortalAuthStore((s) => s.contact);
   const isAuthenticated = usePortalAuthStore((s) => s.isAuthenticated());
+  const hasHydrated = usePortalAuthStore((s) => s._hasHydrated);
 
   useEffect(() => {
-    if (!isAuthenticated && redirectTo) {
+    // Only redirect after store has hydrated from localStorage
+    if (hasHydrated && !isAuthenticated && redirectTo) {
       router.replace(redirectTo);
     }
-  }, [isAuthenticated, router, redirectTo]);
+  }, [hasHydrated, isAuthenticated, router, redirectTo]);
 
-  return { contact, isAuthenticated };
+  return { contact, isAuthenticated, hasHydrated };
 }

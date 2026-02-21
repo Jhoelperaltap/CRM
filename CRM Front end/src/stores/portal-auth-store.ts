@@ -14,18 +14,22 @@ import type { PortalContact } from "@/types/portal";
 
 interface PortalAuthState {
   contact: PortalContact | null;
+  _hasHydrated: boolean;
   setContact: (contact: PortalContact | null) => void;
   clear: () => void;
   isAuthenticated: () => boolean;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const usePortalAuthStore = create<PortalAuthState>()(
   persist(
     (set, get) => ({
       contact: null,
+      _hasHydrated: false,
       setContact: (contact) => set({ contact }),
       clear: () => set({ contact: null }),
       isAuthenticated: () => get().contact !== null,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
       name: "portal-auth-storage",
@@ -33,6 +37,9 @@ export const usePortalAuthStore = create<PortalAuthState>()(
       partialize: (state) => ({
         contact: state.contact,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
