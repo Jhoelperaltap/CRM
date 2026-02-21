@@ -96,6 +96,23 @@ export const API_ENDPOINTS = {
   NOTIFICATION_MARK_READ: (id: string) => `/portal/notifications/${id}/mark-read/`,
   NOTIFICATIONS_UNREAD_COUNT: '/portal/notifications/unread-count/',
   NOTIFICATIONS_MARK_ALL_READ: '/portal/notifications/mark-all-read/',
+
+  // Billing
+  BILLING_DASHBOARD: '/portal/billing/dashboard/',
+  BILLING_PRODUCTS: '/portal/billing/products/',
+  BILLING_PRODUCT_DETAIL: (id: string) => `/portal/billing/products/${id}/`,
+  BILLING_SERVICES: '/portal/billing/services/',
+  BILLING_SERVICE_DETAIL: (id: string) => `/portal/billing/services/${id}/`,
+  BILLING_INVOICES: '/portal/billing/invoices/',
+  BILLING_INVOICE_DETAIL: (id: string) => `/portal/billing/invoices/${id}/`,
+  BILLING_INVOICE_SEND: (id: string) => `/portal/billing/invoices/${id}/send/`,
+  BILLING_INVOICE_MARK_PAID: (id: string) => `/portal/billing/invoices/${id}/mark-paid/`,
+  BILLING_INVOICE_PDF: (id: string) => `/portal/billing/invoices/${id}/pdf/`,
+  BILLING_QUOTES: '/portal/billing/quotes/',
+  BILLING_QUOTE_DETAIL: (id: string) => `/portal/billing/quotes/${id}/`,
+  BILLING_QUOTE_SEND: (id: string) => `/portal/billing/quotes/${id}/send/`,
+  BILLING_QUOTE_CONVERT: (id: string) => `/portal/billing/quotes/${id}/convert/`,
+  BILLING_QUOTE_PDF: (id: string) => `/portal/billing/quotes/${id}/pdf/`,
 } as const;
 
 // Request timeout in milliseconds

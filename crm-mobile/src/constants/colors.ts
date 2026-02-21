@@ -144,6 +144,40 @@ export const statusColors = {
     background: '#ECEFF1',
     text: '#546E7A',
   },
+  // Invoice statuses
+  draft: {
+    background: '#ECEFF1',
+    text: '#546E7A',
+  },
+  sent: {
+    background: '#E3F2FD',
+    text: '#1565C0',
+  },
+  paid: {
+    background: '#E8F5E9',
+    text: '#2E7D32',
+  },
+  overdue: {
+    background: '#FFEBEE',
+    text: '#C62828',
+  },
+  cancelled: {
+    background: '#FAFAFA',
+    text: '#9E9E9E',
+  },
+  // Quote statuses
+  accepted: {
+    background: '#E8F5E9',
+    text: '#2E7D32',
+  },
+  expired: {
+    background: '#FFF3E0',
+    text: '#E65100',
+  },
+  converted: {
+    background: '#E1F5FE',
+    text: '#0277BD',
+  },
 } as const;
 
 export type StatusColorKey = keyof typeof statusColors;
@@ -159,6 +193,7 @@ export const iconColors = {
   appointments: '#E91E63', // Pink
   notifications: '#F44336', // Red
   profile: '#607D8B',     // Blue Gray
+  billing: '#00897B',     // Teal
 
   // Dashboard stat icons
   activeCases: '#FF5722',    // Deep Orange
@@ -219,6 +254,7 @@ export const darkIconColors = {
   appointments: '#F06292', // Light Pink
   notifications: '#EF5350', // Light Red
   profile: '#90A4AE',     // Light Blue Gray
+  billing: '#4DB6AC',     // Light Teal
 
   // Dashboard stat icons
   activeCases: '#FF7043',    // Light Deep Orange

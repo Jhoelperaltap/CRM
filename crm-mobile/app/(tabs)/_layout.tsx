@@ -128,6 +128,20 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="billing"
+        options={{
+          title: 'Billing',
+          headerShown: false,
+          tabBarIcon: ({ focused, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "receipt" : "receipt"}
+              size={size}
+              color={focused ? icons.billing : theme.colors.onSurfaceVariant}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="appointments"
         options={{
           title: 'Appointments',
