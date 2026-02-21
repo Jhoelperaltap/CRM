@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   LogOut,
   Menu,
   X,
   Bell,
-  User,
   LayoutDashboard,
   Briefcase,
   FileText,
@@ -21,9 +25,13 @@ import {
   Wrench,
   FileCheck,
   ChevronRight,
+  Check,
+  AlertCircle,
+  Info,
+  CheckCircle2,
 } from "lucide-react";
 import { usePortalAuthStore } from "@/stores/portal-auth-store";
-import { portalLogout } from "@/lib/api/portal";
+import { portalLogout, portalGetMessages } from "@/lib/api/portal";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -42,12 +50,75 @@ const BILLING_ITEMS = [
   { label: "Quotes", href: "/portal/billing/quotes", icon: FileCheck, color: "text-rose-500" },
 ];
 
+interface Notification {
+  id: string;
+  type: "message" | "info" | "success" | "warning";
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+  href?: string;
+}
+
 export function PortalTopbar() {
   const router = useRouter();
   const pathname = usePathname();
   const contact = usePortalAuthStore((s) => s.contact);
   const clear = usePortalAuthStore((s) => s.clear);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch notifications (messages for now)
+  useEffect(() => {
+    async function fetchNotifications() {
+      try {
+        const messages = await portalGetMessages();
+        const unreadMessages = messages.filter((m) => !m.is_read);
+
+        const notifs: Notification[] = unreadMessages.slice(0, 5).map((msg) => ({
+          id: msg.id,
+          type: "message" as const,
+          title: msg.subject || "New Message",
+          description: msg.body?.substring(0, 60) + (msg.body?.length > 60 ? "..." : "") || "",
+          time: new Date(msg.created_at).toLocaleDateString(),
+          read: msg.is_read,
+          href: "/portal/messages",
+        }));
+
+        // Add welcome notification if no messages
+        if (notifs.length === 0) {
+          notifs.push({
+            id: "welcome",
+            type: "success",
+            title: "Welcome to EJFLOW!",
+            description: "Your client portal is ready. Explore your dashboard.",
+            time: "Just now",
+            read: false,
+            href: "/portal/dashboard",
+          });
+        }
+
+        setNotifications(notifs);
+        setUnreadCount(notifs.filter((n) => !n.read).length);
+      } catch {
+        // Set default notification on error
+        setNotifications([{
+          id: "welcome",
+          type: "info",
+          title: "Welcome!",
+          description: "Check your messages and cases.",
+          time: "Now",
+          read: false,
+          href: "/portal/dashboard",
+        }]);
+        setUnreadCount(1);
+      }
+    }
+
+    fetchNotifications();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -57,6 +128,24 @@ export function PortalTopbar() {
     }
     clear();
     router.replace("/portal/login");
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, read: true })));
+    setUnreadCount(0);
+  };
+
+  const getNotificationIcon = (type: Notification["type"]) => {
+    switch (type) {
+      case "message":
+        return <MessageSquare className="size-4 text-purple-500" />;
+      case "success":
+        return <CheckCircle2 className="size-4 text-green-500" />;
+      case "warning":
+        return <AlertCircle className="size-4 text-amber-500" />;
+      default:
+        return <Info className="size-4 text-blue-500" />;
+    }
   };
 
   const renderMobileNavItem = (item: { label: string; href: string; icon: React.ComponentType<{ className?: string }>; color: string }) => {
@@ -107,11 +196,104 @@ export function PortalTopbar() {
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-2">
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="size-5 text-slate-500" />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
-          </Button>
+          {/* Notifications Dropdown */}
+          <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="size-5 text-slate-500" />
+                {unreadCount > 0 && (
+                  <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b px-4 py-3">
+                <div>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
+                  <p className="text-xs text-slate-500">{unreadCount} unread</p>
+                </div>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                    onClick={markAllAsRead}
+                  >
+                    <Check className="mr-1 size-3" />
+                    Mark all read
+                  </Button>
+                )}
+              </div>
+
+              {/* Notifications List */}
+              <div className="max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <Bell className="size-10 text-slate-300 dark:text-slate-600 mb-2" />
+                    <p className="text-sm text-slate-500">No notifications</p>
+                  </div>
+                ) : (
+                  <div className="divide-y">
+                    {notifications.map((notification) => (
+                      <Link
+                        key={notification.id}
+                        href={notification.href || "#"}
+                        onClick={() => setNotificationsOpen(false)}
+                        className={cn(
+                          "flex gap-3 px-4 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
+                          !notification.read && "bg-blue-50/50 dark:bg-blue-950/20"
+                        )}
+                      >
+                        <div className={cn(
+                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                          notification.type === "message" && "bg-purple-100 dark:bg-purple-900/50",
+                          notification.type === "success" && "bg-green-100 dark:bg-green-900/50",
+                          notification.type === "warning" && "bg-amber-100 dark:bg-amber-900/50",
+                          notification.type === "info" && "bg-blue-100 dark:bg-blue-900/50"
+                        )}>
+                          {getNotificationIcon(notification.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className={cn(
+                              "text-sm truncate",
+                              !notification.read ? "font-semibold text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"
+                            )}>
+                              {notification.title}
+                            </p>
+                            {!notification.read && (
+                              <span className="h-2 w-2 shrink-0 rounded-full bg-blue-500 mt-1.5" />
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                            {notification.description}
+                          </p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                            {notification.time}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="border-t p-2">
+                <Link
+                  href="/portal/messages"
+                  onClick={() => setNotificationsOpen(false)}
+                  className="flex items-center justify-center gap-1 rounded-lg py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors"
+                >
+                  View all messages
+                  <ChevronRight className="size-4" />
+                </Link>
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* User Info */}
           {contact && (
