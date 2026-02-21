@@ -8,6 +8,18 @@ import type {
   PortalLoginResponse,
   PortalMessage,
 } from "@/types/portal";
+import type {
+  BillingDashboard,
+  CreateInvoiceInput,
+  CreateProductInput,
+  CreateQuoteInput,
+  CreateServiceInput,
+  PaginatedResponse,
+  TenantInvoice,
+  TenantProduct,
+  TenantQuote,
+  TenantService,
+} from "@/types/portal-billing";
 
 /**
  * Portal API Client
@@ -131,4 +143,142 @@ export async function portalMarkMessageRead(id: string) {
 export async function portalGetAppointments() {
   const { data } = await portalApi.get<PortalAppointment[]>("/appointments/");
   return data;
+}
+
+// ---------------------------------------------------------------------------
+// Billing
+// ---------------------------------------------------------------------------
+
+// Dashboard
+export async function portalGetBillingDashboard() {
+  const { data } = await portalApi.get<BillingDashboard>("/billing/dashboard/");
+  return data;
+}
+
+// Products
+export async function portalGetProducts(params?: { search?: string; page?: number }) {
+  const { data } = await portalApi.get<PaginatedResponse<TenantProduct>>("/billing/products/", { params });
+  return data;
+}
+
+export async function portalGetProduct(id: string) {
+  const { data } = await portalApi.get<TenantProduct>(`/billing/products/${id}/`);
+  return data;
+}
+
+export async function portalCreateProduct(payload: CreateProductInput) {
+  const { data } = await portalApi.post<TenantProduct>("/billing/products/", payload);
+  return data;
+}
+
+export async function portalUpdateProduct(id: string, payload: Partial<CreateProductInput>) {
+  const { data } = await portalApi.patch<TenantProduct>(`/billing/products/${id}/`, payload);
+  return data;
+}
+
+export async function portalDeleteProduct(id: string) {
+  await portalApi.delete(`/billing/products/${id}/`);
+}
+
+// Services
+export async function portalGetServices(params?: { search?: string; page?: number }) {
+  const { data } = await portalApi.get<PaginatedResponse<TenantService>>("/billing/services/", { params });
+  return data;
+}
+
+export async function portalGetService(id: string) {
+  const { data } = await portalApi.get<TenantService>(`/billing/services/${id}/`);
+  return data;
+}
+
+export async function portalCreateService(payload: CreateServiceInput) {
+  const { data } = await portalApi.post<TenantService>("/billing/services/", payload);
+  return data;
+}
+
+export async function portalUpdateService(id: string, payload: Partial<CreateServiceInput>) {
+  const { data } = await portalApi.patch<TenantService>(`/billing/services/${id}/`, payload);
+  return data;
+}
+
+export async function portalDeleteService(id: string) {
+  await portalApi.delete(`/billing/services/${id}/`);
+}
+
+// Invoices
+export async function portalGetInvoices(params?: { search?: string; status?: string; page?: number }) {
+  const { data } = await portalApi.get<PaginatedResponse<TenantInvoice>>("/billing/invoices/", { params });
+  return data;
+}
+
+export async function portalGetInvoice(id: string) {
+  const { data } = await portalApi.get<TenantInvoice>(`/billing/invoices/${id}/`);
+  return data;
+}
+
+export async function portalCreateInvoice(payload: CreateInvoiceInput) {
+  const { data } = await portalApi.post<TenantInvoice>("/billing/invoices/", payload);
+  return data;
+}
+
+export async function portalUpdateInvoice(id: string, payload: Partial<CreateInvoiceInput>) {
+  const { data } = await portalApi.patch<TenantInvoice>(`/billing/invoices/${id}/`, payload);
+  return data;
+}
+
+export async function portalDeleteInvoice(id: string) {
+  await portalApi.delete(`/billing/invoices/${id}/`);
+}
+
+export async function portalSendInvoice(id: string) {
+  const { data } = await portalApi.post<{ status: string }>(`/billing/invoices/${id}/send/`);
+  return data;
+}
+
+export async function portalMarkInvoicePaid(id: string, amount?: string) {
+  const { data } = await portalApi.post<TenantInvoice>(`/billing/invoices/${id}/mark_paid/`, amount ? { amount } : {});
+  return data;
+}
+
+export async function portalGetInvoicePdfUrl(id: string) {
+  return `${portalApi.defaults.baseURL}/billing/invoices/${id}/pdf/`;
+}
+
+// Quotes
+export async function portalGetQuotes(params?: { search?: string; status?: string; page?: number }) {
+  const { data } = await portalApi.get<PaginatedResponse<TenantQuote>>("/billing/quotes/", { params });
+  return data;
+}
+
+export async function portalGetQuote(id: string) {
+  const { data } = await portalApi.get<TenantQuote>(`/billing/quotes/${id}/`);
+  return data;
+}
+
+export async function portalCreateQuote(payload: CreateQuoteInput) {
+  const { data } = await portalApi.post<TenantQuote>("/billing/quotes/", payload);
+  return data;
+}
+
+export async function portalUpdateQuote(id: string, payload: Partial<CreateQuoteInput>) {
+  const { data } = await portalApi.patch<TenantQuote>(`/billing/quotes/${id}/`, payload);
+  return data;
+}
+
+export async function portalDeleteQuote(id: string) {
+  await portalApi.delete(`/billing/quotes/${id}/`);
+}
+
+export async function portalSendQuote(id: string) {
+  const { data } = await portalApi.post<{ status: string }>(`/billing/quotes/${id}/send/`);
+  return data;
+}
+
+export async function portalConvertQuoteToInvoice(id: string) {
+  const { data } = await portalApi.post<{ invoice_id: string; invoice_number: string }>(`/billing/quotes/${id}/convert/`);
+  return data;
+}
+
+export async function portalGetQuotePdfUrl(id: string) {
+  return `${portalApi.defaults.baseURL}/billing/quotes/${id}/pdf/`;
 }
