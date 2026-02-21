@@ -140,10 +140,7 @@ export async function markInvoicePaid(id: string, amount?: string): Promise<Tena
   return response.data;
 }
 
-export async function getInvoicePdfUrl(id: string): Promise<string> {
-  const response = await apiClient.get<{ pdf_url: string }>(API_ENDPOINTS.BILLING_INVOICE_PDF(id));
-  return response.data.pdf_url;
-}
+// Note: PDF download is handled by src/utils/pdf.ts using direct file download
 
 // Quotes
 export async function getQuotes(params?: {
@@ -190,7 +187,4 @@ export async function convertQuoteToInvoice(id: string): Promise<TenantInvoice> 
   return response.data;
 }
 
-export async function getQuotePdfUrl(id: string): Promise<string> {
-  const response = await apiClient.get<{ pdf_url: string }>(API_ENDPOINTS.BILLING_QUOTE_PDF(id));
-  return response.data.pdf_url;
-}
+// Note: PDF download is handled by src/utils/pdf.ts using direct file download

@@ -1,9 +1,11 @@
-import { StyleSheet, ScrollView, View, Alert, Linking } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, ScrollView, View, Alert } from 'react-native';
 import { useTheme, Card, Text, Button, Divider, DataTable } from 'react-native-paper';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getInvoice, sendInvoice, markInvoicePaid, getInvoicePdfUrl } from '../../../../src/api/billing';
+import { getInvoice, sendInvoice, markInvoicePaid } from '../../../../src/api/billing';
+import { downloadInvoicePdf } from '../../../../src/utils/pdf';
 import { LoadingSpinner, ErrorMessage } from '../../../../src/components/ui';
 import { StatusBadge } from '../../../../src/components/ui/StatusBadge';
 import { INVOICE_STATUS_LABELS } from '../../../../src/types/billing';
@@ -45,12 +47,18 @@ export default function InvoiceDetailScreen() {
     },
   });
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleDownloadPdf = async () => {
+    if (!invoice) return;
+
+    setIsDownloading(true);
     try {
-      const pdfUrl = await getInvoicePdfUrl(id!);
-      await Linking.openURL(pdfUrl);
-    } catch {
+      await downloadInvoicePdf(id!, invoice.invoice_number);
+    } catch (error) {
       Alert.alert('Error', 'Failed to download PDF');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -237,9 +245,11 @@ export default function InvoiceDetailScreen() {
           mode="outlined"
           icon="file-pdf-box"
           onPress={handleDownloadPdf}
+          loading={isDownloading}
+          disabled={isDownloading}
           style={styles.actionButton}
         >
-          Download PDF
+          {isDownloading ? 'Downloading...' : 'Download PDF'}
         </Button>
 
         {canSend && (

@@ -1,9 +1,11 @@
-import { StyleSheet, ScrollView, View, Alert, Linking } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, ScrollView, View, Alert } from 'react-native';
 import { useTheme, Card, Text, Button, Divider, DataTable } from 'react-native-paper';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getQuote, sendQuote, convertQuoteToInvoice, getQuotePdfUrl } from '../../../../src/api/billing';
+import { getQuote, sendQuote, convertQuoteToInvoice } from '../../../../src/api/billing';
+import { downloadQuotePdf } from '../../../../src/utils/pdf';
 import { LoadingSpinner, ErrorMessage } from '../../../../src/components/ui';
 import { StatusBadge } from '../../../../src/components/ui/StatusBadge';
 import { QUOTE_STATUS_LABELS } from '../../../../src/types/billing';
@@ -54,12 +56,18 @@ export default function QuoteDetailScreen() {
     },
   });
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleDownloadPdf = async () => {
+    if (!quote) return;
+
+    setIsDownloading(true);
     try {
-      const pdfUrl = await getQuotePdfUrl(id!);
-      await Linking.openURL(pdfUrl);
-    } catch {
+      await downloadQuotePdf(id!, quote.quote_number);
+    } catch (error) {
       Alert.alert('Error', 'Failed to download PDF');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -241,9 +249,11 @@ export default function QuoteDetailScreen() {
           mode="outlined"
           icon="file-pdf-box"
           onPress={handleDownloadPdf}
+          loading={isDownloading}
+          disabled={isDownloading}
           style={styles.actionButton}
         >
-          Download PDF
+          {isDownloading ? 'Downloading...' : 'Download PDF'}
         </Button>
 
         {canSend && (
