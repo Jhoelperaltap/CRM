@@ -59,6 +59,7 @@ urlpatterns = [
     path("api/v1/settings/", include("apps.business_hours.urls")),
     path("api/v1/settings/", include("apps.portal.urls_config")),
     path("api/v1/portal/", include("apps.portal.urls")),
+    path("api/v1/portal/billing/", include("apps.portal.urls_billing")),
     path("api/v1/portal/chat/", include("apps.chatbot.urls_portal")),
     path("api/v1/chatbot/", include("apps.chatbot.urls")),
     path("api/v1/ai-agent/", include("apps.ai_agent.urls")),

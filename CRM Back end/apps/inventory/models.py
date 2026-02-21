@@ -703,3 +703,311 @@ class StockTransaction(TimeStampedModel):
 
     def __str__(self):
         return f"{self.transaction_type} – {self.product.name} x{self.quantity}"
+
+
+# ===========================================================================
+# Multi-Tenant Billing Models
+# ===========================================================================
+# These models are scoped to a Corporation (tenant) for the billing portal.
+# Each tenant has their own isolated inventory and invoices.
+
+
+class TenantProduct(TimeStampedModel):
+    """
+    Product owned by a specific tenant (Corporation).
+    product_code is unique within the tenant, not globally.
+    """
+
+    tenant = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.CASCADE,
+        related_name="tenant_products",
+    )
+    name = models.CharField(max_length=255, db_index=True)
+    product_code = models.CharField(max_length=50)
+    category = models.CharField(max_length=100, blank=True, default="")
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    cost_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    unit = models.CharField(max_length=50, default="Units")
+    qty_in_stock = models.IntegerField(default=0)
+    description = models.TextField(blank=True, default="")
+    is_active = models.BooleanField(default=True)
+    image_url = models.URLField(blank=True, default="")
+
+    class Meta:
+        db_table = "crm_tenant_products"
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "product_code"],
+                name="unique_product_code_per_tenant",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.product_code} – {self.name}"
+
+
+class TenantService(TimeStampedModel):
+    """
+    Service offered by a specific tenant (Corporation).
+    service_code is unique within the tenant, not globally.
+    """
+
+    tenant = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.CASCADE,
+        related_name="tenant_services",
+    )
+    name = models.CharField(max_length=255, db_index=True)
+    service_code = models.CharField(max_length=50)
+    category = models.CharField(max_length=100, blank=True, default="")
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    usage_unit = models.CharField(max_length=50, default="Hours")
+    description = models.TextField(blank=True, default="")
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "crm_tenant_services"
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "service_code"],
+                name="unique_service_code_per_tenant",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.service_code} – {self.name}"
+
+
+class TenantInvoice(TimeStampedModel):
+    """
+    Invoice created by a tenant for their customers.
+    invoice_number is unique within the tenant, not globally.
+    """
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        SENT = "sent", "Sent"
+        PAID = "paid", "Paid"
+        PARTIAL = "partial", "Partially Paid"
+        OVERDUE = "overdue", "Overdue"
+        CANCELLED = "cancelled", "Cancelled"
+
+    tenant = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.CASCADE,
+        related_name="tenant_invoices",
+    )
+    invoice_number = models.CharField(max_length=50, db_index=True)
+    subject = models.CharField(max_length=255)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.DRAFT, db_index=True
+    )
+
+    # Customer information (denormalized for PDF generation)
+    customer_name = models.CharField(max_length=255)
+    customer_email = models.EmailField(blank=True, default="")
+    customer_phone = models.CharField(max_length=30, blank=True, default="")
+    customer_address = models.TextField(blank=True, default="")
+
+    # Dates
+    invoice_date = models.DateField()
+    due_date = models.DateField(null=True, blank=True)
+
+    # Totals
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    tax_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    tax_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    amount_due = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    notes = models.TextField(blank=True, default="")
+    terms_conditions = models.TextField(blank=True, default="")
+
+    class Meta:
+        db_table = "crm_tenant_invoices"
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "invoice_number"],
+                name="unique_invoice_per_tenant",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.invoice_number} – {self.customer_name}"
+
+    def calculate_totals(self):
+        """Recalculate subtotal, tax, and total from line items."""
+        from decimal import Decimal
+
+        from django.db.models import Sum
+
+        line_totals = self.line_items.aggregate(total=Sum("total"))
+        self.subtotal = line_totals["total"] or Decimal("0")
+        self.tax_amount = self.subtotal * (self.tax_percent / Decimal("100"))
+        self.total = self.subtotal + self.tax_amount - self.discount_amount
+        self.amount_due = self.total - self.amount_paid
+
+
+class TenantInvoiceLineItem(TimeStampedModel):
+    """Line item for a tenant invoice."""
+
+    invoice = models.ForeignKey(
+        TenantInvoice, on_delete=models.CASCADE, related_name="line_items"
+    )
+    product = models.ForeignKey(
+        TenantProduct,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="invoice_line_items",
+    )
+    service = models.ForeignKey(
+        TenantService,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="invoice_line_items",
+    )
+    description = models.CharField(max_length=500, blank=True, default="")
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    sort_order = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = "crm_tenant_invoice_line_items"
+        ordering = ["sort_order"]
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate line total
+        from decimal import Decimal
+
+        discount_multiplier = Decimal("1") - (self.discount_percent / Decimal("100"))
+        self.total = self.quantity * self.unit_price * discount_multiplier
+        super().save(*args, **kwargs)
+
+
+class TenantQuote(TimeStampedModel):
+    """
+    Quote/Estimate created by a tenant for their customers.
+    quote_number is unique within the tenant, not globally.
+    """
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        SENT = "sent", "Sent"
+        ACCEPTED = "accepted", "Accepted"
+        DECLINED = "declined", "Declined"
+        EXPIRED = "expired", "Expired"
+        CONVERTED = "converted", "Converted to Invoice"
+
+    tenant = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.CASCADE,
+        related_name="tenant_quotes",
+    )
+    quote_number = models.CharField(max_length=50, db_index=True)
+    subject = models.CharField(max_length=255)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.DRAFT, db_index=True
+    )
+
+    # Customer information
+    customer_name = models.CharField(max_length=255)
+    customer_email = models.EmailField(blank=True, default="")
+    customer_phone = models.CharField(max_length=30, blank=True, default="")
+    customer_address = models.TextField(blank=True, default="")
+
+    # Dates
+    quote_date = models.DateField()
+    valid_until = models.DateField(null=True, blank=True)
+
+    # Totals
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    tax_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    tax_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    notes = models.TextField(blank=True, default="")
+    terms_conditions = models.TextField(blank=True, default="")
+
+    # Link to converted invoice
+    converted_invoice = models.OneToOneField(
+        TenantInvoice,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="source_quote",
+    )
+
+    class Meta:
+        db_table = "crm_tenant_quotes"
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "quote_number"],
+                name="unique_quote_per_tenant",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.quote_number} – {self.customer_name}"
+
+    def calculate_totals(self):
+        """Recalculate subtotal, tax, and total from line items."""
+        from decimal import Decimal
+
+        from django.db.models import Sum
+
+        line_totals = self.line_items.aggregate(total=Sum("total"))
+        self.subtotal = line_totals["total"] or Decimal("0")
+        self.tax_amount = self.subtotal * (self.tax_percent / Decimal("100"))
+        self.total = self.subtotal + self.tax_amount - self.discount_amount
+
+
+class TenantQuoteLineItem(TimeStampedModel):
+    """Line item for a tenant quote."""
+
+    quote = models.ForeignKey(
+        TenantQuote, on_delete=models.CASCADE, related_name="line_items"
+    )
+    product = models.ForeignKey(
+        TenantProduct,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="quote_line_items",
+    )
+    service = models.ForeignKey(
+        TenantService,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="quote_line_items",
+    )
+    description = models.CharField(max_length=500, blank=True, default="")
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    sort_order = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = "crm_tenant_quote_line_items"
+        ordering = ["sort_order"]
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate line total
+        from decimal import Decimal
+
+        discount_multiplier = Decimal("1") - (self.discount_percent / Decimal("100"))
+        self.total = self.quantity * self.unit_price * discount_multiplier
+        super().save(*args, **kwargs)

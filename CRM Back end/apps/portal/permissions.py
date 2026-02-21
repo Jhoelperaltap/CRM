@@ -67,3 +67,89 @@ class IsContactOwner(BasePermission):
         if hasattr(obj, "id") and obj.__class__.__name__ == "Contact":
             return str(obj.id) == contact_id
         return False
+
+
+class HasBillingPortalAccess(BasePermission):
+    """
+    Allows access only to portal users with active billing portal access.
+    Attaches ``request.billing_access`` and ``request.tenant`` for downstream views.
+
+    Assumes ``IsPortalAuthenticated`` has already run and set
+    ``request.portal_access``.
+    """
+
+    def has_permission(self, request, view):
+        portal_access = getattr(request, "portal_access", None)
+        if not portal_access:
+            return False
+
+        from apps.portal.models import BillingPortalAccess
+
+        try:
+            billing_access = BillingPortalAccess.objects.select_related("tenant").get(
+                portal_access=portal_access, is_active=True
+            )
+        except BillingPortalAccess.DoesNotExist:
+            return False
+
+        request.billing_access = billing_access
+        request.tenant = billing_access.tenant
+        return True
+
+
+class CanManageProducts(BasePermission):
+    """Check if billing user can manage products."""
+
+    def has_permission(self, request, view):
+        billing_access = getattr(request, "billing_access", None)
+        if not billing_access:
+            return False
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return True
+        return billing_access.can_manage_products
+
+
+class CanManageServices(BasePermission):
+    """Check if billing user can manage services."""
+
+    def has_permission(self, request, view):
+        billing_access = getattr(request, "billing_access", None)
+        if not billing_access:
+            return False
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return True
+        return billing_access.can_manage_services
+
+
+class CanCreateInvoices(BasePermission):
+    """Check if billing user can create/manage invoices."""
+
+    def has_permission(self, request, view):
+        billing_access = getattr(request, "billing_access", None)
+        if not billing_access:
+            return False
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return True
+        return billing_access.can_create_invoices
+
+
+class CanCreateQuotes(BasePermission):
+    """Check if billing user can create/manage quotes."""
+
+    def has_permission(self, request, view):
+        billing_access = getattr(request, "billing_access", None)
+        if not billing_access:
+            return False
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return True
+        return billing_access.can_create_quotes
+
+
+class CanViewReports(BasePermission):
+    """Check if billing user can view reports/dashboard."""
+
+    def has_permission(self, request, view):
+        billing_access = getattr(request, "billing_access", None)
+        if not billing_access:
+            return False
+        return billing_access.can_view_reports

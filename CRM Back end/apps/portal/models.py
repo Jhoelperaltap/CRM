@@ -556,3 +556,70 @@ class PortalDeviceToken(models.Model):
 
     def __str__(self):
         return f"Device: {self.contact} ({self.platform})"
+
+
+# ============================================================================
+# Billing Portal Access
+# ============================================================================
+
+
+class BillingPortalAccess(models.Model):
+    """
+    Grants billing/invoicing capabilities to a portal user.
+    Links a ClientPortalAccess to a Corporation (tenant) and defines
+    granular permissions for the billing module.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    portal_access = models.OneToOneField(
+        ClientPortalAccess,
+        on_delete=models.CASCADE,
+        related_name="billing_access",
+        verbose_name=_("portal access"),
+    )
+    tenant = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.CASCADE,
+        related_name="billing_portal_accesses",
+        verbose_name=_("tenant corporation"),
+        help_text=_("The corporation this billing access is scoped to."),
+    )
+
+    # Granular permissions
+    can_manage_products = models.BooleanField(
+        _("can manage products"),
+        default=True,
+        help_text=_("Create, edit, delete products in inventory."),
+    )
+    can_manage_services = models.BooleanField(
+        _("can manage services"),
+        default=True,
+        help_text=_("Create, edit, delete services in inventory."),
+    )
+    can_create_invoices = models.BooleanField(
+        _("can create invoices"),
+        default=True,
+        help_text=_("Create and manage invoices."),
+    )
+    can_create_quotes = models.BooleanField(
+        _("can create quotes"),
+        default=True,
+        help_text=_("Create and manage quotes/estimates."),
+    )
+    can_view_reports = models.BooleanField(
+        _("can view reports"),
+        default=True,
+        help_text=_("View billing dashboard and reports."),
+    )
+
+    is_active = models.BooleanField(_("active"), default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "crm_billing_portal_access"
+        verbose_name = _("billing portal access")
+        verbose_name_plural = _("billing portal accesses")
+
+    def __str__(self):
+        return f"Billing: {self.portal_access.email} -> {self.tenant.name}"
