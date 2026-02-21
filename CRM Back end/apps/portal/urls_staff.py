@@ -1,6 +1,7 @@
 from rest_framework.routers import DefaultRouter
 
 from apps.portal.views_staff import (
+    StaffBillingAccessViewSet,
     StaffDocumentReviewViewSet,
     StaffPortalAccessViewSet,
     StaffPortalMessageViewSet,
@@ -12,5 +13,8 @@ router.register(
     "documents", StaffDocumentReviewViewSet, basename="staff-portal-document"
 )
 router.register("messages", StaffPortalMessageViewSet, basename="staff-portal-message")
+router.register(
+    "billing-access", StaffBillingAccessViewSet, basename="staff-billing-access"
+)
 
 urlpatterns = router.urls
