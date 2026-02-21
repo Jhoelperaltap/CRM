@@ -46,8 +46,9 @@ export default function ServicesPage() {
     try {
       const data = await portalGetServices({ search: search || undefined });
       setServices(data.results);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to load services");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to load services");
     } finally {
       setLoading(false);
     }
@@ -93,8 +94,9 @@ export default function ServicesPage() {
       }
       setDialogOpen(false);
       fetchServices();
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to save service");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to save service");
     } finally {
       setSaving(false);
     }
@@ -106,8 +108,9 @@ export default function ServicesPage() {
     try {
       await portalDeleteService(service.id);
       fetchServices();
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to delete service");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to delete service");
     }
   };
 

@@ -28,8 +28,9 @@ export default function BillingDashboardPage() {
       try {
         const data = await portalGetBillingDashboard();
         setDashboard(data);
-      } catch (err: any) {
-        setError(err?.response?.data?.detail || "Failed to load billing dashboard");
+      } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { detail?: string } } };
+        setError(axiosErr?.response?.data?.detail || "Failed to load billing dashboard");
       } finally {
         setLoading(false);
       }

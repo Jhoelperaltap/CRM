@@ -54,8 +54,9 @@ export default function InvoiceDetailPage() {
       try {
         const data = await portalGetInvoice(params.id as string);
         setInvoice(data);
-      } catch (err: any) {
-        setError(err?.response?.data?.detail || "Failed to load invoice");
+      } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { detail?: string } } };
+        setError(axiosErr?.response?.data?.detail || "Failed to load invoice");
       } finally {
         setLoading(false);
       }
@@ -69,8 +70,9 @@ export default function InvoiceDetailPage() {
     try {
       await portalSendInvoice(invoice.id);
       setInvoice({ ...invoice, status: "sent", status_display: "Sent" });
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to send invoice");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to send invoice");
     } finally {
       setActionLoading(false);
     }
@@ -82,8 +84,9 @@ export default function InvoiceDetailPage() {
     try {
       const updated = await portalMarkInvoicePaid(invoice.id);
       setInvoice(updated);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to mark as paid");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to mark as paid");
     } finally {
       setActionLoading(false);
     }
@@ -97,8 +100,9 @@ export default function InvoiceDetailPage() {
     try {
       await portalDeleteInvoice(invoice.id);
       router.push("/portal/billing/invoices");
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to delete invoice");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to delete invoice");
       setActionLoading(false);
     }
   };

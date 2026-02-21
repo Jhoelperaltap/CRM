@@ -172,8 +172,9 @@ export default function NewQuotePage() {
       };
       const quote = await portalCreateQuote(quoteData);
       router.push(`/portal/billing/quotes/${quote.id}`);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to create quote");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to create quote");
       setSaving(false);
     }
   };

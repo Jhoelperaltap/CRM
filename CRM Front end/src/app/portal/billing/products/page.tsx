@@ -48,8 +48,9 @@ export default function ProductsPage() {
     try {
       const data = await portalGetProducts({ search: search || undefined });
       setProducts(data.results);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to load products");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -97,8 +98,9 @@ export default function ProductsPage() {
       }
       setDialogOpen(false);
       fetchProducts();
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to save product");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to save product");
     } finally {
       setSaving(false);
     }
@@ -110,8 +112,9 @@ export default function ProductsPage() {
     try {
       await portalDeleteProduct(product.id);
       fetchProducts();
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to delete product");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to delete product");
     }
   };
 

@@ -172,8 +172,9 @@ export default function NewInvoicePage() {
       };
       const invoice = await portalCreateInvoice(invoiceData);
       router.push(`/portal/billing/invoices/${invoice.id}`);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to create invoice");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to create invoice");
       setSaving(false);
     }
   };

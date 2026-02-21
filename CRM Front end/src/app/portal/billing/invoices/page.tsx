@@ -51,8 +51,9 @@ export default function InvoicesPage() {
         status: statusFilter !== "all" ? statusFilter : undefined,
       });
       setInvoices(data.results);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to load invoices");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to load invoices");
     } finally {
       setLoading(false);
     }

@@ -54,8 +54,9 @@ export default function QuoteDetailPage() {
       try {
         const data = await portalGetQuote(params.id as string);
         setQuote(data);
-      } catch (err: any) {
-        setError(err?.response?.data?.detail || "Failed to load quote");
+      } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { detail?: string } } };
+        setError(axiosErr?.response?.data?.detail || "Failed to load quote");
       } finally {
         setLoading(false);
       }
@@ -69,8 +70,9 @@ export default function QuoteDetailPage() {
     try {
       await portalSendQuote(quote.id);
       setQuote({ ...quote, status: "sent", status_display: "Sent" });
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to send quote");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to send quote");
     } finally {
       setActionLoading(false);
     }
@@ -84,8 +86,9 @@ export default function QuoteDetailPage() {
     try {
       const result = await portalConvertQuoteToInvoice(quote.id);
       router.push(`/portal/billing/invoices/${result.invoice_id}`);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to convert quote");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to convert quote");
       setActionLoading(false);
     }
   };
@@ -98,8 +101,9 @@ export default function QuoteDetailPage() {
     try {
       await portalDeleteQuote(quote.id);
       router.push("/portal/billing/quotes");
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Failed to delete quote");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      setError(axiosErr?.response?.data?.detail || "Failed to delete quote");
       setActionLoading(false);
     }
   };
