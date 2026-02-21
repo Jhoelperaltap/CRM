@@ -7,7 +7,6 @@ from decimal import Decimal
 
 from django.db.models import Q, Sum
 from django.http import HttpResponse
-from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,7 +17,6 @@ from apps.inventory.models import (
     TenantInvoiceLineItem,
     TenantProduct,
     TenantQuote,
-    TenantQuoteLineItem,
     TenantService,
 )
 from apps.portal.permissions import (
@@ -43,7 +41,6 @@ from apps.portal.serializers_billing import (
     TenantServiceListSerializer,
     TenantServiceSerializer,
 )
-
 
 # ---------------------------------------------------------------------------
 # Dashboard View

@@ -11,7 +11,6 @@ from rest_framework import status
 
 from apps.inventory.models import (
     TenantInvoice,
-    TenantInvoiceLineItem,
     TenantProduct,
     TenantQuote,
     TenantService,
