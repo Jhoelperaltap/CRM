@@ -41,7 +41,9 @@ def _get_tenant_logo(tenant) -> Image | None:
     return None
 
 
-def _build_header_table(tenant, doc_type: str, doc_number: str, doc_date, due_date=None):
+def _build_header_table(
+    tenant, doc_type: str, doc_number: str, doc_date, due_date=None
+):
     """Build the header section with tenant info and document details."""
     # Left side: Tenant info
     tenant_info = []
@@ -106,7 +108,9 @@ def _build_header_table(tenant, doc_type: str, doc_number: str, doc_date, due_da
     return table
 
 
-def _build_customer_section(customer_name, customer_address, customer_email, customer_phone):
+def _build_customer_section(
+    customer_name, customer_address, customer_email, customer_phone
+):
     """Build the 'Bill To' section."""
     styles = getSampleStyleSheet()
 
@@ -202,7 +206,15 @@ def _build_line_items_table(line_items):
     return table
 
 
-def _build_totals_section(subtotal, tax_percent, tax_amount, discount_amount, total, amount_paid=None, amount_due=None):
+def _build_totals_section(
+    subtotal,
+    tax_percent,
+    tax_amount,
+    discount_amount,
+    total,
+    amount_paid=None,
+    amount_due=None,
+):
     """Build the totals section."""
     data = [
         ["Subtotal:", _format_currency(subtotal)],
@@ -237,9 +249,13 @@ def _build_totals_section(subtotal, tax_percent, tax_amount, discount_amount, to
     # Bold the total row
     total_row_index = len(data) - 1
     if amount_due is not None:
-        total_row_index = len(data) - 3 if amount_paid and amount_paid > 0 else len(data) - 2
+        total_row_index = (
+            len(data) - 3 if amount_paid and amount_paid > 0 else len(data) - 2
+        )
 
-    row_styles.append(("FONTNAME", (0, total_row_index), (-1, total_row_index), "Helvetica-Bold"))
+    row_styles.append(
+        ("FONTNAME", (0, total_row_index), (-1, total_row_index), "Helvetica-Bold")
+    )
 
     # Bold the amount due row if present
     if amount_due is not None:

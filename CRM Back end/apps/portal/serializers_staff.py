@@ -219,9 +219,7 @@ class StaffBillingAccessSerializer(serializers.ModelSerializer):
 
     def get_contact_name(self, obj):
         contact = obj.portal_access.contact
-        return (
-            contact.full_name if hasattr(contact, "full_name") else str(contact)
-        )
+        return contact.full_name if hasattr(contact, "full_name") else str(contact)
 
 
 class StaffBillingAccessCreateSerializer(serializers.Serializer):
@@ -321,6 +319,4 @@ class StaffBillingAccessListSerializer(serializers.ModelSerializer):
 
     def get_contact_name(self, obj):
         contact = obj.portal_access.contact
-        return (
-            contact.full_name if hasattr(contact, "full_name") else str(contact)
-        )
+        return contact.full_name if hasattr(contact, "full_name") else str(contact)

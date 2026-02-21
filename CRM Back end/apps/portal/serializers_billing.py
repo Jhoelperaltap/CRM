@@ -2,7 +2,6 @@
 Serializers for the billing portal API.
 """
 
-
 from django.db import transaction
 from rest_framework import serializers
 
@@ -259,9 +258,7 @@ class TenantInvoiceCreateSerializer(serializers.ModelSerializer):
     def _generate_invoice_number(self, tenant):
         """Generate the next invoice number for the tenant."""
         last_invoice = (
-            TenantInvoice.objects.filter(tenant=tenant)
-            .order_by("-created_at")
-            .first()
+            TenantInvoice.objects.filter(tenant=tenant).order_by("-created_at").first()
         )
         if last_invoice:
             try:
@@ -466,9 +463,7 @@ class TenantQuoteCreateSerializer(serializers.ModelSerializer):
     def _generate_quote_number(self, tenant):
         """Generate the next quote number for the tenant."""
         last_quote = (
-            TenantQuote.objects.filter(tenant=tenant)
-            .order_by("-created_at")
-            .first()
+            TenantQuote.objects.filter(tenant=tenant).order_by("-created_at").first()
         )
         if last_quote:
             try:

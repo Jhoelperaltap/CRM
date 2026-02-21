@@ -152,7 +152,9 @@ class StaffPortalAccessViewSet(viewsets.ModelViewSet):
         portal_access = self.get_object()
 
         try:
-            billing_access = BillingPortalAccess.objects.get(portal_access=portal_access)
+            billing_access = BillingPortalAccess.objects.get(
+                portal_access=portal_access
+            )
             billing_access.is_active = False
             billing_access.save(update_fields=["is_active", "updated_at"])
             return Response(StaffBillingAccessSerializer(billing_access).data)
@@ -279,7 +281,11 @@ class StaffBillingAccessViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @action(detail=False, methods=["get"], url_path="by-portal-access/(?P<portal_access_id>[^/.]+)")
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="by-portal-access/(?P<portal_access_id>[^/.]+)",
+    )
     def by_portal_access(self, request, portal_access_id=None):
         """Get billing access for a specific portal account."""
         try:

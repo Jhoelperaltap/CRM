@@ -96,14 +96,11 @@ class PortalBillingDashboardView(APIView):
         ] or Decimal("0.00")
 
         # Revenue this month (paid invoices this month)
-        revenue_this_month = (
-            TenantInvoice.objects.filter(
-                tenant=tenant,
-                status=TenantInvoice.Status.PAID,
-                invoice_date__gte=first_of_month,
-            ).aggregate(total=Sum("total"))["total"]
-            or Decimal("0.00")
-        )
+        revenue_this_month = TenantInvoice.objects.filter(
+            tenant=tenant,
+            status=TenantInvoice.Status.PAID,
+            invoice_date__gte=first_of_month,
+        ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
 
         # Products and services count
         products_count = TenantProduct.objects.filter(
@@ -336,18 +333,14 @@ class PortalBillingInvoiceViewSet(viewsets.ModelViewSet):
         """Get the next suggested invoice number."""
         tenant = request.tenant
         last_invoice = (
-            TenantInvoice.objects.filter(tenant=tenant)
-            .order_by("-created_at")
-            .first()
+            TenantInvoice.objects.filter(tenant=tenant).order_by("-created_at").first()
         )
 
         if last_invoice:
             # Try to parse and increment
             try:
                 prefix = "".join(filter(str.isalpha, last_invoice.invoice_number))
-                number = int(
-                    "".join(filter(str.isdigit, last_invoice.invoice_number))
-                )
+                number = int("".join(filter(str.isdigit, last_invoice.invoice_number)))
                 next_number = f"{prefix}{number + 1:04d}"
             except (ValueError, TypeError):
                 next_number = "INV-0001"
@@ -442,16 +435,12 @@ class PortalBillingQuoteViewSet(viewsets.ModelViewSet):
         # Generate invoice number
         tenant = request.tenant
         last_invoice = (
-            TenantInvoice.objects.filter(tenant=tenant)
-            .order_by("-created_at")
-            .first()
+            TenantInvoice.objects.filter(tenant=tenant).order_by("-created_at").first()
         )
         if last_invoice:
             try:
                 prefix = "".join(filter(str.isalpha, last_invoice.invoice_number))
-                number = int(
-                    "".join(filter(str.isdigit, last_invoice.invoice_number))
-                )
+                number = int("".join(filter(str.isdigit, last_invoice.invoice_number)))
                 invoice_number = f"{prefix}{number + 1:04d}"
             except (ValueError, TypeError):
                 invoice_number = "INV-0001"

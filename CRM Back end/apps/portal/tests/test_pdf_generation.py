@@ -305,7 +305,9 @@ class TestPdfEndpoints:
         assert response.status_code == 200
         assert response["Content-Type"] == "application/pdf"
         assert "attachment" in response["Content-Disposition"]
-        assert f"invoice_{invoice.invoice_number}.pdf" in response["Content-Disposition"]
+        assert (
+            f"invoice_{invoice.invoice_number}.pdf" in response["Content-Disposition"]
+        )
 
     def test_quote_pdf_endpoint_returns_pdf(
         self, client, portal_access, billing_access, quote
