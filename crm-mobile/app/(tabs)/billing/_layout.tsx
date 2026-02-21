@@ -56,6 +56,32 @@ export default function BillingLayout() {
           title: 'Quote Details',
         }}
       />
+      <Stack.Screen
+        name="product/new"
+        options={{
+          title: 'New Product',
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="service/new"
+        options={{
+          title: 'New Service',
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="invoice/new"
+        options={{
+          title: 'New Invoice',
+        }}
+      />
+      <Stack.Screen
+        name="quote/new"
+        options={{
+          title: 'New Quote',
+        }}
+      />
     </Stack>
   );
 }

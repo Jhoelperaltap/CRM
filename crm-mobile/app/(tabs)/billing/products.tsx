@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet, RefreshControl, View } from 'react-native';
 import { useTheme, Searchbar, FAB, Text } from 'react-native-paper';
+import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useCallback } from 'react';
 import { getProducts } from '../../../src/api/billing';
@@ -92,8 +93,7 @@ export default function ProductsScreen() {
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
         onPress={() => {
-          // TODO: Open create product modal
-          console.log('Create product');
+          router.push('/(tabs)/billing/product/new' as any);
         }}
       />
     </View>

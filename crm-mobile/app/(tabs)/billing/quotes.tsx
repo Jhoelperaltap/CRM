@@ -117,8 +117,7 @@ export default function QuotesScreen() {
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
         onPress={() => {
-          // TODO: Navigate to create quote screen
-          console.log('Create quote');
+          router.push('/(tabs)/billing/quote/new' as any);
         }}
       />
     </View>

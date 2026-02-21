@@ -117,8 +117,7 @@ export default function InvoicesScreen() {
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
         onPress={() => {
-          // TODO: Navigate to create invoice screen
-          console.log('Create invoice');
+          router.push('/(tabs)/billing/invoice/new' as any);
         }}
       />
     </View>
