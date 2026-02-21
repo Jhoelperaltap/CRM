@@ -159,9 +159,27 @@ export interface StaffPortalAccess {
   updated_at: string;
 }
 
+export interface StaffBillingAccess {
+  id: string;
+  portal_access: string;
+  portal_access_email: string;
+  contact_name: string;
+  tenant: string;
+  tenant_name: string;
+  can_manage_products: boolean;
+  can_manage_services: boolean;
+  can_create_invoices: boolean;
+  can_create_quotes: boolean;
+  can_view_reports: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface StaffPortalAccessDetail extends StaffPortalAccess {
   contact_email: string;
   temp_password?: string;
+  billing_access: StaffBillingAccess | null;
 }
 
 export interface StaffDocumentReview {

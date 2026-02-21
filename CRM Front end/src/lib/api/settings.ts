@@ -10,6 +10,7 @@ import {
   RoleTree,
   SettingsLog,
   SharingRule,
+  StaffBillingAccess,
   StaffDocumentReview,
   StaffPortalAccess,
   StaffPortalAccessDetail,
@@ -226,7 +227,7 @@ export async function getPIIAccessLogs(params?: Record<string, string>) {
 // ---------------------------------------------------------------------------
 export async function getPortalAccounts(params?: Record<string, string>) {
   const { data } = await api.get<PaginatedResponse<StaffPortalAccess>>(
-    "/settings/portal/accounts/",
+    "/settings/portal-staff/accounts/",
     { params }
   );
   return data;
@@ -234,7 +235,7 @@ export async function getPortalAccounts(params?: Record<string, string>) {
 
 export async function getPortalAccount(id: string) {
   const { data } = await api.get<StaffPortalAccessDetail>(
-    `/settings/portal/accounts/${id}/`
+    `/settings/portal-staff/accounts/${id}/`
   );
   return data;
 }
@@ -244,7 +245,7 @@ export async function invitePortalClient(payload: {
   email?: string;
 }) {
   const { data } = await api.post<StaffPortalAccessDetail>(
-    "/settings/portal/accounts/",
+    "/settings/portal-staff/accounts/",
     payload
   );
   return data;
@@ -255,19 +256,71 @@ export async function updatePortalAccount(
   payload: { is_active?: boolean; email?: string }
 ) {
   const { data } = await api.patch<StaffPortalAccessDetail>(
-    `/settings/portal/accounts/${id}/`,
+    `/settings/portal-staff/accounts/${id}/`,
     payload
   );
   return data;
 }
 
 export async function deletePortalAccount(id: string) {
-  await api.delete(`/settings/portal/accounts/${id}/`);
+  await api.delete(`/settings/portal-staff/accounts/${id}/`);
+}
+
+// Billing Access
+export async function enableBillingAccess(
+  portalAccessId: string,
+  payload: {
+    tenant: string;
+    can_manage_products?: boolean;
+    can_manage_services?: boolean;
+    can_create_invoices?: boolean;
+    can_create_quotes?: boolean;
+    can_view_reports?: boolean;
+  }
+) {
+  const { data } = await api.post<StaffBillingAccess>(
+    `/settings/portal-staff/accounts/${portalAccessId}/enable-billing/`,
+    payload
+  );
+  return data;
+}
+
+export async function disableBillingAccess(portalAccessId: string) {
+  const { data } = await api.post<StaffBillingAccess>(
+    `/settings/portal-staff/accounts/${portalAccessId}/disable-billing/`
+  );
+  return data;
+}
+
+export async function getBillingAccesses(params?: Record<string, string>) {
+  const { data } = await api.get<PaginatedResponse<StaffBillingAccess>>(
+    "/settings/portal-staff/billing-access/",
+    { params }
+  );
+  return data;
+}
+
+export async function updateBillingAccess(
+  id: string,
+  payload: Partial<{
+    can_manage_products: boolean;
+    can_manage_services: boolean;
+    can_create_invoices: boolean;
+    can_create_quotes: boolean;
+    can_view_reports: boolean;
+    is_active: boolean;
+  }>
+) {
+  const { data } = await api.patch<StaffBillingAccess>(
+    `/settings/portal-staff/billing-access/${id}/`,
+    payload
+  );
+  return data;
 }
 
 export async function getPortalDocuments(params?: Record<string, string>) {
   const { data } = await api.get<PaginatedResponse<StaffDocumentReview>>(
-    "/settings/portal/documents/",
+    "/settings/portal-staff/documents/",
     { params }
   );
   return data;
@@ -275,7 +328,7 @@ export async function getPortalDocuments(params?: Record<string, string>) {
 
 export async function approvePortalDocument(id: string) {
   const { data } = await api.post<StaffDocumentReview>(
-    `/settings/portal/documents/${id}/approve/`
+    `/settings/portal-staff/documents/${id}/approve/`
   );
   return data;
 }
@@ -285,7 +338,7 @@ export async function rejectPortalDocument(
   rejectionReason?: string
 ) {
   const { data } = await api.post<StaffDocumentReview>(
-    `/settings/portal/documents/${id}/reject/`,
+    `/settings/portal-staff/documents/${id}/reject/`,
     { rejection_reason: rejectionReason || "" }
   );
   return data;
@@ -293,7 +346,7 @@ export async function rejectPortalDocument(
 
 export async function getPortalMessages(params?: Record<string, string>) {
   const { data } = await api.get<PaginatedResponse<StaffPortalMessage>>(
-    "/settings/portal/messages/",
+    "/settings/portal-staff/messages/",
     { params }
   );
   return data;
@@ -301,7 +354,7 @@ export async function getPortalMessages(params?: Record<string, string>) {
 
 export async function getPortalMessage(id: string) {
   const { data } = await api.get<StaffPortalMessage>(
-    `/settings/portal/messages/${id}/`
+    `/settings/portal-staff/messages/${id}/`
   );
   return data;
 }
@@ -311,7 +364,7 @@ export async function replyPortalMessage(
   payload: { body: string; subject?: string }
 ) {
   const { data } = await api.post<StaffPortalMessage>(
-    `/settings/portal/messages/${id}/reply/`,
+    `/settings/portal-staff/messages/${id}/reply/`,
     payload
   );
   return data;
