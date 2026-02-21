@@ -224,6 +224,7 @@ class TenantInvoiceCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating invoices with nested line items."""
 
     line_items = TenantInvoiceLineItemWriteSerializer(many=True, required=False)
+    invoice_number = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = TenantInvoice
@@ -246,6 +247,8 @@ class TenantInvoiceCreateSerializer(serializers.ModelSerializer):
         ]
 
     def validate_invoice_number(self, value):
+        if not value:
+            return value  # Will be auto-generated in create()
         tenant = self.context["request"].tenant
         qs = TenantInvoice.objects.filter(tenant=tenant, invoice_number=value)
         if self.instance:
@@ -256,10 +259,31 @@ class TenantInvoiceCreateSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def _generate_invoice_number(self, tenant):
+        """Generate the next invoice number for the tenant."""
+        last_invoice = (
+            TenantInvoice.objects.filter(tenant=tenant)
+            .order_by("-created_at")
+            .first()
+        )
+        if last_invoice:
+            try:
+                prefix = "".join(filter(str.isalpha, last_invoice.invoice_number))
+                number = int("".join(filter(str.isdigit, last_invoice.invoice_number)))
+                return f"{prefix or 'INV-'}{number + 1:04d}"
+            except (ValueError, TypeError):
+                pass
+        return "INV-0001"
+
     @transaction.atomic
     def create(self, validated_data):
         line_items_data = validated_data.pop("line_items", [])
         tenant = self.context["request"].tenant
+
+        # Auto-generate invoice number if not provided
+        if not validated_data.get("invoice_number"):
+            validated_data["invoice_number"] = self._generate_invoice_number(tenant)
+
         invoice = TenantInvoice.objects.create(tenant=tenant, **validated_data)
 
         for item_data in line_items_data:
@@ -408,6 +432,7 @@ class TenantQuoteCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating quotes with nested line items."""
 
     line_items = TenantQuoteLineItemWriteSerializer(many=True, required=False)
+    quote_number = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = TenantQuote
@@ -429,6 +454,8 @@ class TenantQuoteCreateSerializer(serializers.ModelSerializer):
         ]
 
     def validate_quote_number(self, value):
+        if not value:
+            return value  # Will be auto-generated in create()
         tenant = self.context["request"].tenant
         qs = TenantQuote.objects.filter(tenant=tenant, quote_number=value)
         if self.instance:
@@ -439,10 +466,31 @@ class TenantQuoteCreateSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def _generate_quote_number(self, tenant):
+        """Generate the next quote number for the tenant."""
+        last_quote = (
+            TenantQuote.objects.filter(tenant=tenant)
+            .order_by("-created_at")
+            .first()
+        )
+        if last_quote:
+            try:
+                prefix = "".join(filter(str.isalpha, last_quote.quote_number))
+                number = int("".join(filter(str.isdigit, last_quote.quote_number)))
+                return f"{prefix or 'QT-'}{number + 1:04d}"
+            except (ValueError, TypeError):
+                pass
+        return "QT-0001"
+
     @transaction.atomic
     def create(self, validated_data):
         line_items_data = validated_data.pop("line_items", [])
         tenant = self.context["request"].tenant
+
+        # Auto-generate quote number if not provided
+        if not validated_data.get("quote_number"):
+            validated_data["quote_number"] = self._generate_quote_number(tenant)
+
         quote = TenantQuote.objects.create(tenant=tenant, **validated_data)
 
         for item_data in line_items_data:
