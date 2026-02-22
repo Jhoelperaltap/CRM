@@ -371,22 +371,22 @@ class ClientStatusChangeSerializer(serializers.Serializer):
     """
 
     client_status = serializers.ChoiceField(choices=Corporation.ClientStatus.choices)
-    closure_reason = serializers.CharField(
-        required=False, allow_blank=True, default=""
-    )
-    pause_reason = serializers.CharField(
-        required=False, allow_blank=True, default=""
-    )
+    closure_reason = serializers.CharField(required=False, allow_blank=True, default="")
+    pause_reason = serializers.CharField(required=False, allow_blank=True, default="")
 
     def validate(self, data):
         if data["client_status"] == Corporation.ClientStatus.BUSINESS_CLOSED:
             if not data.get("closure_reason", "").strip():
                 raise serializers.ValidationError(
-                    {"closure_reason": "Closure reason is required when closing a business."}
+                    {
+                        "closure_reason": "Closure reason is required when closing a business."
+                    }
                 )
         if data["client_status"] == Corporation.ClientStatus.PAUSED:
             if not data.get("pause_reason", "").strip():
                 raise serializers.ValidationError(
-                    {"pause_reason": "Pause reason is required when pausing a business."}
+                    {
+                        "pause_reason": "Pause reason is required when pausing a business."
+                    }
                 )
         return data
