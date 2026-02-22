@@ -199,7 +199,9 @@ class CorporationViewSet(viewsets.ModelViewSet):
             Corporation.ClientStatus.PAUSED,
         ]:
             return Response(
-                {"detail": "Access logging only applies to closed or paused corporations."},
+                {
+                    "detail": "Access logging only applies to closed or paused corporations."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -222,7 +224,9 @@ class CorporationViewSet(viewsets.ModelViewSet):
             reason=reason,
         )
 
-        return Response({"detail": "Access logged successfully."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Access logged successfully."}, status=status.HTTP_200_OK
+        )
 
     @action(
         detail=False,
