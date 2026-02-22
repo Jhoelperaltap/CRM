@@ -113,6 +113,10 @@ class CorporationListSerializer(serializers.ModelSerializer):
     primary_contact_name = serializers.SerializerMethodField()
     assigned_to_name = serializers.SerializerMethodField()
     member_of_name = serializers.SerializerMethodField()
+    client_status = serializers.CharField(read_only=True)
+    client_status_display = serializers.CharField(
+        source="get_client_status_display", read_only=True
+    )
 
     class Meta:
         model = Corporation
@@ -132,6 +136,8 @@ class CorporationListSerializer(serializers.ModelSerializer):
             "billing_city",
             "billing_state",
             "status",
+            "client_status",
+            "client_status_display",
             "primary_contact_name",
             "assigned_to_name",
             "member_of_name",
@@ -169,8 +175,18 @@ class CorporationDetailSerializer(serializers.ModelSerializer):
     primary_contact = _ContactSummarySerializer(read_only=True)
     assigned_to = _UserSummarySerializer(read_only=True)
     created_by = _UserSummarySerializer(read_only=True)
+    closed_by = _UserSummarySerializer(read_only=True)
+    paused_by = _UserSummarySerializer(read_only=True)
     member_of = _CorporationSummarySerializer(read_only=True)
     sla = _SLASummarySerializer(read_only=True)
+    client_status = serializers.CharField(read_only=True)
+    client_status_display = serializers.CharField(
+        source="get_client_status_display", read_only=True
+    )
+    closure_reason = serializers.CharField(read_only=True)
+    closed_at = serializers.DateTimeField(read_only=True)
+    pause_reason = serializers.CharField(read_only=True)
+    paused_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Corporation
@@ -234,6 +250,14 @@ class CorporationDetailSerializer(serializers.ModelSerializer):
             "country",
             # Status & relationships
             "status",
+            "client_status",
+            "client_status_display",
+            "closure_reason",
+            "closed_at",
+            "closed_by",
+            "pause_reason",
+            "paused_at",
+            "paused_by",
             "member_of",
             "primary_contact",
             "assigned_to",
@@ -334,3 +358,35 @@ class CorporationCreateUpdateSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         """Return the full detail representation after create/update."""
         return CorporationDetailSerializer(instance, context=self.context).data
+
+
+# ---------------------------------------------------------------------------
+# Corporation — Client Status Change
+# ---------------------------------------------------------------------------
+class ClientStatusChangeSerializer(serializers.Serializer):
+    """
+    Serializer for changing the client status of a corporation.
+    Requires a closure_reason when closing a business.
+    Requires a pause_reason when pausing a business.
+    """
+
+    client_status = serializers.ChoiceField(choices=Corporation.ClientStatus.choices)
+    closure_reason = serializers.CharField(
+        required=False, allow_blank=True, default=""
+    )
+    pause_reason = serializers.CharField(
+        required=False, allow_blank=True, default=""
+    )
+
+    def validate(self, data):
+        if data["client_status"] == Corporation.ClientStatus.BUSINESS_CLOSED:
+            if not data.get("closure_reason", "").strip():
+                raise serializers.ValidationError(
+                    {"closure_reason": "Closure reason is required when closing a business."}
+                )
+        if data["client_status"] == Corporation.ClientStatus.PAUSED:
+            if not data.get("pause_reason", "").strip():
+                raise serializers.ValidationError(
+                    {"pause_reason": "Pause reason is required when pausing a business."}
+                )
+        return data

@@ -19,6 +19,8 @@ class Notification(models.Model):
         MENTION = "mention", "Mentioned in Comment"
         COMMENT_REPLY = "comment_reply", "Reply to Comment"
         CLIENT_MESSAGE = "client_message", "Client Portal Message"
+        CLOSED_CORP_ACCESSED = "closed_corp_accessed", "Closed Corporation Accessed"
+        PAUSED_CORP_ACCESSED = "paused_corp_accessed", "Paused Corporation Accessed"
         SYSTEM = "system", "System"
 
     class Severity(models.TextChoices):

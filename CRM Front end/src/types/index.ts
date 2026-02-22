@@ -288,6 +288,14 @@ export interface Corporation {
   country: string;
   // Status & relationships
   status: "active" | "inactive" | "dissolved";
+  client_status: "active" | "payment_pending" | "paid" | "paused" | "business_closed";
+  client_status_display?: string;
+  closure_reason?: string;
+  closed_at?: string;
+  closed_by?: UserSummary;
+  pause_reason?: string;
+  paused_at?: string;
+  paused_by?: UserSummary;
   member_of: CorporationSummary | null;
   primary_contact: ContactSummary | null;
   assigned_to: UserSummary | null;
@@ -318,6 +326,8 @@ export interface CorporationListItem {
   billing_city: string;
   billing_state: string;
   status: string;
+  client_status: string;
+  client_status_display: string;
   primary_contact_name: string | null;
   assigned_to_name: string | null;
   member_of_name: string | null;

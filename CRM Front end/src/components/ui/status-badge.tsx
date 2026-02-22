@@ -17,6 +17,11 @@ const statusColors: Record<string, string> = {
   closed: "bg-gray-200 text-gray-900",
   // Corporation
   dissolved: "bg-red-100 text-red-800",
+  // Client Status (Corporation)
+  payment_pending: "bg-red-100 text-red-800",
+  paid: "bg-emerald-100 text-emerald-800",
+  paused: "bg-amber-100 text-amber-800",
+  business_closed: "bg-gray-200 text-gray-800",
   // Appointment
   scheduled: "bg-blue-100 text-blue-800",
   confirmed: "bg-indigo-100 text-indigo-800",

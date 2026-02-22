@@ -11,7 +11,7 @@ import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Upload, AlertTriangle, PauseCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function CorporationsPage() {
@@ -61,16 +61,35 @@ export default function CorporationsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead><TableHead>Type</TableHead><TableHead>EIN</TableHead>
-                  <TableHead>Status</TableHead><TableHead>Contact</TableHead><TableHead>Created</TableHead>
+                  <TableHead>Client Status</TableHead><TableHead>Contact</TableHead><TableHead>Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.results.map((c) => (
-                  <TableRow key={c.id} className="cursor-pointer" onClick={() => router.push(`/corporations/${c.id}`)}>
-                    <TableCell className="font-medium">{c.name}</TableCell>
+                  <TableRow
+                    key={c.id}
+                    className={`cursor-pointer ${
+                      c.client_status === "business_closed" ? "bg-red-50 hover:bg-red-100" :
+                      c.client_status === "paused" ? "bg-amber-50 hover:bg-amber-100" : ""
+                    }`}
+                    onClick={() => router.push(`/corporations/${c.id}`)}
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {c.client_status === "business_closed" && (
+                          <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+                        )}
+                        {c.client_status === "paused" && (
+                          <PauseCircle className="h-4 w-4 text-amber-500 shrink-0" />
+                        )}
+                        <span className={c.client_status === "business_closed" ? "line-through text-muted-foreground" : ""}>
+                          {c.name}
+                        </span>
+                      </div>
+                    </TableCell>
                     <TableCell>{c.entity_type.replace(/_/g, " ")}</TableCell>
                     <TableCell>{c.ein || "-"}</TableCell>
-                    <TableCell><StatusBadge status={c.status} /></TableCell>
+                    <TableCell><StatusBadge status={c.client_status} /></TableCell>
                     <TableCell>{c.primary_contact_name || "-"}</TableCell>
                     <TableCell>{new Date(c.created_at).toLocaleDateString()}</TableCell>
                   </TableRow>

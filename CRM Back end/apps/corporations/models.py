@@ -94,6 +94,16 @@ class Corporation(TimeStampedModel):
         NOT_SET = "not_set", _("Not set")
 
     # ------------------------------------------------------------------
+    # Client Status choices
+    # ------------------------------------------------------------------
+    class ClientStatus(models.TextChoices):
+        ACTIVE = "active", _("Active")
+        PAYMENT_PENDING = "payment_pending", _("Payment Pending")
+        PAID = "paid", _("Paid")
+        PAUSED = "paused", _("Paused")
+        BUSINESS_CLOSED = "business_closed", _("Business Closed")
+
+    # ------------------------------------------------------------------
     # Core fields
     # ------------------------------------------------------------------
     name = models.CharField(
@@ -427,6 +437,51 @@ class Corporation(TimeStampedModel):
         choices=Status.choices,
         default=Status.ACTIVE,
         db_index=True,
+    )
+    client_status = models.CharField(
+        _("client status"),
+        max_length=20,
+        choices=ClientStatus.choices,
+        default=ClientStatus.ACTIVE,
+        db_index=True,
+    )
+    closure_reason = models.TextField(
+        _("closure reason"),
+        blank=True,
+        default="",
+        help_text=_("Required when business is closed"),
+    )
+    closed_at = models.DateTimeField(
+        _("closed at"),
+        null=True,
+        blank=True,
+    )
+    closed_by = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="closed_corporations",
+        verbose_name=_("closed by"),
+    )
+    pause_reason = models.TextField(
+        _("pause reason"),
+        blank=True,
+        default="",
+        help_text=_("Required when business is paused"),
+    )
+    paused_at = models.DateTimeField(
+        _("paused at"),
+        null=True,
+        blank=True,
+    )
+    paused_by = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="paused_corporations",
+        verbose_name=_("paused by"),
     )
     member_of = models.ForeignKey(
         "self",

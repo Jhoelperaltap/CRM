@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getCorporation, deleteCorporation } from "@/lib/api/corporations";
+import { getCorporation, deleteCorporation, logCorporationAccess } from "@/lib/api/corporations";
 import type { Corporation } from "@/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -12,6 +12,14 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Collapsible,
   CollapsibleContent,
@@ -45,6 +53,8 @@ import {
   FolderOpen,
   Plus,
   ExternalLink,
+  AlertTriangle,
+  PauseCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -53,6 +63,7 @@ import { QuickActionsMenu } from "@/components/quick-actions";
 import { CorporationSummaryCard } from "@/components/summary-card";
 import { PortalAccessDialog } from "@/components/contacts/portal-access-dialog";
 import { DepartmentFolders } from "@/components/departments";
+import { ClientStatusDropdown } from "@/components/corporations/client-status-dropdown";
 import { getPortalAccounts } from "@/lib/api/settings";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -177,6 +188,7 @@ export default function CorporationDetailPage() {
   const [corp, setCorp] = useState<Corporation | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [warningDismissed, setWarningDismissed] = useState(false);
   const [portalDialogOpen, setPortalDialogOpen] = useState(false);
   const [portalAccess, setPortalAccess] = useState<{
     hasAccess: boolean;
@@ -200,6 +212,19 @@ export default function CorporationDetailPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  // Log access to closed/paused corporations and notify managers (only once per page load)
+  const accessLoggedRef = useRef(false);
+  useEffect(() => {
+    if (
+      corp &&
+      !accessLoggedRef.current &&
+      (corp.client_status === "business_closed" || corp.client_status === "paused")
+    ) {
+      accessLoggedRef.current = true;
+      logCorporationAccess(id).catch(console.error);
+    }
+  }, [corp, id]);
 
   // Fetch sidebar data
   useEffect(() => {
@@ -334,6 +359,10 @@ export default function CorporationDetailPage() {
         backHref="/corporations"
         actions={
           <>
+            <ClientStatusDropdown
+              corporation={corp}
+              onStatusChange={(updatedCorp) => setCorp(updatedCorp)}
+            />
             <QuickActionsMenu
               entityType="corporation"
               entityId={id}
@@ -353,6 +382,48 @@ export default function CorporationDetailPage() {
       />
 
       <CorporationSummaryCard corporation={corp} />
+
+      {/* Business Closed Warning Banner */}
+      {corp.client_status === "business_closed" && (
+        <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-red-800">Business Closed</h3>
+              {corp.closure_reason && (
+                <p className="text-sm text-red-700 mt-1">{corp.closure_reason}</p>
+              )}
+              {corp.closed_by && corp.closed_at && (
+                <p className="text-xs text-red-600 mt-2">
+                  Closed by {corp.closed_by.full_name} on{" "}
+                  {format(new Date(corp.closed_at), "PPP")}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Business Paused Warning Banner */}
+      {corp.client_status === "paused" && (
+        <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <PauseCircle className="h-6 w-6 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-800">Business Paused</h3>
+              {corp.pause_reason && (
+                <p className="text-sm text-amber-700 mt-1">{corp.pause_reason}</p>
+              )}
+              {corp.paused_by && corp.paused_at && (
+                <p className="text-xs text-amber-600 mt-2">
+                  Paused by {corp.paused_by.full_name} on{" "}
+                  {format(new Date(corp.paused_at), "PPP")}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Layout: Activity + Right Sidebar */}
       <div className="grid gap-6 lg:grid-cols-[1fr,320px]">
@@ -858,6 +929,76 @@ export default function CorporationDetailPage() {
           router.push("/corporations");
         }}
       />
+
+      {/* Warning Dialog for Closed/Paused Business */}
+      <Dialog
+        open={!warningDismissed && (corp.client_status === "business_closed" || corp.client_status === "paused")}
+        onOpenChange={(open) => !open && setWarningDismissed(true)}
+      >
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className={cn(
+              "flex items-center gap-2",
+              corp.client_status === "business_closed" ? "text-red-600" : "text-amber-600"
+            )}>
+              {corp.client_status === "business_closed" ? (
+                <AlertTriangle className="h-5 w-5" />
+              ) : (
+                <PauseCircle className="h-5 w-5" />
+              )}
+              {corp.client_status === "business_closed" ? "Business Closed" : "Business Paused"}
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              This organization is currently{" "}
+              <strong>{corp.client_status === "business_closed" ? "closed" : "paused"}</strong>.
+              Please review the information below before proceeding.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className={cn(
+              "rounded-lg border-2 p-4",
+              corp.client_status === "business_closed"
+                ? "border-red-200 bg-red-50"
+                : "border-amber-200 bg-amber-50"
+            )}>
+              <h4 className={cn(
+                "font-semibold mb-2",
+                corp.client_status === "business_closed" ? "text-red-800" : "text-amber-800"
+              )}>
+                {corp.client_status === "business_closed" ? "Reason for Closure:" : "Reason for Pause:"}
+              </h4>
+              <p className={cn(
+                "text-sm",
+                corp.client_status === "business_closed" ? "text-red-700" : "text-amber-700"
+              )}>
+                {corp.client_status === "business_closed"
+                  ? (corp.closure_reason || "No reason provided")
+                  : (corp.pause_reason || "No reason provided")
+                }
+              </p>
+              {corp.client_status === "business_closed" && corp.closed_by && corp.closed_at && (
+                <p className="text-xs text-red-600 mt-3">
+                  Closed by {corp.closed_by.full_name} on {format(new Date(corp.closed_at), "PPP")}
+                </p>
+              )}
+              {corp.client_status === "paused" && corp.paused_by && corp.paused_at && (
+                <p className="text-xs text-amber-600 mt-3">
+                  Paused by {corp.paused_by.full_name} on {format(new Date(corp.paused_at), "PPP")}
+                </p>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground mt-4">
+              <strong>Important:</strong> Please check the comments section for additional details
+              and history related to this status change.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setWarningDismissed(true)}>
+              I Understand, Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

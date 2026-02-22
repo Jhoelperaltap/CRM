@@ -3,6 +3,7 @@ import io
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
@@ -13,6 +14,7 @@ from apps.core.validators import validate_csv_import
 from apps.corporations.filters import CorporationFilter
 from apps.corporations.models import Corporation
 from apps.corporations.serializers import (
+    ClientStatusChangeSerializer,
     CorporationCreateUpdateSerializer,
     CorporationDetailSerializer,
     CorporationImportSerializer,
@@ -57,6 +59,8 @@ class CorporationViewSet(viewsets.ModelViewSet):
     # ------------------------------------------------------------------
     def get_permissions(self):
         if self.action in ("list", "retrieve", "contacts", "cases"):
+            return [IsAuthenticated()]
+        if self.action in ("change_client_status", "log_access"):
             return [IsAuthenticated()]
         return [IsAuthenticated(), ModulePermission()]
 
@@ -127,6 +131,98 @@ class CorporationViewSet(viewsets.ModelViewSet):
         )
         serializer = TaxCaseListSerializer(cases_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"], url_path="change-client-status")
+    def change_client_status(self, request, pk=None):
+        """
+        Change the client status of a corporation.
+        Only managers/admins can set status to 'business_closed'.
+        """
+        corporation = self.get_object()
+        serializer = ClientStatusChangeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        new_status = serializer.validated_data["client_status"]
+        closure_reason = serializer.validated_data.get("closure_reason", "")
+        pause_reason = serializer.validated_data.get("pause_reason", "")
+
+        if new_status == Corporation.ClientStatus.BUSINESS_CLOSED:
+            corporation.closure_reason = closure_reason
+            corporation.closed_at = timezone.now()
+            corporation.closed_by = request.user
+            # Clear pause fields when closing
+            corporation.pause_reason = ""
+            corporation.paused_at = None
+            corporation.paused_by = None
+        elif new_status == Corporation.ClientStatus.PAUSED:
+            corporation.pause_reason = pause_reason
+            corporation.paused_at = timezone.now()
+            corporation.paused_by = request.user
+        else:
+            # If reactivating from closed, clear closure fields
+            if corporation.client_status == Corporation.ClientStatus.BUSINESS_CLOSED:
+                corporation.closure_reason = ""
+                corporation.closed_at = None
+                corporation.closed_by = None
+            # If reactivating from paused, clear pause fields
+            if corporation.client_status == Corporation.ClientStatus.PAUSED:
+                corporation.pause_reason = ""
+                corporation.paused_at = None
+                corporation.paused_by = None
+
+        corporation.client_status = new_status
+        corporation.save(
+            update_fields=[
+                "client_status",
+                "closure_reason",
+                "closed_at",
+                "closed_by",
+                "pause_reason",
+                "paused_at",
+                "paused_by",
+            ]
+        )
+
+        return Response(CorporationDetailSerializer(corporation).data)
+
+    @action(detail=True, methods=["post"], url_path="log-access")
+    def log_access(self, request, pk=None):
+        """
+        Log access to a closed or paused corporation.
+        Triggers a Celery task to notify managers/admins.
+        """
+        corporation = self.get_object()
+
+        # Only log access for closed or paused corporations
+        if corporation.client_status not in [
+            Corporation.ClientStatus.BUSINESS_CLOSED,
+            Corporation.ClientStatus.PAUSED,
+        ]:
+            return Response(
+                {"detail": "Access logging only applies to closed or paused corporations."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Get the reason based on status
+        reason = ""
+        if corporation.client_status == Corporation.ClientStatus.BUSINESS_CLOSED:
+            reason = corporation.closure_reason
+        elif corporation.client_status == Corporation.ClientStatus.PAUSED:
+            reason = corporation.pause_reason
+
+        # Trigger Celery task to notify managers/admins
+        from apps.corporations.tasks import notify_closed_corporation_access
+
+        notify_closed_corporation_access.delay(
+            corporation_id=str(corporation.id),
+            corporation_name=corporation.name,
+            accessed_by_user_id=str(request.user.id),
+            accessed_by_name=request.user.get_full_name() or request.user.email,
+            client_status=corporation.client_status,
+            reason=reason,
+        )
+
+        return Response({"detail": "Access logged successfully."}, status=status.HTTP_200_OK)
 
     @action(
         detail=False,
