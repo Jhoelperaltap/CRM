@@ -145,7 +145,7 @@ export function DocumentUploadDialog({ open, onClose, onUploaded }: Props) {
                 <SelectItem value="none">No case selected</SelectItem>
                 {cases.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
-                    {c.case_number} - {c.subject || c.case_type}
+                    {c.case_number} - {c.title || c.case_type}
                   </SelectItem>
                 ))}
               </SelectContent>
