@@ -16,7 +16,6 @@ import shutil
 import tempfile
 import zipfile
 from datetime import datetime
-from io import StringIO
 from pathlib import Path
 from typing import Optional
 
@@ -339,8 +338,6 @@ class BackupService:
         if not confirm:
             raise ValueError("Restore requires explicit confirmation")
 
-        from apps.core.models import Backup
-
         file_path = Path(settings.MEDIA_ROOT) / backup.file_path
         if not file_path.exists():
             raise FileNotFoundError(f"Backup file not found: {file_path}")
@@ -449,7 +446,6 @@ class BackupService:
 
             with transaction.atomic():
                 # Restore each model's data
-                from django.apps import apps
                 from django.core.serializers import deserialize
 
                 for model_key, objects in tenant_data.get("models", {}).items():
