@@ -48,13 +48,14 @@ const isSSLPinningConfigured = SSL_PINS.every(
 
 module.exports = {
   expo: {
-    name: "EJFLOW Client",
+    name: "Ebenezer Client",
     slug: "ejflow-client",
+    owner: "ejsupportit",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "automatic",
-    scheme: "ejflow-portal",
+    scheme: "ebenezer-portal",
     newArchEnabled: true,
     splash: {
       image: "./assets/splash-icon.png",
@@ -63,16 +64,29 @@ module.exports = {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.ejflow.client",
+      bundleIdentifier: "com.ebenezertax.clientportal",
+      infoPlist: {
+        NSFaceIDUsageDescription: "Use Face ID to securely access your account",
+        NSCameraUsageDescription: "Take photos to upload documents",
+        NSPhotoLibraryUsageDescription: "Select photos to upload documents",
+      },
+      config: {
+        usesNonExemptEncryption: false,
+      },
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#2563eb",
       },
-      package: "com.ejflow.client",
+      package: "com.ebenezertax.clientportal",
       edgeToEdgeEnabled: true,
-      predictiveBackGestureEnabled: false,
+      permissions: [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+      ],
     },
     web: {
       favicon: "./assets/favicon.png",
@@ -82,34 +96,33 @@ module.exports = {
       "expo-router",
       "expo-secure-store",
       [
+        "expo-local-authentication",
+        {
+          faceIDPermission: "Allow $(PRODUCT_NAME) to use Face ID to unlock the app",
+        },
+      ],
+      [
         "expo-notifications",
         {
           icon: "./assets/notification-icon.png",
           color: "#2563eb",
         },
       ],
-      // SSL Pinning Plugin - only enabled when properly configured
-      ...(isSSLPinningConfigured
-        ? [
-            [
-              "./plugins/withSSLPinning",
-              {
-                pins: SSL_PINS,
-                // Certificate expiration date - update when rotating certificates
-                pinExpiration: "2027-12-31",
-                // Disable cleartext (HTTP) traffic in production
-                allowCleartext: isDev,
-              },
-            ],
-          ]
-        : []),
     ],
     experiments: {
       typedRoutes: true,
     },
     extra: {
-      // Expose SSL pinning status to the app
+      eas: {
+        projectId: "3f2a268a-8b13-4113-8f38-589fe778fdad",
+      },
       sslPinningEnabled: isSSLPinningConfigured && !isDev,
+    },
+    runtimeVersion: {
+      policy: "appVersion",
+    },
+    updates: {
+      url: "https://u.expo.dev/3f2a268a-8b13-4113-8f38-589fe778fdad",
     },
   },
 };

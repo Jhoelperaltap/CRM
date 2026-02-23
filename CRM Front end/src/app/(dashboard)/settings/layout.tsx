@@ -8,9 +8,9 @@ export default function SettingsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex h-full min-h-0 relative">
       <SettingsSidebar />
-      <div className="flex-1 overflow-y-auto p-6">{children}</div>
+      <div className="flex-1 overflow-y-auto p-6 ml-0">{children}</div>
     </div>
   );
 }

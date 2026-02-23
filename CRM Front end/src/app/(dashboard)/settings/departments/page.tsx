@@ -101,13 +101,13 @@ export default function DepartmentsPage() {
 
   const openEdit = (dept: Department) => {
     setEditingDepartment(dept);
-    setName(dept.name);
-    setCode(dept.code);
-    setDescription(dept.description);
-    setColor(dept.color);
-    setIcon(dept.icon);
-    setIsActive(dept.is_active);
-    setOrder(dept.order);
+    setName(dept.name || "");
+    setCode(dept.code || "");
+    setDescription(dept.description || "");
+    setColor(dept.color || "#6366F1");
+    setIcon(dept.icon || "Briefcase");
+    setIsActive(dept.is_active ?? true);
+    setOrder(dept.order ?? 0);
     setDialogOpen(true);
   };
 
@@ -203,7 +203,7 @@ export default function DepartmentsPage() {
                 Add Department
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg" aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>
                   {editingDepartment ? "Edit Department" : "Add Department"}

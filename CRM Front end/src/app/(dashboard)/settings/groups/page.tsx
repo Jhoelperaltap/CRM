@@ -141,7 +141,7 @@ export default function GroupsPage() {
 
       {/* New Group Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>New Group</DialogTitle>
           </DialogHeader>

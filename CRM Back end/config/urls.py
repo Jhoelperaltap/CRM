@@ -72,6 +72,7 @@ urlpatterns = [
     path("api/v1/playbooks/", include("apps.playbooks.urls")),
     path("api/v1/video-meetings/", include("apps.video_meetings.urls")),
     path("api/v1/search/", include("apps.core.urls")),
+    path("api/v1/backups/", include("apps.core.urls_backup")),
     path("api/v1/", include("apps.activities.urls")),
     # API docs
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

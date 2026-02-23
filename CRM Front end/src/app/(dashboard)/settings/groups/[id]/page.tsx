@@ -134,7 +134,7 @@ export default function GroupDetailPage() {
 
       {/* Edit Group Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Edit Group</DialogTitle>
           </DialogHeader>

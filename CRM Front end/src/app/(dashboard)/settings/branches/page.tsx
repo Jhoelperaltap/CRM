@@ -68,15 +68,15 @@ export default function BranchesPage() {
 
   const openEdit = (branch: Branch) => {
     setEditingBranch(branch);
-    setName(branch.name);
-    setCode(branch.code);
-    setAddress(branch.address);
-    setCity(branch.city);
-    setState(branch.state);
-    setZipCode(branch.zip_code);
-    setPhone(branch.phone);
-    setIsActive(branch.is_active);
-    setIsHeadquarters(branch.is_headquarters);
+    setName(branch.name || "");
+    setCode(branch.code || "");
+    setAddress(branch.address || "");
+    setCity(branch.city || "");
+    setState(branch.state || "");
+    setZipCode(branch.zip_code || "");
+    setPhone(branch.phone || "");
+    setIsActive(branch.is_active ?? true);
+    setIsHeadquarters(branch.is_headquarters ?? false);
     setDialogOpen(true);
   };
 
@@ -136,7 +136,7 @@ export default function BranchesPage() {
               Add Branch
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg" aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>
                 {editingBranch ? "Edit Branch" : "Add Branch"}
