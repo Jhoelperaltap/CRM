@@ -35,8 +35,12 @@ urlpatterns = [
     path("run-cycle/", RunAgentCycleView.as_view(), name="agent-run-cycle"),
     path("run-analysis/", RunMarketAnalysisView.as_view(), name="agent-run-analysis"),
     # Backup automation endpoints
-    path("backup/workload/", BackupWorkloadView.as_view(), name="agent-backup-workload"),
-    path("backup/analyze/", RunBackupAnalysisView.as_view(), name="agent-backup-analyze"),
+    path(
+        "backup/workload/", BackupWorkloadView.as_view(), name="agent-backup-workload"
+    ),
+    path(
+        "backup/analyze/", RunBackupAnalysisView.as_view(), name="agent-backup-analyze"
+    ),
     # ViewSet routes
     path("", include(router.urls)),
 ]

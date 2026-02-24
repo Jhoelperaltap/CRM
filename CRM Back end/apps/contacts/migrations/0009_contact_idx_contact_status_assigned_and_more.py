@@ -7,19 +7,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('business_hours', '0001_initial'),
-        ('contacts', '0008_increase_phone_field_length'),
-        ('corporations', '0007_add_paused_status'),
+        ("business_hours", "0001_initial"),
+        ("contacts", "0008_increase_phone_field_length"),
+        ("corporations", "0007_add_paused_status"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='contact',
-            index=models.Index(fields=['status', 'assigned_to'], name='idx_contact_status_assigned'),
+            model_name="contact",
+            index=models.Index(
+                fields=["status", "assigned_to"], name="idx_contact_status_assigned"
+            ),
         ),
         migrations.AddIndex(
-            model_name='contact',
-            index=models.Index(fields=['corporation', 'status'], name='idx_contact_corp_status'),
+            model_name="contact",
+            index=models.Index(
+                fields=["corporation", "status"], name="idx_contact_corp_status"
+            ),
         ),
     ]

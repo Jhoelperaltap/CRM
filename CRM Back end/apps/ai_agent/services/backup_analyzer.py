@@ -150,9 +150,7 @@ class BackupAnalyzer:
             metrics.contacts_created = Contact.objects.filter(
                 created_at__gte=day_ago
             ).count()
-            metrics.contacts_updated = (
-                contacts_qs.count() - metrics.contacts_created
-            )
+            metrics.contacts_updated = contacts_qs.count() - metrics.contacts_created
         except Exception as e:
             logger.warning(f"Error counting contacts: {e}")
 
@@ -274,7 +272,10 @@ class BackupAnalyzer:
         if metrics.documents_created >= self.config.backup_documents_threshold:
             thresholds_exceeded.append("documents")
 
-        if metrics.total_corporations_changes >= self.config.backup_corporations_threshold:
+        if (
+            metrics.total_corporations_changes
+            >= self.config.backup_corporations_threshold
+        ):
             thresholds_exceeded.append("corporations")
 
         if metrics.total_emails >= self.config.backup_emails_threshold:
@@ -390,9 +391,7 @@ class BackupAnalyzer:
             source_action=action,
         )
 
-        logger.info(
-            f"Automated backup created: {backup.id} - {decision.reason}"
-        )
+        logger.info(f"Automated backup created: {backup.id} - {decision.reason}")
 
         return action
 

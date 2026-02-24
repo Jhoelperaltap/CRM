@@ -568,7 +568,9 @@ class RunBackupAnalysisView(APIView):
                 {
                     "status": "backup_created",
                     "action_id": str(action.id) if action else None,
-                    "backup_id": action.action_data.get("backup_id") if action else None,
+                    "backup_id": (
+                        action.action_data.get("backup_id") if action else None
+                    ),
                     "metrics": metrics.to_dict(),
                     "decision": decision.to_dict(),
                 }

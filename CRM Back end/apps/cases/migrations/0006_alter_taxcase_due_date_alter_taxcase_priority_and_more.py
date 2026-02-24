@@ -7,33 +7,52 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cases', '0005_fix_field_lengths'),
-        ('contacts', '0008_increase_phone_field_length'),
-        ('corporations', '0007_add_paused_status'),
+        ("cases", "0005_fix_field_lengths"),
+        ("contacts", "0008_increase_phone_field_length"),
+        ("corporations", "0007_add_paused_status"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='taxcase',
-            name='due_date',
-            field=models.DateField(blank=True, db_index=True, null=True, verbose_name='due date'),
+            model_name="taxcase",
+            name="due_date",
+            field=models.DateField(
+                blank=True, db_index=True, null=True, verbose_name="due date"
+            ),
         ),
         migrations.AlterField(
-            model_name='taxcase',
-            name='priority',
-            field=models.CharField(choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('urgent', 'Urgent')], db_index=True, default='medium', max_length=10, verbose_name='priority'),
+            model_name="taxcase",
+            name="priority",
+            field=models.CharField(
+                choices=[
+                    ("low", "Low"),
+                    ("medium", "Medium"),
+                    ("high", "High"),
+                    ("urgent", "Urgent"),
+                ],
+                db_index=True,
+                default="medium",
+                max_length=10,
+                verbose_name="priority",
+            ),
         ),
         migrations.AddIndex(
-            model_name='taxcase',
-            index=models.Index(fields=['status', 'assigned_preparer'], name='idx_case_status_preparer'),
+            model_name="taxcase",
+            index=models.Index(
+                fields=["status", "assigned_preparer"], name="idx_case_status_preparer"
+            ),
         ),
         migrations.AddIndex(
-            model_name='taxcase',
-            index=models.Index(fields=['status', 'due_date'], name='idx_case_status_due'),
+            model_name="taxcase",
+            index=models.Index(
+                fields=["status", "due_date"], name="idx_case_status_due"
+            ),
         ),
         migrations.AddIndex(
-            model_name='taxcase',
-            index=models.Index(fields=['fiscal_year', 'status'], name='idx_case_year_status'),
+            model_name="taxcase",
+            index=models.Index(
+                fields=["fiscal_year", "status"], name="idx_case_year_status"
+            ),
         ),
     ]

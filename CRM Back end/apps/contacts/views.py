@@ -402,6 +402,7 @@ class ContactViewSet(viewsets.ModelViewSet):
         except Exception as e:
             # Log but don't fail the main operation
             import logging
+
             logging.getLogger(__name__).warning(
                 f"Failed to create portal notification for contact {contact.id}: {e}"
             )
@@ -426,6 +427,7 @@ class ContactViewSet(viewsets.ModelViewSet):
         except Exception as e:
             # Log but don't fail the main operation
             import logging
+
             logging.getLogger(__name__).warning(
                 f"Failed to send push notification to contact {contact.id}: {e}"
             )
