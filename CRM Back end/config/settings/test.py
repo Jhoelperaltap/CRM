@@ -35,31 +35,15 @@ LOGGING = {
 }
 
 # Use PostgreSQL in CI (GitHub Actions), otherwise use SQLite for local tests
-# Check for CI environment variable which GitHub Actions sets to "true"
-_is_ci = os.environ.get("CI") == "true"
+_database_url = os.environ.get("DATABASE_URL")
 
-if _is_ci:
-    # Explicit PostgreSQL configuration for CI - don't rely on DATABASE_URL parsing
-    # This prevents any fallback to system defaults (like 'root' user)
-    _pg_user = os.environ.get("POSTGRES_USER", "test_user")
-    _pg_password = os.environ.get("POSTGRES_PASSWORD", "test_password")
-    _pg_db = os.environ.get("POSTGRES_DB", "test_db")
-    _pg_host = os.environ.get("POSTGRES_HOST", "localhost")
-    _pg_port = os.environ.get("POSTGRES_PORT", "5432")
-
+if _database_url:
+    # Use DATABASE_URL in CI - this is the most reliable way to configure PostgreSQL
+    # django-environ parses the URL and extracts all connection parameters
+    import environ
+    env = environ.Env()
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": _pg_db,
-            "USER": _pg_user,
-            "PASSWORD": _pg_password,
-            "HOST": _pg_host,
-            "PORT": _pg_port,
-            # Explicit TEST config for pytest-django database creation
-            "TEST": {
-                "NAME": f"test_{_pg_db}",
-            },
-        }
+        "default": env.db_url("DATABASE_URL"),
     }
 else:
     # Use SQLite in-memory for local testing (fast, no external deps)
