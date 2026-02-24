@@ -34,13 +34,19 @@ export function useAuth(redirectTo = "/login", verifyOnMount = false) {
         .then((isValid) => {
           if (!isValid) {
             // Session invalid - checkAuth already cleared the store
-            router.replace(`${redirectTo}?reason=session_expired`);
+            // Use microtask to avoid cascading renders
+            Promise.resolve().then(() =>
+              router.replace(`${redirectTo}?reason=session_expired`)
+            );
           }
         })
         .catch(() => {
           // Error checking auth - assume session is invalid
           useAuthStore.getState().clear();
-          router.replace(`${redirectTo}?reason=session_expired`);
+          // Use microtask to avoid cascading renders
+          Promise.resolve().then(() =>
+            router.replace(`${redirectTo}?reason=session_expired`)
+          );
         })
         .finally(() => setIsVerifying(false));
       return;
@@ -48,7 +54,8 @@ export function useAuth(redirectTo = "/login", verifyOnMount = false) {
 
     // If not verifying and no user, redirect to login
     if (!verifyOnMount && !user) {
-      router.replace(redirectTo);
+      // Use microtask to avoid cascading renders
+      Promise.resolve().then(() => router.replace(redirectTo));
     }
   }, [user, _hasHydrated, router, redirectTo, verifyOnMount]);
 

@@ -35,15 +35,20 @@ export function LoginForm() {
   // Check for session-related messages in URL
   useEffect(() => {
     const reason = searchParams.get("reason");
+    let message: string | null = null;
+
     if (reason === "session_timeout") {
-      setSessionTimeoutMessage("Your session has expired due to inactivity. Please sign in again.");
-      router.replace("/login", { scroll: false });
+      message = "Your session has expired due to inactivity. Please sign in again.";
     } else if (reason === "session_terminated") {
-      setSessionTimeoutMessage("Your session was terminated because you logged in from another device.");
-      router.replace("/login", { scroll: false });
+      message = "Your session was terminated because you logged in from another device.";
     } else if (reason === "session_expired") {
-      setSessionTimeoutMessage("Your session has expired. Please sign in again.");
-      router.replace("/login", { scroll: false });
+      message = "Your session has expired. Please sign in again.";
+    }
+
+    if (message) {
+      setSessionTimeoutMessage(message);
+      // Use microtask to schedule navigation after state updates
+      Promise.resolve().then(() => router.replace("/login", { scroll: false }));
     }
   }, [searchParams, router]);
 
