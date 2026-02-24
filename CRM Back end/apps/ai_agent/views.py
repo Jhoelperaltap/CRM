@@ -494,3 +494,100 @@ class RunMarketAnalysisView(APIView):
                     "result": result,
                 }
             )
+
+
+class BackupWorkloadView(APIView):
+    """Get current workload metrics for backup analysis."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Get current workload metrics."""
+        from apps.ai_agent.services.backup_analyzer import BackupAnalyzer
+
+        config = AgentConfiguration.get_config()
+        analyzer = BackupAnalyzer(config)
+        metrics = analyzer.analyze_workload()
+        decision = analyzer.should_backup(metrics)
+
+        return Response(
+            {
+                "metrics": metrics.to_dict(),
+                "decision": decision.to_dict(),
+                "thresholds": {
+                    "contacts": config.backup_contacts_threshold,
+                    "cases": config.backup_cases_threshold,
+                    "documents": config.backup_documents_threshold,
+                    "corporations": config.backup_corporations_threshold,
+                    "emails": config.backup_emails_threshold,
+                    "activity": config.backup_activity_threshold,
+                    "days_since_last": config.backup_days_since_last,
+                },
+                "auto_backup_enabled": config.auto_backup_enabled,
+            }
+        )
+
+
+class RunBackupAnalysisView(APIView):
+    """Manually trigger backup analysis and optionally create backup."""
+
+    permission_classes = [IsAuthenticated, IsAdminRole]
+
+    def post(self, request):
+        """
+        Run backup analysis.
+
+        If create_backup is True in request body, creates backup regardless of
+        analysis result. Otherwise just returns analysis.
+        """
+        from apps.ai_agent.services.backup_analyzer import BackupAnalyzer
+
+        config = AgentConfiguration.get_config()
+
+        if not config.is_active:
+            return Response(
+                {"error": "AI Agent is disabled"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        analyzer = BackupAnalyzer(config)
+        metrics = analyzer.analyze_workload()
+        decision = analyzer.should_backup(metrics)
+
+        # Check if user wants to force create backup
+        create_backup = request.data.get("create_backup", False)
+
+        if create_backup:
+            # Force create backup regardless of analysis
+            action = analyzer.create_backup_action(
+                should_backup=True,
+                decision=decision,
+                metrics=metrics,
+            )
+            return Response(
+                {
+                    "status": "backup_created",
+                    "action_id": str(action.id) if action else None,
+                    "backup_id": action.action_data.get("backup_id") if action else None,
+                    "metrics": metrics.to_dict(),
+                    "decision": decision.to_dict(),
+                }
+            )
+        else:
+            # Just return analysis
+            return Response(
+                {
+                    "status": "analysis_complete",
+                    "metrics": metrics.to_dict(),
+                    "decision": decision.to_dict(),
+                    "thresholds": {
+                        "contacts": config.backup_contacts_threshold,
+                        "cases": config.backup_cases_threshold,
+                        "documents": config.backup_documents_threshold,
+                        "corporations": config.backup_corporations_threshold,
+                        "emails": config.backup_emails_threshold,
+                        "activity": config.backup_activity_threshold,
+                        "days_since_last": config.backup_days_since_last,
+                    },
+                }
+            )

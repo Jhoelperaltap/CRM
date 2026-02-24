@@ -13,7 +13,9 @@ from apps.ai_agent.views import (
     AgentMetricsViewSet,
     AgentStatusView,
     AgentToggleView,
+    BackupWorkloadView,
     RunAgentCycleView,
+    RunBackupAnalysisView,
     RunMarketAnalysisView,
 )
 
@@ -32,6 +34,9 @@ urlpatterns = [
     # Manual triggers
     path("run-cycle/", RunAgentCycleView.as_view(), name="agent-run-cycle"),
     path("run-analysis/", RunMarketAnalysisView.as_view(), name="agent-run-analysis"),
+    # Backup automation endpoints
+    path("backup/workload/", BackupWorkloadView.as_view(), name="agent-backup-workload"),
+    path("backup/analyze/", RunBackupAnalysisView.as_view(), name="agent-backup-analyze"),
     # ViewSet routes
     path("", include(router.urls)),
 ]

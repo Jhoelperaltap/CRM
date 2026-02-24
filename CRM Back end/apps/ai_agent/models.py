@@ -120,6 +120,54 @@ class AgentConfiguration(TimeStampedModel):
         help_text=_("Maximum AI API calls per hour"),
     )
 
+    # Backup automation settings
+    auto_backup_enabled = models.BooleanField(
+        default=False,
+        help_text=_("Enable AI-powered automatic backups"),
+    )
+    backup_schedule_hour = models.PositiveIntegerField(
+        default=23,  # 11 PM
+        help_text=_("Hour of day to run backup analysis (0-23)"),
+    )
+    backup_include_media = models.BooleanField(
+        default=True,
+        help_text=_("Include media files in automated backups"),
+    )
+
+    # Workload thresholds for backup decision
+    backup_contacts_threshold = models.PositiveIntegerField(
+        default=10,
+        help_text=_("Number of contact changes to trigger backup consideration"),
+    )
+    backup_cases_threshold = models.PositiveIntegerField(
+        default=5,
+        help_text=_("Number of case changes to trigger backup consideration"),
+    )
+    backup_documents_threshold = models.PositiveIntegerField(
+        default=20,
+        help_text=_("Number of new documents to trigger backup consideration"),
+    )
+    backup_corporations_threshold = models.PositiveIntegerField(
+        default=3,
+        help_text=_("Number of corporation changes to trigger backup consideration"),
+    )
+    backup_emails_threshold = models.PositiveIntegerField(
+        default=50,
+        help_text=_("Number of emails to trigger backup consideration"),
+    )
+    backup_activity_threshold = models.PositiveIntegerField(
+        default=100,
+        help_text=_("Number of API activities to trigger backup consideration"),
+    )
+    backup_days_since_last = models.PositiveIntegerField(
+        default=7,
+        help_text=_("Force backup if this many days have passed since last backup"),
+    )
+    backup_retention_days = models.PositiveIntegerField(
+        default=30,
+        help_text=_("Auto-delete automated backups older than this many days"),
+    )
+
     class Meta:
         db_table = "crm_agent_configuration"
         verbose_name = _("AI Agent Configuration")
@@ -167,6 +215,7 @@ class AgentAction(TimeStampedModel):
         RECOMMENDATION = "recommendation", _("Made recommendation")
         EMAIL_SENT = "email_sent", _("Sent email")
         TASK_CREATED = "task_created", _("Created task")
+        BACKUP_CREATED = "backup_created", _("Created automated backup")
 
     class Status(models.TextChoices):
         PENDING = "pending", _("Pending approval")

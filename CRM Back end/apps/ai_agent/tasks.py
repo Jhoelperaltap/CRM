@@ -264,3 +264,100 @@ def backfill_metrics(days: int = 30):
     except Exception as e:
         logger.error(f"Failed to backfill metrics: {e}")
         raise
+
+
+@shared_task(name="apps.ai_agent.tasks.run_automated_backup_check")
+def run_automated_backup_check():
+    """
+    Analyze workload and decide if an automated backup is needed.
+    Scheduled to run daily at the configured hour (default: 11 PM).
+
+    This task:
+    1. Checks if AI agent and auto backup are enabled
+    2. Analyzes the past 24 hours of activity
+    3. Decides if backup thresholds are exceeded
+    4. Creates a backup if needed (autonomously, no approval required)
+    """
+    from apps.ai_agent.models import AgentConfiguration
+    from apps.ai_agent.services.backup_analyzer import BackupAnalyzer
+
+    try:
+        config = AgentConfiguration.get_config()
+
+        # Check if feature is enabled
+        if not config.is_active:
+            logger.debug("AI Agent is disabled, skipping backup check")
+            return {"status": "disabled", "reason": "AI Agent is inactive"}
+
+        if not config.auto_backup_enabled:
+            logger.debug("Auto backup is disabled, skipping backup check")
+            return {"status": "disabled", "reason": "Auto backup is disabled"}
+
+        analyzer = BackupAnalyzer(config)
+
+        # Analyze workload
+        metrics = analyzer.analyze_workload()
+        logger.info(
+            f"Backup analysis - Contacts: {metrics.total_contacts_changes}, "
+            f"Cases: {metrics.total_cases_changes}, "
+            f"Documents: {metrics.documents_created}, "
+            f"Days since last: {metrics.days_since_last_backup}"
+        )
+
+        # Make decision
+        decision = analyzer.should_backup(metrics)
+
+        # Execute backup if needed
+        action = analyzer.create_backup_action(
+            should_backup=decision.should_backup,
+            decision=decision,
+            metrics=metrics,
+        )
+
+        result = {
+            "status": "completed",
+            "backup_needed": decision.should_backup,
+            "reason": decision.reason,
+            "forced": decision.forced,
+            "thresholds_exceeded": decision.thresholds_exceeded,
+            "metrics": metrics.to_dict(),
+        }
+
+        if action:
+            result["action_id"] = str(action.id)
+            result["backup_id"] = action.action_data.get("backup_id")
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Automated backup check failed: {e}")
+        raise
+
+
+@shared_task(name="apps.ai_agent.tasks.cleanup_automated_backups")
+def cleanup_automated_backups():
+    """
+    Clean up old automated backups based on retention settings.
+    Scheduled to run weekly (Sunday at 3 AM by default).
+
+    Deletes automated backups older than backup_retention_days.
+    """
+    from apps.ai_agent.models import AgentConfiguration
+    from apps.ai_agent.services.backup_analyzer import BackupAnalyzer
+
+    try:
+        config = AgentConfiguration.get_config()
+
+        if not config.auto_backup_enabled:
+            logger.debug("Auto backup is disabled, skipping cleanup")
+            return {"status": "disabled", "deleted": 0}
+
+        analyzer = BackupAnalyzer(config)
+        deleted_count = analyzer.cleanup_old_automated_backups()
+
+        logger.info(f"Cleaned up {deleted_count} old automated backups")
+        return {"status": "completed", "deleted": deleted_count}
+
+    except Exception as e:
+        logger.error(f"Automated backup cleanup failed: {e}")
+        raise

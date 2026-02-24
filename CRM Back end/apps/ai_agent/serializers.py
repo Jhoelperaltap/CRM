@@ -42,6 +42,18 @@ class AgentConfigurationSerializer(serializers.ModelSerializer):
             # Rate limiting
             "max_actions_per_hour",
             "max_ai_calls_per_hour",
+            # Backup automation
+            "auto_backup_enabled",
+            "backup_schedule_hour",
+            "backup_include_media",
+            "backup_contacts_threshold",
+            "backup_cases_threshold",
+            "backup_documents_threshold",
+            "backup_corporations_threshold",
+            "backup_emails_threshold",
+            "backup_activity_threshold",
+            "backup_days_since_last",
+            "backup_retention_days",
             # Timestamps
             "created_at",
             "updated_at",
@@ -60,6 +72,21 @@ class AgentConfigurationSerializer(serializers.ModelSerializer):
             if not isinstance(h, (int, float)) or h < 0:
                 raise serializers.ValidationError("Each hour must be a positive number")
         return sorted(set(value), reverse=True)
+
+    def validate_backup_schedule_hour(self, value):
+        if value < 0 or value > 23:
+            raise serializers.ValidationError("Hour must be between 0 and 23")
+        return value
+
+    def validate_backup_days_since_last(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Must be at least 1 day")
+        return value
+
+    def validate_backup_retention_days(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Must be at least 1 day")
+        return value
 
 
 class AgentConfigurationUpdateSerializer(AgentConfigurationSerializer):

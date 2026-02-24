@@ -23,6 +23,8 @@ import type {
   RecordOutcomePayload,
   AcknowledgeInsightPayload,
   RunCycleResponse,
+  BackupWorkloadResponse,
+  BackupAnalysisResponse,
 } from "@/types/ai-agent";
 
 const BASE_URL = "/ai-agent";
@@ -239,6 +241,22 @@ export async function runAgentCycle(runAsync = true): Promise<RunCycleResponse> 
 export async function runMarketAnalysis(runAsync = true): Promise<RunCycleResponse> {
   const { data } = await api.post<RunCycleResponse>(`${BASE_URL}/run-analysis/`, {
     async: runAsync,
+  });
+  return data;
+}
+
+// =====================
+// Backup Automation
+// =====================
+
+export async function getBackupWorkload(): Promise<BackupWorkloadResponse> {
+  const { data } = await api.get<BackupWorkloadResponse>(`${BASE_URL}/backup/workload/`);
+  return data;
+}
+
+export async function runBackupAnalysis(createBackup = false): Promise<BackupAnalysisResponse> {
+  const { data } = await api.post<BackupAnalysisResponse>(`${BASE_URL}/backup/analyze/`, {
+    create_backup: createBackup,
   });
   return data;
 }

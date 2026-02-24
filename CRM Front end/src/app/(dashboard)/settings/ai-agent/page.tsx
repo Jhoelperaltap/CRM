@@ -6,6 +6,7 @@ import {
   Calendar,
   CheckCircle,
   Clock,
+  Database,
   Mail,
   Settings,
   Sparkles,
@@ -58,6 +59,18 @@ interface FormData {
   focus_areas: string;
   max_actions_per_hour: number;
   max_ai_calls_per_hour: number;
+  // Backup automation
+  auto_backup_enabled: boolean;
+  backup_schedule_hour: number;
+  backup_include_media: boolean;
+  backup_contacts_threshold: number;
+  backup_cases_threshold: number;
+  backup_documents_threshold: number;
+  backup_corporations_threshold: number;
+  backup_emails_threshold: number;
+  backup_activity_threshold: number;
+  backup_days_since_last: number;
+  backup_retention_days: number;
 }
 
 export default function AIAgentSettingsPage() {
@@ -87,6 +100,18 @@ export default function AIAgentSettingsPage() {
     focus_areas: "",
     max_actions_per_hour: 100,
     max_ai_calls_per_hour: 50,
+    // Backup automation
+    auto_backup_enabled: false,
+    backup_schedule_hour: 23,
+    backup_include_media: true,
+    backup_contacts_threshold: 10,
+    backup_cases_threshold: 5,
+    backup_documents_threshold: 20,
+    backup_corporations_threshold: 3,
+    backup_emails_threshold: 50,
+    backup_activity_threshold: 100,
+    backup_days_since_last: 7,
+    backup_retention_days: 30,
   });
 
   const fetchData = useCallback(async () => {
@@ -105,6 +130,18 @@ export default function AIAgentSettingsPage() {
         focus_areas: configData.focus_areas.join(", "),
         openai_api_key: "",
         anthropic_api_key: "",
+        // Ensure backup fields are populated
+        auto_backup_enabled: configData.auto_backup_enabled ?? false,
+        backup_schedule_hour: configData.backup_schedule_hour ?? 23,
+        backup_include_media: configData.backup_include_media ?? true,
+        backup_contacts_threshold: configData.backup_contacts_threshold ?? 10,
+        backup_cases_threshold: configData.backup_cases_threshold ?? 5,
+        backup_documents_threshold: configData.backup_documents_threshold ?? 20,
+        backup_corporations_threshold: configData.backup_corporations_threshold ?? 3,
+        backup_emails_threshold: configData.backup_emails_threshold ?? 50,
+        backup_activity_threshold: configData.backup_activity_threshold ?? 100,
+        backup_days_since_last: configData.backup_days_since_last ?? 7,
+        backup_retention_days: configData.backup_retention_days ?? 30,
       });
     } catch (err) {
       console.error("Failed to fetch configuration:", err);
@@ -299,6 +336,10 @@ export default function AIAgentSettingsPage() {
             <TabsTrigger value="timing">
               <Clock className="mr-2 h-4 w-4" />
               Timing
+            </TabsTrigger>
+            <TabsTrigger value="backup">
+              <Database className="mr-2 h-4 w-4" />
+              Backup
             </TabsTrigger>
             <TabsTrigger value="advanced">
               <Settings className="mr-2 h-4 w-4" />
@@ -588,6 +629,210 @@ export default function AIAgentSettingsPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Backup Tab */}
+          <TabsContent value="backup">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Automated Backup</CardTitle>
+                  <CardDescription>
+                    Configure AI-powered automatic backups based on daily workload
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between rounded-lg border p-4">
+                    <div className="flex items-center gap-4">
+                      <Database className="h-8 w-8 text-blue-500" />
+                      <div>
+                        <Label className="text-base">Enable Automated Backups</Label>
+                        <p className="text-sm text-muted-foreground">
+                          AI analyzes daily activity and creates backups when needed
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={formData.auto_backup_enabled}
+                      onCheckedChange={(checked) => handleChange("auto_backup_enabled", checked)}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_schedule_hour">Schedule Hour (0-23)</Label>
+                      <Select
+                        value={String(formData.backup_schedule_hour)}
+                        onValueChange={(value) => handleChange("backup_schedule_hour", parseInt(value, 10))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select hour" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <SelectItem key={i} value={String(i)}>
+                              {i.toString().padStart(2, "0")}:00 {i < 12 ? "AM" : "PM"}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Hour of day to run backup analysis (default: 11 PM)
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 rounded-lg border p-4">
+                      <div className="flex-1">
+                        <Label className="text-sm">Include Media Files</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Include uploaded files in backups
+                        </p>
+                      </div>
+                      <Switch
+                        checked={formData.backup_include_media}
+                        onCheckedChange={(checked) => handleChange("backup_include_media", checked)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Activity Thresholds</CardTitle>
+                  <CardDescription>
+                    Backup is triggered when any threshold is exceeded
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_contacts_threshold">Contact Changes</Label>
+                      <Input
+                        id="backup_contacts_threshold"
+                        type="number"
+                        min="0"
+                        value={formData.backup_contacts_threshold}
+                        onChange={(e) => handleChange("backup_contacts_threshold", parseInt(e.target.value, 10) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Created or updated contacts
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_cases_threshold">Case Changes</Label>
+                      <Input
+                        id="backup_cases_threshold"
+                        type="number"
+                        min="0"
+                        value={formData.backup_cases_threshold}
+                        onChange={(e) => handleChange("backup_cases_threshold", parseInt(e.target.value, 10) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Cases + notes created/updated
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_documents_threshold">New Documents</Label>
+                      <Input
+                        id="backup_documents_threshold"
+                        type="number"
+                        min="0"
+                        value={formData.backup_documents_threshold}
+                        onChange={(e) => handleChange("backup_documents_threshold", parseInt(e.target.value, 10) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Documents uploaded
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_corporations_threshold">Corporation Changes</Label>
+                      <Input
+                        id="backup_corporations_threshold"
+                        type="number"
+                        min="0"
+                        value={formData.backup_corporations_threshold}
+                        onChange={(e) => handleChange("backup_corporations_threshold", parseInt(e.target.value, 10) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Corporations created/updated
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_emails_threshold">Emails</Label>
+                      <Input
+                        id="backup_emails_threshold"
+                        type="number"
+                        min="0"
+                        value={formData.backup_emails_threshold}
+                        onChange={(e) => handleChange("backup_emails_threshold", parseInt(e.target.value, 10) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Sent + received emails
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_activity_threshold">API Activity</Label>
+                      <Input
+                        id="backup_activity_threshold"
+                        type="number"
+                        min="0"
+                        value={formData.backup_activity_threshold}
+                        onChange={(e) => handleChange("backup_activity_threshold", parseInt(e.target.value, 10) || 0)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Total API requests (audit logs)
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Safety Settings</CardTitle>
+                  <CardDescription>
+                    Configure backup safeguards and retention
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_days_since_last">Max Days Without Backup</Label>
+                      <Input
+                        id="backup_days_since_last"
+                        type="number"
+                        min="1"
+                        value={formData.backup_days_since_last}
+                        onChange={(e) => handleChange("backup_days_since_last", parseInt(e.target.value, 10) || 1)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Force backup if this many days pass without one
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="backup_retention_days">Retention Days</Label>
+                      <Input
+                        id="backup_retention_days"
+                        type="number"
+                        min="1"
+                        value={formData.backup_retention_days}
+                        onChange={(e) => handleChange("backup_retention_days", parseInt(e.target.value, 10) || 1)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Auto-delete automated backups older than this
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Advanced Tab */}

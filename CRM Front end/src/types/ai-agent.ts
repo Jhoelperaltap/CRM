@@ -11,7 +11,8 @@ export type ActionType =
   | "insight"
   | "recommendation"
   | "email_sent"
-  | "task_created";
+  | "task_created"
+  | "backup_created";
 
 export const ACTION_TYPE_LABELS: Record<ActionType, string> = {
   email_note: "Created note from email",
@@ -22,6 +23,7 @@ export const ACTION_TYPE_LABELS: Record<ActionType, string> = {
   recommendation: "Made recommendation",
   email_sent: "Sent email",
   task_created: "Created task",
+  backup_created: "Created automated backup",
 };
 
 // Action status constants
@@ -120,6 +122,18 @@ export interface AgentConfiguration {
   // Rate limiting
   max_actions_per_hour: number;
   max_ai_calls_per_hour: number;
+  // Backup automation
+  auto_backup_enabled: boolean;
+  backup_schedule_hour: number;
+  backup_include_media: boolean;
+  backup_contacts_threshold: number;
+  backup_cases_threshold: number;
+  backup_documents_threshold: number;
+  backup_corporations_threshold: number;
+  backup_emails_threshold: number;
+  backup_activity_threshold: number;
+  backup_days_since_last: number;
+  backup_retention_days: number;
   // Timestamps
   created_at: string;
   updated_at: string;
@@ -145,6 +159,18 @@ export interface AgentConfigurationUpdate {
   focus_areas?: string[];
   max_actions_per_hour?: number;
   max_ai_calls_per_hour?: number;
+  // Backup automation
+  auto_backup_enabled?: boolean;
+  backup_schedule_hour?: number;
+  backup_include_media?: boolean;
+  backup_contacts_threshold?: number;
+  backup_cases_threshold?: number;
+  backup_documents_threshold?: number;
+  backup_corporations_threshold?: number;
+  backup_emails_threshold?: number;
+  backup_activity_threshold?: number;
+  backup_days_since_last?: number;
+  backup_retention_days?: number;
 }
 
 // =====================
@@ -454,4 +480,67 @@ export interface RunCycleResponse {
     action_count: number;
     errors: Array<{ component: string; error: string }>;
   };
+}
+
+// =====================
+// Backup Automation
+// =====================
+
+export interface BackupWorkloadMetrics {
+  contacts_created: number;
+  contacts_updated: number;
+  cases_created: number;
+  cases_updated: number;
+  case_notes_created: number;
+  documents_created: number;
+  corporations_created: number;
+  corporations_updated: number;
+  emails_sent: number;
+  emails_received: number;
+  api_activity: number;
+  last_backup_date: string | null;
+  days_since_last_backup: number | null;
+  total_contacts_changes: number;
+  total_cases_changes: number;
+  total_corporations_changes: number;
+  total_emails: number;
+}
+
+export interface BackupDecision {
+  should_backup: boolean;
+  reason: string;
+  thresholds_exceeded: string[];
+  forced: boolean;
+}
+
+export interface BackupWorkloadResponse {
+  metrics: BackupWorkloadMetrics;
+  decision: BackupDecision;
+  thresholds: {
+    contacts: number;
+    cases: number;
+    documents: number;
+    corporations: number;
+    emails: number;
+    activity: number;
+    days_since_last: number;
+  };
+  auto_backup_enabled: boolean;
+}
+
+export interface BackupAnalysisResponse {
+  status: "analysis_complete" | "backup_created";
+  metrics: BackupWorkloadMetrics;
+  decision: BackupDecision;
+  thresholds?: {
+    contacts: number;
+    cases: number;
+    documents: number;
+    corporations: number;
+    emails: number;
+    activity: number;
+    days_since_last: number;
+  };
+  action_id?: string;
+  backup_id?: string;
 }

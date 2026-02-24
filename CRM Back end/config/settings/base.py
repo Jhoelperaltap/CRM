@@ -315,6 +315,15 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.documents.tasks.cleanup_expired_download_tokens",
         "schedule": crontab(hour=3, minute=0),  # daily at 3 AM
     },
+    # Automated backup tasks
+    "ai-agent-automated-backup-check": {
+        "task": "apps.ai_agent.tasks.run_automated_backup_check",
+        "schedule": crontab(hour=23, minute=0),  # daily at 11 PM
+    },
+    "ai-agent-cleanup-automated-backups": {
+        "task": "apps.ai_agent.tasks.cleanup_automated_backups",
+        "schedule": crontab(hour=3, minute=0, day_of_week=0),  # Sunday at 3 AM
+    },
 }
 
 # ---------------------------------------------------------------------------
