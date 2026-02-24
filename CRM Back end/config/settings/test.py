@@ -38,12 +38,20 @@ LOGGING = {
 _database_url = os.environ.get("DATABASE_URL")
 
 if _database_url:
-    # Use DATABASE_URL in CI - this is the most reliable way to configure PostgreSQL
-    # django-environ parses the URL and extracts all connection parameters
-    import environ
-    env = environ.Env()
+    # Parse DATABASE_URL manually to ensure correct credentials
+    # Format: postgresql://user:password@host:port/dbname
+    from urllib.parse import urlparse
+    _parsed = urlparse(_database_url)
+
     DATABASES = {
-        "default": env.db_url("DATABASE_URL"),
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": _parsed.path.lstrip("/"),
+            "USER": _parsed.username or "test_user",
+            "PASSWORD": _parsed.password or "test_password",
+            "HOST": _parsed.hostname or "localhost",
+            "PORT": str(_parsed.port or 5432),
+        }
     }
 else:
     # Use SQLite in-memory for local testing (fast, no external deps)
