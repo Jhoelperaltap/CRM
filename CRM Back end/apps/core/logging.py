@@ -43,6 +43,8 @@ from typing import Any, Dict, Optional
 
 from django.core.cache import cache
 
+from apps.core.utils import get_client_ip
+
 
 class JsonFormatter(logging.Formatter):
     """
@@ -149,7 +151,7 @@ class RequestLogMiddleware:
             "method": request.method,
             "path": request.path,
             "query_params": dict(request.GET),
-            "ip": self._get_client_ip(request),
+            "ip": get_client_ip(request),
             "user_agent": request.META.get("HTTP_USER_AGENT", ""),
         }
 
@@ -179,13 +181,6 @@ class RequestLogMiddleware:
             self.logger.info("Request completed", extra=request_data)
 
         return response
-
-    @staticmethod
-    def _get_client_ip(request) -> str:
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        if x_forwarded_for:
-            return x_forwarded_for.split(",")[0].strip()
-        return request.META.get("REMOTE_ADDR", "")
 
 
 def get_logger(name: str) -> logging.Logger:

@@ -1,19 +1,10 @@
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from apps.core.utils import get_current_request
+from apps.core.utils import get_client_ip_safe, get_current_request
 
 # Models to audit — maps model class to module name
 AUDITED_MODELS = {}
-
-
-def _get_client_ip(request):
-    if request is None:
-        return None
-    xff = request.META.get("HTTP_X_FORWARDED_FOR")
-    if xff:
-        return xff.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR")
 
 
 def _create_audit_log(action, instance, changes=None):
@@ -33,7 +24,7 @@ def _create_audit_log(action, instance, changes=None):
         user = getattr(request, "user", None)
         if user and not user.is_authenticated:
             user = None
-        ip_address = _get_client_ip(request)
+        ip_address = get_client_ip_safe(request)
         user_agent = request.META.get("HTTP_USER_AGENT", "")
         request_path = request.get_full_path()
 

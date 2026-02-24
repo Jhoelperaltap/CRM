@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.core.utils import get_client_ip
 from apps.core.validators import validate_csv_import
 from apps.users.authentication import (
     clear_auth_cookies,
@@ -301,7 +302,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         from apps.users.models import AuthenticationPolicy, UserSession
         from apps.users.services.brute_force import BruteForceProtection
 
-        ip = self._get_client_ip(request)
+        ip = get_client_ip(request)
         user_agent = request.META.get("HTTP_USER_AGENT", "")
         email = request.data.get("email", "")
 
@@ -463,13 +464,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             )
 
         return response
-
-    @staticmethod
-    def _get_client_ip(request):
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        if x_forwarded_for:
-            return x_forwarded_for.split(",")[0].strip()
-        return request.META.get("REMOTE_ADDR")
 
     @staticmethod
     def _regenerate_session(request):

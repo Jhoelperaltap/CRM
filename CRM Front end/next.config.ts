@@ -3,9 +3,13 @@ import type { NextConfig } from "next";
 // Content Security Policy configuration
 // Adjust these values based on your deployment environment
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const isDev = process.env.NODE_ENV !== 'production';
+
+// SECURITY: unsafe-eval only allowed in development for hot reload
+// Production uses strict CSP without unsafe-eval
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob: https: ${apiUrl};
   font-src 'self' data:;

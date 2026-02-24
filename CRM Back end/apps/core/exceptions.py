@@ -19,6 +19,8 @@ from rest_framework.exceptions import (
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
+from apps.core.utils import get_client_ip_safe
+
 logger = logging.getLogger(__name__)
 security_logger = logging.getLogger("security")
 
@@ -172,7 +174,7 @@ def custom_exception_handler(exc, context):
                     "path": request_path,
                     "method": request_method,
                     "exception_type": type(exc).__name__,
-                    "ip_address": _get_client_ip(request) if request else None,
+                    "ip_address": get_client_ip_safe(request),
                 },
             )
 
@@ -204,7 +206,7 @@ def custom_exception_handler(exc, context):
                 "path": request_path,
                 "method": request_method,
                 "exception_type": type(exc).__name__,
-                "ip_address": _get_client_ip(request) if request else None,
+                "ip_address": get_client_ip_safe(request),
             },
         )
 
@@ -216,16 +218,6 @@ def custom_exception_handler(exc, context):
         },
         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
-
-
-def _get_client_ip(request):
-    """Extract client IP from request."""
-    if request is None:
-        return None
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if x_forwarded_for:
-        return x_forwarded_for.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR")
 
 
 # Custom exceptions for the application
