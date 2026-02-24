@@ -346,14 +346,14 @@ class BackupAnalyzer:
         action = AgentAction.objects.create(
             action_type=AgentAction.ActionType.BACKUP_CREATED,
             status=AgentAction.Status.EXECUTED,
-            title=f"Automated Backup Created",
+            title="Automated Backup Created",
             description=(
-                f"Created automated backup based on workload analysis.\n\n"
+                "Created automated backup based on workload analysis.\n\n"
                 f"Reason: {decision.reason}\n"
                 f"Backup ID: {backup.id}"
             ),
             reasoning=(
-                f"Analysis of the past 24 hours showed:\n"
+                "Analysis of the past 24 hours showed:\n"
                 f"- Contacts: {metrics.total_contacts_changes} changes\n"
                 f"- Cases: {metrics.total_cases_changes} changes\n"
                 f"- Documents: {metrics.documents_created} new\n"
@@ -378,7 +378,7 @@ class BackupAnalyzer:
             insight_type=AgentInsight.InsightType.METRIC,
             title="Automated Backup Created",
             description=(
-                f"The AI agent created an automated backup based on today's workload.\n\n"
+                "The AI agent created an automated backup based on today's workload.\n\n"
                 f"{decision.reason}"
             ),
             supporting_data={

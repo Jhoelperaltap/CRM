@@ -41,14 +41,24 @@ _is_ci = os.environ.get("CI") == "true"
 if _is_ci:
     # Explicit PostgreSQL configuration for CI - don't rely on DATABASE_URL parsing
     # This prevents any fallback to system defaults (like 'root' user)
+    _pg_user = os.environ.get("POSTGRES_USER", "test_user")
+    _pg_password = os.environ.get("POSTGRES_PASSWORD", "test_password")
+    _pg_db = os.environ.get("POSTGRES_DB", "test_db")
+    _pg_host = os.environ.get("POSTGRES_HOST", "localhost")
+    _pg_port = os.environ.get("POSTGRES_PORT", "5432")
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB", "test_db"),
-            "USER": os.environ.get("POSTGRES_USER", "test_user"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "test_password"),
-            "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+            "NAME": _pg_db,
+            "USER": _pg_user,
+            "PASSWORD": _pg_password,
+            "HOST": _pg_host,
+            "PORT": _pg_port,
+            # Explicit TEST config for pytest-django database creation
+            "TEST": {
+                "NAME": f"test_{_pg_db}",
+            },
         }
     }
 else:

@@ -81,10 +81,12 @@ jobs:
       - name: Run tests
         env:
           DJANGO_SETTINGS_MODULE: config.settings.test
-          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          CI: "true"
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: test_db
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
           REDIS_URL: redis://localhost:6379/0
           SECRET_KEY: test-secret-key-for-ci
           JWT_SIGNING_KEY: test-jwt-key-for-ci
