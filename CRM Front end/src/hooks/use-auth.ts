@@ -18,6 +18,7 @@ import { checkAuth } from "@/lib/auth";
 export function useAuth(redirectTo = "/login", verifyOnMount = false) {
   const router = useRouter();
   const { user, _hasHydrated } = useAuthStore();
+  // Start with verifyOnMount value - no need to set it again in effect
   const [isVerifying, setIsVerifying] = useState(verifyOnMount);
   const hasVerified = useRef(false);
 
@@ -28,25 +29,19 @@ export function useAuth(redirectTo = "/login", verifyOnMount = false) {
     // Verify session on mount (only once)
     if (verifyOnMount && !hasVerified.current) {
       hasVerified.current = true;
-      setIsVerifying(true);
+      // isVerifying is already true from initial state, no need to set it
 
       checkAuth()
         .then((isValid) => {
           if (!isValid) {
             // Session invalid - checkAuth already cleared the store
-            // Use microtask to avoid cascading renders
-            Promise.resolve().then(() =>
-              router.replace(`${redirectTo}?reason=session_expired`)
-            );
+            router.replace(`${redirectTo}?reason=session_expired`);
           }
         })
         .catch(() => {
           // Error checking auth - assume session is invalid
           useAuthStore.getState().clear();
-          // Use microtask to avoid cascading renders
-          Promise.resolve().then(() =>
-            router.replace(`${redirectTo}?reason=session_expired`)
-          );
+          router.replace(`${redirectTo}?reason=session_expired`);
         })
         .finally(() => setIsVerifying(false));
       return;
@@ -54,8 +49,7 @@ export function useAuth(redirectTo = "/login", verifyOnMount = false) {
 
     // If not verifying and no user, redirect to login
     if (!verifyOnMount && !user) {
-      // Use microtask to avoid cascading renders
-      Promise.resolve().then(() => router.replace(redirectTo));
+      router.replace(redirectTo);
     }
   }, [user, _hasHydrated, router, redirectTo, verifyOnMount]);
 

@@ -26,31 +26,28 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  const [sessionTimeoutMessage, setSessionTimeoutMessage] = useState<string | null>(null);
   const [step, setStep] = useState<"credentials" | "totp" | "recovery">(
     "credentials"
   );
   const requires2FA = useAuthStore((s) => s.requires2FA);
 
-  // Check for session-related messages in URL
+  // Derive session message from URL params (no useState needed)
+  const reason = searchParams.get("reason");
+  const sessionTimeoutMessage =
+    reason === "session_timeout"
+      ? "Your session has expired due to inactivity. Please sign in again."
+      : reason === "session_terminated"
+        ? "Your session was terminated because you logged in from another device."
+        : reason === "session_expired"
+          ? "Your session has expired. Please sign in again."
+          : null;
+
+  // Clean up URL params after reading them
   useEffect(() => {
-    const reason = searchParams.get("reason");
-    let message: string | null = null;
-
-    if (reason === "session_timeout") {
-      message = "Your session has expired due to inactivity. Please sign in again.";
-    } else if (reason === "session_terminated") {
-      message = "Your session was terminated because you logged in from another device.";
-    } else if (reason === "session_expired") {
-      message = "Your session has expired. Please sign in again.";
+    if (reason) {
+      router.replace("/login", { scroll: false });
     }
-
-    if (message) {
-      setSessionTimeoutMessage(message);
-      // Use microtask to schedule navigation after state updates
-      Promise.resolve().then(() => router.replace("/login", { scroll: false }));
-    }
-  }, [searchParams, router]);
+  }, [reason, router]);
 
   const {
     register,
