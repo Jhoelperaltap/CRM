@@ -36,21 +36,45 @@ LOGGING = {
 
 # Use PostgreSQL in CI (GitHub Actions), otherwise use SQLite for local tests
 _database_url = os.environ.get("DATABASE_URL")
+_is_ci = os.environ.get("CI") == "true"
 
-if _database_url:
+if _database_url and _is_ci:
     # Parse DATABASE_URL manually to ensure correct credentials
     # Format: postgresql://user:password@host:port/dbname
     from urllib.parse import urlparse
     _parsed = urlparse(_database_url)
 
+    # Extract credentials with explicit defaults
+    _db_user = _parsed.username if _parsed.username else "test_user"
+    _db_pass = _parsed.password if _parsed.password else "test_password"
+    _db_name = _parsed.path.lstrip("/") if _parsed.path else "test_db"
+    _db_host = _parsed.hostname if _parsed.hostname else "localhost"
+    _db_port = str(_parsed.port) if _parsed.port else "5432"
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": _parsed.path.lstrip("/"),
-            "USER": _parsed.username or "test_user",
-            "PASSWORD": _parsed.password or "test_password",
-            "HOST": _parsed.hostname or "localhost",
-            "PORT": str(_parsed.port or 5432),
+            "NAME": _db_name,
+            "USER": _db_user,
+            "PASSWORD": _db_pass,
+            "HOST": _db_host,
+            "PORT": _db_port,
+            "CONN_MAX_AGE": 0,
+            "OPTIONS": {
+                "connect_timeout": 10,
+            },
+        }
+    }
+elif _is_ci:
+    # CI but no DATABASE_URL - use explicit defaults
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "test_db",
+            "USER": "test_user",
+            "PASSWORD": "test_password",
+            "HOST": "localhost",
+            "PORT": "5432",
         }
     }
 else:

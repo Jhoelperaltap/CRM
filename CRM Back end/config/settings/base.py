@@ -225,14 +225,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # SECURITY: Use SQLite by default for local development (no credentials needed).
 # In production, set DATABASE_URL environment variable to your PostgreSQL connection.
 # Example: DATABASE_URL=postgres://user:password@host:5432/dbname
-# Note: In test settings, DATABASES is overridden - we use SQLite here as safe default
-_settings_module = env("DJANGO_SETTINGS_MODULE", default="")
-if "test" in _settings_module:
-    # Don't parse DATABASE_URL in base.py for tests - let test.py handle it
+#
+# In CI/test environments, we skip DATABASE_URL parsing here and let test.py handle it.
+# This prevents any accidental fallback to system user defaults.
+import os as _os
+_is_ci = _os.environ.get("CI") == "true"
+_is_test = "test" in _os.environ.get("DJANGO_SETTINGS_MODULE", "")
+
+if _is_ci or _is_test:
+    # Use SQLite placeholder - test.py will override with proper PostgreSQL config
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "db.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 else:
