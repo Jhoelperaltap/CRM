@@ -47,6 +47,12 @@ if _database_url:
     DATABASES = {
         "default": env.db_url("DATABASE_URL"),
     }
+    # Ensure the connection settings are explicit for pytest-django
+    # This prevents any fallback to system defaults (like 'root' user)
+    DATABASES["default"].setdefault("USER", os.environ.get("POSTGRES_USER", "test_user"))
+    DATABASES["default"].setdefault("PASSWORD", os.environ.get("POSTGRES_PASSWORD", "test_password"))
+    DATABASES["default"].setdefault("HOST", "localhost")
+    DATABASES["default"].setdefault("PORT", "5432")
 else:
     # Use SQLite in-memory for local testing (fast, no external deps)
     DATABASES = {
