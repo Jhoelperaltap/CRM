@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { checkAuth } from "@/lib/auth";
@@ -11,35 +11,46 @@ import { checkAuth } from "@/lib/auth";
  * With httpOnly cookies, we can't directly check for tokens in JavaScript.
  * Instead, we check if we have a user in the store (set during login).
  * On initial page load, we optionally verify the session is still valid.
+ *
+ * IMPORTANT: Set verifyOnMount=true for protected routes to prevent
+ * blank page issues when sessions expire by timeout.
  */
 export function useAuth(redirectTo = "/login", verifyOnMount = false) {
   const router = useRouter();
   const { user, _hasHydrated } = useAuthStore();
   const [isVerifying, setIsVerifying] = useState(verifyOnMount);
+  const hasVerified = useRef(false);
 
   useEffect(() => {
     // Wait for hydration before checking auth
     if (!_hasHydrated) return;
 
-    // If we have a user, we're authenticated (cookies handle the rest)
-    if (user) {
-      // Optionally verify the session is still valid on mount
-      if (verifyOnMount && isVerifying) {
-        checkAuth()
-          .then((isValid) => {
-            if (!isValid) {
-              useAuthStore.getState().clear();
-              router.replace(redirectTo);
-            }
-          })
-          .finally(() => setIsVerifying(false));
-      }
+    // Verify session on mount (only once)
+    if (verifyOnMount && !hasVerified.current) {
+      hasVerified.current = true;
+      setIsVerifying(true);
+
+      checkAuth()
+        .then((isValid) => {
+          if (!isValid) {
+            // Session invalid - checkAuth already cleared the store
+            router.replace(`${redirectTo}?reason=session_expired`);
+          }
+        })
+        .catch(() => {
+          // Error checking auth - assume session is invalid
+          useAuthStore.getState().clear();
+          router.replace(`${redirectTo}?reason=session_expired`);
+        })
+        .finally(() => setIsVerifying(false));
       return;
     }
 
-    // No user - redirect to login
-    router.replace(redirectTo);
-  }, [user, _hasHydrated, router, redirectTo, verifyOnMount, isVerifying]);
+    // If not verifying and no user, redirect to login
+    if (!verifyOnMount && !user) {
+      router.replace(redirectTo);
+    }
+  }, [user, _hasHydrated, router, redirectTo, verifyOnMount]);
 
   return {
     user,

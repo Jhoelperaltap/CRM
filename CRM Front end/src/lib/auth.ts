@@ -131,6 +131,9 @@ export async function logout(): Promise<void> {
 /**
  * Check if the current session is valid by calling /auth/me/.
  * Useful for verifying cookie-based auth on page load.
+ *
+ * If the session is invalid (401), clears the local auth store to prevent
+ * stale session data from causing blank pages.
  */
 export async function checkAuth(): Promise<boolean> {
   try {
@@ -142,8 +145,12 @@ export async function checkAuth(): Promise<boolean> {
       useAuthStore.getState().setUser(response.data);
       return true;
     }
+    // No user data - clear local state
+    useAuthStore.getState().clear();
     return false;
   } catch {
+    // Session invalid - clear local state to prevent blank page issue
+    useAuthStore.getState().clear();
     return false;
   }
 }

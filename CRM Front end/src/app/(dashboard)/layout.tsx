@@ -11,7 +11,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  // verifyOnMount=true ensures session is validated with the server on page load
+  // This prevents stale sessions from showing a blank page
+  const { isAuthenticated, isLoading } = useAuth("/login", true);
 
   // Show nothing while hydrating auth state
   if (isLoading) {
