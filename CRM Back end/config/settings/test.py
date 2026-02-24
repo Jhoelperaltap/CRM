@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 from .base import *  # noqa: F401,F403
 
@@ -41,7 +42,6 @@ _is_ci = os.environ.get("CI") == "true"
 if _database_url and _is_ci:
     # Parse DATABASE_URL manually to ensure correct credentials
     # Format: postgresql://user:password@host:port/dbname
-    from urllib.parse import urlparse
     _parsed = urlparse(_database_url)
 
     # Extract credentials with explicit defaults

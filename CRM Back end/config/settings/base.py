@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -228,9 +229,8 @@ AUTH_PASSWORD_VALIDATORS = [
 #
 # In CI/test environments, we skip DATABASE_URL parsing here and let test.py handle it.
 # This prevents any accidental fallback to system user defaults.
-import os as _os
-_is_ci = _os.environ.get("CI") == "true"
-_is_test = "test" in _os.environ.get("DJANGO_SETTINGS_MODULE", "")
+_is_ci = os.environ.get("CI") == "true"
+_is_test = "test" in os.environ.get("DJANGO_SETTINGS_MODULE", "")
 
 if _is_ci or _is_test:
     # Use SQLite placeholder - test.py will override with proper PostgreSQL config

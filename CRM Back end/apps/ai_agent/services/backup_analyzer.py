@@ -20,7 +20,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 if TYPE_CHECKING:
-    from apps.ai_agent.models import AgentConfiguration
+    from apps.ai_agent.models import AgentAction, AgentConfiguration
 
 logger = logging.getLogger(__name__)
 
