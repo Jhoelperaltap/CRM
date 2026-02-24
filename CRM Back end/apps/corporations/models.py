@@ -543,6 +543,18 @@ class Corporation(TimeStampedModel):
         ordering = ["name"]
         verbose_name = _("corporation")
         verbose_name_plural = _("corporations")
+        indexes = [
+            # Common filter: corporations by status and assigned user
+            models.Index(
+                fields=["status", "assigned_to"],
+                name="idx_corp_status_assigned",
+            ),
+            # Common filter: corporations by status and client status
+            models.Index(
+                fields=["status", "client_status"],
+                name="idx_corp_status_client",
+            ),
+        ]
 
     def __str__(self):
         return self.name

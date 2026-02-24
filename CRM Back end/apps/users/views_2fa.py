@@ -72,7 +72,9 @@ def decode_temp_2fa_token(token_str):
             return None
         user_id = token.get("user_id")
         return uuid.UUID(user_id) if user_id else None
-    except Exception:
+    except Exception as e:
+        # Expected for expired/invalid tokens
+        logger.debug(f"2FA temp token decode failed: {type(e).__name__}")
         return None
 
 

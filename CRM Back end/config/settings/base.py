@@ -254,6 +254,18 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "America/New_York"
 
+# Task timeouts to prevent runaway tasks
+# Soft limit raises SoftTimeLimitExceeded (allows cleanup), hard limit kills the task
+CELERY_TASK_SOFT_TIME_LIMIT = 300  # 5 minutes soft limit
+CELERY_TASK_TIME_LIMIT = 600  # 10 minutes hard limit
+
+# Prevent task from being executed multiple times (idempotency)
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+
+# Retry settings for failed tasks
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+
 CELERY_BEAT_SCHEDULE = {
     "sync-all-email-accounts": {
         "task": "apps.emails.tasks.sync_all_accounts",

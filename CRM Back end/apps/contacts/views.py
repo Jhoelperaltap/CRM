@@ -399,8 +399,12 @@ class ContactViewSet(viewsets.ModelViewSet):
                 related_message=message,
                 related_case=message_data.get("case"),
             )
-        except Exception:
-            pass
+        except Exception as e:
+            # Log but don't fail the main operation
+            import logging
+            logging.getLogger(__name__).warning(
+                f"Failed to create portal notification for contact {contact.id}: {e}"
+            )
 
         # Send push notification to client if they have a device token
         try:
@@ -419,9 +423,12 @@ class ContactViewSet(viewsets.ModelViewSet):
                     body=f"{request.user.get_full_name()}: {subject}",
                     data={"type": "message", "message_id": str(message.id)},
                 )
-        except Exception:
-            # Don't fail if push notification fails
-            pass
+        except Exception as e:
+            # Log but don't fail the main operation
+            import logging
+            logging.getLogger(__name__).warning(
+                f"Failed to send push notification to contact {contact.id}: {e}"
+            )
 
         from apps.portal.serializers import PortalMessageSerializer
 

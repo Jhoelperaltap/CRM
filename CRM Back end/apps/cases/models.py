@@ -94,6 +94,7 @@ class TaxCase(TimeStampedModel):
         max_length=10,
         choices=Priority.choices,
         default=Priority.MEDIUM,
+        db_index=True,
     )
 
     # --- Relationships ---
@@ -153,7 +154,7 @@ class TaxCase(TimeStampedModel):
     )
 
     # --- Dates ---
-    due_date = models.DateField(_("due date"), null=True, blank=True)
+    due_date = models.DateField(_("due date"), null=True, blank=True, db_index=True)
     extension_date = models.DateField(_("extension date"), null=True, blank=True)
     filed_date = models.DateField(_("filed date"), null=True, blank=True)
     completed_date = models.DateField(_("completed date"), null=True, blank=True)
@@ -174,6 +175,23 @@ class TaxCase(TimeStampedModel):
         ordering = ["-created_at"]
         verbose_name = _("tax case")
         verbose_name_plural = _("tax cases")
+        indexes = [
+            # Common filter: cases by status and preparer
+            models.Index(
+                fields=["status", "assigned_preparer"],
+                name="idx_case_status_preparer",
+            ),
+            # Common filter: cases by status and due date
+            models.Index(
+                fields=["status", "due_date"],
+                name="idx_case_status_due",
+            ),
+            # Common filter: cases by fiscal year and status
+            models.Index(
+                fields=["fiscal_year", "status"],
+                name="idx_case_year_status",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.case_number} - {self.title}"

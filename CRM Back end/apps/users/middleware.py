@@ -19,7 +19,9 @@ def _get_jwt_user_and_token(request):
         validated_token = jwt_auth.get_validated_token(auth_header.split(" ", 1)[1])
         user = jwt_auth.get_user(validated_token)
         return user, validated_token
-    except Exception:
+    except Exception as e:
+        # Expected for expired/invalid tokens - log at debug level
+        logger.debug(f"JWT validation failed: {type(e).__name__}")
         return None, None
 
 

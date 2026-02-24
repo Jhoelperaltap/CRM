@@ -38,9 +38,7 @@ class CorporationViewSet(viewsets.ModelViewSet):
     - **cases**     ``GET /corporations/<pk>/cases/``     -- tax cases linked to this corporation.
     """
 
-    queryset = Corporation.objects.select_related(
-        "primary_contact", "assigned_to", "created_by"
-    ).all()
+    queryset = Corporation.objects.all()
     filterset_class = CorporationFilter
     search_fields = ["name", "legal_name", "ein"]
     ordering_fields = [
@@ -53,6 +51,32 @@ class CorporationViewSet(viewsets.ModelViewSet):
     ]
     ordering = ["name"]
     module_name = "corporations"
+
+    # ------------------------------------------------------------------
+    # Queryset optimization to prevent N+1 queries
+    # ------------------------------------------------------------------
+    def get_queryset(self):
+        qs = Corporation.objects.all()
+
+        if self.action == "list":
+            # List view: only needs relations shown in CorporationListSerializer
+            qs = qs.select_related("primary_contact", "assigned_to", "member_of")
+        elif self.action in ("retrieve", "update", "partial_update"):
+            # Detail view: needs all relations shown in CorporationDetailSerializer
+            qs = qs.select_related(
+                "primary_contact",
+                "assigned_to",
+                "created_by",
+                "closed_by",
+                "paused_by",
+                "member_of",
+                "sla",
+            )
+        else:
+            # Other actions: basic prefetching
+            qs = qs.select_related("primary_contact", "assigned_to", "created_by")
+
+        return qs
 
     # ------------------------------------------------------------------
     # Permissions
@@ -98,7 +122,10 @@ class CorporationViewSet(viewsets.ModelViewSet):
         from apps.contacts.models import Contact
         from apps.contacts.serializers import ContactListSerializer
 
-        contacts_qs = Contact.objects.filter(corporation=corporation)
+        # Use select_related to prevent N+1 queries for ContactListSerializer
+        contacts_qs = Contact.objects.select_related(
+            "corporation", "assigned_to"
+        ).filter(corporation=corporation)
 
         # Include the primary contact even if it does not have the
         # corporation FK set (defensive).
@@ -106,9 +133,9 @@ class CorporationViewSet(viewsets.ModelViewSet):
             corporation.primary_contact_id
             and not contacts_qs.filter(pk=corporation.primary_contact_id).exists()
         ):
-            contacts_qs = contacts_qs | Contact.objects.filter(
-                pk=corporation.primary_contact_id,
-            )
+            contacts_qs = contacts_qs | Contact.objects.select_related(
+                "corporation", "assigned_to"
+            ).filter(pk=corporation.primary_contact_id)
 
         contacts_qs = contacts_qs.distinct().order_by("last_name", "first_name")
         serializer = ContactListSerializer(contacts_qs, many=True)
@@ -126,8 +153,11 @@ class CorporationViewSet(viewsets.ModelViewSet):
         from apps.cases.models import TaxCase
         from apps.cases.serializers import TaxCaseListSerializer
 
-        cases_qs = TaxCase.objects.filter(corporation=corporation).order_by(
-            "-created_at"
+        # Use select_related to prevent N+1 queries for TaxCaseListSerializer
+        cases_qs = (
+            TaxCase.objects.select_related("contact", "assigned_preparer")
+            .filter(corporation=corporation)
+            .order_by("-created_at")
         )
         serializer = TaxCaseListSerializer(cases_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -502,6 +502,16 @@ class Contact(TimeStampedModel):
         verbose_name_plural = _("contacts")
         indexes = [
             models.Index(fields=["last_name", "first_name"], name="idx_contact_name"),
+            # Common filter: contacts by status and assigned user
+            models.Index(
+                fields=["status", "assigned_to"],
+                name="idx_contact_status_assigned",
+            ),
+            # Common filter: contacts by corporation
+            models.Index(
+                fields=["corporation", "status"],
+                name="idx_contact_corp_status",
+            ),
         ]
 
     def __str__(self):
