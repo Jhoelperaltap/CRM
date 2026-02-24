@@ -6,9 +6,9 @@ Tests cover:
 - cleanup_automated_backups task
 """
 
-import pytest
 from datetime import timedelta
 
+import pytest
 from django.utils import timezone
 
 from apps.ai_agent.models import AgentConfiguration

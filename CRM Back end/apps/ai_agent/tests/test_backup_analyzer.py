@@ -10,10 +10,10 @@ Tests cover:
 - BackupAnalyzer.cleanup_old_automated_backups()
 """
 
-import pytest
 from datetime import timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 from django.utils import timezone
 
 from apps.ai_agent.models import AgentAction, AgentConfiguration, AgentInsight

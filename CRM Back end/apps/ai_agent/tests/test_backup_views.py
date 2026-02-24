@@ -7,13 +7,12 @@ Tests cover:
 """
 
 import pytest
-
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.ai_agent.models import AgentConfiguration
-from apps.users.models import User, Role
+from apps.users.models import Role, User
 
 
 @pytest.fixture
