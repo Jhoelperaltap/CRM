@@ -13,6 +13,8 @@ from apps.video_meetings.models import (
     VideoProvider,
 )
 
+BASE_VIDEO = "/api/v1/video-meetings/"
+
 
 @pytest.fixture
 def api_client():
@@ -72,7 +74,7 @@ class TestVideoProviderViewSet:
         """Test listing video providers."""
         api_client.force_authenticate(user=admin_user)
 
-        response = api_client.get("/api/v1/video/providers/")
+        response = api_client.get(f"{BASE_VIDEO}providers/")
 
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["results"]) >= 1
@@ -88,7 +90,7 @@ class TestVideoProviderViewSet:
             "client_id": "new_client_id",
         }
 
-        response = api_client.post("/api/v1/video/providers/", data, format="json")
+        response = api_client.post(f"{BASE_VIDEO}providers/", data, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["name"] == "New Provider"
@@ -100,7 +102,7 @@ class TestVideoProviderViewSet:
         api_client.force_authenticate(user=admin_user)
 
         response = api_client.get(
-            f"/api/v1/video/providers/{video_provider.id}/oauth_url/"
+            f"{BASE_VIDEO}providers/{video_provider.id}/oauth_url/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -121,7 +123,7 @@ class TestVideoProviderViewSet:
             is_active=True,
         )
 
-        response = api_client.get(f"/api/v1/video/providers/{provider.id}/oauth_url/")
+        response = api_client.get(f"{BASE_VIDEO}providers/{provider.id}/oauth_url/")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "error" in response.json()
@@ -137,7 +139,7 @@ class TestVideoProviderViewSet:
             client_id="",  # Empty client_id
         )
 
-        response = api_client.get(f"/api/v1/video/providers/{provider.id}/oauth_url/")
+        response = api_client.get(f"{BASE_VIDEO}providers/{provider.id}/oauth_url/")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "client_id" in response.json()["error"].lower()
@@ -147,7 +149,7 @@ class TestVideoProviderViewSet:
         api_client.force_authenticate(user=admin_user)
 
         response = api_client.post(
-            f"/api/v1/video/providers/{video_provider.id}/set_default/"
+            f"{BASE_VIDEO}providers/{video_provider.id}/set_default/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -163,7 +165,7 @@ class TestVideoMeetingViewSet:
         """Test listing video meetings."""
         api_client.force_authenticate(user=admin_user)
 
-        response = api_client.get("/api/v1/video/meetings/")
+        response = api_client.get(f"{BASE_VIDEO}meetings/")
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -178,15 +180,15 @@ class TestVideoMeetingViewSet:
             "provider_id": str(video_provider.id),
         }
 
-        response = api_client.post("/api/v1/video/meetings/", data, format="json")
+        response = api_client.post(f"{BASE_VIDEO}meetings/", data, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["title"] == "New Test Meeting"
 
-    def test_create_meeting_with_invalid_participants(
+    def test_create_meeting_with_invalid_participants_rejected(
         self, api_client, admin_user, video_provider
     ):
-        """Test that invalid participant emails are handled gracefully."""
+        """Test that invalid participant emails are rejected by validation."""
         api_client.force_authenticate(user=admin_user)
 
         data = {
@@ -197,22 +199,40 @@ class TestVideoMeetingViewSet:
             "participant_emails": ["valid@test.com", "invalid-email", ""],
         }
 
-        response = api_client.post("/api/v1/video/meetings/", data, format="json")
+        response = api_client.post(f"{BASE_VIDEO}meetings/", data, format="json")
 
-        # Should succeed, invalid emails are logged but not added
+        # Should fail validation due to invalid email format
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_meeting_with_valid_participants(
+        self, api_client, admin_user, video_provider
+    ):
+        """Test that valid participant emails are added to meeting."""
+        api_client.force_authenticate(user=admin_user)
+
+        data = {
+            "title": "Meeting with Valid Participants",
+            "scheduled_start": "2026-03-15T14:00:00Z",
+            "scheduled_end": "2026-03-15T15:00:00Z",
+            "provider_id": str(video_provider.id),
+            "participant_emails": ["participant1@test.com", "participant2@test.com"],
+        }
+
+        response = api_client.post(f"{BASE_VIDEO}meetings/", data, format="json")
+
         assert response.status_code == status.HTTP_201_CREATED
 
-        # Only valid participant should be added (plus host)
         meeting_id = response.json()["id"]
         participants = MeetingParticipant.objects.filter(meeting_id=meeting_id)
-        valid_emails = [p.email for p in participants if "@" in p.email]
-        assert "valid@test.com" in valid_emails
+        emails = [p.email for p in participants]
+        assert "participant1@test.com" in emails
+        assert "participant2@test.com" in emails
 
     def test_start_meeting(self, api_client, admin_user, video_meeting):
         """Test starting a meeting."""
         api_client.force_authenticate(user=admin_user)
 
-        response = api_client.post(f"/api/v1/video/meetings/{video_meeting.id}/start/")
+        response = api_client.post(f"{BASE_VIDEO}meetings/{video_meeting.id}/start/")
 
         assert response.status_code == status.HTTP_200_OK
         video_meeting.refresh_from_db()
@@ -226,7 +246,7 @@ class TestVideoMeetingViewSet:
         video_meeting.status = VideoMeeting.Status.STARTED
         video_meeting.save()
 
-        response = api_client.post(f"/api/v1/video/meetings/{video_meeting.id}/end/")
+        response = api_client.post(f"{BASE_VIDEO}meetings/{video_meeting.id}/end/")
 
         assert response.status_code == status.HTTP_200_OK
         video_meeting.refresh_from_db()
@@ -236,7 +256,7 @@ class TestVideoMeetingViewSet:
         """Test canceling a meeting."""
         api_client.force_authenticate(user=admin_user)
 
-        response = api_client.post(f"/api/v1/video/meetings/{video_meeting.id}/cancel/")
+        response = api_client.post(f"{BASE_VIDEO}meetings/{video_meeting.id}/cancel/")
 
         assert response.status_code == status.HTTP_200_OK
         video_meeting.refresh_from_db()
@@ -249,7 +269,7 @@ class TestVideoMeetingViewSet:
         data = {"email": "participant@test.com", "name": "Test Participant"}
 
         response = api_client.post(
-            f"/api/v1/video/meetings/{video_meeting.id}/add_participant/",
+            f"{BASE_VIDEO}meetings/{video_meeting.id}/add_participant/",
             data,
             format="json",
         )
@@ -268,7 +288,7 @@ class TestVideoMeetingViewSet:
         data = {"name": "No Email Participant"}
 
         response = api_client.post(
-            f"/api/v1/video/meetings/{video_meeting.id}/add_participant/",
+            f"{BASE_VIDEO}meetings/{video_meeting.id}/add_participant/",
             data,
             format="json",
         )
@@ -290,7 +310,7 @@ class TestVideoMeetingViewSet:
         # Try to add same participant again
         data = {"email": "existing@test.com"}
         response = api_client.post(
-            f"/api/v1/video/meetings/{video_meeting.id}/add_participant/",
+            f"{BASE_VIDEO}meetings/{video_meeting.id}/add_participant/",
             data,
             format="json",
         )
@@ -305,8 +325,8 @@ class TestVideoMeetingAuthentication:
 
     def test_unauthenticated_access_denied(self, api_client):
         """Test that unauthenticated users cannot access endpoints."""
-        response = api_client.get("/api/v1/video/providers/")
+        response = api_client.get(f"{BASE_VIDEO}providers/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-        response = api_client.get("/api/v1/video/meetings/")
+        response = api_client.get(f"{BASE_VIDEO}meetings/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
