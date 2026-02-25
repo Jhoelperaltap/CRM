@@ -21,12 +21,12 @@ def on_chat_session_created(sender, instance, created, **kwargs):
                 agents = instance.department.agents.filter(is_available=True)
                 for agent in agents:
                     Notification.objects.create(
-                        user=agent.user,
-                        type="new_chat",
+                        recipient=agent.user,
+                        notification_type="system",
                         title="New Chat Waiting",
                         message=f"New chat from {instance.visitor_name or 'Anonymous'}",
-                        link=f"/live-chat?session={instance.session_id}",
-                        priority="high",
+                        action_url=f"/live-chat?session={instance.session_id}",
+                        severity="info",
                     )
 
 
@@ -39,12 +39,12 @@ def on_chat_message_created(sender, instance, created, **kwargs):
             from apps.notifications.models import Notification
 
             Notification.objects.create(
-                user=session.assigned_agent.user,
-                type="chat_message",
+                recipient=session.assigned_agent.user,
+                notification_type="system",
                 title="New Chat Message",
                 message=f"{session.visitor_name or 'Visitor'}: {instance.content[:50]}",
-                link=f"/live-chat?session={session.session_id}",
-                priority="medium",
+                action_url=f"/live-chat?session={session.session_id}",
+                severity="info",
             )
 
 
@@ -62,10 +62,10 @@ def on_offline_message_created(sender, instance, created, **kwargs):
         admins = User.objects.filter(role__slug="admin", is_active=True)
         for admin in admins:
             Notification.objects.create(
-                user=admin,
-                type="offline_message",
+                recipient=admin,
+                notification_type="system",
                 title="New Offline Message",
                 message=f"Message from {instance.name}: {instance.message[:50]}",
-                link="/live-chat/offline-messages",
-                priority="medium",
+                action_url="/live-chat/offline-messages",
+                severity="info",
             )

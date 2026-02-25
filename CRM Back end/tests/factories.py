@@ -662,3 +662,345 @@ class DepartmentClientFolderFactory(DjangoModelFactory):
     description = ""
     is_default = False
     created_by = factory.SubFactory(UserFactory)
+
+
+# ---------------------------------------------------------------------------
+# Live Chat models
+# ---------------------------------------------------------------------------
+
+
+class ChatDepartmentFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.ChatDepartment"
+
+    name = factory.Sequence(lambda n: f"Support Team {n}")
+    description = factory.Faker("sentence")
+    is_active = True
+    order = factory.Sequence(lambda n: n)
+    auto_assign = True
+    max_concurrent_chats = 5
+    offline_message = "We're currently offline. Please leave a message."
+    collect_email_offline = True
+
+
+class ChatAgentFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.ChatAgent"
+
+    user = factory.SubFactory(UserFactory)
+    is_available = False
+    status = "offline"
+    status_message = ""
+    max_concurrent_chats = 5
+    current_chat_count = 0
+    total_chats_handled = 0
+    sound_enabled = True
+    desktop_notifications = True
+
+
+class ChatSessionFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.ChatSession"
+
+    session_id = factory.Sequence(lambda n: f"session-{n}")
+    status = "waiting"
+    source = "widget"
+    department = factory.SubFactory(ChatDepartmentFactory)
+    visitor_name = factory.Faker("name")
+    visitor_email = factory.Faker("email")
+    visitor_phone = factory.Faker("phone_number")
+    assigned_agent = None
+    subject = factory.Faker("sentence", nb_words=5)
+    initial_message = factory.Faker("paragraph")
+    ip_address = factory.Faker("ipv4")
+    user_agent = factory.Faker("user_agent")
+
+
+class ChatMessageFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.ChatMessage"
+
+    session = factory.SubFactory(ChatSessionFactory)
+    message_type = "text"
+    sender_type = "visitor"
+    agent = None
+    sender_name = factory.LazyAttribute(lambda obj: obj.session.visitor_name)
+    content = factory.Faker("paragraph")
+    is_read = False
+    is_internal = False
+
+
+class CannedResponseFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.CannedResponse"
+
+    title = factory.Sequence(lambda n: f"Quick Reply {n}")
+    shortcut = factory.Sequence(lambda n: f"qr{n}")
+    content = factory.Faker("paragraph")
+    department = None
+    created_by = factory.SubFactory(UserFactory)
+    is_global = True
+    is_active = True
+    usage_count = 0
+
+
+class ChatWidgetSettingsFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.ChatWidgetSettings"
+
+    primary_color = "#3b82f6"
+    position = "bottom-right"
+    company_name = "Support"
+    welcome_message = "Hi there! How can we help you today?"
+    away_message = "We're not available right now. Please leave a message."
+    require_name = True
+    require_email = True
+    enable_rating = True
+
+
+class OfflineMessageFactory(DjangoModelFactory):
+    class Meta:
+        model = "live_chat.OfflineMessage"
+
+    name = factory.Faker("name")
+    email = factory.Faker("email")
+    phone = factory.Faker("phone_number")
+    message = factory.Faker("paragraph")
+    department = factory.SubFactory(ChatDepartmentFactory)
+    ip_address = factory.Faker("ipv4")
+    is_read = False
+    is_responded = False
+
+
+# ---------------------------------------------------------------------------
+# Calls models
+# ---------------------------------------------------------------------------
+
+
+class TelephonyProviderFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.TelephonyProvider"
+
+    name = factory.Sequence(lambda n: f"Provider {n}")
+    provider_type = "twilio"
+    is_active = True
+    is_default = False
+    account_sid = factory.Faker("uuid4")
+    auth_token = factory.Faker("uuid4")
+    recording_enabled = True
+
+
+class PhoneLineFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.PhoneLine"
+
+    provider = factory.SubFactory(TelephonyProviderFactory)
+    phone_number = factory.Sequence(lambda n: f"+1555{n:07d}")
+    friendly_name = factory.Sequence(lambda n: f"Line {n}")
+    line_type = "both"
+    is_active = True
+    assigned_user = None
+    voicemail_enabled = True
+    ring_timeout = 30
+
+
+class CallFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.Call"
+
+    direction = "outbound"
+    status = "completed"
+    call_type = "regular"
+    from_number = factory.Faker("phone_number")
+    to_number = factory.Faker("phone_number")
+    phone_line = factory.SubFactory(PhoneLineFactory)
+    user = factory.SubFactory(UserFactory)
+    contact = None
+    corporation = None
+    case = None
+    duration = factory.Faker("random_int", min=30, max=600)
+    subject = factory.Faker("sentence", nb_words=5)
+    notes = factory.Faker("paragraph")
+
+
+class CallQueueFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.CallQueue"
+
+    name = factory.Sequence(lambda n: f"Queue {n}")
+    description = factory.Faker("sentence")
+    is_active = True
+    strategy = "round_robin"
+    timeout = 30
+    max_wait_time = 300
+
+
+class CallQueueMemberFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.CallQueueMember"
+
+    queue = factory.SubFactory(CallQueueFactory)
+    user = factory.SubFactory(UserFactory)
+    priority = 0
+    is_active = True
+    is_available = True
+    calls_taken = 0
+
+
+class VoicemailFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.Voicemail"
+
+    phone_line = factory.SubFactory(PhoneLineFactory)
+    call = None
+    caller_number = factory.Faker("phone_number")
+    caller_name = factory.Faker("name")
+    audio_url = factory.Faker("url")
+    duration = factory.Faker("random_int", min=10, max=120)
+    transcription = factory.Faker("paragraph")
+    status = "new"
+    contact = None
+
+
+class CallScriptFactory(DjangoModelFactory):
+    class Meta:
+        model = "calls.CallScript"
+
+    name = factory.Sequence(lambda n: f"Script {n}")
+    script_type = "sales"
+    description = factory.Faker("sentence")
+    is_active = True
+    content = factory.Faker("paragraph", nb_sentences=5)
+    sections = factory.LazyFunction(list)
+    times_used = 0
+    avg_success_rate = 0.0
+    created_by = factory.SubFactory(UserFactory)
+
+
+# ---------------------------------------------------------------------------
+# Chatbot models
+# ---------------------------------------------------------------------------
+
+
+class ChatbotConfigurationFactory(DjangoModelFactory):
+    class Meta:
+        model = "chatbot.ChatbotConfiguration"
+        django_get_or_create = ("id",)
+
+    id = factory.LazyFunction(
+        lambda: __import__("uuid").UUID("00000000-0000-4000-8000-000000000002")
+    )
+    ai_provider = "openai"
+    api_key = ""
+    model_name = "gpt-4o-mini"
+    temperature = 0.7
+    max_tokens = 1000
+    system_prompt = "You are a helpful assistant."
+    company_name = "Test Company"
+    welcome_message = "Hello! How can I help you today?"
+    is_active = True
+    allow_appointments = True
+    handoff_enabled = True
+
+
+class ChatbotKnowledgeEntryFactory(DjangoModelFactory):
+    class Meta:
+        model = "chatbot.ChatbotKnowledgeEntry"
+
+    configuration = factory.SubFactory(ChatbotConfigurationFactory)
+    entry_type = "faq"
+    title = factory.Sequence(lambda n: f"FAQ {n}")
+    content = factory.Faker("paragraph")
+    keywords = "tax, help, question"
+    priority = 0
+    is_active = True
+
+
+class ChatbotConversationFactory(DjangoModelFactory):
+    class Meta:
+        model = "chatbot.ChatbotConversation"
+
+    contact = factory.SubFactory(ContactFactory)
+    status = "active"
+    fallback_count = 0
+    assigned_staff = None
+
+
+class ChatbotMessageFactory(DjangoModelFactory):
+    class Meta:
+        model = "chatbot.ChatbotMessage"
+
+    conversation = factory.SubFactory(ChatbotConversationFactory)
+    role = "user"
+    message_type = "text"
+    content = factory.Faker("sentence")
+    metadata = factory.LazyFunction(dict)
+    tokens_used = 0
+
+
+class ChatbotAppointmentSlotFactory(DjangoModelFactory):
+    class Meta:
+        model = "chatbot.ChatbotAppointmentSlot"
+
+    day_of_week = 0  # Monday
+    start_time = factory.LazyFunction(lambda: __import__("datetime").time(9, 0))
+    end_time = factory.LazyFunction(lambda: __import__("datetime").time(17, 0))
+    slot_duration_minutes = 30
+    max_appointments = 1
+    is_active = True
+    assigned_staff = None
+
+
+# ---------------------------------------------------------------------------
+# Knowledge Base models
+# ---------------------------------------------------------------------------
+
+
+class KBCategoryFactory(DjangoModelFactory):
+    class Meta:
+        model = "knowledge_base.Category"
+
+    name = factory.Sequence(lambda n: f"Category {n}")
+    slug = factory.LazyAttribute(lambda obj: obj.name.lower().replace(" ", "-"))
+    description = factory.Faker("sentence")
+    icon = "book"
+    color = "#3b82f6"
+    parent = None
+    order = factory.Sequence(lambda n: n)
+    is_active = True
+    is_public = True
+
+
+class KBArticleFactory(DjangoModelFactory):
+    class Meta:
+        model = "knowledge_base.Article"
+
+    title = factory.Sequence(lambda n: f"Article {n}")
+    slug = factory.LazyAttribute(lambda obj: obj.title.lower().replace(" ", "-"))
+    summary = factory.Faker("sentence")
+    content = factory.Faker("paragraph", nb_sentences=5)
+    category = factory.SubFactory(KBCategoryFactory)
+    status = "published"
+    visibility = "public"
+    author = factory.SubFactory(UserFactory)
+    tags = factory.LazyFunction(list)
+    keywords = "help, guide"
+    view_count = 0
+    helpful_count = 0
+    not_helpful_count = 0
+    is_featured = False
+    is_pinned = False
+
+
+class KBFAQFactory(DjangoModelFactory):
+    class Meta:
+        model = "knowledge_base.FAQ"
+
+    question = factory.Sequence(lambda n: f"Question {n}?")
+    answer = factory.Faker("paragraph")
+    category = factory.SubFactory(KBCategoryFactory)
+    order = factory.Sequence(lambda n: n)
+    is_active = True
+    is_public = True
+    view_count = 0
+    created_by = factory.SubFactory(UserFactory)

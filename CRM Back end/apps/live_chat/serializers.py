@@ -204,7 +204,7 @@ class ChatSessionSerializer(serializers.ModelSerializer):
             "visitor_name",
             "visitor_email",
             "visitor_phone",
-            "portal_user",
+            "portal_access",
             "contact",
             "contact_name",
             "assigned_agent",
