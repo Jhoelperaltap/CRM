@@ -2,6 +2,8 @@
 Tests for AI Agent models.
 """
 
+import datetime
+
 import pytest
 from django.utils import timezone
 
@@ -204,10 +206,11 @@ class TestAgentMetrics:
 
     def test_create_daily_metrics(self):
         """Test creating daily metrics."""
-        today = timezone.now().date()
+        # Use a unique date (100 days ago) to avoid conflicts with other tests
+        test_date = timezone.now().date() - datetime.timedelta(days=100)
 
         metrics = AgentMetrics.objects.create(
-            date=today,
+            date=test_date,
             total_actions=50,
             actions_executed=40,
             actions_rejected=5,
@@ -216,15 +219,16 @@ class TestAgentMetrics:
         )
 
         assert metrics.id is not None
-        assert metrics.date == today
+        assert metrics.date == test_date
         assert metrics.total_actions == 50
 
     def test_unique_date_constraint(self):
         """Test that only one metrics record per date."""
-        today = timezone.now().date()
+        # Use a unique date (200 days ago) to avoid conflicts with other tests
+        test_date = timezone.now().date() - datetime.timedelta(days=200)
 
-        AgentMetrics.objects.create(date=today, total_actions=10)
+        AgentMetrics.objects.create(date=test_date, total_actions=10)
 
         # Creating another for the same date should fail
         with pytest.raises(Exception):  # IntegrityError
-            AgentMetrics.objects.create(date=today, total_actions=20)
+            AgentMetrics.objects.create(date=test_date, total_actions=20)
