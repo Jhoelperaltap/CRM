@@ -341,9 +341,7 @@ class TestOfflineMessageViewSet:
     def test_mark_read(self, admin_client, admin_user):
         message = OfflineMessageFactory(is_read=False, read_by=None)
 
-        resp = admin_client.post(
-            f"{BASE_CHAT}offline-messages/{message.id}/mark_read/"
-        )
+        resp = admin_client.post(f"{BASE_CHAT}offline-messages/{message.id}/mark_read/")
         assert resp.status_code == status.HTTP_200_OK
 
         message.refresh_from_db()

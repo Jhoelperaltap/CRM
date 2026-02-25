@@ -679,7 +679,9 @@ class TestSearchView:
         assert len(resp.data["articles"]) == 1
 
     def test_search_excludes_internal_articles(self, api_client):
-        KBArticleFactory(status="published", visibility="internal", title="Internal Tax")
+        KBArticleFactory(
+            status="published", visibility="internal", title="Internal Tax"
+        )
         KBArticleFactory(status="published", visibility="public", title="Public Tax")
 
         resp = api_client.get(f"{BASE_URL}search/?q=tax")

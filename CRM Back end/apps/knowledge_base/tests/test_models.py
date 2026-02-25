@@ -175,7 +175,9 @@ class TestArticle:
         article2 = KBArticleFactory(is_pinned=True, is_featured=False)
         article3 = KBArticleFactory(is_pinned=False, is_featured=True)
 
-        articles = list(Article.objects.filter(id__in=[article1.id, article2.id, article3.id]))
+        articles = list(
+            Article.objects.filter(id__in=[article1.id, article2.id, article3.id])
+        )
         # Pinned first, then featured
         assert articles[0] == article2
         assert articles[1] == article3

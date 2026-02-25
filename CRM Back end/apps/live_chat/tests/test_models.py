@@ -40,7 +40,9 @@ class TestChatDepartment:
         agent2.departments.add(department)
         # Create online but inactive user agent
         inactive_user = UserFactory(is_active=False)
-        agent3 = ChatAgentFactory(user=inactive_user, is_available=True, status="online")
+        agent3 = ChatAgentFactory(
+            user=inactive_user, is_available=True, status="online"
+        )
         agent3.departments.add(department)
 
         assert department.online_agents_count == 1

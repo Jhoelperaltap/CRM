@@ -54,7 +54,9 @@ class TestPhoneLine:
     """Tests for PhoneLine model."""
 
     def test_str_representation_with_friendly_name(self):
-        line = PhoneLineFactory(friendly_name="Main Office", phone_number="+15551234567")
+        line = PhoneLineFactory(
+            friendly_name="Main Office", phone_number="+15551234567"
+        )
         assert str(line) == "Main Office"
 
     def test_str_representation_without_friendly_name(self):
