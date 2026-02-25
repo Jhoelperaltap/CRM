@@ -374,7 +374,11 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"])
     def summary(self, request):
         """Get performance summary."""
-        days = int(request.query_params.get("days", 30))
+        try:
+            days = int(request.query_params.get("days", 30))
+            days = max(1, min(days, 365))  # Limit to 1-365 days
+        except (ValueError, TypeError):
+            days = 30
 
         from apps.ai_agent.models import AgentConfiguration
         from apps.ai_agent.services.learning_engine import LearningEngine
@@ -423,7 +427,11 @@ class AgentMetricsViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"])
     def trends(self, request):
         """Get daily trend data."""
-        days = int(request.query_params.get("days", 30))
+        try:
+            days = int(request.query_params.get("days", 30))
+            days = max(1, min(days, 365))  # Limit to 1-365 days
+        except (ValueError, TypeError):
+            days = 30
 
         from apps.ai_agent.models import AgentConfiguration
         from apps.ai_agent.services.learning_engine import LearningEngine

@@ -6,6 +6,7 @@ This module provides:
 - Comment: Internal comments between team members with @mention support
 """
 
+import logging
 import re
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -14,6 +15,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
+
+logger = logging.getLogger(__name__)
 
 
 class Activity(TimeStampedModel):
@@ -362,8 +365,9 @@ This is an internal CRM notification.
                 self.email_sent = True
                 self.email_sent_at = timezone.now()
                 self.save(update_fields=["email_sent", "email_sent_at"])
-            except Exception:
-                pass  # Don't fail the comment creation if email fails
+            except Exception as e:
+                # Log but don't fail comment creation if email fails
+                logger.warning(f"Failed to send comment notification email: {e}")
 
 
 class CommentReaction(TimeStampedModel):

@@ -204,8 +204,14 @@ class PortalPasswordResetRequestView(APIView):
         )
         portal_access.save(update_fields=["reset_token", "reset_token_expires_at"])
 
-        # TODO: Send email with reset link containing the UNHASHED token
-        # The token variable (not token_hash) should be sent to the user
+        # Send email with reset link containing the UNHASHED token
+        from apps.portal.tasks import send_portal_password_reset_email
+
+        send_portal_password_reset_email.delay(
+            email=portal_access.email,
+            reset_token=token,  # Send unhashed token to user
+        )
+
         return Response({"detail": "If the email exists, a reset link has been sent."})
 
 

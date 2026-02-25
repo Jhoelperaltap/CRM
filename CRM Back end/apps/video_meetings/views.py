@@ -1,4 +1,6 @@
+import logging
 from datetime import timedelta
+from urllib.parse import urlencode
 
 from django.db.models import Q
 from django.utils import timezone
@@ -27,6 +29,8 @@ from .serializers import (
     VideoProviderWriteSerializer,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class VideoProviderViewSet(viewsets.ModelViewSet):
     """ViewSet for managing video providers"""
@@ -51,8 +55,39 @@ class VideoProviderViewSet(viewsets.ModelViewSet):
     def oauth_url(self, request, pk=None):
         """Get OAuth authorization URL for this provider"""
         provider = self.get_object()
-        # TODO: Generate actual OAuth URL based on provider type
-        oauth_url = f"https://{provider.provider_type}.com/oauth/authorize?client_id={provider.client_id}"
+
+        # Map provider types to their OAuth endpoints
+        oauth_endpoints = {
+            "zoom": "https://zoom.us/oauth/authorize",
+            "google_meet": "https://accounts.google.com/o/oauth2/v2/auth",
+            "teams": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+            "webex": "https://webexapis.com/v1/authorize",
+        }
+
+        base_url = oauth_endpoints.get(provider.provider_type)
+        if not base_url:
+            return Response(
+                {
+                    "error": f"OAuth not supported for provider type: {provider.provider_type}"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not provider.client_id:
+            return Response(
+                {"error": "Provider client_id is not configured"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Build OAuth URL with properly encoded parameters
+        params = {
+            "client_id": provider.client_id,
+            "response_type": "code",
+            "redirect_uri": provider.redirect_uri
+            or request.build_absolute_uri("/api/v1/video/oauth/callback/"),
+        }
+
+        oauth_url = f"{base_url}?{urlencode(params)}"
         return Response({"oauth_url": oauth_url})
 
 
@@ -169,11 +204,14 @@ class VideoMeetingViewSet(viewsets.ModelViewSet):
 
         # Add other participants
         for email in data.get("participant_emails", []):
-            MeetingParticipant.objects.create(
-                meeting=meeting,
-                email=email,
-                name=email.split("@")[0],
-            )
+            if email and isinstance(email, str) and "@" in email:
+                MeetingParticipant.objects.create(
+                    meeting=meeting,
+                    email=email,
+                    name=email.split("@")[0],
+                )
+            elif email:
+                logger.warning(f"Invalid email format for participant: {email}")
 
         return Response(
             VideoMeetingDetailSerializer(meeting).data,
