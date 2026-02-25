@@ -122,9 +122,7 @@ class TestPortalPasswordReset:
 
     def test_request_reset(self, portal_client_access):
         client = APIClient()
-        with patch(
-            "apps.portal.tasks.send_portal_password_reset_email.delay"
-        ) as mock:
+        with patch("apps.portal.tasks.send_portal_password_reset_email.delay") as mock:
             resp = client.post(
                 self.REQUEST_URL,
                 {"email": portal_client_access.email},
@@ -150,9 +148,7 @@ class TestPortalPasswordReset:
     def test_request_reset_stores_hashed_token(self, portal_client_access):
         """SECURITY: Reset token is hashed before storage."""
         client = APIClient()
-        with patch(
-            "apps.portal.tasks.send_portal_password_reset_email.delay"
-        ) as mock:
+        with patch("apps.portal.tasks.send_portal_password_reset_email.delay") as mock:
             resp = client.post(
                 self.REQUEST_URL,
                 {"email": portal_client_access.email},
@@ -319,9 +315,7 @@ class TestPortalPasswordReset:
         client = APIClient()
         uppercase_email = portal_client_access.email.upper()
 
-        with patch(
-            "apps.portal.tasks.send_portal_password_reset_email.delay"
-        ) as mock:
+        with patch("apps.portal.tasks.send_portal_password_reset_email.delay") as mock:
             resp = client.post(
                 self.REQUEST_URL,
                 {"email": uppercase_email},

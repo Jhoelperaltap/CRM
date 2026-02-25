@@ -93,7 +93,9 @@ class TestVideoProviderViewSet:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["name"] == "New Provider"
 
-    def test_oauth_url_returns_encoded_url(self, api_client, admin_user, video_provider):
+    def test_oauth_url_returns_encoded_url(
+        self, api_client, admin_user, video_provider
+    ):
         """Test that OAuth URL is properly encoded."""
         api_client.force_authenticate(user=admin_user)
 
@@ -210,9 +212,7 @@ class TestVideoMeetingViewSet:
         """Test starting a meeting."""
         api_client.force_authenticate(user=admin_user)
 
-        response = api_client.post(
-            f"/api/v1/video/meetings/{video_meeting.id}/start/"
-        )
+        response = api_client.post(f"/api/v1/video/meetings/{video_meeting.id}/start/")
 
         assert response.status_code == status.HTTP_200_OK
         video_meeting.refresh_from_db()
@@ -236,9 +236,7 @@ class TestVideoMeetingViewSet:
         """Test canceling a meeting."""
         api_client.force_authenticate(user=admin_user)
 
-        response = api_client.post(
-            f"/api/v1/video/meetings/{video_meeting.id}/cancel/"
-        )
+        response = api_client.post(f"/api/v1/video/meetings/{video_meeting.id}/cancel/")
 
         assert response.status_code == status.HTTP_200_OK
         video_meeting.refresh_from_db()
@@ -261,7 +259,9 @@ class TestVideoMeetingViewSet:
             meeting=video_meeting, email="participant@test.com"
         ).exists()
 
-    def test_add_participant_requires_email(self, api_client, admin_user, video_meeting):
+    def test_add_participant_requires_email(
+        self, api_client, admin_user, video_meeting
+    ):
         """Test that adding participant requires email."""
         api_client.force_authenticate(user=admin_user)
 
