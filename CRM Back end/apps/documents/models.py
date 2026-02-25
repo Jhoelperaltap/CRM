@@ -73,7 +73,7 @@ class DepartmentClientFolder(TimeStampedModel):
         verbose_name_plural = _("department client folders")
         constraints = [
             models.CheckConstraint(
-                check=(
+                condition=(
                     models.Q(contact__isnull=False, corporation__isnull=True)
                     | models.Q(contact__isnull=True, corporation__isnull=False)
                 ),
