@@ -63,7 +63,7 @@ class UserFactory(DjangoModelFactory):
     email = factory.LazyAttributeSequence(
         lambda obj, n: f"{obj.first_name.lower()}.{obj.last_name.lower()}.{n}@example.com"
     )
-    phone = factory.Faker("phone_number")
+    phone = factory.Sequence(lambda n: f"+1555{n:07d}")
     role = factory.SubFactory(RoleFactory)
     is_active = True
 
@@ -101,8 +101,8 @@ class ContactFactory(DjangoModelFactory):
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     email = factory.Faker("email")
-    phone = factory.Faker("phone_number")
-    mobile = factory.Faker("phone_number")
+    phone = factory.Sequence(lambda n: f"+1555{n:07d}")
+    mobile = factory.Sequence(lambda n: f"+1666{n:07d}")
     status = "active"
     corporation = None
     assigned_to = factory.SubFactory(UserFactory)
@@ -342,7 +342,7 @@ class BranchFactory(DjangoModelFactory):
     city = factory.Faker("city")
     state = factory.Faker("state_abbr")
     zip_code = factory.Faker("zipcode")
-    phone = factory.Faker("phone_number")
+    phone = factory.Sequence(lambda n: f"+1888{n:07d}")
     is_active = True
     is_headquarters = False
 
@@ -708,7 +708,7 @@ class ChatSessionFactory(DjangoModelFactory):
     department = factory.SubFactory(ChatDepartmentFactory)
     visitor_name = factory.Faker("name")
     visitor_email = factory.Faker("email")
-    visitor_phone = factory.Faker("phone_number")
+    visitor_phone = factory.Sequence(lambda n: f"+1999{n:07d}")
     assigned_agent = None
     subject = factory.Faker("sentence", nb_words=5)
     initial_message = factory.Faker("paragraph")
@@ -764,7 +764,7 @@ class OfflineMessageFactory(DjangoModelFactory):
 
     name = factory.Faker("name")
     email = factory.Faker("email")
-    phone = factory.Faker("phone_number")
+    phone = factory.Sequence(lambda n: f"+1444{n:07d}")
     message = factory.Faker("paragraph")
     department = factory.SubFactory(ChatDepartmentFactory)
     ip_address = factory.Faker("ipv4")
@@ -811,8 +811,8 @@ class CallFactory(DjangoModelFactory):
     direction = "outbound"
     status = "completed"
     call_type = "regular"
-    from_number = factory.Faker("phone_number")
-    to_number = factory.Faker("phone_number")
+    from_number = factory.Sequence(lambda n: f"+1555{n:07d}")
+    to_number = factory.Sequence(lambda n: f"+1666{n:07d}")
     phone_line = factory.SubFactory(PhoneLineFactory)
     user = factory.SubFactory(UserFactory)
     contact = None
@@ -853,7 +853,7 @@ class VoicemailFactory(DjangoModelFactory):
 
     phone_line = factory.SubFactory(PhoneLineFactory)
     call = None
-    caller_number = factory.Faker("phone_number")
+    caller_number = factory.Sequence(lambda n: f"+1777{n:07d}")
     caller_name = factory.Faker("name")
     audio_url = factory.Faker("url")
     duration = factory.Faker("random_int", min=10, max=120)
