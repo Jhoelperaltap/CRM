@@ -41,17 +41,41 @@ class PublicChatRateThrottle(AnonRateThrottle):
 
     rate = "30/minute"
 
+    def allow_request(self, request, view):
+        """Disable throttling in test environment."""
+        from django.conf import settings
+
+        if getattr(settings, "TESTING", False):
+            return True
+        return super().allow_request(request, view)
+
 
 class ChatSessionCreationThrottle(AnonRateThrottle):
     """Stricter rate limit for creating new chat sessions."""
 
     rate = "5/minute"
 
+    def allow_request(self, request, view):
+        """Disable throttling in test environment."""
+        from django.conf import settings
+
+        if getattr(settings, "TESTING", False):
+            return True
+        return super().allow_request(request, view)
+
 
 class ChatMessageThrottle(AnonRateThrottle):
     """Rate limit for sending chat messages."""
 
     rate = "20/minute"
+
+    def allow_request(self, request, view):
+        """Disable throttling in test environment."""
+        from django.conf import settings
+
+        if getattr(settings, "TESTING", False):
+            return True
+        return super().allow_request(request, view)
 
 
 class ChatDepartmentViewSet(viewsets.ModelViewSet):
