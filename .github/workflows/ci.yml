@@ -78,6 +78,16 @@ jobs:
         run: |
           black --check apps/ config/
 
+      - name: Run migrations
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.test
+          CI: "true"
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          SECRET_KEY: test-secret-key-for-ci
+          JWT_SIGNING_KEY: test-jwt-key-for-ci
+        run: |
+          python manage.py migrate --run-syncdb
+
       - name: Run tests
         env:
           DJANGO_SETTINGS_MODULE: config.settings.test
