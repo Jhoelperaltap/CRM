@@ -3,12 +3,9 @@ Tests for chatbot API views.
 """
 
 import pytest
-from django.utils import timezone
 from rest_framework import status
 
 from apps.chatbot.models import (
-    ChatbotAppointmentSlot,
-    ChatbotConfiguration,
     ChatbotConversation,
 )
 from tests.factories import (

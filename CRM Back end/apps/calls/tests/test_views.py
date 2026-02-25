@@ -139,7 +139,7 @@ class TestCallViewSet:
         assert call.user == admin_user
 
     def test_click_to_call(self, admin_client, admin_user):
-        line = PhoneLineFactory(assigned_user=admin_user, is_active=True)
+        PhoneLineFactory(assigned_user=admin_user, is_active=True)
 
         resp = admin_client.post(
             f"{BASE_CALLS}calls/click_to_call/",

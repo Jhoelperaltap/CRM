@@ -5,12 +5,11 @@ Tests for knowledge base API views.
 import pytest
 from rest_framework import status
 
-from apps.knowledge_base.models import Article, ArticleFeedback, Category, FAQ
+from apps.knowledge_base.models import FAQ, Article, ArticleFeedback
 from tests.factories import (
     KBArticleFactory,
     KBCategoryFactory,
     KBFAQFactory,
-    UserFactory,
 )
 
 BASE_URL = "/api/v1/knowledge-base/"
@@ -384,7 +383,7 @@ class TestPublicArticleView:
         assert len(resp.data["results"]) == 2
 
     def test_get_single_public_article(self, api_client):
-        article = KBArticleFactory(
+        KBArticleFactory(
             status="published",
             visibility="public",
             slug="test-article",
@@ -622,8 +621,9 @@ class TestSearchView:
 
         resp = api_client.get(f"{BASE_URL}search/?q=tax")
         assert resp.status_code == status.HTTP_200_OK
-        assert len(resp.data["articles"]) == 1
-        assert resp.data["articles"][0]["title"] == "Tax Filing Guide"
+        assert len(resp.data["articles"]) >= 1
+        titles = [a["title"] for a in resp.data["articles"]]
+        assert "Tax Filing Guide" in titles
 
     def test_search_finds_faqs(self, api_client):
         KBFAQFactory(

@@ -7,8 +7,6 @@ from django.utils import timezone
 
 from apps.live_chat.models import (
     ChatAgent,
-    ChatDepartment,
-    ChatMessage,
     ChatSession,
 )
 from tests.factories import (

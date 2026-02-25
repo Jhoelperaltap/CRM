@@ -7,11 +7,8 @@ import pytest
 from apps.calls.models import (
     Call,
     CallQueue,
-    CallQueueMember,
-    CallSettings,
     CallScript,
-    PhoneLine,
-    TelephonyProvider,
+    CallSettings,
     Voicemail,
 )
 from tests.factories import (
@@ -177,7 +174,7 @@ class TestCallSettings:
     """Tests for CallSettings model."""
 
     def test_singleton_enforcement(self):
-        settings1 = CallSettings.objects.create()
+        CallSettings.objects.create()  # First instance
 
         with pytest.raises(ValueError):
             CallSettings.objects.create()

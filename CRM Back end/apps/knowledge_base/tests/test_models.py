@@ -5,12 +5,12 @@ Tests for knowledge base models.
 import pytest
 
 from apps.knowledge_base.models import (
+    FAQ,
     Article,
     ArticleAttachment,
     ArticleFeedback,
     ArticleView,
     Category,
-    FAQ,
 )
 from tests.factories import (
     KBArticleFactory,

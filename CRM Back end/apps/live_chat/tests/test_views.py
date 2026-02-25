@@ -5,7 +5,7 @@ Tests for live_chat API views.
 import pytest
 from rest_framework import status
 
-from apps.live_chat.models import ChatAgent, ChatMessage, ChatSession
+from apps.live_chat.models import ChatAgent, ChatSession
 from tests.factories import (
     CannedResponseFactory,
     ChatAgentFactory,
@@ -14,7 +14,6 @@ from tests.factories import (
     ChatSessionFactory,
     ChatWidgetSettingsFactory,
     OfflineMessageFactory,
-    UserFactory,
 )
 
 BASE_CHAT = "/api/v1/live-chat/"
@@ -103,7 +102,7 @@ class TestChatAgentViewSet:
         dept = ChatDepartmentFactory()
         agent1 = ChatAgentFactory()
         agent1.departments.add(dept)
-        agent2 = ChatAgentFactory()
+        ChatAgentFactory()  # Agent without department
 
         resp = admin_client.get(f"{BASE_CHAT}agents/?department={dept.id}")
         assert resp.status_code == status.HTTP_200_OK
@@ -410,7 +409,7 @@ class TestPublicChatAPI:
 
     def test_get_widget_config(self, api_client):
         ChatWidgetSettingsFactory()
-        dept = ChatDepartmentFactory(is_active=True)
+        ChatDepartmentFactory(is_active=True)
         ChatAgentFactory(is_available=True)
 
         resp = api_client.get(f"{BASE_CHAT}public/")

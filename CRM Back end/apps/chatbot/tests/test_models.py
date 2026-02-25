@@ -2,8 +2,9 @@
 Tests for chatbot models.
 """
 
-import pytest
 from datetime import time
+
+import pytest
 
 from apps.chatbot.models import (
     ChatbotAppointmentSlot,
@@ -19,7 +20,6 @@ from tests.factories import (
     ChatbotKnowledgeEntryFactory,
     ChatbotMessageFactory,
     ContactFactory,
-    UserFactory,
 )
 
 
