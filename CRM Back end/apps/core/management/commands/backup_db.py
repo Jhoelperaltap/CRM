@@ -32,7 +32,6 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--key",
-            "-k",
             type=str,
             default="",
             help="Fernet encryption key (base64). Defaults to FIELD_ENCRYPTION_KEY.",
