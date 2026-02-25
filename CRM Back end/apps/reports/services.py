@@ -7,6 +7,7 @@ Security: Field names are validated against actual model fields to prevent
 ORM injection attacks via malicious field traversal.
 """
 
+import logging
 import re
 from datetime import datetime
 from decimal import Decimal
@@ -16,6 +17,8 @@ from django.db.models import DateField, DateTimeField, DecimalField
 from django.utils import timezone
 
 from apps.reports.models import Report
+
+logger = logging.getLogger(__name__)
 
 
 def _get_valid_field_names(model) -> set:
@@ -201,7 +204,11 @@ def execute_report(report: Report, page: int = 1, page_size: int = 50):
                 if callable(val) and not hasattr(val, "id"):
                     val = val()
                 row[col] = _serialise_value(val)
-            except Exception:
+            except Exception as e:
+                logger.warning(
+                    f"Error retrieving field '{col}' from {obj.__class__.__name__} "
+                    f"(id={obj.pk}): {e}"
+                )
                 row[col] = None
         rows.append(row)
 
@@ -219,7 +226,10 @@ def execute_report(report: Report, page: int = 1, page_size: int = 50):
 
 
 def get_module_fields(primary_module: str):
-    """Return available field names and types for a module (used in report builder UI)."""
+    """Return available field names and types for a module.
+
+    Used in report builder UI.
+    """
     model = _get_model(primary_module)
     if model is None:
         return []

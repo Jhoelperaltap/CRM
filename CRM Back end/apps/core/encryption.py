@@ -43,7 +43,10 @@ def _get_fernet():
     try:
         _fernet_instance = Fernet(key)
     except Exception:
-        logger.error("Invalid FIELD_ENCRYPTION_KEY. Encryption disabled.")
+        logger.exception(
+            "Invalid FIELD_ENCRYPTION_KEY. Encryption disabled. "
+            "This is a CRITICAL security issue - PII data will be stored in plaintext."
+        )
         _fernet_instance = None
         return None
     return _fernet_instance
@@ -74,8 +77,16 @@ def decrypt_value(token: str) -> str:
         return token
     try:
         return fernet.decrypt(token.encode()).decode()
-    except (InvalidToken, Exception):
-        # Token may be plaintext (pre-encryption data)
+    except InvalidToken:
+        # Token may be plaintext (pre-encryption data) - this is expected
+        # during migration from unencrypted to encrypted storage
+        return token
+    except Exception:
+        # Unexpected error during decryption
+        logger.warning(
+            "Unexpected error decrypting value. Returning as-is. "
+            "This may indicate data corruption or key mismatch."
+        )
         return token
 
 

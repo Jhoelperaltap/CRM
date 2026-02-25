@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from apps.core.fields import EncryptedCharField
 from apps.core.models import TimeStampedModel
 
 # Fixed UUID for singleton AgentConfiguration
@@ -85,16 +86,16 @@ class AgentConfiguration(TimeStampedModel):
         help_text=_("Maximum tokens for AI responses"),
     )
 
-    # API Keys (encrypted in production)
-    openai_api_key = models.CharField(
-        max_length=255,
+    # API Keys (encrypted at rest using Fernet)
+    openai_api_key = EncryptedCharField(
+        max_length=500,  # Encrypted values are longer than plaintext
         blank=True,
-        help_text=_("OpenAI API key"),
+        help_text=_("OpenAI API key (stored encrypted)"),
     )
-    anthropic_api_key = models.CharField(
-        max_length=255,
+    anthropic_api_key = EncryptedCharField(
+        max_length=500,  # Encrypted values are longer than plaintext
         blank=True,
-        help_text=_("Anthropic API key"),
+        help_text=_("Anthropic API key (stored encrypted)"),
     )
 
     # Custom instructions

@@ -4,6 +4,7 @@ Uses ReportLab to generate branded PDF documents.
 """
 
 import io
+import logging
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -24,6 +25,8 @@ from reportlab.platypus import (
 if TYPE_CHECKING:
     from apps.inventory.models import TenantInvoice, TenantQuote
 
+logger = logging.getLogger(__name__)
+
 
 def _format_currency(amount: Decimal) -> str:
     """Format a decimal as currency."""
@@ -36,8 +39,11 @@ def _get_tenant_logo(tenant) -> Image | None:
         try:
             # Return an Image object sized appropriately
             return Image(tenant.image.path, width=1.5 * inch, height=0.75 * inch)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(
+                f"Failed to load tenant logo for tenant '{tenant.name}' "
+                f"(id={tenant.id}): {e}. PDF will be generated without logo."
+            )
     return None
 
 

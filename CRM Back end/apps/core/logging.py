@@ -351,15 +351,22 @@ class SecurityEventLogger:
             new_value = current + 1
             cache.set(key, new_value, ttl_seconds)
             return new_value
-        except Exception:
-            # If cache is unavailable, don't block the logging
+        except Exception as e:
+            # If cache is unavailable, don't block the logging but warn
+            self.logger.warning(
+                f"Cache unavailable for security counter increment (key={key}): {e}. "
+                "Rate limiting may be degraded."
+            )
             return 0
 
     def _get_counter(self, key: str) -> int:
         """Get the current value of a counter."""
         try:
             return cache.get(key, 0)
-        except Exception:
+        except Exception as e:
+            self.logger.warning(
+                f"Cache unavailable for security counter read (key={key}): {e}"
+            )
             return 0
 
     def _add_to_set(self, key: str, value: str, ttl_seconds: int):
@@ -368,15 +375,21 @@ class SecurityEventLogger:
             current_set = cache.get(key, set())
             current_set.add(value)
             cache.set(key, current_set, ttl_seconds)
-        except Exception:
-            pass
+        except Exception as e:
+            self.logger.warning(
+                f"Cache unavailable for security set operation (key={key}): {e}. "
+                "Pattern detection may be degraded."
+            )
 
     def _get_set_size(self, key: str) -> int:
         """Get the size of a set in cache."""
         try:
             current_set = cache.get(key, set())
             return len(current_set)
-        except Exception:
+        except Exception as e:
+            self.logger.warning(
+                f"Cache unavailable for security set read (key={key}): {e}"
+            )
             return 0
 
     def _determine_severity(self, event_type: str, **context) -> str:

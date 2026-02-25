@@ -158,8 +158,11 @@ class IMAPClient:
         if self._conn:
             try:
                 self._conn.logout()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(
+                    f"IMAP disconnect error for {self.host}: {e}. "
+                    "Connection may have been lost."
+                )
             self._conn = None
 
     def fetch_new_messages(self, since_uid: str = "") -> list[ParsedEmail]:
@@ -228,8 +231,11 @@ class SMTPClient:
         if self._conn:
             try:
                 self._conn.quit()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(
+                    f"SMTP disconnect error for {self.host}: {e}. "
+                    "Connection may have been lost."
+                )
             self._conn = None
 
     def send_message(
