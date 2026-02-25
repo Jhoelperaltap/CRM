@@ -324,7 +324,7 @@ class Voicemail(TimeStampedModel):
     )
 
     # Caller info
-    caller_number = models.CharField(max_length=20)
+    caller_number = models.CharField(max_length=30)
     caller_name = models.CharField(max_length=100, blank=True)
 
     # Content
