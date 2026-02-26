@@ -344,6 +344,224 @@ crm-mobile/
 
 ---
 
+## Configuración del Agente de IA
+
+### Campos de Personalización
+
+El modelo `AgentConfiguration` incluye dos campos clave para personalizar el comportamiento del agente:
+
+#### custom_instructions (TextField)
+
+**Definición en modelo:**
+```python
+custom_instructions = models.TextField(
+    blank=True,
+    help_text=_("Additional instructions for the AI agent"),
+)
+```
+
+**Cómo se utiliza:**
+
+El campo `custom_instructions` se inyecta en el system prompt de todas las llamadas a la IA. En `ai_service.py`:
+
+```python
+# apps/ai_agent/services/ai_service.py
+full_system_prompt = system_prompt or ""
+if self.config.custom_instructions:
+    full_system_prompt = (
+        f"{full_system_prompt}\n\n{self.config.custom_instructions}".strip()
+    )
+```
+
+**Valores válidos:**
+- Texto libre en cualquier idioma
+- Instrucciones sobre contexto del negocio
+- Prioridades de comunicación
+- Reglas específicas de la empresa
+
+**Ejemplo de uso:**
+```
+Somos Ebenezer Tax Services, una empresa de preparación de impuestos.
+Nuestros clientes son principalmente hispanos.
+Priorizar comunicaciones en español.
+Temporada alta: enero-abril.
+Casos con refund > $5000 son prioritarios.
+```
+
+#### focus_areas (JSONField)
+
+**Definición en modelo:**
+```python
+focus_areas = models.JSONField(
+    default=list,
+    blank=True,
+    help_text=_(
+        'Priority areas for analysis (e.g., ["revenue", "client_retention"])'
+    ),
+)
+```
+
+**Cómo se utiliza:**
+
+El campo `focus_areas` se utiliza en el `MarketAnalyzer` para priorizar el análisis de métricas:
+
+```python
+# apps/ai_agent/services/market_analyzer.py
+focus_areas = self.config.focus_areas or [
+    "revenue",
+    "efficiency",
+    "client_satisfaction",
+]
+
+prompt = f"""
+Analyze these business metrics and generate insights.
+...
+Focus Areas: {', '.join(focus_areas)}
+...
+"""
+```
+
+**Valores reconocidos:**
+
+| Valor | Descripción | Métricas relacionadas |
+|-------|-------------|----------------------|
+| `revenue` | Ingresos | Facturación, cobros, tendencias |
+| `efficiency` | Eficiencia | Tiempo por caso, productividad |
+| `client_satisfaction` | Satisfacción | Retención, quejas, NPS |
+| `growth` | Crecimiento | Nuevos clientes, casos nuevos |
+| `compliance` | Cumplimiento | Plazos, documentación |
+| `team_performance` | Rendimiento | Por preparador, por rol |
+| `case_completion` | Completitud | Tasa finalización, pendientes |
+
+**Ejemplo de valor:**
+```json
+["revenue", "client_satisfaction", "case_completion"]
+```
+
+### Capacidades y Limitaciones del Agente
+
+#### Lo que el Agente PUEDE hacer:
+
+| Capacidad | Servicio | Modelo afectado |
+|-----------|----------|-----------------|
+| Crear notas desde emails | `EmailAnalyzer` | `TaxCaseNote` |
+| Enviar recordatorios de citas | `AppointmentReminder` | Notificación |
+| Enviar recordatorios de tareas | `TaskEnforcement` | Notificación |
+| Escalar tareas vencidas | `TaskEnforcement` | Notificación, Task |
+| Generar insights de negocio | `MarketAnalyzer` | `AgentInsight` |
+| Crear backups automáticos | `BackupAnalyzer` | `Backup`, `AgentAction` |
+| Registrar acciones | Todos | `AgentAction`, `AgentLog` |
+
+#### Lo que el Agente NO PUEDE hacer:
+
+| Restricción | Razón | Implementación |
+|-------------|-------|----------------|
+| Eliminar datos | Seguridad | No hay métodos DELETE en servicios |
+| Modificar permisos | Seguridad | No tiene acceso a `ModulePermission` |
+| Enviar emails sin aprobación | Control | `requires_approval=True` por defecto |
+| Acceder a APIs externas | Aislamiento | Solo usa `AIService` interno |
+| Modificar casos directamente | Auditoría | Solo crea `TaxCaseNote` |
+| Ejecutar código arbitrario | Seguridad | Prompts estructurados |
+
+### Flujo de Aprobación de Acciones
+
+```
+┌─────────────────┐
+│ Agente propone  │
+│ acción          │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐     ┌─────────────────┐
+│ AgentAction     │────►│ requires_approval│
+│ status=PENDING  │     │ = True          │
+└────────┬────────┘     └─────────────────┘
+         │
+         │ autonomous_actions_enabled=True?
+         ▼
+    ┌────┴────┐
+    │         │
+    ▼         ▼
+┌───────┐ ┌───────┐
+│ Auto  │ │ Queue │
+│Execute│ │ for   │
+│       │ │Review │
+└───┬───┘ └───┬───┘
+    │         │
+    ▼         ▼
+┌─────────────────┐
+│ AgentAction     │
+│ status=EXECUTED │
+│ or APPROVED     │
+└─────────────────┘
+```
+
+### API Endpoints del Agente
+
+```
+/api/v1/ai-agent/
+├── config/                   GET, PUT - Configuración
+├── status/                   GET - Estado actual
+├── actions/                  GET - Lista de acciones
+│   ├── {id}/                 GET - Detalle de acción
+│   ├── {id}/approve/         POST - Aprobar acción
+│   ├── {id}/reject/          POST - Rechazar acción
+│   └── {id}/outcome/         POST - Registrar resultado
+├── insights/                 GET - Lista de insights
+│   ├── {id}/                 GET - Detalle de insight
+│   └── {id}/acknowledge/     POST - Reconocer insight
+├── logs/                     GET - Logs del agente
+├── metrics/                  GET - Métricas históricas
+├── analytics/
+│   ├── performance/          GET - Resumen de rendimiento
+│   ├── learning-progress/    GET - Progreso de aprendizaje
+│   ├── recommendations/      GET - Recomendaciones
+│   └── trends/               GET - Tendencias
+├── backup/
+│   ├── workload/             GET - Métricas de carga actual
+│   └── analyze/              POST - Ejecutar análisis manual
+└── run-cycle/                POST - Ejecutar ciclo manual
+```
+
+### Tareas Celery del Agente
+
+```python
+CELERY_BEAT_SCHEDULE = {
+    # Ciclo principal del agente (cada 5 minutos)
+    "ai-agent-cycle": {
+        "task": "apps.ai_agent.tasks.run_agent_cycle",
+        "schedule": 300.0,
+    },
+    # Análisis de backup (11 PM diario)
+    "ai-agent-automated-backup-check": {
+        "task": "apps.ai_agent.tasks.run_automated_backup_check",
+        "schedule": crontab(hour=23, minute=0),
+    },
+    # Limpieza de backups automáticos (Domingo 3 AM)
+    "ai-agent-cleanup-automated-backups": {
+        "task": "apps.ai_agent.tasks.cleanup_automated_backups",
+        "schedule": crontab(hour=3, minute=0, day_of_week=0),
+    },
+    # Agregación de métricas diarias (12:05 AM)
+    "ai-agent-aggregate-metrics": {
+        "task": "apps.ai_agent.tasks.aggregate_daily_metrics",
+        "schedule": crontab(hour=0, minute=5),
+    },
+}
+```
+
+### Seguridad del Agente
+
+| Control | Implementación |
+|---------|----------------|
+| Rate Limiting | `max_actions_per_hour`, `max_ai_calls_per_hour` |
+| Aprobación | `requires_approval` en `AgentAction` |
+| Auditoría | `AgentLog` registra todas las operaciones |
+| API Keys encriptadas | `EncryptedCharField` con Fernet |
+| Permisos | Solo admins pueden modificar configuración |
+
+---
+
 ## Base de Datos
 
 ### Modelo de Datos Principal

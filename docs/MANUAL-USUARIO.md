@@ -636,6 +636,139 @@ Puede ver y editar:
 
 ---
 
+## Agente de IA (AI Agent)
+
+El sistema incluye un Agente de Inteligencia Artificial que puede automatizar tareas y generar insights sobre su negocio.
+
+### Acceder a la Configuración
+
+1. Vaya a **Configuración** (icono de engranaje)
+2. Seleccione **AI Agent** en el menú lateral
+3. Verá las pestañas: General, Capacidades, IA, Instrucciones, Backup
+
+### Capacidades del Agente
+
+El Agente de IA puede realizar las siguientes acciones:
+
+| Capacidad | Descripción |
+|-----------|-------------|
+| **Análisis de Emails** | Lee emails entrantes y crea notas automáticas con información importante |
+| **Recordatorios de Citas** | Envía recordatorios automáticos antes de las citas programadas |
+| **Supervisión de Tareas** | Monitorea tareas vencidas y envía recordatorios o escalaciones |
+| **Análisis de Mercado** | Analiza métricas del negocio y genera insights (fortalezas, debilidades, oportunidades) |
+| **Backups Automatizados** | Analiza la carga de trabajo diaria y decide si crear un backup |
+
+### Configuración de Instrucciones Personalizadas
+
+#### Campo: Custom Instructions (Instrucciones Personalizadas)
+
+Este campo permite dar instrucciones adicionales al agente de IA para personalizar su comportamiento.
+
+**¿Qué puede escribir aquí?**
+
+- Contexto sobre su negocio: tipo de clientes, servicios principales
+- Prioridades de comunicación: tono formal/informal, idioma preferido
+- Reglas específicas de su empresa
+- Información sobre temporadas importantes (ej: temporada de impuestos)
+
+**Ejemplos válidos:**
+
+```
+Somos una empresa de servicios de impuestos enfocada en clientes hispanos.
+Priorizar la comunicación en español cuando sea posible.
+Durante los meses de enero a abril, considerar todas las tareas como urgentes.
+Los clientes con casos de más de $50,000 requieren atención especial.
+```
+
+**¿Qué NO debe escribir?**
+
+- Instrucciones para acceder a sistemas externos
+- Solicitudes de enviar información confidencial por email
+- Comandos que contradigan la seguridad del sistema
+- Instrucciones para eliminar datos sin aprobación
+
+#### Campo: Focus Areas (Áreas de Enfoque)
+
+Este campo define las prioridades para el análisis de mercado. Es una lista de áreas que el agente debe priorizar al generar insights.
+
+**Valores predeterminados:**
+- `revenue` - Ingresos y facturación
+- `efficiency` - Eficiencia operacional
+- `client_satisfaction` - Satisfacción del cliente
+
+**Valores adicionales que puede agregar:**
+
+| Valor | Descripción |
+|-------|-------------|
+| `revenue` | Análisis de ingresos, facturación, tendencias financieras |
+| `efficiency` | Productividad, tiempos de respuesta, carga de trabajo |
+| `client_satisfaction` | Retención de clientes, quejas, satisfacción |
+| `growth` | Crecimiento de clientes, nuevos casos, expansión |
+| `compliance` | Cumplimiento de plazos, documentación completa |
+| `team_performance` | Rendimiento por usuario, casos completados |
+| `case_completion` | Tasa de finalización de casos, casos pendientes |
+
+**Ejemplo de configuración:**
+```json
+["revenue", "client_satisfaction", "case_completion", "compliance"]
+```
+
+### Lo que el Agente PUEDE Hacer
+
+1. **Crear notas automáticas** desde emails importantes
+2. **Enviar recordatorios** de citas y tareas (configurables)
+3. **Generar insights** sobre el rendimiento del negocio
+4. **Escalar tareas** vencidas a supervisores
+5. **Crear backups** basados en actividad diaria
+6. **Registrar** todas sus acciones para auditoría
+
+### Lo que el Agente NO PUEDE Hacer
+
+1. **No puede eliminar datos** - Solo puede crear y leer información
+2. **No puede enviar emails externos** sin aprobación previa
+3. **No puede modificar permisos** de usuarios
+4. **No puede acceder** a sistemas externos al CRM
+5. **No puede tomar decisiones financieras** ni crear cotizaciones
+6. **No puede modificar casos** directamente (solo crear notas)
+7. **No puede anular** decisiones de usuarios humanos
+
+### Aprobación de Acciones
+
+Por defecto, las acciones del agente requieren aprobación manual:
+
+1. El agente propone una acción
+2. Aparece en la lista de **Acciones Pendientes**
+3. Un administrador revisa la acción
+4. Puede **Aprobar** (ejecutar) o **Rechazar** (con motivo)
+
+Para acciones automáticas sin aprobación, habilite **Autonomous Actions** (solo recomendado para recordatorios).
+
+### Configuración de Backup Automático
+
+En la pestaña **Backup**, configure:
+
+| Opción | Descripción |
+|--------|-------------|
+| **Habilitar Backup Automático** | Activa/desactiva la función |
+| **Hora de Ejecución** | Cuándo analizar la carga (default: 23:00) |
+| **Incluir Media** | Incluir archivos en el backup |
+| **Umbrales de Actividad** | Cantidad de cambios que disparan un backup |
+| **Días Máximos sin Backup** | Fuerza backup después de X días |
+| **Días de Retención** | Elimina backups automáticos viejos |
+
+### Monitoreo del Agente
+
+En el **Dashboard del Agente** puede ver:
+
+- Estado actual (Activo/Inactivo)
+- Acciones pendientes de aprobación
+- Historial de acciones ejecutadas
+- Insights generados
+- Métricas de uso de IA
+- Logs detallados de operaciones
+
+---
+
 ## Preguntas Frecuentes
 
 ### ¿Cómo busco un contacto específico?
