@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createRentalProperty } from "@/lib/api/portal-rental";
-import type { RentalPropertyFormData, PropertyType } from "@/types/portal-rental";
+import type { RentalPropertyFormData } from "@/types/portal-rental";
 import { PROPERTY_TYPE_OPTIONS } from "@/types/portal-rental";
 import { ArrowLeft, Home, Save, Loader2 } from "lucide-react";
 

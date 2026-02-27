@@ -53,6 +53,7 @@ export default function RentalPropertyDetailPage() {
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
   const loadData = useCallback(async () => {
+    setLoading(true);
     try {
       const [prop, cats] = await Promise.all([
         getRentalProperty(propertyId),
@@ -62,6 +63,8 @@ export default function RentalPropertyDetailPage() {
       setCategories(cats);
     } catch {
       setProperty(null);
+    } finally {
+      setLoading(false);
     }
   }, [propertyId]);
 
@@ -75,8 +78,7 @@ export default function RentalPropertyDetailPage() {
   }, [propertyId, year]);
 
   useEffect(() => {
-    setLoading(true);
-    loadData().finally(() => setLoading(false));
+    loadData();
   }, [loadData]);
 
   useEffect(() => {

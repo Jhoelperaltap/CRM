@@ -20,7 +20,6 @@ import {
   Home,
   Plus,
   Trash2,
-  Edit2,
   TrendingUp,
   TrendingDown,
   Filter,

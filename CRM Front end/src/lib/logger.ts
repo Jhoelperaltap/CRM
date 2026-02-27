@@ -93,7 +93,7 @@ class Logger {
     if (isDevelopment) {
       // In development, log everything for debugging
       const consoleMethod = level === 'debug' ? 'log' : level;
-      // eslint-disable-next-line no-console
+       
       console[consoleMethod](message, error, context);
     } else {
       // In production, sanitize and limit output
@@ -103,7 +103,7 @@ class Logger {
 
       // Only log errors and warnings in production
       if (level === 'error' || level === 'warn') {
-        // eslint-disable-next-line no-console
+         
         console[level](sanitizedMessage, sanitizedError ? `(${sanitizedError})` : '');
       }
 
