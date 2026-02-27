@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from apps.portal.views import (
@@ -55,4 +55,6 @@ urlpatterns = [
         PortalDeviceRegisterView.as_view(),
         name="portal-device-register",
     ),
+    # Rental properties module
+    path("rentals/", include("apps.portal.urls_rental")),
 ] + router.urls

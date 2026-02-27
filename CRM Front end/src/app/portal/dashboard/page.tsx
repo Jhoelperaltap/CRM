@@ -15,7 +15,9 @@ import {
   ArrowRight,
   TrendingUp,
   Clock,
+  Home,
 } from "lucide-react";
+import { RentalDashboardWidget } from "@/components/portal/rental-dashboard-widget";
 import { cn } from "@/lib/utils";
 
 export default function PortalDashboardPage() {
@@ -257,6 +259,9 @@ export default function PortalDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Rental Properties Widget */}
+      <RentalDashboardWidget />
     </div>
   );
 }

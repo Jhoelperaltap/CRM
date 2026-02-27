@@ -8,6 +8,7 @@ import {
   FileText,
   MessageSquare,
   Calendar,
+  Home,
   Receipt,
   Package,
   Wrench,
@@ -62,6 +63,13 @@ const NAV_ITEMS: NavItem[] = [
     icon: Calendar,
     color: "text-pink-400",
     bgColor: "bg-pink-500/20",
+  },
+  {
+    label: "Rental Properties",
+    href: "/portal/rentals",
+    icon: Home,
+    color: "text-teal-400",
+    bgColor: "bg-teal-500/20",
   },
 ];
 

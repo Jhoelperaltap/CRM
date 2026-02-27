@@ -20,6 +20,7 @@ import {
   FileText,
   MessageSquare,
   Calendar,
+  Home,
   Receipt,
   Package,
   Wrench,
@@ -40,6 +41,7 @@ const NAV_ITEMS = [
   { label: "Documents", href: "/portal/documents", icon: FileText, color: "text-emerald-500" },
   { label: "Messages", href: "/portal/messages", icon: MessageSquare, color: "text-purple-500" },
   { label: "Appointments", href: "/portal/appointments", icon: Calendar, color: "text-pink-500" },
+  { label: "Rental Properties", href: "/portal/rentals", icon: Home, color: "text-teal-500" },
 ];
 
 const BILLING_ITEMS = [
