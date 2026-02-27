@@ -201,10 +201,12 @@ class TestArticleViewSet:
         assert resp.data["count"] == 1
 
     def test_search_articles(self, admin_client, admin_user):
-        KBArticleFactory(author=admin_user, title="Tax Filing Guide")
+        # Use unique search term to avoid interference from other tests
+        unique_term = "UniqueSearchTerm12345"
+        KBArticleFactory(author=admin_user, title=f"{unique_term} Filing Guide")
         KBArticleFactory(author=admin_user, title="Business Setup")
 
-        resp = admin_client.get(f"{BASE_URL}articles/?search=tax")
+        resp = admin_client.get(f"{BASE_URL}articles/?search={unique_term}")
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["count"] == 1
 
