@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EJFLOW CRM - Mockups para Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .mockup-container {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 40px auto;
+            max-width: 1200px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .mockup-title {
+            background: #1e5a99;
+            color: white;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .figure-label {
+            background: #f3f4f6;
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .page-break { page-break-after: always; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-800">EJFLOW CRM - Mockups para Manual</h1>
+        <p class="text-gray-600 mt-2">Abra este archivo en Chrome y use Ctrl+P para exportar a PDF o tome capturas de cada sección</p>
+    </div>
+
+    <!-- ========== FIGURA 1: LOGIN ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 1: Pantalla de Inicio de Sesión</div>
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 min-h-[500px] flex items-center justify-center p-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl mb-4">
+                        <span class="text-white text-2xl font-bold">EJ</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800">EJFLOW</h1>
+                    <p class="text-gray-500 text-sm mt-1">Iniciar sesión en su cuenta</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                        <input type="email" value="usuario@ejemplo.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" value="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-lg" readonly>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-600">Recordarme</span>
+                        </label>
+                        <a href="#" class="text-sm text-blue-600 hover:underline">¿Olvidó su contraseña?</a>
+                    </div>
+                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 1: Pantalla de inicio de sesión del sistema EJFLOW</div>
+    </div>
+
+    <!-- ========== FIGURA 2: 2FA ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 2: Verificación de Dos Factores (2FA)</div>
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 min-h-[400px] flex items-center justify-center p-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Verificación de dos factores</h2>
+                <p class="text-gray-500 text-sm mb-6">Ingrese el código de 6 dígitos de su aplicación autenticadora</p>
+                <div class="flex justify-center gap-2 mb-6">
+                    <input type="text" value="4" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg" readonly>
+                    <input type="text" value="7" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg" readonly>
+                    <input type="text" value="2" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg" readonly>
+                    <input type="text" value="9" class="w-12 h-14 text-center text-2xl font-bold border-2 border-blue-500 rounded-lg bg-blue-50" readonly>
+                    <input type="text" value="" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg" readonly>
+                    <input type="text" value="" class="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg" readonly>
+                </div>
+                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium">Verificar</button>
+            </div>
+        </div>
+        <div class="figure-label">Figura 2: Ingreso de código de autenticación de dos factores</div>
+    </div>
+
+    <!-- ========== FIGURA 3: DASHBOARD ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 3: Dashboard Principal</div>
+        <div class="flex bg-gray-50">
+            <!-- Sidebar -->
+            <div class="w-16 bg-gradient-to-b from-[#1e5a99] via-[#336daa] to-[#4887bf] min-h-[600px] flex flex-col items-center py-4">
+                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-white font-bold mb-6">EJ</div>
+                <div class="space-y-4">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </div>
+                    <div class="w-10 h-10 hover:bg-white/10 rounded-lg flex items-center justify-center text-white/70">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <div class="w-10 h-10 hover:bg-white/10 rounded-lg flex items-center justify-center text-white/70">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <div class="w-10 h-10 hover:bg-white/10 rounded-lg flex items-center justify-center text-white/70">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <div class="w-10 h-10 hover:bg-white/10 rounded-lg flex items-center justify-center text-white/70">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="flex-1 p-6">
+                <!-- Top Bar -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                        <p class="text-gray-500">Bienvenido de vuelta, Juan García</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Buscar... (Ctrl+K)" class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg">
+                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <div class="relative">
+                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                        </div>
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">JG</div>
+                    </div>
+                </div>
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Casos Activos</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-1">24</p>
+                                <p class="text-green-600 text-sm mt-1">↑ 12% vs mes anterior</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Citas de Hoy</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-1">5</p>
+                                <p class="text-gray-500 text-sm mt-1">Próxima: 2:30 PM</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Tareas Pendientes</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-1">8</p>
+                                <p class="text-red-600 text-sm mt-1">2 vencidas</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Mensajes</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-1">12</p>
+                                <p class="text-blue-600 text-sm mt-1">3 sin leer</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sticky Notes -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Notas Rápidas</h2>
+                        <button class="text-blue-600 text-sm font-medium">+ Nueva Nota</button>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-48 h-40 bg-yellow-100 rounded-lg p-4 shadow-sm">
+                            <p class="text-sm text-gray-700">Llamar a María García para confirmar documentos del caso 2024</p>
+                            <p class="text-xs text-gray-500 mt-4">Hace 2 horas</p>
+                        </div>
+                        <div class="w-48 h-40 bg-blue-100 rounded-lg p-4 shadow-sm">
+                            <p class="text-sm text-gray-700">Revisar declaración de ABC Corp antes del viernes</p>
+                            <p class="text-xs text-gray-500 mt-4">Ayer</p>
+                        </div>
+                        <div class="w-48 h-40 bg-green-100 rounded-lg p-4 shadow-sm">
+                            <p class="text-sm text-gray-700">Enviar cotización a nuevo cliente potencial</p>
+                            <p class="text-xs text-gray-500 mt-4">15 Feb</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 3: Dashboard principal con métricas y notas adhesivas</div>
+    </div>
+
+    <!-- ========== FIGURA 4: LISTA DE CONTACTOS ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 4: Lista de Contactos</div>
+        <div class="bg-gray-50 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Contactos</h1>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Nuevo Contacto
+                </button>
+            </div>
+            <!-- Filters -->
+            <div class="flex gap-4 mb-4">
+                <input type="text" placeholder="Buscar contactos..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
+                <select class="px-4 py-2 border border-gray-300 rounded-lg">
+                    <option>Estado: Todos</option>
+                    <option>Activo</option>
+                    <option>Inactivo</option>
+                </select>
+                <select class="px-4 py-2 border border-gray-300 rounded-lg">
+                    <option>Corporación: Todas</option>
+                    <option>ABC Corp</option>
+                    <option>XYZ Inc</option>
+                </select>
+            </div>
+            <!-- Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Corporación</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium mr-3">MG</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">María García</p>
+                                        <p class="text-sm text-gray-500">Cliente desde 2022</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600">maria.garcia@email.com</td>
+                            <td class="px-6 py-4 text-gray-600">(555) 123-4567</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">ABC Corp</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm">Activo</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-medium mr-3">JP</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Juan Pérez</p>
+                                        <p class="text-sm text-gray-500">Cliente desde 2023</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600">juan.perez@email.com</td>
+                            <td class="px-6 py-4 text-gray-600">(555) 234-5678</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-sm">XYZ Inc</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm">Activo</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 font-medium mr-3">CR</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Carlos Rodríguez</p>
+                                        <p class="text-sm text-gray-500">Cliente desde 2021</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600">carlos.r@email.com</td>
+                            <td class="px-6 py-4 text-gray-600">(555) 345-6789</td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-1">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">ABC Corp</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">+2</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm">Activo</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="figure-label">Figura 4: Lista de contactos con filtros y acciones</div>
+    </div>
+
+    <!-- ========== FIGURA 5: FORMULARIO DE CONTACTO CON MULTI-CORPORACIÓN ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 5: Formulario de Contacto con Múltiples Corporaciones</div>
+        <div class="bg-gray-50 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-3xl mx-auto">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Editar Contacto</h2>
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Información Básica -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input type="text" value="Carlos" class="w-full px-4 py-2 border border-gray-300 rounded-lg" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                        <input type="text" value="Rodríguez" class="w-full px-4 py-2 border border-gray-300 rounded-lg" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" value="carlos.r@email.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <input type="tel" value="(555) 345-6789" class="w-full px-4 py-2 border border-gray-300 rounded-lg" readonly>
+                    </div>
+
+                    <!-- Corporación Primaria -->
+                    <div class="col-span-2 border-t pt-6 mt-2">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Corporaciones</h3>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Corporación Primaria <span class="text-red-500">*</span></label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option>ABC Corp</option>
+                            <option>XYZ Inc</option>
+                            <option>Tech Solutions LLC</option>
+                        </select>
+                        <p class="text-sm text-gray-500 mt-1">La corporación principal asociada a este contacto</p>
+                    </div>
+
+                    <!-- Corporaciones Adicionales -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Corporaciones Adicionales</label>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                                XYZ Inc
+                                <button class="ml-2 text-blue-500 hover:text-blue-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                                Tech Solutions LLC
+                                <button class="ml-2 text-purple-500 hover:text-purple-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="flex gap-2">
+                            <select class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
+                                <option value="">Seleccionar corporación...</option>
+                                <option>Global Services Inc</option>
+                                <option>Acme Corporation</option>
+                            </select>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium">
+                                + Agregar
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Otras corporaciones donde este contacto tiene participación</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-8 pt-6 border-t">
+                    <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 5: Formulario de contacto con selector de múltiples corporaciones</div>
+    </div>
+
+    <!-- ========== FIGURA 6: DETALLE DE CONTACTO ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 6: Detalle del Contacto</div>
+        <div class="bg-gray-50 p-6">
+            <div class="max-w-5xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center">
+                            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold mr-6">CR</div>
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <h1 class="text-2xl font-bold text-gray-800">Carlos Rodríguez</h1>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm">Activo</span>
+                                    <button class="text-gray-400 hover:text-yellow-500">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                                    </button>
+                                </div>
+                                <p class="text-gray-500 mt-1">carlos.r@email.com • (555) 345-6789</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-sm text-gray-600">Corporación Principal:</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm font-medium">ABC Corp</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                Email
+                            </button>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                Editar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- Main Content -->
+                    <div class="col-span-2 space-y-4">
+                        <!-- Información -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Información del Contacto</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Dirección</p>
+                                    <p class="text-gray-800">123 Main Street, Miami, FL 33101</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Asignado a</p>
+                                    <p class="text-gray-800">Juan García</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Fuente</p>
+                                    <p class="text-gray-800">Referido</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Cliente desde</p>
+                                    <p class="text-gray-800">15 Marzo 2021</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Casos Recientes -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Casos Recientes</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Caso #2024-0892</p>
+                                        <p class="text-sm text-gray-500">Individual Tax Return 2024</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-sm">En Proceso</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Caso #2023-0456</p>
+                                        <p class="text-sm text-gray-500">Individual Tax Return 2023</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-sm">Completado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-4">
+                        <!-- Corporaciones -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Corporaciones</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center text-blue-600 text-sm font-medium">A</div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 text-sm">ABC Corp</p>
+                                            <p class="text-xs text-gray-500">Primaria</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Principal</span>
+                                </div>
+                                <div class="flex items-center gap-2 pl-2 border-l-2 border-gray-200">
+                                    <div class="w-8 h-8 bg-purple-100 rounded flex items-center justify-center text-purple-600 text-sm font-medium">X</div>
+                                    <div>
+                                        <p class="font-medium text-gray-800 text-sm">XYZ Inc</p>
+                                        <p class="text-xs text-gray-500">Socio</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 pl-2 border-l-2 border-gray-200">
+                                    <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center text-green-600 text-sm font-medium">T</div>
+                                    <div>
+                                        <p class="font-medium text-gray-800 text-sm">Tech Solutions LLC</p>
+                                        <p class="text-xs text-gray-500">Consultor</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Acciones Rápidas -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Acciones</h2>
+                            <div class="space-y-2">
+                                <button class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 rounded-lg flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Crear Caso
+                                </button>
+                                <button class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 rounded-lg flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    Agendar Cita
+                                </button>
+                                <button class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 rounded-lg flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                    Subir Documento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 6: Vista de detalle del contacto con corporaciones asociadas</div>
+    </div>
+
+    <!-- ========== FIGURA 7: LISTA DE CORPORACIONES ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 7: Lista de Corporaciones con Estados</div>
+        <div class="bg-gray-50 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Corporaciones</h1>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Nueva Corporación
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Empresa</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">EIN</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contactos</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded flex items-center justify-center text-blue-600 font-medium mr-3">A</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">ABC Corp</p>
+                                        <p class="text-sm text-gray-500">LLC • Technology</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600 font-mono">XX-XXXXXXX</td>
+                            <td class="px-6 py-4">
+                                <span class="text-gray-600">5 contactos</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Active</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-purple-100 rounded flex items-center justify-center text-purple-600 font-medium mr-3">X</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">XYZ Inc</p>
+                                        <p class="text-sm text-gray-500">Corporation • Consulting</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600 font-mono">XX-XXXXXXX</td>
+                            <td class="px-6 py-4">
+                                <span class="text-gray-600">3 contactos</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">Payment Pending</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                            </td>
+                        </tr>
+                        <tr class="bg-amber-50/50 hover:bg-amber-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-amber-100 rounded flex items-center justify-center text-amber-600 font-medium mr-3">⏸</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Tech Solutions LLC</p>
+                                        <p class="text-sm text-gray-500">LLC • Software</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600 font-mono">XX-XXXXXXX</td>
+                            <td class="px-6 py-4">
+                                <span class="text-gray-600">2 contactos</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">Paused</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                            </td>
+                        </tr>
+                        <tr class="bg-red-50/50 hover:bg-red-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-red-100 rounded flex items-center justify-center text-red-600 font-medium mr-3">⛔</div>
+                                    <div>
+                                        <p class="font-medium text-gray-500 line-through">Global Services Inc</p>
+                                        <p class="text-sm text-gray-400">Corporation • Trading</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-400 font-mono">XX-XXXXXXX</td>
+                            <td class="px-6 py-4">
+                                <span class="text-gray-400">1 contacto</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">Business Closed</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="figure-label">Figura 7: Lista de corporaciones con indicadores de estado (Active, Paused, Closed)</div>
+    </div>
+
+    <!-- ========== FIGURA 8: SELECTOR DE ESTADO ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 8: Selector de Estado del Cliente</div>
+        <div class="bg-gray-50 p-6 flex justify-center">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-64">
+                <p class="text-xs text-gray-500 uppercase font-medium mb-2">Estado del Cliente</p>
+                <div class="space-y-1">
+                    <button class="w-full px-3 py-2 text-left rounded-lg bg-green-50 border border-green-200 flex items-center gap-2">
+                        <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                        <span class="text-green-700 font-medium">Active</span>
+                        <svg class="w-4 h-4 text-green-600 ml-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button class="w-full px-3 py-2 text-left rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                        <span class="text-gray-700">Payment Pending</span>
+                    </button>
+                    <button class="w-full px-3 py-2 text-left rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                        <span class="text-gray-700">Paid</span>
+                    </button>
+                    <button class="w-full px-3 py-2 text-left rounded-lg hover:bg-amber-50 flex items-center gap-2">
+                        <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
+                        <span class="text-gray-700">Paused</span>
+                    </button>
+                    <button class="w-full px-3 py-2 text-left rounded-lg hover:bg-red-50 flex items-center gap-2">
+                        <span class="w-3 h-3 bg-red-600 rounded-full"></span>
+                        <span class="text-gray-700">Business Closed</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 8: Menú desplegable para cambiar el estado del cliente</div>
+    </div>
+
+    <!-- ========== FIGURA 9: MODAL DE CIERRE ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 9: Diálogo de Cierre de Empresa</div>
+        <div class="bg-gray-900/50 p-6 flex justify-center items-center min-h-[400px]">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Cerrar Empresa</h3>
+                        <p class="text-sm text-gray-500">ABC Corp</p>
+                    </div>
+                </div>
+
+                <p class="text-gray-600 mb-4">
+                    ¿Está seguro que desea marcar esta empresa como cerrada? Esta acción se registrará en el sistema.
+                </p>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Motivo del cierre <span class="text-red-500">*</span>
+                    </label>
+                    <textarea rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Ingrese el motivo del cierre de la empresa...">Empresa cerrada por decisión del propietario. Cliente se mudó fuera del estado.</textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
+                    <button class="px-4 py-2 bg-red-600 text-white rounded-lg font-medium">Confirmar Cierre</button>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 9: Diálogo de confirmación para cerrar una empresa (requiere justificación)</div>
+    </div>
+
+    <!-- ========== FIGURA 10: BANNER DE ADVERTENCIA ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 10: Banner de Empresa Cerrada</div>
+        <div class="bg-gray-50 p-6">
+            <!-- Banner Rojo -->
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-red-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div>
+                        <h3 class="text-red-800 font-bold">Esta empresa está cerrada</h3>
+                        <p class="text-red-700 mt-1">
+                            <strong>Motivo:</strong> Empresa cerrada por decisión del propietario. Cliente se mudó fuera del estado.
+                        </p>
+                        <p class="text-red-600 text-sm mt-2">
+                            Cerrada por Juan García el 15 de febrero de 2026 a las 2:30 PM
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Ámbar -->
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-amber-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div>
+                        <h3 class="text-amber-800 font-bold">Esta empresa está pausada</h3>
+                        <p class="text-amber-700 mt-1">
+                            <strong>Motivo:</strong> Cliente solicitó pausa temporal mientras reorganiza su contabilidad interna.
+                        </p>
+                        <p class="text-amber-600 text-sm mt-2">
+                            Pausada por María López el 10 de febrero de 2026 a las 11:15 AM
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 10: Banners de advertencia para empresas cerradas y pausadas</div>
+    </div>
+
+    <!-- ========== FIGURA 11: CARPETAS POR DEPARTAMENTO ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 11: Carpetas por Departamento</div>
+        <div class="bg-gray-50 p-6">
+            <div class="flex gap-6">
+                <!-- Sidebar de carpetas -->
+                <div class="w-72 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <h3 class="font-semibold text-gray-800 mb-4">Carpetas de Departamento</h3>
+
+                    <!-- Accounting -->
+                    <div class="mb-3">
+                        <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 text-left">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                                <span class="text-blue-600 text-sm">📊</span>
+                            </div>
+                            <span class="text-blue-700 font-medium">Accounting</span>
+                        </button>
+                        <div class="ml-10 mt-1 space-y-1">
+                            <button class="w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm text-gray-600 hover:bg-gray-50">
+                                <span>📁</span> Tax Returns <span class="text-gray-400 ml-auto">12</span>
+                            </button>
+                            <button class="w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm text-gray-600 hover:bg-gray-50">
+                                <span>📁</span> Correspondence <span class="text-gray-400 ml-auto">5</span>
+                            </button>
+                            <button class="w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm bg-blue-100 text-blue-700">
+                                <span>📁</span> Forms <span class="text-blue-500 ml-auto">8</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Payroll -->
+                    <div class="mb-3">
+                        <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-50 text-left">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
+                                <span class="text-green-600 text-sm">💵</span>
+                            </div>
+                            <span class="text-green-700 font-medium">Payroll</span>
+                            <span class="text-gray-400 ml-auto text-sm">4</span>
+                        </button>
+                    </div>
+
+                    <!-- Billing -->
+                    <div class="mb-3">
+                        <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-yellow-50 text-left">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <div class="w-8 h-8 bg-yellow-100 rounded flex items-center justify-center">
+                                <span class="text-yellow-600 text-sm">🧾</span>
+                            </div>
+                            <span class="text-yellow-700 font-medium">Billing</span>
+                            <span class="text-gray-400 ml-auto text-sm">2</span>
+                        </button>
+                    </div>
+
+                    <!-- Audit -->
+                    <div class="mb-3">
+                        <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 text-left">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <div class="w-8 h-8 bg-red-100 rounded flex items-center justify-center">
+                                <span class="text-red-600 text-sm">🔍</span>
+                            </div>
+                            <span class="text-red-700 font-medium">Audit</span>
+                            <span class="text-gray-400 ml-auto text-sm">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de documentos -->
+                <div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <span>Accounting</span>
+                            <span>/</span>
+                            <span class="text-gray-800 font-medium">Forms</span>
+                        </div>
+                        <button class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium">+ Subir</button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-red-100 rounded flex items-center justify-center">
+                                <span class="text-red-600">PDF</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">W-2_2024.pdf</p>
+                                <p class="text-sm text-gray-500">245 KB • Subido el 15 Feb 2026</p>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-red-100 rounded flex items-center justify-center">
+                                <span class="text-red-600">PDF</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">1099-INT_2024.pdf</p>
+                                <p class="text-sm text-gray-500">128 KB • Subido el 14 Feb 2026</p>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
+                                <span class="text-blue-600">IMG</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">ID_Driver_License.jpg</p>
+                                <p class="text-sm text-gray-500">1.2 MB • Subido el 10 Feb 2026</p>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 11: Sistema de carpetas por departamento con documentos</div>
+    </div>
+
+    <!-- ========== FIGURA 12: DETALLE DE CORPORACIÓN ========== -->
+    <div class="mockup-container">
+        <div class="mockup-title">Figura 12: Detalle de Corporación con Contactos y Subsidiarias</div>
+        <div class="bg-gray-50 p-6">
+            <div class="max-w-5xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center">
+                            <div class="w-20 h-20 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 text-3xl font-bold mr-6">A</div>
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <h1 class="text-2xl font-bold text-gray-800">ABC Corp</h1>
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Active</span>
+                                </div>
+                                <p class="text-gray-500 mt-1">LLC • Technology • EIN: XX-XXXXXXX</p>
+                                <p class="text-gray-500 text-sm">123 Business Ave, Miami, FL 33101</p>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Editar</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- Main Content -->
+                    <div class="col-span-2 space-y-4">
+                        <!-- Contactos Vinculados -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold text-gray-800">Contactos Vinculados</h2>
+                                <span class="text-sm text-gray-500">5 contactos</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium">CR</div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">Carlos Rodríguez</p>
+                                            <p class="text-sm text-gray-500">carlos.r@email.com</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Primario</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-medium">MG</div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">María García</p>
+                                            <p class="text-sm text-gray-500">maria.g@email.com</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-gray-500">Contador</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Casos -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Casos Activos</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Caso #2024-1001</p>
+                                        <p class="text-sm text-gray-500">Corporate Tax Return 2024</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-sm">En Proceso</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-4">
+                        <!-- Corporaciones Relacionadas -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Corporaciones Relacionadas</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-purple-100 rounded flex items-center justify-center text-purple-600 text-sm font-medium">X</div>
+                                    <div>
+                                        <p class="font-medium text-gray-800 text-sm">XYZ Inc</p>
+                                        <p class="text-xs text-gray-500">Socio comercial</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subsidiarias -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Subsidiarias</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center text-green-600 text-sm font-medium">T</div>
+                                    <div>
+                                        <p class="font-medium text-gray-800 text-sm">Tech Solutions LLC</p>
+                                        <p class="text-xs text-gray-500">100% propiedad</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-orange-100 rounded flex items-center justify-center text-orange-600 text-sm font-medium">D</div>
+                                    <div>
+                                        <p class="font-medium text-gray-800 text-sm">Digital Marketing Inc</p>
+                                        <p class="text-xs text-gray-500">75% propiedad</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Estadísticas</h2>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Contactos</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Casos totales</span>
+                                    <span class="font-medium">12</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Documentos</span>
+                                    <span class="font-medium">48</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Subsidiarias</span>
+                                    <span class="font-medium">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="figure-label">Figura 12: Detalle de corporación mostrando contactos vinculados, relacionadas y subsidiarias</div>
+    </div>
+
+    <!-- Instrucciones finales -->
+    <div class="max-w-4xl mx-auto mt-12 p-8 bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Instrucciones para Exportar</h2>
+        <div class="space-y-4 text-gray-600">
+            <p><strong>Opción 1 - Capturas de pantalla:</strong></p>
+            <ol class="list-decimal list-inside space-y-2 ml-4">
+                <li>Abra este archivo en Google Chrome</li>
+                <li>Use la extensión "Full Page Screen Capture" o herramienta similar</li>
+                <li>Capture cada sección individualmente</li>
+                <li>Guarde las imágenes en la carpeta <code>docs/images/</code></li>
+            </ol>
+
+            <p><strong>Opción 2 - Exportar a PDF:</strong></p>
+            <ol class="list-decimal list-inside space-y-2 ml-4">
+                <li>Presione Ctrl+P (o Cmd+P en Mac)</li>
+                <li>Seleccione "Guardar como PDF"</li>
+                <li>Configure los márgenes a "Ninguno"</li>
+                <li>Active "Gráficos de fondo"</li>
+            </ol>
+
+            <p><strong>Opción 3 - Herramienta de recorte:</strong></p>
+            <ol class="list-decimal list-inside space-y-2 ml-4">
+                <li>En Windows: Use Win+Shift+S</li>
+                <li>Seleccione cada mockup individualmente</li>
+                <li>Pegue en un editor de imágenes</li>
+                <li>Guarde como PNG</li>
+            </ol>
+        </div>
+
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <p class="text-blue-800">
+                <strong>Tip:</strong> Para mejor calidad, use un zoom del 100% en el navegador antes de capturar.
+            </p>
+        </div>
+    </div>
+
+    <div class="text-center mt-8 mb-12 text-gray-500">
+        <p>© 2026 EJFLOW - E & J Support IT. Todos los derechos reservados.</p>
+    </div>
+</body>
+</html>

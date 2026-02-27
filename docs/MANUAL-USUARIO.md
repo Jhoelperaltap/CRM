@@ -1,6 +1,6 @@
 # Manual del Usuario - Ebenezer Tax Services CRM
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** Febrero 2026
 
 ---
@@ -161,8 +161,42 @@ El dashboard incluye un widget de notas adhesivas para recordatorios rápidos:
    - **Información Básica:** Nombre, apellido, título
    - **Información de Contacto:** Email, teléfonos
    - **Dirección:** Calle, ciudad, estado, código postal
+   - **Corporaciones:** Seleccione las empresas asociadas (ver sección siguiente)
    - **Información Adicional:** Fuente, notas
 3. Haga clic en **"Guardar"**
+
+### Asignar Contacto a Múltiples Corporaciones
+
+Un contacto puede estar asociado a múltiples corporaciones (por ejemplo, un contador que trabaja para varias empresas o un socio de múltiples negocios).
+
+#### Corporación Primaria vs Corporaciones Adicionales
+
+| Tipo | Descripción |
+|------|-------------|
+| **Corporación Primaria** | La empresa principal asociada al contacto. Se muestra en la lista de contactos y es la relación más importante. |
+| **Corporaciones Adicionales** | Otras empresas con las que el contacto está relacionado. Aparecen en el detalle del contacto. |
+
+#### Agregar Corporaciones al Contacto
+
+1. Al crear o editar un contacto
+2. En la sección **"Corporaciones"**:
+   - **Corporación Primaria:** Seleccione la empresa principal del menú desplegable
+   - **Corporaciones Adicionales:** Haga clic en **"Agregar Corporación"** para vincular más empresas
+3. Las corporaciones adicionales aparecen como badges con botón de eliminar
+4. Puede agregar tantas corporaciones como necesite
+
+#### Ver Corporaciones del Contacto
+
+En la vista de detalle del contacto:
+- La **corporación primaria** se muestra prominentemente en la sección de información
+- Las **corporaciones adicionales** aparecen en una sección separada con enlaces directos
+
+#### Filtrar Contactos por Corporación
+
+1. En la lista de contactos
+2. Use el filtro **"Corporación"**
+3. Seleccione una corporación
+4. Se mostrarán todos los contactos asociados a esa corporación (como primaria o adicional)
 
 ### Ver Detalle de Contacto
 

@@ -1,7 +1,7 @@
 #  EJFLOW CRM
 ## Manual del Administrador
 
-**Versión:** 2.0
+**Versión:** 2.1
 **Fecha:** Febrero 2026
 
 ---
@@ -27,7 +27,7 @@ Como administrador del CRM de EJFLOW Ebenezer, usted tiene acceso completo a tod
 
 ### Panel de Administración
 
-<!-- IMAGEN: Dashboard de administrador -->
+![Dashboard de administrador](images/figura-03-dashboard.png)
 **Figura 1:** Panel de control del administrador
 
 ---
@@ -39,7 +39,7 @@ Como administrador del CRM de EJFLOW Ebenezer, usted tiene acceso completo a tod
 1. Navegue a **Configuración** > **Usuarios**
 2. Verá la lista de todos los usuarios del sistema
 
-<!-- IMAGEN: Lista de usuarios -->
+![Lista de usuarios](images/figura-04-lista-contactos.png)
 **Figura 2:** Lista de usuarios del sistema
 
 ### Crear Nuevo Usuario
@@ -53,7 +53,7 @@ Como administrador del CRM de EJFLOW Ebenezer, usted tiene acceso completo a tod
 3. Haga clic en **"Crear"**
 4. El usuario recibirá un correo con instrucciones
 
-<!-- IMAGEN: Formulario de nuevo usuario -->
+![Formulario de nuevo usuario](images/figura-05-formulario-contacto.png)
 **Figura 3:** Formulario de creación de usuario
 
 ### Editar Usuario
@@ -66,7 +66,7 @@ Como administrador del CRM de EJFLOW Ebenezer, usted tiene acceso completo a tod
    - Estado (activo/inactivo)
 3. Guarde los cambios
 
-<!-- IMAGEN: Formulario de edición de usuario -->
+![Formulario de edición de usuario](images/figura-05-formulario-contacto.png)
 **Figura 4:** Edición de usuario
 
 ### Asignar Usuario a Departamento
@@ -90,7 +90,7 @@ Los departamentos organizan a los usuarios y los documentos de los clientes.
 1. Navegue a **Configuración** > **Departamentos**
 2. Verá la lista de departamentos
 
-<!-- IMAGEN: Lista de departamentos -->
+![Lista de departamentos](images/figura-07-lista-corporaciones.png)
 **Figura 5:** Lista de departamentos
 
 ### Departamentos Predefinidos
@@ -115,7 +115,7 @@ Los departamentos organizan a los usuarios y los documentos de los clientes.
    - **Descripción:** Descripción del departamento
 3. Haga clic en **"Guardar"**
 
-<!-- IMAGEN: Formulario de nuevo departamento -->
+![Formulario de nuevo departamento](images/figura-05-formulario-contacto.png)
 **Figura 6:** Crear nuevo departamento
 
 ### Editar Departamento
@@ -124,7 +124,7 @@ Los departamentos organizan a los usuarios y los documentos de los clientes.
 2. Modifique los campos necesarios
 3. Guarde los cambios
 
-<!-- IMAGEN: Edición de departamento -->
+![Edición de departamento](images/figura-05-formulario-contacto.png)
 **Figura 7:** Editar departamento
 
 ### Desactivar Departamento
@@ -155,7 +155,7 @@ Cliente: John Smith
 └── ...
 ```
 
-<!-- IMAGEN: Árbol de carpetas de un cliente -->
+![Estructura de carpetas](images/figura-11-carpetas.png)
 **Figura 8:** Estructura de carpetas por departamento
 
 ### Inicializar Carpetas para un Cliente
@@ -165,7 +165,7 @@ Cliente: John Smith
 3. Haga clic en **"Inicializar Carpetas"**
 4. Se crearán carpetas predeterminadas para cada departamento activo
 
-<!-- IMAGEN: Botón de inicializar carpetas -->
+![Inicializar carpetas](images/figura-11-carpetas.png)
 **Figura 9:** Inicializar carpetas de departamento
 
 ### Crear Subcarpeta
@@ -176,7 +176,7 @@ Cliente: John Smith
 4. Nombre la subcarpeta
 5. Haga clic en **"Crear"**
 
-<!-- IMAGEN: Crear subcarpeta -->
+![Crear subcarpeta](images/figura-11-carpetas.png)
 **Figura 10:** Crear nueva subcarpeta
 
 ### Permisos de Carpetas
@@ -199,8 +199,42 @@ Cliente: John Smith
 | Preparer | Ver/Edit | CRUD | CRUD | Ver | No |
 | Receptionist | CRUD | Ver | Ver/Subir | No | No |
 
-<!-- IMAGEN: Matriz de permisos por rol -->
+![Permisos por rol](images/figura-07-lista-corporaciones.png)
 **Figura 11:** Permisos por rol
+
+---
+
+## Contactos con Múltiples Corporaciones
+
+El sistema permite asociar un contacto a múltiples corporaciones.
+
+### Corporación Primaria vs Adicionales
+
+| Tipo | Descripción |
+|------|-------------|
+| **Primaria** | Corporación principal del contacto, visible en listas |
+| **Adicionales** | Otras corporaciones asociadas, visibles en detalle |
+
+![Múltiples corporaciones](images/figura-05-formulario-contacto.png)
+**Figura 11b:** Asignar múltiples corporaciones
+
+### Casos de Uso
+
+1. **Contador de varios negocios:** Se asocia a todas las empresas que atiende
+2. **Socio de múltiples empresas:** Aparece en cada corporación donde tiene participación
+3. **Empleado de grupos empresariales:** Vinculado a la matriz y subsidiarias
+
+### Configurar desde el Formulario
+
+1. Abra el contacto para editar
+2. En **"Corporación Primaria":** seleccione la empresa principal
+3. En **"Corporaciones Adicionales":** agregue más empresas
+4. Las corporaciones aparecen como badges removibles
+5. Guarde los cambios
+
+### Filtrar por Corporación
+
+Al filtrar contactos por corporación, el sistema busca en **todas** las asociaciones (primaria + adicionales).
 
 ### Crear Rol Personalizado
 
@@ -214,7 +248,7 @@ Cliente: John Smith
    - **Eliminar:** Puede eliminar registros
 5. Guarde el rol
 
-<!-- IMAGEN: Formulario de creación de rol -->
+![Crear rol personalizado](images/figura-05-formulario-contacto.png)
 **Figura 12:** Crear rol personalizado
 
 ---
@@ -233,7 +267,7 @@ El sistema de Estado del Cliente permite gestionar el ciclo de vida de cada corp
 | **Paused** | Ámbar | Cliente pausado temporalmente |
 | **Business Closed** | Rojo | Empresa cerrada permanentemente |
 
-<!-- IMAGEN: Dropdown de estado del cliente -->
+![Selector de estado](images/figura-08-selector-estado.png)
 **Figura 13:** Selector de estado del cliente en el header
 
 ### Cambiar Estado de un Cliente
@@ -243,7 +277,7 @@ El sistema de Estado del Cliente permite gestionar el ciclo de vida de cada corp
 3. Haga clic en el estado actual para ver las opciones
 4. Seleccione el nuevo estado
 
-<!-- IMAGEN: Opciones del dropdown de estado -->
+![Opciones de estado](images/figura-08-selector-estado.png)
 **Figura 14:** Opciones del selector de estado
 
 ### Estados que Requieren Justificación
@@ -259,7 +293,7 @@ Cuando selecciona **"Business Closed"**, el sistema:
    - Fecha y hora del cierre
    - Motivo del cierre
 
-<!-- IMAGEN: Diálogo de cierre de empresa -->
+![Diálogo de cierre](images/figura-09-modal-cierre.png)
 **Figura 15:** Diálogo para cerrar una empresa
 
 **Campos registrados:**
@@ -278,7 +312,7 @@ Cuando selecciona **"Paused"**, el sistema:
    - Fecha y hora de la pausa
    - Motivo de la pausa
 
-<!-- IMAGEN: Diálogo de pausa de empresa -->
+![Diálogo de pausa](images/figura-09-modal-cierre.png)
 **Figura 16:** Diálogo para pausar una empresa
 
 ### Indicadores Visuales en la Lista
@@ -292,7 +326,7 @@ En la lista de corporaciones, los estados especiales se muestran con indicadores
 | Payment Pending | Badge rojo |
 | Paid | Badge verde |
 
-<!-- IMAGEN: Lista de corporaciones con indicadores de estado -->
+![Lista de corporaciones](images/figura-07-lista-corporaciones.png)
 **Figura 17:** Indicadores de estado en la lista de corporaciones
 
 ### Advertencia al Acceder a Empresas Cerradas/Pausadas
@@ -305,7 +339,7 @@ Cuando un usuario accede a una corporación cerrada o pausada:
    - Quién realizó la acción y cuándo
 2. El usuario debe hacer clic en "Continuar" para acceder
 
-<!-- IMAGEN: Modal de advertencia de empresa cerrada -->
+![Modal de advertencia](images/figura-10-banners.png)
 **Figura 18:** Modal de advertencia para empresas cerradas
 
 ### Banner Permanente
@@ -320,7 +354,7 @@ El banner incluye:
 - Motivo del cierre/pausa
 - Nombre del usuario y fecha de la acción
 
-<!-- IMAGEN: Banner de empresa cerrada -->
+![Banner de advertencia](images/figura-10-banners.png)
 **Figura 19:** Banner de advertencia permanente
 
 ### Sistema de Notificaciones
@@ -336,7 +370,7 @@ La notificación incluye:
 
 Esto permite a los supervisores monitorear el acceso a clientes inactivos.
 
-<!-- IMAGEN: Notificación de acceso a empresa cerrada -->
+![Notificación de acceso](images/figura-03-dashboard.png)
 **Figura 20:** Notificación de acceso a empresa cerrada
 
 ### Reactivar una Empresa
@@ -361,7 +395,7 @@ Navegue a **Configuración** > **General**:
 - **Zona Horaria:** Default para todo el sistema
 - **Formato de Fecha:** MM/DD/YYYY o DD/MM/YYYY
 
-<!-- IMAGEN: Configuración general -->
+![Configuración general](images/figura-05-formulario-contacto.png)
 **Figura 21:** Configuración general del sistema
 
 ### Configuración de Correo
@@ -373,7 +407,7 @@ Navegue a **Configuración** > **General**:
    - **Usuario:** Cuenta de correo
    - **Contraseña:** Credenciales
 
-<!-- IMAGEN: Configuración de email -->
+![Configuración de correo](images/figura-05-formulario-contacto.png)
 **Figura 22:** Configuración de correo
 
 ---
@@ -398,7 +432,7 @@ El chatbot asiste a los clientes en el portal con consultas sobre sus casos, doc
 | **Max Tokens** | Longitud máxima de respuesta | 1000 |
 | **Sistema Prompt** | Instrucciones base del asistente | Ver abajo |
 
-<!-- IMAGEN: Configuración del chatbot -->
+![Configuración del chatbot](images/figura-05-formulario-contacto.png)
 **Figura 23:** Panel de configuración del chatbot
 
 #### Sistema Prompt Recomendado
@@ -432,7 +466,7 @@ El chatbot tiene acceso a:
 - Datos de otros clientes
 - Información de facturación
 
-<!-- IMAGEN: Conversación de ejemplo del chatbot -->
+![Conversación con chatbot](images/figura-06-detalle-contacto.png)
 **Figura 24:** Ejemplo de conversación con el chatbot
 
 #### Personalización de Respuestas
@@ -458,7 +492,7 @@ La aplicación web utiliza IA para asistir al personal interno con diversas tare
 | **Análisis de Documentos** | Extrae información de documentos subidos | Vista de documento |
 | **Búsqueda Semántica** | Búsqueda inteligente en toda la base de datos | Barra de búsqueda |
 
-<!-- IMAGEN: Asistente de IA en la aplicación -->
+![Asistente de IA](images/figura-03-dashboard.png)
 **Figura 25:** Asistente de IA para el personal
 
 #### Configuración de IA Interna
@@ -473,7 +507,7 @@ La aplicación web utiliza IA para asistir al personal interno con diversas tare
 | **API Key** | Clave de API del proveedor |
 | **Modelo Preferido** | Modelo a usar para cada función |
 
-<!-- IMAGEN: Configuración de IA interna -->
+![Configuración de IA](images/figura-05-formulario-contacto.png)
 **Figura 26:** Configuración de IA interna
 
 #### Claves de API
@@ -504,7 +538,7 @@ Configure límites para controlar costos:
 | **Límite por Usuario** | Máximo por usuario/hora | 50 |
 | **Alerta de Gasto** | Notificar al alcanzar $ | $100 |
 
-<!-- IMAGEN: Configuración de límites de IA -->
+![Límites de IA](images/figura-05-formulario-contacto.png)
 **Figura 27:** Configuración de límites de uso de IA
 
 ### Privacidad y Seguridad de IA
@@ -528,7 +562,7 @@ Los clientes acceden al portal mediante:
 - URL: `https://[su-dominio]/portal`
 - Credenciales proporcionadas por email
 
-<!-- IMAGEN: Página de login del portal -->
+![Login del portal](images/figura-01-login.png)
 **Figura 28:** Página de acceso al portal del cliente
 
 ### Funcionalidades del Portal
@@ -552,7 +586,7 @@ Los clientes pueden subir documentos desde el portal:
 5. Agregar descripción (opcional)
 6. Confirmar
 
-<!-- IMAGEN: Diálogo de subida de documentos -->
+![Subir documentos](images/figura-11-carpetas.png)
 **Figura 29:** Subir documentos en el portal
 
 ### Notificaciones del Portal
@@ -585,7 +619,7 @@ El chatbot está disponible 24/7 en el portal para:
    - Rango de fechas
 3. Exporte a CSV si necesita
 
-<!-- IMAGEN: Logs de auditoría -->
+![Logs de auditoría](images/figura-04-lista-contactos.png)
 **Figura 30:** Logs de auditoría
 
 ### Eventos Registrados
@@ -611,7 +645,7 @@ Vaya a **Configuración** > **Seguridad**:
 | 2FA Obligatorio | Requerir autenticación de dos factores |
 | IP Whitelist | Solo permitir IPs específicas |
 
-<!-- IMAGEN: Configuración de seguridad -->
+![Configuración de seguridad](images/figura-05-formulario-contacto.png)
 **Figura 31:** Configuración de seguridad
 
 ---
@@ -643,7 +677,7 @@ EJFLOW cuenta con un sistema avanzado de respaldos que permite proteger la infor
    - **Nombre:** Descripción del respaldo
 5. Haga clic en **"Crear"**
 
-<!-- IMAGEN: Formulario de respaldo global -->
+![Crear respaldo global](images/figura-09-modal-cierre.png)
 **Figura 32:** Crear respaldo global
 
 El sistema:
@@ -665,7 +699,7 @@ Para respaldar una corporación específica:
    - **Incluir Multimedia:** Documentos de la corporación
 6. Haga clic en **"Crear"**
 
-<!-- IMAGEN: Formulario de respaldo de tenant -->
+![Crear respaldo de tenant](images/figura-09-modal-cierre.png)
 **Figura 33:** Crear respaldo de tenant
 
 **Datos incluidos en respaldo de tenant:**
@@ -690,7 +724,7 @@ La lista de respaldos muestra:
 | Fecha | Cuándo se creó |
 | Acciones | Descargar, Restaurar, Eliminar |
 
-<!-- IMAGEN: Lista de respaldos -->
+![Lista de respaldos](images/figura-04-lista-contactos.png)
 **Figura 34:** Lista de respaldos del sistema
 
 ### Estados del Respaldo
@@ -724,7 +758,7 @@ La lista de respaldos muestra:
    - Restaura los datos
    - Restaura archivos multimedia (si están incluidos)
 
-<!-- IMAGEN: Diálogo de confirmación de restauración -->
+![Confirmar restauración](images/figura-09-modal-cierre.png)
 **Figura 35:** Confirmar restauración de respaldo
 
 ### Respaldos Automáticos
@@ -738,7 +772,7 @@ Configure respaldos automáticos:
    - **Tipo:** Global o por tenant
    - **Retención:** Cuántos respaldos mantener
 
-<!-- IMAGEN: Configuración de respaldos automáticos -->
+![Respaldos automáticos](images/figura-05-formulario-contacto.png)
 **Figura 36:** Programación de respaldos automáticos
 
 ### Configuración de Encriptación
@@ -835,6 +869,7 @@ R: Sí, en Configuración > IA > Deshabilitar.
 
 | Versión | Fecha | Cambios |
 |---------|-------|---------|
+| 2.1 | Feb 2026 | Soporte multi-corporación para contactos |
 | 2.0 | Feb 2026 | Sistema de Estado del Cliente, Respaldos avanzados, Configuración de IA |
 | 1.1 | Feb 2026 | Gestión de departamentos, Portal del cliente |
 | 1.0 | Ene 2026 | Versión inicial |

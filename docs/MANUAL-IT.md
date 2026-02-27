@@ -1,6 +1,6 @@
 # Manual de IT - Ebenezer Tax Services CRM
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** Febrero 2026
 **Audiencia:** Personal de Tecnología de Información
 
@@ -274,7 +274,9 @@ ebenezer_crm
 ├── crm_users (Usuarios del sistema)
 ├── crm_departments (Departamentos)
 ├── crm_contacts (Contactos/Clientes)
+├── crm_contact_corporations (M2M: Contactos-Corporaciones)
 ├── crm_corporations (Empresas)
+├── crm_corporation_related (M2M: Corporaciones relacionadas)
 ├── crm_tax_cases (Casos de impuestos)
 ├── crm_documents (Documentos)
 ├── crm_department_client_folders (Carpetas por departamento/cliente)
@@ -286,6 +288,26 @@ ebenezer_crm
 ├── crm_audit_logs (Auditoría)
 └── celery_* (Tareas programadas)
 ```
+
+### Modelo Multi-Corporación
+
+El sistema soporta asignación de contactos a múltiples corporaciones:
+
+```
+Contact
+├── primary_corporation_id (FK)    # Corporación principal
+└── corporations (M2M)             # Todas las corporaciones asociadas
+
+Corporation
+├── parent_id (FK a sí mismo)      # Para jerarquía (subsidiarias)
+└── related_corporations (M2M)     # Corporaciones relacionadas
+```
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `primary_corporation_id` | FK | Corporación principal del contacto |
+| `crm_contact_corporations` | M2M | Tabla intermedia contacto-corporación |
+| `crm_corporation_related` | M2M | Tabla intermedia corporaciones relacionadas |
 
 ### Modelo de Departamentos
 

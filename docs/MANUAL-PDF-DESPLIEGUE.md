@@ -1,7 +1,7 @@
 # Ebenezer Tax Services CRM
 ## Manual de Despliegue e IT
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** Febrero 2026
 **Audiencia:** Personal de IT / DevOps
 
@@ -86,7 +86,7 @@ Docker 24+ (opcional pero recomendado)
 └─────────────────┘ └─────────────────┘ └─────────────────┘
 ```
 
-<!-- IMAGEN: Diagrama de arquitectura visual -->
+![Arquitectura del sistema](images/figura-03-dashboard.png)
 **Figura 1:** Arquitectura del sistema
 
 ### Componentes
@@ -118,7 +118,7 @@ cp .env.example .env
 # Editar .env con valores de producción
 ```
 
-<!-- IMAGEN: Archivo .env de ejemplo -->
+![Variables de entorno](images/figura-05-formulario-contacto.png)
 **Figura 2:** Configuración de variables de entorno
 
 ### Paso 3: Iniciar Servicios
@@ -153,7 +153,7 @@ docker-compose ps
 docker-compose logs -f backend
 ```
 
-<!-- IMAGEN: Salida de docker-compose ps -->
+![Servicios Docker](images/figura-04-lista-contactos.png)
 **Figura 3:** Servicios Docker corriendo
 
 ---
@@ -272,7 +272,9 @@ ebenezer_crm
 ├── crm_users (Usuarios del sistema)
 ├── crm_departments (Departamentos)
 ├── crm_contacts (Contactos)
+├── crm_contact_corporations (M2M: Contactos-Corporaciones)
 ├── crm_corporations (Corporaciones)
+├── crm_corporation_related (M2M: Corporaciones relacionadas)
 ├── crm_tax_cases (Casos de impuestos)
 ├── crm_documents (Documentos)
 ├── crm_department_client_folders (Carpetas por departamento)
@@ -280,6 +282,20 @@ ebenezer_crm
 ├── crm_appointments (Citas)
 ├── crm_audit_logs (Auditoría)
 └── celery_* (Tareas programadas)
+```
+
+### Modelo Multi-Corporación
+
+```sql
+-- Contactos con múltiples corporaciones
+crm_contacts
+├── primary_corporation_id (FK)  -- Corporación principal
+└── corporations (M2M)           -- Todas las asociaciones
+
+-- Tabla intermedia M2M
+crm_contact_corporations
+├── contact_id (FK)
+└── corporation_id (FK)
 ```
 
 ### Modelo de Departamentos

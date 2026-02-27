@@ -1,6 +1,6 @@
 # Manual del Administrador - Ebenezer Tax Services CRM
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** Febrero 2026
 **Sistema:** CRM para Servicios de Impuestos
 
@@ -283,8 +283,8 @@ Vaya a **Configuración** → **Email**:
 
 | Módulo | Descripción |
 |--------|-------------|
-| **Contactos** | Gestión de clientes y prospectos |
-| **Corporaciones** | Empresas y entidades comerciales |
+| **Contactos** | Gestión de clientes y prospectos (soporte multi-corporación) |
+| **Corporaciones** | Empresas y entidades comerciales (jerarquía y relaciones) |
 | **Casos** | Casos de impuestos y seguimiento |
 | **Documentos** | Almacenamiento y gestión de archivos |
 | **Citas** | Calendario y programación |
@@ -296,6 +296,35 @@ Vaya a **Configuración** → **Email**:
 | **Reportes** | Análisis y exportación |
 | **Inventario** | Control de suministros |
 | **E-Sign** | Firmas electrónicas |
+
+### Contactos con Múltiples Corporaciones
+
+El sistema permite asociar un contacto a múltiples corporaciones:
+
+#### Corporación Primaria vs Adicionales
+
+| Tipo | Descripción |
+|------|-------------|
+| **Primaria** | Corporación principal del contacto, visible en listas |
+| **Adicionales** | Otras corporaciones asociadas, visibles en detalle |
+
+#### Casos de Uso Comunes
+
+1. **Contador que atiende varios negocios:** El contador (contacto) se asocia como contacto a todas las corporaciones que atiende
+2. **Socio de múltiples empresas:** Un empresario aparece como contacto en cada una de sus empresas
+3. **Empleados de grupos empresariales:** Un gerente de varias subsidiarias puede aparecer en cada corporación
+
+#### Configurar desde Admin
+
+1. Vaya a **Contactos** y seleccione o cree un contacto
+2. En el formulario de edición:
+   - **Corporación Primaria:** Seleccione del menú desplegable
+   - **Corporaciones Adicionales:** Use el botón "Agregar" para vincular más
+3. Guarde los cambios
+
+#### Filtrar por Corporación
+
+Al filtrar contactos por corporación, el sistema buscará en **todas** las corporaciones asociadas (primaria y adicionales), no solo la primaria.
 
 ### Habilitar/Deshabilitar Módulos
 

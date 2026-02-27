@@ -1,6 +1,6 @@
 # Manual Técnico - Ebenezer Tax Services CRM
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** Febrero 2026
 **Documento Confidencial**
 
@@ -575,28 +575,33 @@ CELERY_BEAT_SCHEDULE = {
 │ password        │     │ last_name       │     │ ein             │
 │ role_id ────────┼──┐  │ email           │     │ type            │
 │ department_id ──┼──┼─►│ phone           │     │ address         │
-│ is_active       │  │  │ address         │     │ created_at      │
-│ created_at      │  │  │ assigned_to ────┼──┐  └────────┬────────┘
-└─────────────────┘  │  │ created_at      │  │           │
-                     │  └────────┬────────┘  │           │
-┌─────────────────┐  │           │           │           │
+│ is_active       │  │  │ address         │     │ parent_id ──────┼──► Self
+│ created_at      │  │  │ assigned_to ────┼──┐  │ created_at      │
+└─────────────────┘  │  │ primary_corp ───┼──┼──► (FK opcional)   │
+                     │  │ created_at      │  │  └────────┬────────┘
+┌─────────────────┐  │  └────────┬────────┘  │           │
 │      Role       │  │           │           │           │
-├─────────────────┤  │           │           │           │
-│ id (UUID)       │◄─┘           │           │           │
-│ name            │              │           │           │
-│ description     │              ▼           │           │
-└─────────────────┘     ┌─────────────────┐  │           │
-                        │    TaxCase      │  │           │
-┌─────────────────┐     ├─────────────────┤  │           │
-│ ModulePermission│     │ id (UUID)       │  │           │
-├─────────────────┤     │ case_number     │  │           │
-│ role_id         │     │ contact_id ◄────┼──┼───────────┘
-│ module          │     │ corporation_id  │◄─┘
-│ can_view        │     │ case_type       │
-│ can_create      │     │ tax_year        │
-│ can_edit        │     │ status          │
-│ can_delete      │     │ assigned_to ────┼──► User
-└─────────────────┘     │ created_at      │
+├─────────────────┤  │           ▼           │           │
+│ id (UUID)       │◄─┘  ┌─────────────────┐  │           │
+│ name            │     │contact_corporations│           │
+│ description     │     │    (M2M Table)    │  │           │
+└─────────────────┘     ├─────────────────┤  │           │
+                        │ contact_id ◄────┼──┼───────────┤
+┌─────────────────┐     │ corporation_id ◄┼──┼───────────┘
+│ ModulePermission│     └─────────────────┘  │
+├─────────────────┤                          │
+│ role_id         │     ┌─────────────────┐  │
+│ module          │     │    TaxCase      │  │
+│ can_view        │     ├─────────────────┤  │
+│ can_create      │     │ id (UUID)       │  │
+│ can_edit        │     │ case_number     │  │
+│ can_delete      │     │ contact_id ◄────┼──┘
+└─────────────────┘     │ corporation_id  │
+                        │ case_type       │
+                        │ tax_year        │
+                        │ status          │
+                        │ assigned_to ────┼──► User
+                        │ created_at      │
                         └────────┬────────┘
 
 ┌─────────────────┐     ┌─────────────────────────┐
@@ -654,12 +659,88 @@ CELERY_BEAT_SCHEDULE = {
                      └──► Contact
 ```
 
+### Modelo Multi-Corporación para Contactos
+
+El sistema soporta asignación de contactos a múltiples corporaciones mediante una relación ManyToMany:
+
+```python
+# apps/contacts/models.py
+class Contact(TimeStampedModel):
+    # Corporación primaria (relación principal para display)
+    primary_corporation = models.ForeignKey(
+        "corporations.Corporation",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="primary_contacts",
+    )
+
+    # Todas las corporaciones asociadas (M2M)
+    corporations = models.ManyToManyField(
+        "corporations.Corporation",
+        blank=True,
+        related_name="contacts",
+    )
+```
+
+**Características:**
+- `primary_corporation`: Corporación principal mostrada en listas y como referencia rápida
+- `corporations`: Relación M2M que incluye todas las corporaciones (primaria + adicionales)
+- Al asignar una corporación primaria, también se añade automáticamente a `corporations`
+- Filtrar por corporación busca en la relación M2M, no solo en primaria
+
+**Queries optimizadas:**
+```python
+# Vista de contactos con prefetch de corporaciones
+Contact.objects.select_related(
+    "primary_corporation", "assigned_to", "created_by"
+).prefetch_related("corporations")
+
+# Filtrar contactos por corporación (busca en M2M)
+Contact.objects.filter(corporations__id=corporation_uuid)
+```
+
+### Modelo de Corporaciones con Jerarquía
+
+```python
+# apps/corporations/models.py
+class Corporation(TimeStampedModel):
+    # Jerarquía (subsidiarias)
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="subsidiaries",
+    )
+
+    # Corporaciones relacionadas (M2M bidireccional)
+    related_corporations = models.ManyToManyField(
+        "self",
+        blank=True,
+        symmetrical=True,
+    )
+```
+
+**Serializers relacionados:**
+```python
+# CorporationDetailSerializer incluye:
+- contacts (lista de contactos vinculados)
+- contacts_count (conteo de contactos)
+- subsidiaries (corporaciones hijas)
+- related_corporations (corporaciones relacionadas M2M)
+- related_corporations_count (conteo de relacionadas)
+```
+
 ### Índices Importantes
 
 ```sql
 -- Índices de rendimiento
 CREATE INDEX idx_contacts_email ON crm_contacts(email);
 CREATE INDEX idx_contacts_assigned ON crm_contacts(assigned_to_id);
+CREATE INDEX idx_contacts_primary_corp ON crm_contacts(primary_corporation_id);
+CREATE INDEX idx_contact_corps_contact ON crm_contact_corporations(contact_id);
+CREATE INDEX idx_contact_corps_corp ON crm_contact_corporations(corporation_id);
 CREATE INDEX idx_cases_status ON crm_tax_cases(status);
 CREATE INDEX idx_cases_contact ON crm_tax_cases(contact_id);
 CREATE INDEX idx_documents_contact ON crm_documents(contact_id);

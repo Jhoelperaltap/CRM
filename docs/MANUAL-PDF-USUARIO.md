@@ -1,7 +1,7 @@
 # Ebenezer Tax Services CRM
 ## Manual del Usuario
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** Febrero 2026
 
 ---
@@ -33,9 +33,6 @@ El CRM de Ebenezer Tax Services es un sistema integral diseñado para gestionar 
 | **Preparer** | Preparación de casos de impuestos |
 | **Receptionist** | Atención al cliente y citas |
 
-<!-- IMAGEN: Captura de pantalla de la página de login -->
-**Figura 1:** Pantalla de inicio de sesión
-
 ---
 
 ## Acceso al Sistema
@@ -47,8 +44,8 @@ El CRM de Ebenezer Tax Services es un sistema integral diseñado para gestionar 
 3. Ingrese su contraseña
 4. Haga clic en "Iniciar Sesión"
 
-<!-- IMAGEN: Captura del formulario de login con campos marcados -->
-**Figura 2:** Formulario de inicio de sesión
+![Pantalla de inicio de sesión](images/figura-01-login.png)
+**Figura 1:** Pantalla de inicio de sesión
 
 ### Autenticación de Dos Factores (2FA)
 
@@ -57,8 +54,8 @@ Si tiene 2FA habilitado:
 2. Ingrese el código de 6 dígitos mostrado
 3. El código cambia cada 30 segundos
 
-<!-- IMAGEN: Pantalla de ingreso de código 2FA -->
-**Figura 3:** Verificación de dos factores
+![Verificación de dos factores](images/figura-02-2fa.png)
+**Figura 2:** Verificación de dos factores
 
 ### Recuperar Contraseña
 
@@ -73,8 +70,8 @@ Si tiene 2FA habilitado:
 
 Al iniciar sesión, verá el panel de control con información relevante de su trabajo.
 
-<!-- IMAGEN: Captura del dashboard completo -->
-**Figura 4:** Dashboard principal
+![Dashboard principal](images/figura-03-dashboard.png)
+**Figura 3:** Dashboard principal
 
 ### Widgets del Dashboard
 
@@ -94,17 +91,14 @@ Las notas adhesivas le permiten guardar recordatorios personales:
 3. La nota se guarda automáticamente
 4. Use el ícono de papelera para eliminar
 
-<!-- IMAGEN: Panel de sticky notes con ejemplo de notas -->
-**Figura 5:** Sticky Notes en el dashboard
-
 ---
 
 ## Gestión de Contactos
 
 ### Lista de Contactos
 
-<!-- IMAGEN: Lista de contactos con filtros visibles -->
-**Figura 6:** Lista de contactos
+![Lista de contactos](images/figura-04-lista-contactos.png)
+**Figura 4:** Lista de contactos con filtros
 
 Para ver contactos:
 1. Navegue a **Contactos** en el menú lateral
@@ -118,22 +112,40 @@ Para ver contactos:
    - Nombre y apellido
    - Correo electrónico
    - Teléfono
+   - Corporaciones (ver sección siguiente)
 3. Haga clic en "Guardar"
 
-<!-- IMAGEN: Formulario de nuevo contacto -->
-**Figura 7:** Formulario de nuevo contacto
+### Asignar Contacto a Múltiples Corporaciones
+
+Un contacto puede estar asociado a múltiples corporaciones:
+
+| Tipo | Descripción |
+|------|-------------|
+| **Corporación Primaria** | Empresa principal del contacto, visible en listas |
+| **Corporaciones Adicionales** | Otras empresas asociadas, visibles en detalle |
+
+Para agregar corporaciones:
+1. Al crear o editar un contacto
+2. Seleccione la **Corporación Primaria** del menú desplegable
+3. Use **"Agregar Corporación"** para vincular empresas adicionales
+4. Las corporaciones aparecen como badges que puede eliminar
+
+![Formulario de contacto con múltiples corporaciones](images/figura-05-formulario-contacto.png)
+**Figura 5:** Formulario de contacto con selector de múltiples corporaciones
 
 ### Detalle del Contacto
 
 La página de detalle del contacto muestra:
 - Información personal
+- **Corporación primaria** (destacada)
+- **Corporaciones adicionales** (en sección separada)
 - Historial de casos
 - Documentos asociados
 - Notas y comentarios
 - Carpetas por departamento
 
-<!-- IMAGEN: Vista de detalle de un contacto -->
-**Figura 8:** Detalle del contacto
+![Detalle del contacto](images/figura-06-detalle-contacto.png)
+**Figura 6:** Vista de detalle del contacto con corporaciones asociadas
 
 ---
 
@@ -141,8 +153,7 @@ La página de detalle del contacto muestra:
 
 ### Lista de Casos
 
-<!-- IMAGEN: Lista de casos con diferentes estados -->
-**Figura 9:** Lista de casos de impuestos
+La lista de casos muestra todos los casos de impuestos organizados por estado.
 
 ### Estados del Caso
 
@@ -165,13 +176,7 @@ La página de detalle del contacto muestra:
    - Formularios requeridos
 4. Haga clic en "Crear"
 
-<!-- IMAGEN: Formulario de nuevo caso -->
-**Figura 10:** Formulario de nuevo caso
-
 ### Detalle del Caso
-
-<!-- IMAGEN: Vista de detalle de un caso -->
-**Figura 11:** Detalle del caso
 
 En el detalle del caso puede:
 - Ver información general
@@ -196,8 +201,8 @@ Los documentos se organizan en carpetas por departamento para cada cliente:
 | Representation | Púrpura | Representación ante IRS |
 | Client Visit | Cyan | Visitas a clientes |
 
-<!-- IMAGEN: Vista de árbol de carpetas por departamento -->
-**Figura 12:** Carpetas por departamento
+![Carpetas por departamento](images/figura-11-carpetas.png)
+**Figura 7:** Sistema de carpetas por departamento
 
 ### Ver Carpetas de un Cliente
 
@@ -213,18 +218,12 @@ Los documentos se organizan en carpetas por departamento para cada cliente:
 3. Seleccione el archivo (PDF, imagen, etc.)
 4. El documento se guarda automáticamente
 
-<!-- IMAGEN: Diálogo de subida de documentos -->
-**Figura 13:** Subir documento
-
 ### Vista Previa de Documentos
 
 - Haga clic en un documento para verlo
 - Los PDFs se muestran directamente en el navegador
 - Las imágenes se muestran en un visor
 - Use los controles para zoom y navegación
-
-<!-- IMAGEN: Vista previa de un documento PDF -->
-**Figura 14:** Vista previa de documento
 
 ### Descargar Documentos
 
@@ -236,9 +235,6 @@ Los documentos se organizan en carpetas por departamento para cada cliente:
 ## Calendario y Citas
 
 ### Vista del Calendario
-
-<!-- IMAGEN: Vista del calendario mensual -->
-**Figura 15:** Calendario de citas
 
 El calendario muestra:
 - Vista mensual, semanal o diaria
@@ -255,9 +251,6 @@ El calendario muestra:
    - Ubicación o enlace virtual
 3. Configure recordatorios
 4. Haga clic en "Guardar"
-
-<!-- IMAGEN: Formulario de nueva cita -->
-**Figura 16:** Formulario de nueva cita
 
 ### Tipos de Citas
 
@@ -282,9 +275,6 @@ Puede agregar comentarios a contactos y casos para mantener un historial de comu
 4. Opcionalmente adjunte archivos
 5. Haga clic en "Enviar"
 
-<!-- IMAGEN: Sección de comentarios con archivo adjunto -->
-**Figura 17:** Comentarios con archivos adjuntos
-
 ### Adjuntar Archivos en Comentarios
 
 Los archivos adjuntos en comentarios se guardan automáticamente en la carpeta del departamento seleccionado:
@@ -293,9 +283,6 @@ Los archivos adjuntos en comentarios se guardan automáticamente en la carpeta d
 2. Seleccione la carpeta de departamento destino
 3. Suba el archivo
 4. El archivo quedará vinculado al comentario Y guardado en la carpeta
-
-<!-- IMAGEN: Adjuntar archivo a comentario -->
-**Figura 18:** Adjuntar archivo a comentario
 
 ### Mensajes del Portal
 
@@ -316,9 +303,6 @@ Puede ver y responder mensajes enviados por clientes desde el portal:
 3. Actualice su información
 4. Guarde los cambios
 
-<!-- IMAGEN: Página de perfil de usuario -->
-**Figura 19:** Perfil de usuario
-
 ### Preferencias
 
 En **Configuración** > **Preferencias**:
@@ -329,9 +313,6 @@ En **Configuración** > **Preferencias**:
 | Idioma | Español / English |
 | Zona Horaria | Su zona horaria local |
 | Notificaciones | Qué alertas recibir |
-
-<!-- IMAGEN: Página de preferencias -->
-**Figura 20:** Preferencias del sistema
 
 ### Cambiar Contraseña
 
@@ -359,42 +340,3 @@ En **Configuración** > **Preferencias**:
 ---
 
 **© 2026 Ebenezer Tax Services. Todos los derechos reservados.**
-
----
-
-## Instrucciones para Generar PDF
-
-Para convertir este documento a PDF con imágenes:
-
-### Opción 1: Pandoc (Línea de comandos)
-
-```bash
-# Instalar pandoc y wkhtmltopdf
-# Reemplazar los comentarios <!-- IMAGEN --> con imágenes reales
-pandoc MANUAL-PDF-USUARIO.md -o MANUAL-USUARIO.pdf --pdf-engine=wkhtmltopdf
-```
-
-### Opción 2: Visual Studio Code
-
-1. Instalar extensión "Markdown PDF"
-2. Abrir este archivo
-3. Presionar Ctrl+Shift+P
-4. Seleccionar "Markdown PDF: Export (pdf)"
-
-### Opción 3: Online
-
-1. Ir a https://dillinger.io/ o https://stackedit.io/
-2. Pegar el contenido
-3. Exportar como PDF
-
-### Agregar Imágenes
-
-Reemplace cada comentario `<!-- IMAGEN: descripción -->` con:
-```markdown
-![Descripción](ruta/a/imagen.png)
-```
-
-Ejemplo:
-```markdown
-![Pantalla de login](images/login-screen.png)
-```
