@@ -43,6 +43,7 @@ import {
 import { useAuthStore } from "@/stores/auth-store";
 import { useUIStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
+import { HelpAssistantDialog } from "@/components/help/help-assistant-dialog";
 
 interface MenuItem {
   label: string;
@@ -74,6 +75,7 @@ export function MegaMenuSidebar() {
   const toggleMobileMenu = useUIStore((state) => state.toggleSidebar);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isPinned, setIsPinned] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -479,11 +481,17 @@ export function MegaMenuSidebar() {
             <Search className="size-5 text-white/70 group-hover:text-white transition-colors" />
             <span className="mt-1 text-[10px] font-medium text-white/60">Search</span>
           </button>
-          <button className="group flex flex-col items-center justify-center rounded-xl p-2 transition-all hover:bg-white/10">
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="group flex flex-col items-center justify-center rounded-xl p-2 transition-all hover:bg-white/10"
+          >
             <HelpCircle className="size-5 text-white/70 group-hover:text-white transition-colors" />
             <span className="mt-1 text-[10px] font-medium text-white/60">Help</span>
           </button>
         </div>
+
+        {/* Help Assistant Dialog */}
+        <HelpAssistantDialog open={helpOpen} onOpenChange={setHelpOpen} />
       </aside>
 
       {/* Mega menu flyout panel */}

@@ -14,6 +14,7 @@ from apps.ai_agent.views import (
     AgentStatusView,
     AgentToggleView,
     BackupWorkloadView,
+    HelpAssistantView,
     RunAgentCycleView,
     RunBackupAnalysisView,
     RunMarketAnalysisView,
@@ -41,6 +42,8 @@ urlpatterns = [
     path(
         "backup/analyze/", RunBackupAnalysisView.as_view(), name="agent-backup-analyze"
     ),
+    # Help Assistant endpoint
+    path("help/", HelpAssistantView.as_view(), name="agent-help"),
     # ViewSet routes
     path("", include(router.urls)),
 ]

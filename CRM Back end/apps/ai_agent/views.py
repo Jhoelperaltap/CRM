@@ -601,3 +601,63 @@ class RunBackupAnalysisView(APIView):
                     },
                 }
             )
+
+
+class HelpAssistantView(APIView):
+    """
+    AI-powered help assistant for staff users.
+
+    This assistant ONLY answers questions about system functionality.
+    It validates user permissions before providing guidance.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        Send a message to the help assistant.
+
+        Request body:
+            message (str): The user's question
+            history (list, optional): Previous messages [{role, content}]
+
+        Returns:
+            response (str): The assistant's answer
+        """
+        message = request.data.get("message", "").strip()
+
+        if not message:
+            return Response(
+                {"error": "Message is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Get the help assistant service
+        from apps.ai_agent.services.help_assistant import get_help_assistant_service
+
+        service = get_help_assistant_service()
+
+        if not service:
+            return Response(
+                {
+                    "response": "The help assistant is not configured. Please contact your administrator to set up the AI API key in Settings > AI Agent.",
+                    "error": "not_configured",
+                }
+            )
+
+        # Get conversation history if provided
+        history = request.data.get("history", [])
+
+        # Get response from AI
+        result = service.get_response(
+            user=request.user,
+            message=message,
+            conversation_history=history,
+        )
+
+        return Response(
+            {
+                "response": result["content"],
+                "error": result.get("error"),
+            }
+        )
