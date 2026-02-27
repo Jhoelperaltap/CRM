@@ -428,7 +428,21 @@ export default function ContactDetailPage() {
                       <StatusBadge status={contact.status} />
                     </div>
                     <InfoRow label="Assigned To" value={contact.assigned_to?.full_name} />
-                    <InfoRow label="Organization" value={contact.corporation?.name} />
+                    <InfoRow label="Primary Corporation" value={contact.primary_corporation?.name} />
+                    {contact.corporations && contact.corporations.length > 0 && (
+                      <div className="flex justify-between py-2 border-b border-muted">
+                        <span className="text-muted-foreground">Corporations</span>
+                        <div className="flex flex-wrap gap-1 justify-end max-w-[60%]">
+                          {contact.corporations.map((corp) => (
+                            <Link key={corp.id} href={`/corporations/${corp.id}`}>
+                              <Badge variant="outline" className="text-xs hover:bg-primary/10">
+                                {corp.name}
+                              </Badge>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -700,20 +714,33 @@ export default function ContactDetailPage() {
             </div>
           ) : (
             <>
-              {/* Organization */}
-              {contact.corporation && (
+              {/* Corporations */}
+              {contact.corporations && contact.corporations.length > 0 && (
                 <SidebarSection
-                  title="Organization"
+                  title="Corporations"
                   icon={<Building2 className="h-4 w-4 text-slate-500" />}
-                  count={1}
+                  count={contact.corporations.length}
                   defaultOpen={true}
                 >
-                  <Link
-                    href={`/corporations/${contact.corporation.id}`}
-                    className="block p-2 rounded border hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="font-medium text-sm">{contact.corporation.name}</div>
-                  </Link>
+                  <div className="space-y-1.5">
+                    {contact.corporations.map((corp) => (
+                      <Link
+                        key={corp.id}
+                        href={`/corporations/${corp.id}`}
+                        className="block p-2 rounded border hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium text-sm">{corp.name}</span>
+                          {contact.primary_corporation?.id === corp.id && (
+                            <Badge variant="secondary" className="text-[10px] px-1.5 h-4">
+                              Primary
+                            </Badge>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </SidebarSection>
               )}
 

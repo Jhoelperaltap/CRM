@@ -181,8 +181,11 @@ export interface Contact {
   facebook_followers: number | null;
   // Image
   image: string | null;
-  // Relationships
-  corporation: CorporationSummary | null;
+  // Relationships - Multi-corporation support
+  corporations: CorporationSummary[];
+  primary_corporation: CorporationSummary | null;
+  /** @deprecated Use primary_corporation or corporations instead */
+  corporation?: CorporationSummary | null;
   assigned_to: UserSummary | null;
   created_by: UserSummary | null;
   sla: SLASummary | null;
@@ -217,6 +220,7 @@ export interface ContactListItem {
   mailing_state: string;
   office_services: string;
   corporation_name: string | null;
+  corporations_count: number;
   assigned_to_name: string | null;
   is_starred: boolean;
   created_at: string;
@@ -301,6 +305,12 @@ export interface Corporation {
   assigned_to: UserSummary | null;
   created_by: UserSummary | null;
   sla: SLASummary | null;
+  // Related entities
+  contacts: ContactSummary[];
+  contacts_count: number;
+  related_corporations: CorporationSummary[];
+  related_corporations_count: number;
+  subsidiaries: CorporationSummary[];
   // Other
   description: string;
   image: string | null;
@@ -331,6 +341,8 @@ export interface CorporationListItem {
   primary_contact_name: string | null;
   assigned_to_name: string | null;
   member_of_name: string | null;
+  contacts_count: number;
+  related_corporations_count: number;
   created_at: string;
 }
 
@@ -729,7 +741,9 @@ export interface ContactSummary {
   id: string;
   first_name: string;
   last_name: string;
+  full_name?: string;
   email?: string;
+  phone?: string;
 }
 
 export interface CorporationSummary {

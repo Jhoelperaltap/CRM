@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,7 @@ import { getUsers } from "@/lib/api/users";
 import { getCorporations } from "@/lib/api/corporations";
 import { getPortalAccounts } from "@/lib/api/settings";
 import type { User, CorporationListItem } from "@/types";
-import { Smartphone, Loader2 } from "lucide-react";
+import { Smartphone, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PortalAccessDialog } from "@/components/contacts/portal-access-dialog";
 import Link from "next/link";
@@ -29,31 +30,41 @@ import Link from "next/link";
 // Schema
 // -----------------------------------------------------------------------------
 const schema = z.object({
-  // Organization Details
-  name: z.string().min(1, "Organization name is required"),
+  // Corporation Details (Essential)
+  name: z.string().min(1, "Company name is required"),
+  ein: z.string().min(1, "EIN is required"),
+  email: z.string().email("Invalid email").or(z.literal("")).optional(),
+  industry: z.string().optional(),
+  member_of: z.string().optional(),
+  assigned_to: z.string().optional(),
+  date_incorporated: z.string().optional(),
+  // Address
+  billing_street: z.string().optional(),
+  billing_city: z.string().optional(),
+  billing_state: z.string().optional(),
+  billing_zip: z.string().optional(),
+  billing_country: z.string().optional(),
+  billing_po_box: z.string().optional(),
+  // Additional fields
   legal_name: z.string().optional(),
   entity_type: z.string().min(1, "Entity type is required"),
   organization_type: z.string().optional(),
   organization_status: z.string().optional(),
-  ein: z.string().optional(),
   state_id: z.string().optional(),
   // Business Details
   employees: z.union([z.number(), z.string()]).optional(),
   ownership: z.string().optional(),
   ticker_symbol: z.string().optional(),
   sic_code: z.string().optional(),
-  industry: z.string().optional(),
   annual_revenue: z.union([z.number(), z.string()]).optional(),
   annual_revenue_range: z.string().optional(),
   fiscal_year_end: z.string().optional(),
-  date_incorporated: z.string().optional(),
   region: z.string().optional(),
   timezone: z.string().optional(),
   // Contact info
   phone: z.string().optional(),
   secondary_phone: z.string().optional(),
   fax: z.string().optional(),
-  email: z.string().email("Invalid email").or(z.literal("")).optional(),
   secondary_email: z.string().email("Invalid email").or(z.literal("")).optional(),
   email_domain: z.string().optional(),
   website: z.string().optional(),
@@ -65,13 +76,6 @@ const schema = z.object({
   email_opt_in: z.string().optional(),
   sms_opt_in: z.string().optional(),
   notify_owner: z.boolean().optional(),
-  // Billing address
-  billing_street: z.string().optional(),
-  billing_city: z.string().optional(),
-  billing_state: z.string().optional(),
-  billing_zip: z.string().optional(),
-  billing_country: z.string().optional(),
-  billing_po_box: z.string().optional(),
   // Shipping address
   shipping_street: z.string().optional(),
   shipping_city: z.string().optional(),
@@ -81,8 +85,6 @@ const schema = z.object({
   shipping_po_box: z.string().optional(),
   // Status & relationships
   status: z.enum(["active", "inactive", "dissolved"]),
-  member_of: z.string().optional(),
-  assigned_to: z.string().optional(),
   sla: z.string().optional(),
   // Other
   description: z.string().optional(),
@@ -214,7 +216,7 @@ interface Section {
 }
 
 const sections: Section[] = [
-  { id: "organization-details", label: "Organization Details" },
+  { id: "corporation-details", label: "Corporation Details" },
   { id: "address-details", label: "Address Details" },
   { id: "description-details", label: "Description Details" },
 ];
@@ -245,7 +247,8 @@ export function CorporationForm({
   primaryContactId,
   primaryContactName,
 }: Props) {
-  const [activeSection, setActiveSection] = useState("organization-details");
+  const [activeSection, setActiveSection] = useState("corporation-details");
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [portalDialogOpen, setPortalDialogOpen] = useState(false);
   const [portalAccess, setPortalAccess] = useState<{
@@ -402,42 +405,31 @@ export function CorporationForm({
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8 pb-4">
 
           {/* ══════════════════════════════════════════════════════════════════
-              ORGANIZATION DETAILS
+              CORPORATION DETAILS
           ══════════════════════════════════════════════════════════════════ */}
-          <section id="organization-details" className="space-y-6">
-            <h3 className="text-lg font-semibold border-b pb-2">Organization Details</h3>
+          <section id="corporation-details" className="space-y-6">
+            <h3 className="text-lg font-semibold border-b pb-2">Corporation Details</h3>
 
-            {/* Row 1: Name, Email */}
+            {/* Row 1: Company Name, EIN (Required) */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Organization Name <span className="text-destructive">*</span></Label>
-                <Input {...register("name")} placeholder="Enter organization name" />
+                <Label>Company Name <span className="text-destructive">*</span></Label>
+                <Input {...register("name")} placeholder="Enter company name" />
                 {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
               </div>
+              <div className="space-y-2">
+                <Label>EIN <span className="text-destructive">*</span></Label>
+                <Input {...register("ein")} placeholder="XX-XXXXXXX" />
+                {errors.ein && <p className="text-destructive text-sm">{errors.ein.message}</p>}
+              </div>
+            </div>
+
+            {/* Row 2: Email, Industry */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label>Email</Label>
                 <Input type="email" {...register("email")} placeholder="info@company.com" />
                 {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
-              </div>
-            </div>
-
-            {/* Row 2: Website, Phone */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Website</Label>
-                <Input {...register("website")} placeholder="https://www.company.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input {...register("phone")} placeholder="(555) 123-4567" />
-              </div>
-            </div>
-
-            {/* Row 3: Employees, Industry */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Employees</Label>
-                <Input type="number" {...register("employees")} placeholder="Number of employees" />
               </div>
               <div className="space-y-2">
                 <Label>Industry</Label>
@@ -453,20 +445,8 @@ export function CorporationForm({
               </div>
             </div>
 
-            {/* Row 4: Annual Revenue, Member Of */}
+            {/* Row 3: Member Of, Assigned To */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Annual Revenue</Label>
-                <Select value={watch("annual_revenue_range") || ""} onValueChange={(v) => setValue("annual_revenue_range", v === "__none__" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Select an Option</SelectItem>
-                    {annualRevenueRanges.map((r) => (
-                      <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="space-y-2">
                 <Label>Member Of</Label>
                 <Select value={watch("member_of") || ""} onValueChange={(v) => setValue("member_of", v === "__none__" ? "" : v)}>
@@ -479,35 +459,8 @@ export function CorporationForm({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            {/* Row 5: Ownership, Type */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Ownership</Label>
-                <Input {...register("ownership")} placeholder="e.g. Private, Public, Family Owned" />
-              </div>
-              <div className="space-y-2">
-                <Label>Type</Label>
-                <Select value={watch("organization_type") || "lead"} onValueChange={(v) => setValue("organization_type", v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {organizationTypes.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Row 6: Ticker Symbol, Assigned To */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Ticker Symbol</Label>
-                <Input {...register("ticker_symbol")} placeholder="e.g. AAPL" />
-              </div>
-              <div className="space-y-2">
-                <Label>Assigned To <span className="text-destructive">*</span></Label>
+                <Label>Assigned To</Label>
                 <Select value={watch("assigned_to") || ""} onValueChange={(v) => setValue("assigned_to", v === "__none__" ? "" : v)}>
                   <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
                   <SelectContent>
@@ -522,108 +475,12 @@ export function CorporationForm({
               </div>
             </div>
 
-            {/* Row 7: Notify Owner, SIC Code */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="flex items-center gap-3 pt-6">
-                <Switch
-                  checked={watch("notify_owner") || false}
-                  onCheckedChange={(checked) => setValue("notify_owner", checked)}
-                />
-                <Label>Notify Owner</Label>
-              </div>
-              <div className="space-y-2">
-                <Label>SIC Code</Label>
-                <Input {...register("sic_code")} placeholder="e.g. 7371" />
-              </div>
-            </div>
-
-            {/* Row 8: Twitter Username, Secondary Phone */}
+            {/* Row 4: Date Incorporated, Entity Type */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Twitter Username</Label>
-                <Input {...register("twitter_username")} placeholder="@username" />
+                <Label>Date Incorporated</Label>
+                <Input type="date" {...register("date_incorporated")} />
               </div>
-              <div className="space-y-2">
-                <Label>Secondary Phone</Label>
-                <Input {...register("secondary_phone")} placeholder="(555) 123-4567" />
-              </div>
-            </div>
-
-            {/* Row 9: Email Domain, Organization Status */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Email Domain</Label>
-                <Input {...register("email_domain")} placeholder="company.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>Organization Status</Label>
-                <Select value={watch("organization_status") || "cold"} onValueChange={(v) => setValue("organization_status", v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {organizationStatuses.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Row 10: Region, Email Opt-in */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Region</Label>
-                <Select value={watch("region") || ""} onValueChange={(v) => setValue("region", v === "__none__" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Select an Option</SelectItem>
-                    {regions.map((r) => (
-                      <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Email Opt-in</Label>
-                <Select value={watch("email_opt_in") || "single_opt_in"} onValueChange={(v) => setValue("email_opt_in", v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {optInStatuses.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Row 11: SMS opt-in, Timezone */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>SMS Opt-in</Label>
-                <Select value={watch("sms_opt_in") || "single_opt_in"} onValueChange={(v) => setValue("sms_opt_in", v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {optInStatuses.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Timezone</Label>
-                <Select value={watch("timezone") || ""} onValueChange={(v) => setValue("timezone", v === "__none__" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Select an Option</SelectItem>
-                    {timezones.map((tz) => (
-                      <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Row 12: Entity Type, Status */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label>Entity Type <span className="text-destructive">*</span></Label>
                 <Select value={watch("entity_type") || "llc"} onValueChange={(v) => setValue("entity_type", v)}>
@@ -635,74 +492,241 @@ export function CorporationForm({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <Select value={watch("status")} onValueChange={(v) => setValue("status", v as "active" | "inactive" | "dissolved")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="dissolved">Dissolved</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
-            {/* Row 13: Legal Name, EIN */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Legal Name</Label>
-                <Input {...register("legal_name")} placeholder="Full legal business name" />
-              </div>
-              <div className="space-y-2">
-                <Label>EIN</Label>
-                <Input {...register("ein")} placeholder="XX-XXXXXXX" />
-              </div>
+            {/* Toggle for more information */}
+            <div className="flex items-center space-x-3 pt-2 pb-2 border-t border-b bg-muted/30 px-3 py-3 rounded-md">
+              <Checkbox
+                id="show-more-info"
+                checked={showMoreInfo}
+                onCheckedChange={(checked) => setShowMoreInfo(checked === true)}
+              />
+              <Label htmlFor="show-more-info" className="cursor-pointer flex items-center gap-2">
+                Show more information
+                {showMoreInfo ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Label>
             </div>
 
-            {/* Row 14: State ID, Fiscal Year End */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>State ID</Label>
-                <Input {...register("state_id")} placeholder="State registration number" />
-              </div>
-              <div className="space-y-2">
-                <Label>Fiscal Year End</Label>
-                <Input {...register("fiscal_year_end")} placeholder="e.g. December" />
-              </div>
-            </div>
+            {/* Additional fields (shown when checkbox is checked) */}
+            {showMoreInfo && (
+              <div className="space-y-6 pt-4 border-l-2 border-primary/20 pl-4">
+                <p className="text-sm text-muted-foreground">Additional Information</p>
 
-            {/* Row 15: Date Incorporated, Fax */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Date Incorporated</Label>
-                <Input type="date" {...register("date_incorporated")} />
-              </div>
-              <div className="space-y-2">
-                <Label>Fax</Label>
-                <Input {...register("fax")} placeholder="(555) 123-4567" />
-              </div>
-            </div>
+                {/* Row: Legal Name, Status */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Legal Name</Label>
+                    <Input {...register("legal_name")} placeholder="Full legal business name" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select value={watch("status")} onValueChange={(v) => setValue("status", v as "active" | "inactive" | "dissolved")}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                        <SelectItem value="dissolved">Dissolved</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-            {/* Row 16: Secondary Email, LinkedIn */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Secondary Email</Label>
-                <Input type="email" {...register("secondary_email")} placeholder="contact@company.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>LinkedIn URL</Label>
-                <Input {...register("linkedin_url")} placeholder="https://linkedin.com/company/..." />
-              </div>
-            </div>
+                {/* Row: Website, Phone */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Website</Label>
+                    <Input {...register("website")} placeholder="https://www.company.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input {...register("phone")} placeholder="(555) 123-4567" />
+                  </div>
+                </div>
 
-            {/* Row 17: Facebook */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Facebook URL</Label>
-                <Input {...register("facebook_url")} placeholder="https://facebook.com/..." />
+                {/* Row: Employees, Annual Revenue */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Employees</Label>
+                    <Input type="number" {...register("employees")} placeholder="Number of employees" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Annual Revenue</Label>
+                    <Select value={watch("annual_revenue_range") || ""} onValueChange={(v) => setValue("annual_revenue_range", v === "__none__" ? "" : v)}>
+                      <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Select an Option</SelectItem>
+                        {annualRevenueRanges.map((r) => (
+                          <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Row: Ownership, Type */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Ownership</Label>
+                    <Input {...register("ownership")} placeholder="e.g. Private, Public, Family Owned" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Type</Label>
+                    <Select value={watch("organization_type") || "lead"} onValueChange={(v) => setValue("organization_type", v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {organizationTypes.map((t) => (
+                          <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Row: Ticker Symbol, SIC Code */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Ticker Symbol</Label>
+                    <Input {...register("ticker_symbol")} placeholder="e.g. AAPL" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>SIC Code</Label>
+                    <Input {...register("sic_code")} placeholder="e.g. 7371" />
+                  </div>
+                </div>
+
+                {/* Row: Notify Owner, Organization Status */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="flex items-center gap-3 pt-6">
+                    <Switch
+                      checked={watch("notify_owner") || false}
+                      onCheckedChange={(checked) => setValue("notify_owner", checked)}
+                    />
+                    <Label>Notify Owner</Label>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Organization Status</Label>
+                    <Select value={watch("organization_status") || "cold"} onValueChange={(v) => setValue("organization_status", v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {organizationStatuses.map((s) => (
+                          <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Row: State ID, Fiscal Year End */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>State ID</Label>
+                    <Input {...register("state_id")} placeholder="State registration number" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Fiscal Year End</Label>
+                    <Input {...register("fiscal_year_end")} placeholder="e.g. December" />
+                  </div>
+                </div>
+
+                {/* Row: Region, Timezone */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Region</Label>
+                    <Select value={watch("region") || ""} onValueChange={(v) => setValue("region", v === "__none__" ? "" : v)}>
+                      <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Select an Option</SelectItem>
+                        {regions.map((r) => (
+                          <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Timezone</Label>
+                    <Select value={watch("timezone") || ""} onValueChange={(v) => setValue("timezone", v === "__none__" ? "" : v)}>
+                      <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Select an Option</SelectItem>
+                        {timezones.map((tz) => (
+                          <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Row: Secondary Phone, Fax */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Secondary Phone</Label>
+                    <Input {...register("secondary_phone")} placeholder="(555) 123-4567" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Fax</Label>
+                    <Input {...register("fax")} placeholder="(555) 123-4567" />
+                  </div>
+                </div>
+
+                {/* Row: Secondary Email, Email Domain */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Secondary Email</Label>
+                    <Input type="email" {...register("secondary_email")} placeholder="contact@company.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email Domain</Label>
+                    <Input {...register("email_domain")} placeholder="company.com" />
+                  </div>
+                </div>
+
+                {/* Row: Email Opt-in, SMS Opt-in */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Email Opt-in</Label>
+                    <Select value={watch("email_opt_in") || "single_opt_in"} onValueChange={(v) => setValue("email_opt_in", v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {optInStatuses.map((s) => (
+                          <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>SMS Opt-in</Label>
+                    <Select value={watch("sms_opt_in") || "single_opt_in"} onValueChange={(v) => setValue("sms_opt_in", v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {optInStatuses.map((s) => (
+                          <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Row: Twitter, LinkedIn */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Twitter Username</Label>
+                    <Input {...register("twitter_username")} placeholder="@username" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>LinkedIn URL</Label>
+                    <Input {...register("linkedin_url")} placeholder="https://linkedin.com/company/..." />
+                  </div>
+                </div>
+
+                {/* Row: Facebook */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Facebook URL</Label>
+                    <Input {...register("facebook_url")} placeholder="https://facebook.com/..." />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </section>
 
           {/* ══════════════════════════════════════════════════════════════════
@@ -711,13 +735,13 @@ export function CorporationForm({
           <section id="address-details" className="space-y-6">
             <h3 className="text-lg font-semibold border-b pb-2">Address Details</h3>
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-              {/* Billing Address */}
-              <div className="space-y-4">
-                <h4 className="font-medium text-muted-foreground">Billing Address</h4>
+            {/* Billing Address (Always visible) */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-muted-foreground">Billing Address</h4>
 
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Billing Country</Label>
+                  <Label>Country</Label>
                   <Select value={watch("billing_country") || "United States"} onValueChange={(v) => setValue("billing_country", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -728,24 +752,8 @@ export function CorporationForm({
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="space-y-2">
-                  <Label>Billing Address</Label>
-                  <Textarea {...register("billing_street")} placeholder="Street address" rows={2} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Billing PO Box</Label>
-                  <Input {...register("billing_po_box")} placeholder="PO Box" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Billing City</Label>
-                  <Input {...register("billing_city")} placeholder="City" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Billing State</Label>
+                  <Label>State</Label>
                   <Select value={watch("billing_state") || ""} onValueChange={(v) => setValue("billing_state", v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
                     <SelectContent>
@@ -756,15 +764,32 @@ export function CorporationForm({
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="space-y-2">
-                  <Label>Billing Postal Code</Label>
-                  <Input {...register("billing_zip")} placeholder="ZIP / Postal Code" />
-                </div>
               </div>
 
-              {/* Shipping Address */}
-              <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Street Address</Label>
+                <Textarea {...register("billing_street")} placeholder="Street address" rows={2} />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Label>City</Label>
+                  <Input {...register("billing_city")} placeholder="City" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Postal Code</Label>
+                  <Input {...register("billing_zip")} placeholder="ZIP / Postal Code" />
+                </div>
+                <div className="space-y-2">
+                  <Label>PO Box</Label>
+                  <Input {...register("billing_po_box")} placeholder="PO Box" />
+                </div>
+              </div>
+            </div>
+
+            {/* Shipping Address (Only in more info) */}
+            {showMoreInfo && (
+              <div className="space-y-4 pt-4 border-t">
                 <div className="flex items-center justify-between">
                   <h4 className="font-medium text-muted-foreground">Shipping Address</h4>
                   <Button type="button" variant="outline" size="sm" onClick={copyBillingToShipping}>
@@ -772,53 +797,54 @@ export function CorporationForm({
                   </Button>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Shipping Country</Label>
-                  <Select value={watch("shipping_country") || "United States"} onValueChange={(v) => setValue("shipping_country", v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="United States">United States</SelectItem>
-                      <SelectItem value="Canada">Canada</SelectItem>
-                      <SelectItem value="Mexico">Mexico</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Country</Label>
+                    <Select value={watch("shipping_country") || "United States"} onValueChange={(v) => setValue("shipping_country", v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="United States">United States</SelectItem>
+                        <SelectItem value="Canada">Canada</SelectItem>
+                        <SelectItem value="Mexico">Mexico</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>State</Label>
+                    <Select value={watch("shipping_state") || ""} onValueChange={(v) => setValue("shipping_state", v === "__none__" ? "" : v)}>
+                      <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Select an Option</SelectItem>
+                        {usStates.map((st) => (
+                          <SelectItem key={st} value={st}>{st}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Shipping Address</Label>
+                  <Label>Street Address</Label>
                   <Textarea {...register("shipping_street")} placeholder="Street address" rows={2} />
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Shipping PO Box</Label>
-                  <Input {...register("shipping_po_box")} placeholder="PO Box" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Shipping City</Label>
-                  <Input {...register("shipping_city")} placeholder="City" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Shipping State</Label>
-                  <Select value={watch("shipping_state") || ""} onValueChange={(v) => setValue("shipping_state", v === "__none__" ? "" : v)}>
-                    <SelectTrigger><SelectValue placeholder="Select an Option" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">Select an Option</SelectItem>
-                      {usStates.map((st) => (
-                        <SelectItem key={st} value={st}>{st}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Shipping Postal Code</Label>
-                  <Input {...register("shipping_zip")} placeholder="ZIP / Postal Code" />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label>City</Label>
+                    <Input {...register("shipping_city")} placeholder="City" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Postal Code</Label>
+                    <Input {...register("shipping_zip")} placeholder="ZIP / Postal Code" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>PO Box</Label>
+                    <Input {...register("shipping_po_box")} placeholder="PO Box" />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </section>
 
           {/* ══════════════════════════════════════════════════════════════════
@@ -849,7 +875,7 @@ export function CorporationForm({
 
                 {!primaryContactId ? (
                   <p className="text-xs text-muted-foreground">
-                    Set a primary contact to grant portal access for this organization.
+                    Set a primary contact to grant portal access for this corporation.
                   </p>
                 ) : portalAccess?.hasAccess ? (
                   <div className="text-xs text-muted-foreground space-y-1">
@@ -890,7 +916,7 @@ export function CorporationForm({
               <Label>Description</Label>
               <Textarea
                 {...register("description")}
-                placeholder="Enter a description of this organization..."
+                placeholder="Enter a description of this corporation..."
                 rows={6}
                 className="resize-y"
               />
@@ -900,7 +926,7 @@ export function CorporationForm({
           {/* Submit Button */}
           <div className="flex justify-end border-t pt-4">
             <Button type="submit" disabled={isLoading} size="lg">
-              {isLoading ? "Saving..." : isEdit ? "Update Organization" : "Save"}
+              {isLoading ? "Saving..." : isEdit ? "Update Corporation" : "Save"}
             </Button>
           </div>
 

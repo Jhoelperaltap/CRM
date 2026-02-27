@@ -471,19 +471,19 @@ export default function CorporationDetailPage() {
 
             <TabsContent value="details" className="mt-4 space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
-                {/* Organization Details */}
+                {/* Corporation Details */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Building2 className="h-5 w-5 text-primary" />
-                      Organization Details
+                      Corporation Details
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="text-sm">
                     <InfoRow label="Account Number" value={corp.account_number} />
                     <InfoRow label="Entity Type" value={formatEntityType(corp.entity_type)} />
-                    <InfoRow label="Organization Type" value={corp.organization_type ? corp.organization_type.charAt(0).toUpperCase() + corp.organization_type.slice(1) : "-"} />
-                    <InfoRow label="Organization Status" value={corp.organization_status ? corp.organization_status.charAt(0).toUpperCase() + corp.organization_status.slice(1) : "-"} />
+                    <InfoRow label="Corporation Type" value={corp.organization_type ? corp.organization_type.charAt(0).toUpperCase() + corp.organization_type.slice(1) : "-"} />
+                    <InfoRow label="Corporation Status" value={corp.organization_status ? corp.organization_status.charAt(0).toUpperCase() + corp.organization_status.slice(1) : "-"} />
                     <InfoRow label="EIN" value={corp.ein} />
                     <InfoRow label="State ID" value={corp.state_id} />
                     <div className="flex justify-between py-2 border-b border-muted">
@@ -890,6 +890,70 @@ export default function CorporationDetailPage() {
                       >
                         View all ({appointments.length}) <ExternalLink className="h-3 w-3" />
                       </Link>
+                    )}
+                  </div>
+                )}
+              </SidebarSection>
+
+              {/* Related Corporations */}
+              <SidebarSection
+                title="Related Corporations"
+                icon={<Link2 className="h-4 w-4 text-purple-600" />}
+                count={corp.related_corporations?.length || 0}
+                defaultOpen={(corp.related_corporations?.length || 0) > 0}
+              >
+                {!corp.related_corporations || corp.related_corporations.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No related corporations</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {corp.related_corporations.slice(0, 5).map((rc) => (
+                      <Link
+                        key={rc.id}
+                        href={`/corporations/${rc.id}`}
+                        className="block p-2 rounded border hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium text-sm truncate">{rc.name}</span>
+                        </div>
+                      </Link>
+                    ))}
+                    {corp.related_corporations.length > 5 && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        +{corp.related_corporations.length - 5} more
+                      </p>
+                    )}
+                  </div>
+                )}
+              </SidebarSection>
+
+              {/* Subsidiaries (corporations that have this one as member_of) */}
+              <SidebarSection
+                title="Subsidiaries"
+                icon={<Building2 className="h-4 w-4 text-teal-600" />}
+                count={corp.subsidiaries?.length || 0}
+                defaultOpen={(corp.subsidiaries?.length || 0) > 0}
+              >
+                {!corp.subsidiaries || corp.subsidiaries.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No subsidiaries</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {corp.subsidiaries.slice(0, 5).map((sub) => (
+                      <Link
+                        key={sub.id}
+                        href={`/corporations/${sub.id}`}
+                        className="block p-2 rounded border hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium text-sm truncate">{sub.name}</span>
+                        </div>
+                      </Link>
+                    ))}
+                    {corp.subsidiaries.length > 5 && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        +{corp.subsidiaries.length - 5} more
+                      </p>
                     )}
                   </div>
                 )}

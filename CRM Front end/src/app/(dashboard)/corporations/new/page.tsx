@@ -24,7 +24,7 @@ export default function NewCorporationPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Creating Organization" backHref="/corporations" />
+      <PageHeader title="Creating Corporation" backHref="/corporations" />
       <div className="rounded-lg border bg-card">
         <CorporationForm
           onSubmit={handleSubmit}

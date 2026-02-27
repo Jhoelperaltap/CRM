@@ -11,7 +11,7 @@ class ContactFilter(django_filters.FilterSet):
     --------------------------
     - ``status``           exact match (active / inactive / lead)
     - ``assigned_to``      exact UUID of the assigned user
-    - ``corporation``      exact UUID of the linked corporation
+    - ``corporation``      exact UUID of linked corporation (searches M2M)
     - ``created_after``    contacts created on or after this date
     - ``created_before``   contacts created on or before this date
     - ``is_starred``       boolean -- filters to contacts the requesting
@@ -23,7 +23,8 @@ class ContactFilter(django_filters.FilterSet):
 
     status = django_filters.CharFilter(field_name="status", lookup_expr="exact")
     assigned_to = django_filters.UUIDFilter(field_name="assigned_to__id")
-    corporation = django_filters.UUIDFilter(field_name="corporation__id")
+    # Use M2M corporations field to find all contacts linked to a corporation
+    corporation = django_filters.UUIDFilter(field_name="corporations__id")
     created_after = django_filters.DateFilter(
         field_name="created_at", lookup_expr="date__gte"
     )

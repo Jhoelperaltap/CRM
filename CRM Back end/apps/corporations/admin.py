@@ -19,6 +19,7 @@ class CorporationAdmin(admin.ModelAdmin):
     search_fields = ("name", "legal_name", "ein", "email", "phone")
     ordering = ("name",)
     readonly_fields = ("id", "created_by", "created_at", "updated_at")
+    filter_horizontal = ["related_corporations"]  # Better UI for M2M
 
     fieldsets = (
         (
@@ -74,6 +75,8 @@ class CorporationAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "primary_contact",
+                    "member_of",
+                    "related_corporations",
                     "assigned_to",
                     "created_by",
                 ),

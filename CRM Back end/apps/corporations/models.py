@@ -492,6 +492,13 @@ class Corporation(TimeStampedModel):
         verbose_name=_("member of"),
         help_text=_("Parent organization"),
     )
+    # ManyToMany for linking related corporations (peer relationships)
+    related_corporations = models.ManyToManyField(
+        "self",
+        blank=True,
+        verbose_name=_("related corporations"),
+        help_text=_("Other corporations related to this one"),
+    )
     primary_contact = models.ForeignKey(
         "contacts.Contact",
         on_delete=models.SET_NULL,

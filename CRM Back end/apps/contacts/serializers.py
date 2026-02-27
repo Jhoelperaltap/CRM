@@ -47,11 +47,8 @@ class ContactListSerializer(serializers.ModelSerializer):
     """
 
     full_name = serializers.CharField(read_only=True)
-    corporation_name = serializers.CharField(
-        source="corporation.name",
-        read_only=True,
-        default=None,
-    )
+    corporation_name = serializers.SerializerMethodField()
+    corporations_count = serializers.SerializerMethodField()
     assigned_to_name = serializers.SerializerMethodField()
     is_starred = serializers.SerializerMethodField()
 
@@ -77,6 +74,7 @@ class ContactListSerializer(serializers.ModelSerializer):
             "mailing_state",
             "office_services",
             "corporation_name",
+            "corporations_count",
             "assigned_to_name",
             "is_starred",
             "created_at",
@@ -84,6 +82,17 @@ class ContactListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     # -- helpers --
+    def get_corporation_name(self, obj):
+        """Returns name of primary corporation for display."""
+        if obj.primary_corporation:
+            return obj.primary_corporation.name
+        first_corp = obj.corporations.first()
+        return first_corp.name if first_corp else None
+
+    def get_corporations_count(self, obj):
+        """Returns count of corporations this contact belongs to."""
+        return obj.corporations.count()
+
     def get_assigned_to_name(self, obj):
         if obj.assigned_to_id:
             return obj.assigned_to.get_full_name()
@@ -105,11 +114,12 @@ class ContactListSerializer(serializers.ModelSerializer):
 class ContactDetailSerializer(serializers.ModelSerializer):
     """
     Full serializer used for the retrieve (detail) endpoint.
-    Embeds nested summaries for corporation, assigned_to, created_by, reports_to, and sla.
+    Embeds nested summaries for corporations, assigned_to, created_by, reports_to, and sla.
     """
 
     full_name = serializers.CharField(read_only=True)
-    corporation = _CorporationSummarySerializer(read_only=True)
+    corporations = _CorporationSummarySerializer(many=True, read_only=True)
+    primary_corporation = _CorporationSummarySerializer(read_only=True)
     assigned_to = _UserSummarySerializer(read_only=True)
     created_by = _UserSummarySerializer(read_only=True)
     reports_to = _ContactSummarySerializer(read_only=True)
@@ -191,7 +201,8 @@ class ContactDetailSerializer(serializers.ModelSerializer):
             # Image
             "image",
             # Relationships
-            "corporation",
+            "corporations",
+            "primary_corporation",
             "assigned_to",
             "created_by",
             "sla",
@@ -297,7 +308,8 @@ class ContactCreateUpdateSerializer(serializers.ModelSerializer):
             # Image
             "image",
             # Relationships
-            "corporation",
+            "corporations",
+            "primary_corporation",
             "assigned_to",
             "sla",
             # Office Services

@@ -113,6 +113,8 @@ class CorporationListSerializer(serializers.ModelSerializer):
     primary_contact_name = serializers.SerializerMethodField()
     assigned_to_name = serializers.SerializerMethodField()
     member_of_name = serializers.SerializerMethodField()
+    contacts_count = serializers.SerializerMethodField()
+    related_corporations_count = serializers.SerializerMethodField()
     client_status = serializers.CharField(read_only=True)
     client_status_display = serializers.CharField(
         source="get_client_status_display", read_only=True
@@ -141,6 +143,8 @@ class CorporationListSerializer(serializers.ModelSerializer):
             "primary_contact_name",
             "assigned_to_name",
             "member_of_name",
+            "contacts_count",
+            "related_corporations_count",
             "created_at",
         ]
         read_only_fields = fields
@@ -162,6 +166,12 @@ class CorporationListSerializer(serializers.ModelSerializer):
             return obj.member_of.name
         return None
 
+    def get_contacts_count(self, obj):
+        return obj.contacts.count()
+
+    def get_related_corporations_count(self, obj):
+        return obj.related_corporations.count()
+
 
 # ---------------------------------------------------------------------------
 # Corporation — Detail (full)
@@ -169,7 +179,8 @@ class CorporationListSerializer(serializers.ModelSerializer):
 class CorporationDetailSerializer(serializers.ModelSerializer):
     """
     Full serializer used for retrieve views.
-    Includes nested summaries for primary_contact and assigned_to.
+    Includes nested summaries for primary_contact, assigned_to, contacts,
+    related_corporations, and subsidiaries.
     """
 
     primary_contact = _ContactSummarySerializer(read_only=True)
@@ -187,6 +198,12 @@ class CorporationDetailSerializer(serializers.ModelSerializer):
     closed_at = serializers.DateTimeField(read_only=True)
     pause_reason = serializers.CharField(read_only=True)
     paused_at = serializers.DateTimeField(read_only=True)
+    # Related entities
+    contacts = _ContactSummarySerializer(many=True, read_only=True)
+    related_corporations = _CorporationSummarySerializer(many=True, read_only=True)
+    subsidiaries = serializers.SerializerMethodField()
+    contacts_count = serializers.SerializerMethodField()
+    related_corporations_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Corporation
@@ -263,6 +280,12 @@ class CorporationDetailSerializer(serializers.ModelSerializer):
             "assigned_to",
             "created_by",
             "sla",
+            # Related entities
+            "contacts",
+            "contacts_count",
+            "related_corporations",
+            "related_corporations_count",
+            "subsidiaries",
             # Other
             "description",
             "image",
@@ -271,6 +294,17 @@ class CorporationDetailSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = fields
+
+    def get_subsidiaries(self, obj):
+        """Returns corporations that have this corporation as their member_of."""
+        subsidiaries = Corporation.objects.filter(member_of=obj)
+        return _CorporationSummarySerializer(subsidiaries, many=True).data
+
+    def get_contacts_count(self, obj):
+        return obj.contacts.count()
+
+    def get_related_corporations_count(self, obj):
+        return obj.related_corporations.count()
 
 
 # ---------------------------------------------------------------------------
@@ -348,6 +382,7 @@ class CorporationCreateUpdateSerializer(serializers.ModelSerializer):
             "primary_contact",
             "assigned_to",
             "sla",
+            "related_corporations",
             # Other
             "description",
             "image",

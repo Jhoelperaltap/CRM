@@ -86,8 +86,9 @@ const contactSchema = z.object({
   linkedin_followers: z.number().optional().nullable(),
   facebook_url: z.string().optional(),
   facebook_followers: z.number().optional().nullable(),
-  // Relationships
-  corporation: z.string().optional(),
+  // Relationships - Multi-corporation support
+  corporations: z.array(z.string()).optional(),
+  primary_corporation: z.string().optional(),
   assigned_to: z.string().optional(),
   sla: z.string().optional(),
   // Office Services
@@ -339,7 +340,10 @@ export function ContactForm({ defaultValues, onSubmit, isLoading, isEdit, contac
   const handleFormSubmit = async (data: ContactFormData) => {
     // Clean empty strings for FK fields
     const cleanedData: Record<string, unknown> = { ...data };
-    if (!cleanedData.corporation) delete cleanedData.corporation;
+    if (!cleanedData.primary_corporation) delete cleanedData.primary_corporation;
+    if (!cleanedData.corporations || (cleanedData.corporations as string[]).length === 0) {
+      delete cleanedData.corporations;
+    }
     if (!cleanedData.assigned_to) delete cleanedData.assigned_to;
     if (!cleanedData.reports_to) delete cleanedData.reports_to;
     if (!cleanedData.sla) delete cleanedData.sla;
@@ -445,7 +449,7 @@ export function ContactForm({ defaultValues, onSubmit, isLoading, isEdit, contac
               </div>
             </div>
 
-            {/* Row 2: Title, Department, Reports To, Organization */}
+            {/* Row 2: Title, Department, Reports To, Primary Corporation */}
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-4">
               <div className="space-y-2">
                 <Label>Title</Label>
@@ -473,12 +477,22 @@ export function ContactForm({ defaultValues, onSubmit, isLoading, isEdit, contac
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Organization</Label>
+                <Label>Primary Corporation</Label>
                 <Select
-                  value={watch("corporation") || ""}
-                  onValueChange={(v) => setValue("corporation", v === "__none__" ? "" : v)}
+                  value={watch("primary_corporation") || ""}
+                  onValueChange={(v) => {
+                    const newValue = v === "__none__" ? "" : v;
+                    setValue("primary_corporation", newValue);
+                    // Also add to corporations list if not already there
+                    if (newValue) {
+                      const currentCorps = watch("corporations") || [];
+                      if (!currentCorps.includes(newValue)) {
+                        setValue("corporations", [...currentCorps, newValue]);
+                      }
+                    }
+                  }}
                 >
-                  <SelectTrigger><SelectValue placeholder="Select organization" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Select primary corporation" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">None</SelectItem>
                     {corporations.map((corp) => (
@@ -488,6 +502,60 @@ export function ContactForm({ defaultValues, onSubmit, isLoading, isEdit, contac
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* Row 2b: Additional Corporations */}
+            <div className="mt-4">
+              <div className="space-y-2">
+                <Label>Additional Corporations</Label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {(watch("corporations") || [])
+                    .filter(corpId => corpId !== watch("primary_corporation"))
+                    .map(corpId => {
+                      const corp = corporations.find(c => c.id === corpId);
+                      return corp ? (
+                        <Badge key={corpId} variant="secondary" className="flex items-center gap-1">
+                          {corp.name}
+                          <button
+                            type="button"
+                            className="ml-1 hover:text-destructive"
+                            onClick={() => {
+                              const currentCorps = watch("corporations") || [];
+                              setValue("corporations", currentCorps.filter(id => id !== corpId));
+                            }}
+                          >
+                            &times;
+                          </button>
+                        </Badge>
+                      ) : null;
+                    })}
+                </div>
+                <Select
+                  value=""
+                  onValueChange={(v) => {
+                    if (v && v !== "__none__") {
+                      const currentCorps = watch("corporations") || [];
+                      if (!currentCorps.includes(v)) {
+                        setValue("corporations", [...currentCorps, v]);
+                      }
+                    }
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Add corporation..." /></SelectTrigger>
+                  <SelectContent>
+                    {corporations
+                      .filter(corp => !(watch("corporations") || []).includes(corp.id))
+                      .map((corp) => (
+                        <SelectItem key={corp.id} value={corp.id}>
+                          {corp.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Contact can belong to multiple corporations. The primary corporation is used for display.
+                </p>
               </div>
             </div>
 

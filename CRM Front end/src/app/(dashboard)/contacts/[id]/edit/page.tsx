@@ -96,8 +96,9 @@ export default function EditContactPage() {
     linkedin_followers: contact.linkedin_followers || undefined,
     facebook_url: contact.facebook_url || "",
     facebook_followers: contact.facebook_followers || undefined,
-    // Relationships
-    corporation: contact.corporation?.id || "",
+    // Relationships - Multi-corporation support
+    corporations: contact.corporations?.map(c => c.id) || [],
+    primary_corporation: contact.primary_corporation?.id || "",
     assigned_to: contact.assigned_to?.id || "",
     sla: contact.sla?.id || "",
     // Other

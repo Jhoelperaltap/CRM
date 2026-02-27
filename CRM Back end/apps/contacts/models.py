@@ -432,13 +432,22 @@ class Contact(TimeStampedModel):
     )
 
     # -- Relationships --
-    corporation = models.ForeignKey(
+    # ManyToMany relationship: a contact can belong to multiple corporations
+    corporations = models.ManyToManyField(
+        "corporations.Corporation",
+        related_name="contacts",
+        verbose_name=_("corporations"),
+        blank=True,
+    )
+    # Primary corporation for display purposes (optional)
+    primary_corporation = models.ForeignKey(
         "corporations.Corporation",
         on_delete=models.SET_NULL,
-        related_name="contacts",
-        verbose_name=_("organization"),
+        related_name="primary_contacts",
+        verbose_name=_("primary corporation"),
         null=True,
         blank=True,
+        help_text=_("Main corporation for this contact"),
     )
     assigned_to = models.ForeignKey(
         "users.User",
@@ -507,10 +516,10 @@ class Contact(TimeStampedModel):
                 fields=["status", "assigned_to"],
                 name="idx_contact_status_assigned",
             ),
-            # Common filter: contacts by corporation
+            # Common filter: contacts by primary corporation
             models.Index(
-                fields=["corporation", "status"],
-                name="idx_contact_corp_status",
+                fields=["primary_corporation", "status"],
+                name="idx_contact_prim_corp_status",
             ),
         ]
 
@@ -540,6 +549,19 @@ class Contact(TimeStampedModel):
         parts.append(self.first_name)
         parts.append(self.last_name)
         return " ".join(parts).strip()
+
+    @property
+    def corporation(self):
+        """Backward compatibility: returns primary corporation or first corporation."""
+        if self.primary_corporation:
+            return self.primary_corporation
+        return self.corporations.first()
+
+    @property
+    def corporation_name(self):
+        """Returns name of primary corporation for display."""
+        corp = self.corporation
+        return corp.name if corp else None
 
 
 # ---------------------------------------------------------------------------

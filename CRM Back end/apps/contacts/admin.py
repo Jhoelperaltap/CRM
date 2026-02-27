@@ -11,15 +11,16 @@ class ContactAdmin(admin.ModelAdmin):
         "email",
         "phone",
         "status",
-        "corporation",
+        "primary_corporation",
         "assigned_to",
         "created_at",
     ]
     list_filter = ["status", "state", "country", "created_at"]
     search_fields = ["first_name", "last_name", "email", "phone"]
-    list_select_related = ["corporation", "assigned_to"]
+    list_select_related = ["primary_corporation", "assigned_to"]
     readonly_fields = ["id", "created_at", "updated_at"]
-    raw_id_fields = ["corporation", "assigned_to", "created_by"]
+    raw_id_fields = ["primary_corporation", "assigned_to", "created_by"]
+    filter_horizontal = ["corporations"]  # Better UI for M2M
     ordering = ["last_name", "first_name"]
     fieldsets = (
         (
@@ -78,7 +79,8 @@ class ContactAdmin(admin.ModelAdmin):
             "Relationships",
             {
                 "fields": (
-                    "corporation",
+                    "corporations",
+                    "primary_corporation",
                     "assigned_to",
                     "created_by",
                 ),
