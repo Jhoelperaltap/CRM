@@ -40,7 +40,9 @@ class PortalChangePasswordSerializer(serializers.Serializer):
             )
         if attrs["current_password"] == attrs["new_password"]:
             raise serializers.ValidationError(
-                {"new_password": "New password must be different from current password."}
+                {
+                    "new_password": "New password must be different from current password."
+                }
             )
         return attrs
 
