@@ -82,7 +82,8 @@ CRM Back end/
 │   ├── corporations/       # Corporation/business entity management
 │   ├── cases/              # TaxCase and TaxCaseNote — central domain entity
 │   ├── dashboard/          # Dashboard widgets, user preferences
-│   └── audit/              # Audit logging middleware and endpoints
+│   ├── audit/              # Audit logging middleware and endpoints
+│   └── portal/             # Client portal: rental properties, messages, documents
 └── requirements/
     ├── base.txt            # Core deps (Django 5.1, DRF, simplejwt, celery, etc.)
     └── development.txt     # Dev tools (pytest-django, black, ruff, factory-boy, etc.)
@@ -96,6 +97,8 @@ CRM Front end/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── (dashboard)/        # Protected dashboard routes
 │   │   ├── portal/             # Client portal (EJFLOW Client)
+│   │   │   ├── dashboard/      # Portal dashboard with widgets
+│   │   │   └── rentals/        # Rental properties management
 │   │   └── login/              # Authentication pages
 │   ├── components/
 │   │   ├── layout/
@@ -141,6 +144,8 @@ All endpoints under `/api/v1/`. Key route groups:
 | `/api/v1/preferences/` | dashboard (urls_preferences) | User theme/sidebar settings |
 | `/api/v1/audit/` | audit | Audit logs |
 | `/api/v1/search/` | core | Global search |
+| `/api/v1/portal/auth/` | portal | Client portal authentication |
+| `/api/v1/portal/rentals/` | portal (urls_rental) | Rental properties: CRUD, transactions, summaries, PDF export |
 | `/api/docs/` | — | Swagger UI |
 
 ### Infrastructure
