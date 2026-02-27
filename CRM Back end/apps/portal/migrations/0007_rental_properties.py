@@ -90,7 +90,10 @@ class Migration(migrations.Migration):
                     models.CharField(max_length=255, verbose_name="street address"),
                 ),
                 ("address_city", models.CharField(max_length=100, verbose_name="city")),
-                ("address_state", models.CharField(max_length=50, verbose_name="state")),
+                (
+                    "address_state",
+                    models.CharField(max_length=50, verbose_name="state"),
+                ),
                 (
                     "address_zip",
                     models.CharField(max_length=20, verbose_name="ZIP code"),

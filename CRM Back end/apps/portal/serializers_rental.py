@@ -44,12 +44,19 @@ class RentalExpenseCategoryCreateSerializer(serializers.ModelSerializer):
         """Ensure slug is unique for this contact or system categories."""
         contact = self.context.get("contact")
         # Check if slug exists as system category
-        if RentalExpenseCategory.objects.filter(slug=value, contact__isnull=True).exists():
+        if RentalExpenseCategory.objects.filter(
+            slug=value, contact__isnull=True
+        ).exists():
             raise serializers.ValidationError(
                 "A system category with this slug already exists."
             )
         # Check if slug exists for this contact
-        if contact and RentalExpenseCategory.objects.filter(slug=value, contact=contact).exists():
+        if (
+            contact
+            and RentalExpenseCategory.objects.filter(
+                slug=value, contact=contact
+            ).exists()
+        ):
             raise serializers.ValidationError(
                 "You already have a category with this slug."
             )
@@ -215,7 +222,10 @@ class RentalTransactionCreateSerializer(serializers.ModelSerializer):
         category = attrs.get("category")
 
         # Expenses require a category
-        if transaction_type == RentalTransaction.TransactionType.EXPENSE and not category:
+        if (
+            transaction_type == RentalTransaction.TransactionType.EXPENSE
+            and not category
+        ):
             raise serializers.ValidationError(
                 {"category": "Category is required for expense transactions."}
             )

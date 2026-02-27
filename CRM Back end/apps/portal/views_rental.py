@@ -34,7 +34,20 @@ from apps.portal.serializers_rental import (
 )
 
 # Month mapping for summary calculations
-MONTH_NAMES = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+MONTH_NAMES = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+]
 
 
 def _empty_monthly_values():
@@ -84,9 +97,7 @@ def _calculate_property_summary(property_obj, year):
 
     # Build expense categories list with all active categories
     contact = property_obj.contact
-    all_categories = RentalExpenseCategory.objects.filter(
-        is_active=True
-    ).filter(
+    all_categories = RentalExpenseCategory.objects.filter(is_active=True).filter(
         # System categories OR this contact's categories
         contact__isnull=True
     ) | RentalExpenseCategory.objects.filter(
@@ -103,12 +114,14 @@ def _calculate_property_summary(property_obj, year):
         else:
             values = _empty_monthly_values()
 
-        expenses_list.append({
-            "category_id": cat.id,
-            "category_name": cat.name,
-            "category_slug": cat.slug,
-            "values": {k: v for k, v in values.items() if k != "_category"},
-        })
+        expenses_list.append(
+            {
+                "category_id": cat.id,
+                "category_name": cat.name,
+                "category_slug": cat.slug,
+                "values": {k: v for k, v in values.items() if k != "_category"},
+            }
+        )
 
     return {
         "year": year,
@@ -270,31 +283,37 @@ class PortalRentalPropertyViewSet(viewsets.ViewSet):
 
         year = int(request.query_params.get("year", timezone.now().year))
 
-        transactions = RentalTransaction.objects.filter(
-            property=prop,
-            transaction_date__year=year,
-        ).select_related("category").order_by("transaction_date")
+        transactions = (
+            RentalTransaction.objects.filter(
+                property=prop,
+                transaction_date__year=year,
+            )
+            .select_related("category")
+            .order_by("transaction_date")
+        )
 
         # Create CSV
         output = StringIO()
         writer = csv.writer(output)
 
         # Header
-        writer.writerow([
-            "Date", "Type", "Category", "Amount", "Debit", "Credit", "Description"
-        ])
+        writer.writerow(
+            ["Date", "Type", "Category", "Amount", "Debit", "Credit", "Description"]
+        )
 
         # Data rows
         for txn in transactions:
-            writer.writerow([
-                txn.transaction_date.strftime("%Y-%m-%d"),
-                txn.get_transaction_type_display(),
-                txn.category.name if txn.category else "",
-                str(txn.amount),
-                str(txn.debit_amount),
-                str(txn.credit_amount),
-                txn.description,
-            ])
+            writer.writerow(
+                [
+                    txn.transaction_date.strftime("%Y-%m-%d"),
+                    txn.get_transaction_type_display(),
+                    txn.category.name if txn.category else "",
+                    str(txn.amount),
+                    str(txn.debit_amount),
+                    str(txn.credit_amount),
+                    txn.description,
+                ]
+            )
 
         # Create response
         response = HttpResponse(output.getvalue(), content_type="text/csv")
@@ -571,13 +590,15 @@ class PortalRentalDashboardView(APIView):
         for prop in properties:
             ytd = _calculate_ytd_for_property(prop, year)
 
-            properties_data.append({
-                "property_id": prop.id,
-                "property_name": prop.name,
-                "total_income": ytd["ytd_income"],
-                "total_expenses": ytd["ytd_expenses"],
-                "net_profit": ytd["ytd_net_profit"],
-            })
+            properties_data.append(
+                {
+                    "property_id": prop.id,
+                    "property_name": prop.name,
+                    "total_income": ytd["ytd_income"],
+                    "total_expenses": ytd["ytd_expenses"],
+                    "net_profit": ytd["ytd_net_profit"],
+                }
+            )
 
             total_income += ytd["ytd_income"]
             total_expenses += ytd["ytd_expenses"]

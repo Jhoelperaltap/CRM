@@ -15,11 +15,23 @@ from apps.portal.views_rental import (
 )
 
 router = DefaultRouter()
-router.register(r"properties", PortalRentalPropertyViewSet, basename="portal-rental-properties")
-router.register(r"transactions", PortalRentalTransactionViewSet, basename="portal-rental-transactions")
-router.register(r"categories", PortalRentalCategoryViewSet, basename="portal-rental-categories")
+router.register(
+    r"properties", PortalRentalPropertyViewSet, basename="portal-rental-properties"
+)
+router.register(
+    r"transactions",
+    PortalRentalTransactionViewSet,
+    basename="portal-rental-transactions",
+)
+router.register(
+    r"categories", PortalRentalCategoryViewSet, basename="portal-rental-categories"
+)
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("dashboard/", PortalRentalDashboardView.as_view(), name="portal-rental-dashboard"),
+    path(
+        "dashboard/",
+        PortalRentalDashboardView.as_view(),
+        name="portal-rental-dashboard",
+    ),
 ]

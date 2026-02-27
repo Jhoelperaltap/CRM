@@ -171,8 +171,8 @@ class RentalTransaction(TimeStampedModel):
     """
 
     class TransactionType(models.TextChoices):
-        INCOME = "income", _("Income")      # Credit - money comes in
-        EXPENSE = "expense", _("Expense")   # Debit - money goes out
+        INCOME = "income", _("Income")  # Credit - money comes in
+        EXPENSE = "expense", _("Expense")  # Debit - money goes out
 
     property = models.ForeignKey(
         RentalProperty,

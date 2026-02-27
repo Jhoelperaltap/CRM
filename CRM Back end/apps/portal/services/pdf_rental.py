@@ -20,11 +20,33 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-MONTH_NAMES = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+MONTH_NAMES = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+]
 MONTH_LABELS = {
-    "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr",
-    "may": "May", "jun": "Jun", "jul": "Jul", "aug": "Aug",
-    "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec",
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec",
 }
 
 
@@ -43,7 +65,9 @@ def _get_month_value(values: dict, month: str) -> Decimal:
     return Decimal(str(val))
 
 
-def generate_rental_summary_pdf(summary_data: dict[str, Any], contact_name: str = "") -> bytes:
+def generate_rental_summary_pdf(
+    summary_data: dict[str, Any], contact_name: str = ""
+) -> bytes:
     """
     Generate a PDF for a rental property monthly summary.
 
@@ -173,7 +197,6 @@ def generate_rental_summary_pdf(summary_data: dict[str, Any], contact_name: str 
         ("ALIGN", (0, 0), (-1, 0), "CENTER"),
         ("BOTTOMPADDING", (0, 0), (-1, 0), 6),
         ("TOPPADDING", (0, 0), (-1, 0), 6),
-
         # All cells
         ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
         ("FONTSIZE", (0, 1), (-1, -1), 8),
@@ -181,20 +204,16 @@ def generate_rental_summary_pdf(summary_data: dict[str, Any], contact_name: str 
         ("ALIGN", (0, 1), (0, -1), "LEFT"),
         ("BOTTOMPADDING", (0, 1), (-1, -1), 4),
         ("TOPPADDING", (0, 1), (-1, -1), 4),
-
         # Grid lines
         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#d1d5db")),
-
         # Income row (row 1)
         ("BACKGROUND", (0, 1), (-1, 1), colors.HexColor("#ecfdf5")),
         ("FONTNAME", (0, 1), (-1, 1), "Helvetica-Bold"),
         ("TEXTCOLOR", (0, 1), (-1, 1), colors.HexColor("#047857")),
-
         # Expenses header (row 2)
         ("BACKGROUND", (0, 2), (-1, 2), colors.HexColor("#f3f4f6")),
         ("FONTNAME", (0, 2), (0, 2), "Helvetica-Bold"),
         ("TEXTCOLOR", (0, 2), (0, 2), colors.HexColor("#374151")),
-
         # Total column
         ("BACKGROUND", (-1, 1), (-1, -1), colors.HexColor("#f9fafb")),
         ("FONTNAME", (-1, 1), (-1, -1), "Helvetica-Bold"),
@@ -202,21 +221,47 @@ def generate_rental_summary_pdf(summary_data: dict[str, Any], contact_name: str 
 
     # Total expenses row (second to last)
     total_exp_row_idx = len(data) - 2
-    table_style.extend([
-        ("BACKGROUND", (0, total_exp_row_idx), (-1, total_exp_row_idx), colors.HexColor("#fef2f2")),
-        ("FONTNAME", (0, total_exp_row_idx), (-1, total_exp_row_idx), "Helvetica-Bold"),
-        ("TEXTCOLOR", (0, total_exp_row_idx), (-1, total_exp_row_idx), colors.HexColor("#b91c1c")),
-    ])
+    table_style.extend(
+        [
+            (
+                "BACKGROUND",
+                (0, total_exp_row_idx),
+                (-1, total_exp_row_idx),
+                colors.HexColor("#fef2f2"),
+            ),
+            (
+                "FONTNAME",
+                (0, total_exp_row_idx),
+                (-1, total_exp_row_idx),
+                "Helvetica-Bold",
+            ),
+            (
+                "TEXTCOLOR",
+                (0, total_exp_row_idx),
+                (-1, total_exp_row_idx),
+                colors.HexColor("#b91c1c"),
+            ),
+        ]
+    )
 
     # Net cash flow row (last row)
     net_row_idx = len(data) - 1
     net_total = _get_month_value(net_cash_flow, "total")
-    net_color = colors.HexColor("#047857") if net_total >= 0 else colors.HexColor("#b91c1c")
-    table_style.extend([
-        ("BACKGROUND", (0, net_row_idx), (-1, net_row_idx), colors.HexColor("#eff6ff")),
-        ("FONTNAME", (0, net_row_idx), (-1, net_row_idx), "Helvetica-Bold"),
-        ("TEXTCOLOR", (0, net_row_idx), (-1, net_row_idx), net_color),
-    ])
+    net_color = (
+        colors.HexColor("#047857") if net_total >= 0 else colors.HexColor("#b91c1c")
+    )
+    table_style.extend(
+        [
+            (
+                "BACKGROUND",
+                (0, net_row_idx),
+                (-1, net_row_idx),
+                colors.HexColor("#eff6ff"),
+            ),
+            ("FONTNAME", (0, net_row_idx), (-1, net_row_idx), "Helvetica-Bold"),
+            ("TEXTCOLOR", (0, net_row_idx), (-1, net_row_idx), net_color),
+        ]
+    )
 
     table.setStyle(TableStyle(table_style))
     elements.append(table)
@@ -273,6 +318,7 @@ def generate_rental_summary_pdf(summary_data: dict[str, Any], contact_name: str 
         alignment=TA_CENTER,
     )
     from datetime import datetime
+
     generated_date = datetime.now().strftime("%B %d, %Y at %I:%M %p")
     elements.append(Paragraph(f"Generated on {generated_date}", footer_style))
 
