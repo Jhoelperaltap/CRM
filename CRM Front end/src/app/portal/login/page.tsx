@@ -86,8 +86,16 @@ export default function PortalLoginPage() {
           {/* Footer */}
           <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
             Need help? Contact{" "}
-            <a href="mailto:support@ejflow.com" className="text-blue-600 hover:underline">
-              support@ejflow.com
+            <a href="mailto:jhoelp@supportit.com" className="text-blue-600 hover:underline">
+              jhoelp@supportit.com
+            </a>
+          </p>
+
+          {/* Staff Login Link */}
+          <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
+            Staff member?{" "}
+            <a href="/login" className="text-blue-600 hover:underline">
+              Go to Staff Login
             </a>
           </p>
         </div>

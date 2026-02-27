@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TwoFactorVerify } from "@/components/auth/two-factor-verify";
 import { RecoveryCodeInput } from "@/components/auth/recovery-code-input";
-import { Clock } from "lucide-react";
+import { Clock, ExternalLink } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -160,6 +161,32 @@ export function LoginForm() {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
+
+          {/* Client Portal Link */}
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or
+              </span>
+            </div>
+          </div>
+
+          <Link href="/portal/login" className="block">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full gap-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Client Portal Access
+            </Button>
+          </Link>
+          <p className="text-center text-xs text-muted-foreground mt-2">
+            Are you a client? Access your portal here
+          </p>
         </form>
       </CardContent>
     </Card>
