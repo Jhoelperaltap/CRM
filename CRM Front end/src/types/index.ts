@@ -78,6 +78,9 @@ export interface User {
   // Avatar & Security
   avatar: string;
   is_active: boolean;
+  is_locked: boolean;
+  locked_until: string | null;
+  failed_login_attempts: number;
   last_login: string | null;
   last_login_ip: string | null;
   email_account: string | null;

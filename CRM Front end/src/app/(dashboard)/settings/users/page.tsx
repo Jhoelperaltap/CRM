@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getUsers, importUsersCsv, exportUsersUrl } from "@/lib/api/users";
+import { getUsers, getLockedUsers, importUsersCsv, exportUsersUrl } from "@/lib/api/users";
 import type { User } from "@/types";
 import type { PaginatedResponse } from "@/types/api";
 import { PageHeader } from "@/components/ui/page-header";
@@ -11,7 +11,7 @@ import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, Lock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -39,12 +39,23 @@ export default function UsersPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const params: Record<string, string> = { page: String(page) };
-      if (search) params.search = search;
-      if (statusFilter === "active") params.is_active = "true";
-      if (statusFilter === "inactive") params.is_active = "false";
-      const result = await getUsers(params);
-      setData(result);
+      if (statusFilter === "locked") {
+        // Use locked users endpoint
+        const lockedUsers = await getLockedUsers();
+        setData({
+          results: lockedUsers,
+          count: lockedUsers.length,
+          next: null,
+          previous: null,
+        });
+      } else {
+        const params: Record<string, string> = { page: String(page) };
+        if (search) params.search = search;
+        if (statusFilter === "active") params.is_active = "true";
+        if (statusFilter === "inactive") params.is_active = "false";
+        const result = await getUsers(params);
+        setData(result);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -121,6 +132,7 @@ export default function UsersPage() {
               <SelectItem value="all">All Users</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="locked">Locked</SelectItem>
             </SelectContent>
           </Select>
         }
@@ -161,16 +173,27 @@ export default function UsersPage() {
                     <TableCell>{user.role?.name || "-"}</TableCell>
                     <TableCell>{user.phone || "-"}</TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={
-                          user.is_active
-                            ? "border-0 bg-green-100 text-green-800 font-medium"
-                            : "border-0 bg-gray-100 text-gray-800 font-medium"
-                        }
-                      >
-                        {user.is_active ? "Active" : "Inactive"}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Badge
+                          variant="outline"
+                          className={
+                            user.is_active
+                              ? "border-0 bg-green-100 text-green-800 font-medium"
+                              : "border-0 bg-gray-100 text-gray-800 font-medium"
+                          }
+                        >
+                          {user.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                        {user.is_locked && (
+                          <Badge
+                            variant="outline"
+                            className="border-0 bg-red-100 text-red-800 font-medium gap-1"
+                          >
+                            <Lock className="h-3 w-3" />
+                            Locked
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {new Date(user.created_at).toLocaleDateString()}

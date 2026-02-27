@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getUser, deleteUser } from "@/lib/api/users";
+import { getUser, deleteUser, unlockUser } from "@/lib/api/users";
 import type { User } from "@/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Unlock, Lock, AlertTriangle } from "lucide-react";
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +20,7 @@ export default function UserDetailPage() {
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
 
   useEffect(() => {
     getUser(id)
@@ -41,6 +42,21 @@ export default function UserDetailPage() {
     }
   };
 
+  const handleUnlock = async () => {
+    setUnlocking(true);
+    try {
+      await unlockUser(id);
+      // Refresh user data
+      const updatedUser = await getUser(id);
+      setUser(updatedUser);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to unlock user");
+    } finally {
+      setUnlocking(false);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
   if (!user) return <div>User not found</div>;
 
@@ -51,6 +67,17 @@ export default function UserDetailPage() {
         backHref="/settings/users"
         actions={
           <>
+            {user.is_locked && (
+              <Button
+                variant="outline"
+                onClick={handleUnlock}
+                disabled={unlocking}
+                className="border-amber-500 text-amber-700 hover:bg-amber-50"
+              >
+                <Unlock className="mr-2 h-4 w-4" />
+                {unlocking ? "Unlocking..." : "Unlock Account"}
+              </Button>
+            )}
             <Button variant="outline" asChild>
               <Link href={`/settings/users/${id}/edit`}>
                 <Pencil className="mr-2 h-4 w-4" /> Edit
@@ -87,19 +114,66 @@ export default function UserDetailPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Status</span>
-              <Badge
-                variant="outline"
-                className={
-                  user.is_active
-                    ? "border-0 bg-green-100 text-green-800 font-medium"
-                    : "border-0 bg-gray-100 text-gray-800 font-medium"
-                }
-              >
-                {user.is_active ? "Active" : "Inactive"}
-              </Badge>
+              <div className="flex items-center gap-1.5">
+                <Badge
+                  variant="outline"
+                  className={
+                    user.is_active
+                      ? "border-0 bg-green-100 text-green-800 font-medium"
+                      : "border-0 bg-gray-100 text-gray-800 font-medium"
+                  }
+                >
+                  {user.is_active ? "Active" : "Inactive"}
+                </Badge>
+                {user.is_locked && (
+                  <Badge
+                    variant="outline"
+                    className="border-0 bg-red-100 text-red-800 font-medium gap-1"
+                  >
+                    <Lock className="h-3 w-3" />
+                    Locked
+                  </Badge>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        {user.is_locked && (
+          <Card className="border-amber-200 bg-amber-50">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-amber-800">
+                <AlertTriangle className="h-5 w-5" />
+                Account Locked
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <p className="text-amber-700">
+                This account has been locked due to multiple failed login attempts.
+              </p>
+              <div className="flex justify-between">
+                <span className="text-amber-700">Failed Attempts</span>
+                <span className="font-medium text-amber-900">{user.failed_login_attempts || 0}</span>
+              </div>
+              {user.locked_until && (
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Locked Until</span>
+                  <span className="font-medium text-amber-900">
+                    {new Date(user.locked_until).toLocaleString()}
+                  </span>
+                </div>
+              )}
+              <Button
+                onClick={handleUnlock}
+                disabled={unlocking}
+                className="w-full mt-2 bg-amber-600 hover:bg-amber-700"
+              >
+                <Unlock className="mr-2 h-4 w-4" />
+                {unlocking ? "Unlocking..." : "Unlock Account"}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

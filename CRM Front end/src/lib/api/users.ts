@@ -49,3 +49,13 @@ export function exportUsersUrl() {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
   return `${base}/users/export_csv/`;
 }
+
+export async function getLockedUsers() {
+  const { data } = await api.get<User[]>("/users/locked/");
+  return data;
+}
+
+export async function unlockUser(id: string) {
+  const { data } = await api.post<{ detail: string }>(`/users/${id}/unlock/`);
+  return data;
+}
