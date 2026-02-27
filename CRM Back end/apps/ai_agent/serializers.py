@@ -109,6 +109,32 @@ class AgentConfigurationUpdateSerializer(AgentConfigurationSerializer):
             "anthropic_api_key",
         ]
 
+    def update(self, instance, validated_data):
+        """
+        Custom update to handle encrypted API key fields.
+
+        The API keys use EncryptedCharField which transparently encrypts values.
+        We need to explicitly handle these write-only fields to ensure they're saved.
+        """
+        # Extract API keys from validated_data
+        openai_key = validated_data.pop("openai_api_key", None)
+        anthropic_key = validated_data.pop("anthropic_api_key", None)
+
+        # Set API keys on the instance before save (only if provided)
+        # Empty string clears the key, None/missing keeps existing value
+        if openai_key is not None:
+            instance.openai_api_key = openai_key if openai_key else ""
+        if anthropic_key is not None:
+            instance.anthropic_api_key = anthropic_key if anthropic_key else ""
+
+        # Now update all other fields and save using parent's update
+        # This will save everything including the API keys we just set
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 
 class _ContactSummarySerializer(serializers.Serializer):
     """Lightweight contact summary for nested display."""
