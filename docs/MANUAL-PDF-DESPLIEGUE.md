@@ -560,14 +560,3 @@ python manage.py clearsessions
 ---
 
 **© 2026 Ebenezer Tax Services. Documento Confidencial.**
-
----
-
-## Instrucciones para Generar PDF
-
-```bash
-# Usando Pandoc
-pandoc MANUAL-PDF-DESPLIEGUE.md -o MANUAL-DESPLIEGUE.pdf --pdf-engine=wkhtmltopdf
-
-# O usar VS Code con extensión "Markdown PDF"
-```
