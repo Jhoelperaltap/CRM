@@ -6,13 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('chatbot', '0001_initial'),
+        ("chatbot", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='chatbotknowledgeentry',
-            name='target_audience',
-            field=models.CharField(choices=[('portal', 'Portal Clients Only'), ('crm', 'CRM Users Only'), ('all', 'Both')], default='all', help_text='Who can see this knowledge entry.', max_length=10, verbose_name='Target Audience'),
+            model_name="chatbotknowledgeentry",
+            name="target_audience",
+            field=models.CharField(
+                choices=[
+                    ("portal", "Portal Clients Only"),
+                    ("crm", "CRM Users Only"),
+                    ("all", "Both"),
+                ],
+                default="all",
+                help_text="Who can see this knowledge entry.",
+                max_length=10,
+                verbose_name="Target Audience",
+            ),
         ),
     ]

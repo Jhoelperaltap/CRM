@@ -197,9 +197,7 @@ APPOINTMENT BOOKING:
 KNOWLEDGE BASE:
 """
         # Append knowledge base entries filtered by audience
-        knowledge_items = self.knowledge_entries.filter(
-            is_active=True
-        ).filter(
+        knowledge_items = self.knowledge_entries.filter(is_active=True).filter(
             models.Q(target_audience=audience) | models.Q(target_audience="all")
         )
         for item in knowledge_items:

@@ -89,9 +89,13 @@ class ChatbotAIService:
                 "tokens_used": 0,
             }
 
-    def _build_messages(self, conversation, user_message: str, audience: str = "portal") -> list:
+    def _build_messages(
+        self, conversation, user_message: str, audience: str = "portal"
+    ) -> list:
         """Build the message history for the AI."""
-        messages = [{"role": "system", "content": self.config.get_full_system_prompt(audience)}]
+        messages = [
+            {"role": "system", "content": self.config.get_full_system_prompt(audience)}
+        ]
 
         # Add conversation history (last 20 messages for context)
         for msg in conversation.messages.all()[:20]:

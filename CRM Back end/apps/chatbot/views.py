@@ -243,7 +243,7 @@ class CRMChatView(APIView):
                     status=ChatbotConversation.Status.ACTIVE,
                 )
                 # Verify the conversation belongs to this user (via crm_user field)
-                if hasattr(conversation, 'crm_user') and conversation.crm_user != user:
+                if hasattr(conversation, "crm_user") and conversation.crm_user != user:
                     conversation = self._create_crm_conversation(user)
             except ChatbotConversation.DoesNotExist:
                 conversation = self._create_crm_conversation(user)
@@ -339,17 +339,24 @@ class CRMChatHistoryView(APIView):
         user = request.user
         # Get the most recent active conversation for this CRM user
         system_email = f"crm-chat-{user.id}@system.internal"
-        conversation = ChatbotConversation.objects.filter(
-            contact__email=system_email,
-            status=ChatbotConversation.Status.ACTIVE,
-        ).prefetch_related("messages").order_by("-created_at").first()
+        conversation = (
+            ChatbotConversation.objects.filter(
+                contact__email=system_email,
+                status=ChatbotConversation.Status.ACTIVE,
+            )
+            .prefetch_related("messages")
+            .order_by("-created_at")
+            .first()
+        )
 
         if not conversation:
-            return Response({
-                "conversation_id": None,
-                "status": None,
-                "messages": [],
-            })
+            return Response(
+                {
+                    "conversation_id": None,
+                    "status": None,
+                    "messages": [],
+                }
+            )
 
         # Return single conversation with messages
         messages_data = [
@@ -362,11 +369,13 @@ class CRMChatHistoryView(APIView):
             for msg in conversation.messages.all()
         ]
 
-        return Response({
-            "conversation_id": str(conversation.id),
-            "status": conversation.status,
-            "messages": messages_data,
-        })
+        return Response(
+            {
+                "conversation_id": str(conversation.id),
+                "status": conversation.status,
+                "messages": messages_data,
+            }
+        )
 
 
 class CRMChatStartView(APIView):
