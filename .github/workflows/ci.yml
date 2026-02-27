@@ -136,7 +136,9 @@ jobs:
           echo "Node version: $(node --version)"
           echo "NPM version: $(npm --version)"
           echo "ESLint version: $(npx eslint --version)"
-          npm run lint
+          echo "Searching for 'prop' in source files..."
+          grep -rn "const.*prop\b\|= prop\b\|\[prop," src/ || echo "No 'prop' found"
+          npm run lint || (echo "Lint failed, showing detailed errors:"; npx eslint . --format stylish 2>&1 | head -100; exit 1)
 
       - name: Type check
         run: npx tsc --noEmit

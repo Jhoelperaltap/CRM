@@ -21,6 +21,8 @@ const eslintConfig = defineConfig([
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_",
       }],
+      // Disable strict no-unused-vars that might conflict
+      "no-unused-vars": "off",
       // React Compiler rules - set to warn to avoid CI failures
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/exhaustive-deps": "warn",
