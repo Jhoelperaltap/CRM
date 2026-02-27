@@ -8,6 +8,7 @@ import {
   getPropertySummary,
   getExpenseCategories,
   getPropertyExportUrl,
+  getPropertyPdfUrl,
 } from "@/lib/api/portal-rental";
 import type { RentalProperty, RentalMonthlySummary, RentalExpenseCategory } from "@/types/portal-rental";
 import { RentalMonthlyGrid } from "@/components/portal/rental-monthly-grid";
@@ -18,6 +19,8 @@ import {
   Building2,
   ChevronDown,
   Download,
+  FileText,
+  Printer,
   List,
   Settings,
   TrendingUp,
@@ -89,6 +92,15 @@ export default function RentalPropertyDetailPage() {
   const handleExport = () => {
     const url = getPropertyExportUrl(propertyId, year);
     window.open(url, "_blank");
+  };
+
+  const handlePDF = () => {
+    const url = getPropertyPdfUrl(propertyId, year);
+    window.open(url, "_blank");
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   if (loading) {
@@ -190,13 +202,31 @@ export default function RentalPropertyDetailPage() {
             )}
           </div>
 
+          {/* Print */}
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 print:hidden"
+          >
+            <Printer className="size-4" />
+            <span className="hidden sm:inline">Print</span>
+          </button>
+
+          {/* Export PDF */}
+          <button
+            onClick={handlePDF}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 print:hidden"
+          >
+            <FileText className="size-4" />
+            <span className="hidden sm:inline">PDF</span>
+          </button>
+
           {/* Export CSV */}
           <button
             onClick={handleExport}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 print:hidden"
           >
             <Download className="size-4" />
-            Export CSV
+            <span className="hidden sm:inline">CSV</span>
           </button>
 
           {/* View Transactions */}

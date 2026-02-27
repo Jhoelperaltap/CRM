@@ -305,6 +305,41 @@ class PortalRentalPropertyViewSet(viewsets.ViewSet):
 
         return response
 
+    @action(detail=True, methods=["get"])
+    def pdf(self, request, pk=None):
+        """Export property summary to PDF."""
+        try:
+            prop = RentalProperty.objects.select_related("contact").get(
+                pk=pk,
+                contact_id=request.portal_contact_id,
+            )
+        except RentalProperty.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        year = int(request.query_params.get("year", timezone.now().year))
+        summary_data = _calculate_property_summary(prop, year)
+
+        # Convert summary data for PDF generator
+        serializer = RentalMonthlySummarySerializer(summary_data)
+        pdf_data = serializer.data
+
+        # Get contact name for the PDF header
+        contact_name = ""
+        if prop.contact:
+            contact_name = f"{prop.contact.first_name} {prop.contact.last_name}".strip()
+
+        # Generate PDF
+        from apps.portal.services.pdf_rental import generate_rental_summary_pdf
+
+        pdf_content = generate_rental_summary_pdf(pdf_data, contact_name)
+
+        # Create response
+        response = HttpResponse(pdf_content, content_type="application/pdf")
+        filename = f"{prop.name.replace(' ', '_')}_{year}_summary.pdf"
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+        return response
+
 
 # -----------------------------------------------------------------------
 # Transactions ViewSet

@@ -364,3 +364,172 @@
 ::selection {
   background: oklch(0.58 0.24 264 / 0.2);
 }
+
+/* ========================================
+   Print Styles - Rental Property Reports
+   ======================================== */
+@media print {
+  /* Reset page margins */
+  @page {
+    size: landscape;
+    margin: 0.5in;
+  }
+
+  /* Force light background for printing */
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide navigation and UI elements */
+  nav,
+  aside,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  /* Show only main content */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove shadows and unnecessary styles */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Table styling for print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  th, td {
+    border: 1px solid #374151 !important;
+    padding: 4px 8px !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    background: #f3f4f6 !important;
+    font-weight: bold !important;
+  }
+
+  /* Preserve text colors for financial data */
+  .text-green-600,
+  .text-green-400 {
+    color: #047857 !important;
+  }
+
+  .text-red-600,
+  .text-red-400 {
+    color: #b91c1c !important;
+  }
+
+  .text-blue-600,
+  .text-blue-400 {
+    color: #2563eb !important;
+  }
+
+  /* Income row highlight */
+  .bg-green-50,
+  .from-green-50 {
+    background: #ecfdf5 !important;
+  }
+
+  /* Expense total row highlight */
+  .bg-red-50,
+  .from-red-50 {
+    background: #fef2f2 !important;
+  }
+
+  /* Net cash flow row highlight */
+  .bg-blue-50,
+  .from-blue-50 {
+    background: #eff6ff !important;
+  }
+
+  /* Property header styling */
+  h1 {
+    font-size: 16pt !important;
+    margin-bottom: 4px !important;
+    color: #1e3a5f !important;
+  }
+
+  h2 {
+    font-size: 12pt !important;
+    margin-bottom: 8px !important;
+    color: #374151 !important;
+  }
+
+  /* Quick stats cards for print */
+  .rounded-xl {
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+    margin-bottom: 8px !important;
+    page-break-inside: avoid;
+  }
+
+  /* Grid container */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure monospace font for numbers */
+  .font-mono {
+    font-family: "Courier New", Courier, monospace !important;
+  }
+
+  /* Dark mode overrides for print */
+  .dark {
+    background: white !important;
+    color: black !important;
+  }
+
+  .dark * {
+    background: inherit !important;
+    color: inherit !important;
+    border-color: #374151 !important;
+  }
+
+  /* Specific row backgrounds */
+  .bg-slate-50,
+  .bg-slate-100 {
+    background: #f9fafb !important;
+  }
+
+  /* Sticky columns - remove sticky for print */
+  .sticky {
+    position: static !important;
+  }
+}

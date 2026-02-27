@@ -92,6 +92,18 @@ export async function exportPropertyCSV(propertyId: string, year: number) {
   return response.data as Blob;
 }
 
+export function getPropertyPdfUrl(propertyId: string, year: number) {
+  return `${rentalApi.defaults.baseURL}/properties/${propertyId}/pdf/?year=${year}`;
+}
+
+export async function exportPropertyPDF(propertyId: string, year: number) {
+  const response = await rentalApi.get(`/properties/${propertyId}/pdf/`, {
+    params: { year },
+    responseType: "blob",
+  });
+  return response.data as Blob;
+}
+
 // ---------------------------------------------------------------------------
 // Transactions
 // ---------------------------------------------------------------------------
