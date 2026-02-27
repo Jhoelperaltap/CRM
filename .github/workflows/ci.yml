@@ -132,7 +132,11 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: npm run lint
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "ESLint version: $(npx eslint --version)"
+          npm run lint
 
       - name: Type check
         run: npx tsc --noEmit
