@@ -1,7 +1,7 @@
 # EJFLOW Client
 ## Manual del Cliente
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Febrero 2026
 
 ---
@@ -15,9 +15,11 @@
 5. [Documentos](#documentos)
 6. [Mensajes](#mensajes)
 7. [Citas](#citas)
-8. [Mi Perfil](#mi-perfil)
-9. [Asistente Virtual](#asistente-virtual)
-10. [Preguntas Frecuentes](#preguntas-frecuentes)
+8. [Facturación](#facturación)
+9. [Propiedades en Alquiler](#propiedades-en-alquiler)
+10. [Mi Perfil](#mi-perfil)
+11. [Asistente Virtual](#asistente-virtual)
+12. [Preguntas Frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -249,6 +251,221 @@ La sección de mensajes le permite comunicarse directamente con su equipo de pre
 
 ---
 
+## Facturación
+
+El módulo de facturación le permite gestionar sus facturas, cotizaciones, productos y servicios.
+
+### Panel de Facturación
+
+1. Haga clic en **"Facturación"** en el menú
+2. Verá un resumen con:
+   - **Ingresos Totales** - Total de facturas pagadas
+   - **Este Mes** - Ingresos del mes actual
+   - **Pendiente** - Monto en facturas por cobrar
+   - **Vencido** - Facturas pasadas de fecha
+
+### Ver Facturas
+
+1. Haga clic en **"Facturación"** > **"Facturas"**
+2. Use los filtros para buscar:
+   - **Búsqueda** - Por número o descripción
+   - **Estado** - Borrador, Enviada, Pagada, Parcial, Vencida, Cancelada
+
+### Estados de Facturas
+
+| Estado | Significado |
+|--------|-------------|
+| 🔘 **Borrador** | Factura en preparación |
+| 🔵 **Enviada** | Factura enviada al cliente |
+| 🟢 **Pagada** | Factura completamente pagada |
+| 🟡 **Parcial** | Pago parcial recibido |
+| 🔴 **Vencida** | Factura pasada de fecha de pago |
+| ⚫ **Cancelada** | Factura anulada |
+
+### Crear Nueva Factura
+
+1. Haga clic en **"Nueva Factura"**
+2. Complete la información:
+   - Cliente
+   - Fecha de factura
+   - Fecha de vencimiento
+   - Asunto/Descripción
+3. Agregue líneas de productos o servicios
+4. Revise el total
+5. Guarde como **Borrador** o **Envíe** directamente
+
+### Ver Detalle de Factura
+
+1. Haga clic en el ícono de ojo (👁️) de la factura
+2. Verá:
+   - Información del cliente
+   - Detalle de productos/servicios
+   - Subtotal, impuestos y total
+   - Historial de pagos
+
+### Descargar Factura
+
+1. Abra el detalle de la factura
+2. Haga clic en **"Descargar PDF"**
+3. El archivo se guardará en su carpeta de descargas
+
+### Cotizaciones
+
+Las cotizaciones funcionan similar a las facturas pero son propuestas de precio:
+
+1. Vaya a **"Facturación"** > **"Cotizaciones"**
+2. Cree una nueva cotización
+3. Una vez aprobada, puede convertirla en factura
+
+---
+
+## Propiedades en Alquiler
+
+Este módulo le permite llevar el control de ingresos y gastos de sus propiedades en alquiler con una vista mensual tipo hoja de cálculo.
+
+### Panel de Propiedades
+
+1. Haga clic en **"Propiedades en Alquiler"** en el menú
+2. Verá un resumen del año actual:
+   - **Total Ingresos** - Renta cobrada
+   - **Total Gastos** - Gastos de las propiedades
+   - **Ganancia Neta** - Ingresos menos gastos
+
+### Ver Lista de Propiedades
+
+La página principal muestra tarjetas con cada propiedad:
+
+- Nombre y dirección
+- Tipo de propiedad (Residencial, Comercial, Multi-familiar, Uso Mixto)
+- Número de unidades
+- Resumen YTD (Año Hasta la Fecha):
+  - Ingresos
+  - Gastos
+  - Ganancia
+
+### Agregar Nueva Propiedad
+
+1. Haga clic en **"Agregar Propiedad"**
+2. Complete la información:
+   - **Nombre** - Nombre de identificación (ej: "123 Main Street")
+   - **Dirección** - Calle, Ciudad, Estado, Código Postal
+   - **Tipo** - Residencial, Comercial, Multi-familiar, Uso Mixto
+   - **Número de Unidades** - Cantidad de unidades rentables
+   - **Fecha de Compra** - Opcional
+   - **Precio de Compra** - Opcional
+3. Haga clic en **"Guardar"**
+
+### Vista Mensual (Grid)
+
+Al hacer clic en una propiedad, verá la vista de resumen mensual:
+
+```
+┌─────────────────┬─────┬─────┬─────┬───┬─────┬───────────┐
+│ CATEGORÍA       │ ENE │ FEB │ MAR │...│ DIC │ TOTAL AÑO │
+├─────────────────┼─────┼─────┼─────┼───┼─────┼───────────┤
+│ INGRESOS        │1200 │1200 │1200 │   │1200 │   14400   │
+├─────────────────┼─────┼─────┼─────┼───┼─────┼───────────┤
+│ GASTOS          │     │     │     │   │     │           │
+│ HIPOTECA        │ 800 │ 800 │ 800 │   │ 800 │    9600   │
+│ IMPUESTOS       │   0 │   0 │2400 │   │   0 │    2400   │
+│ REPARACIONES    │ 150 │   0 │   0 │   │   0 │     150   │
+│ ...             │     │     │     │   │     │           │
+├─────────────────┼─────┼─────┼─────┼───┼─────┼───────────┤
+│ TOTAL GASTOS    │ 950 │ 800 │3200 │   │ 800 │   12150   │
+│ FLUJO NETO      │ 250 │ 400 │-2000│   │ 400 │    2250   │
+└─────────────────┴─────┴─────┴─────┴───┴─────┴───────────┘
+```
+
+**Colores:**
+- 🟢 Verde = Valores positivos (ingresos, ganancia)
+- 🔴 Rojo = Valores negativos (gastos, pérdida)
+
+### Agregar Transacción (Ingreso o Gasto)
+
+**Método 1: Hacer clic en una celda**
+
+1. Haga clic en cualquier celda del grid mensual
+2. Se abrirá un formulario modal
+3. Complete los datos:
+   - **Tipo** - Ingreso o Gasto
+   - **Categoría** - Solo para gastos (Hipoteca, Reparaciones, etc.)
+   - **Monto** - Cantidad en dólares
+   - **Descripción** - Opcional
+4. Haga clic en **"Guardar"**
+
+### Categorías de Gastos
+
+El sistema incluye categorías predefinidas:
+
+| Categoría | Descripción |
+|-----------|-------------|
+| MORTGAGE | Pago de hipoteca |
+| PROPERTY TAXES | Impuestos de propiedad |
+| HOME INSURANCE | Seguro del hogar |
+| ELECTRIC | Electricidad |
+| WATER | Agua |
+| GAS | Gas |
+| INTERNET | Internet |
+| REPAIRS | Reparaciones |
+| MAINTENANCE | Mantenimiento |
+| LANDSCAPING/SNOW | Jardinería/Nieve |
+| CLEANING | Limpieza |
+| APPLIANCES | Electrodomésticos |
+| PEST CONTROL | Control de plagas |
+| HOA FEES | Cuotas de asociación |
+| MANAGEMENT FEES | Honorarios de administración |
+| LEGAL/PROFESSIONAL | Legal/Profesional |
+| ADVERTISING | Publicidad |
+| SUPPLIES | Suministros |
+| OTHER | Otros |
+
+### Ver Lista de Transacciones
+
+1. Haga clic en **"Transacciones"** en la barra de acciones
+2. Verá todas las transacciones en formato de lista
+3. Puede filtrar por:
+   - Tipo (Ingreso/Gasto)
+   - Categoría
+   - Rango de fechas
+
+### Editar o Eliminar Transacción
+
+1. Vaya a la lista de transacciones
+2. Haga clic en la transacción que desea modificar
+3. Edite los datos o haga clic en **"Eliminar"**
+
+### Seleccionar Año
+
+1. Use el selector de año en la esquina superior derecha
+2. Puede ver datos de los últimos 6 años
+
+### Exportar Datos
+
+**Exportar a PDF:**
+1. Haga clic en el botón **"PDF"**
+2. Se generará un reporte profesional con:
+   - Resumen de la propiedad
+   - Tabla mensual de ingresos y gastos
+   - Totales anuales
+
+**Exportar a CSV:**
+1. Haga clic en el botón **"CSV"**
+2. Se descargará un archivo compatible con Excel
+3. Útil para análisis adicional o reportes fiscales
+
+**Imprimir:**
+1. Haga clic en el botón **"Imprimir"**
+2. Se abrirá el diálogo de impresión del navegador
+3. La página está optimizada para impresión
+
+### Editar Propiedad
+
+1. Haga clic en el ícono de engranaje (⚙️)
+2. Modifique los datos de la propiedad
+3. Haga clic en **"Guardar"**
+
+---
+
 ## Mi Perfil
 
 ### Ver Mi Información
@@ -351,13 +568,42 @@ R: Generalmente significa que falta información o documentos. Revise sus notifi
 **P: ¿Cuánto tiempo toma procesar mi declaración?**
 R: El tiempo varía según la complejidad. Su preparador le dará un estimado.
 
-### Pagos
+### Pagos y Facturación
 
 **P: ¿Cómo puedo pagar los servicios?**
 R: Puede pagar en línea con tarjeta de crédito/débito, o en persona en la oficina.
 
 **P: ¿Puedo ver mis facturas en el portal?**
-R: Sí, en la sección "Facturación" puede ver y descargar sus facturas.
+R: Sí, en la sección "Facturación" puede ver y descargar sus facturas en formato PDF.
+
+**P: ¿Qué significan los diferentes estados de factura?**
+R: Borrador (en preparación), Enviada (pendiente de pago), Pagada (completamente pagada), Parcial (pago parcial recibido), Vencida (pasada la fecha de pago), Cancelada (anulada).
+
+**P: ¿Cómo descargo una factura?**
+R: Abra el detalle de la factura y haga clic en "Descargar PDF".
+
+### Propiedades en Alquiler
+
+**P: ¿Cómo agrego una propiedad en alquiler?**
+R: Vaya a "Propiedades en Alquiler" y haga clic en "Agregar Propiedad". Complete los datos de dirección, tipo y número de unidades.
+
+**P: ¿Cómo registro un pago de renta?**
+R: Haga clic en la propiedad, luego en la celda del mes correspondiente en la fila "INGRESOS". Complete el monto y guarde.
+
+**P: ¿Cómo registro un gasto de la propiedad?**
+R: Haga clic en la celda correspondiente a la categoría del gasto (ej: HIPOTECA, REPARACIONES) y el mes. Complete el monto y descripción.
+
+**P: ¿Puedo agregar mis propias categorías de gastos?**
+R: El sistema incluye categorías predefinidas que cubren la mayoría de gastos comunes. Contacte a su preparador si necesita categorías adicionales.
+
+**P: ¿Cómo exporto los datos para mis impuestos?**
+R: Use el botón "CSV" o "PDF" en la vista de la propiedad para exportar el resumen anual. El archivo CSV es compatible con Excel.
+
+**P: ¿Cómo veo el resumen de años anteriores?**
+R: Use el selector de año en la esquina superior derecha de la vista de propiedad. Puede ver los últimos 6 años.
+
+**P: ¿Qué es el "Flujo Neto"?**
+R: Es la diferencia entre los ingresos (renta) y los gastos totales de la propiedad. Un número verde positivo indica ganancia, rojo indica pérdida.
 
 ---
 
