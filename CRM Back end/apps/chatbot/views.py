@@ -338,8 +338,6 @@ class CRMChatHistoryView(APIView):
     def get(self, request):
         user = request.user
         # Get the most recent active conversation for this CRM user
-        from apps.contacts.models import Contact
-
         system_email = f"crm-chat-{user.id}@system.internal"
         conversation = ChatbotConversation.objects.filter(
             contact__email=system_email,
