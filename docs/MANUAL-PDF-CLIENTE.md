@@ -365,7 +365,7 @@ R: Sí, en la sección "Facturación" puede ver y descargar sus facturas.
 
 ### Información de Contacto
 
-- **Email:** soporte@ejflow.com
+- **Email:** jhoelp@supportit.com
 - **Teléfono:** (347) 854-5662
 - **Horario:** Lunes a Viernes, 9:00 AM - 6:00 PM EST
 
@@ -377,7 +377,7 @@ Ebenezer Tax Services
 ### Soporte Técnico
 
 Si tiene problemas técnicos con el portal:
-- **Email:** soporte@ejsupportit.com
+- **Email:** jhoelp@supportit.com
 - **Chat:** Use el asistente virtual
 
 ---
