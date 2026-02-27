@@ -9,6 +9,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -680,3 +681,116 @@ class CookieTokenRefreshView(APIView):
                 {"detail": "Invalid or expired refresh token.", "error": str(e)},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
+
+# ---------------------------------------------------------------------------
+# Password Reset
+# ---------------------------------------------------------------------------
+class PasswordResetThrottle(AnonRateThrottle):
+    """Limit password reset requests to prevent abuse."""
+
+    rate = "3/hour"
+
+    def allow_request(self, request, view):
+        from django.conf import settings
+
+        if getattr(settings, "TESTING", False):
+            return True
+        return super().allow_request(request, view)
+
+
+class PasswordResetRequestView(APIView):
+    """
+    POST /api/v1/auth/password-reset/
+    Request a password reset email.
+
+    SECURITY: Always returns success message to prevent email enumeration.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [PasswordResetThrottle]
+
+    def post(self, request):
+        from apps.users.serializers import PasswordResetRequestSerializer
+
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+
+        try:
+            user = User.objects.get(email__iexact=email, is_active=True)
+        except User.DoesNotExist:
+            # Don't reveal whether the email exists
+            return Response(
+                {"detail": "If the email exists, a reset link has been sent."}
+            )
+
+        # Generate password reset token using Django's built-in generator
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.encoding import force_bytes
+        from django.utils.http import urlsafe_base64_encode
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        # Send email with reset link
+        from apps.users.tasks import send_password_reset_email
+
+        send_password_reset_email.delay(
+            user_id=str(user.pk),
+            email=user.email,
+            uid=uid,
+            token=token,
+        )
+
+        return Response({"detail": "If the email exists, a reset link has been sent."})
+
+
+class PasswordResetConfirmView(APIView):
+    """
+    POST /api/v1/auth/password-reset/confirm/
+    Confirm password reset with token and set new password.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.encoding import force_str
+        from django.utils.http import urlsafe_base64_decode
+
+        from apps.users.serializers import PasswordResetConfirmSerializer
+
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        uid = serializer.validated_data["uid"]
+        token = serializer.validated_data["token"]
+        new_password = serializer.validated_data["new_password"]
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_id)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response(
+                {"detail": "Invalid or expired reset link."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"detail": "Invalid or expired reset link."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Set new password
+        user.set_password(new_password)
+        user.save()
+
+        # Clear any account lockout
+        from apps.users.services.brute_force import BruteForceProtection
+
+        BruteForceProtection.unlock_account(user)
+
+        return Response({"detail": "Password has been reset successfully."})

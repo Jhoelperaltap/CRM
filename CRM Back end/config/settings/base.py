@@ -666,3 +666,28 @@ LOGGING = {
         "level": LOG_LEVEL,
     },
 }
+
+# ---------------------------------------------------------------------------
+# Email Configuration
+# ---------------------------------------------------------------------------
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
+)
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.hostinger.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=465)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=True)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="EJFLOW <support@ejsupportit.com>"
+)
+SERVER_EMAIL = env("SERVER_EMAIL", default="support@ejsupportit.com")
+
+# Portal configuration
+PORTAL_BASE_URL = env(
+    "PORTAL_BASE_URL", default="https://ebenezertaxservices1.od2.ejsupportit.com"
+)
+CRM_BASE_URL = env(
+    "CRM_BASE_URL", default="https://ebenezertaxservices1.od2.ejsupportit.com"
+)

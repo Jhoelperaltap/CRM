@@ -6,6 +6,8 @@ from apps.users.views import (
     CookieTokenRefreshView,
     CustomTokenObtainPairView,
     LogoutView,
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
     UserViewSet,
 )
 from apps.users.views_2fa import (
@@ -33,6 +35,12 @@ urlpatterns = [
     path("me/", me_view, name="me"),
     # Password
     path("change-password/", ChangePasswordView.as_view(), name="change_password"),
+    path("password-reset/", PasswordResetRequestView.as_view(), name="password_reset"),
+    path(
+        "password-reset/confirm/",
+        PasswordResetConfirmView.as_view(),
+        name="password_reset_confirm",
+    ),
     # Two-factor authentication
     path("2fa/setup/", TwoFactorSetupView.as_view(), name="2fa_setup"),
     path(

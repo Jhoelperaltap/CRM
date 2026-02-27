@@ -610,3 +610,42 @@ class UserImportSerializer(serializers.Serializer):
         user.set_unusable_password()
         user.save()
         return user
+
+
+# ---------------------------------------------------------------------------
+# Password Reset Serializers
+# ---------------------------------------------------------------------------
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """Serializer for requesting a password reset email."""
+
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Serializer for confirming password reset with new password."""
+
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8, write_only=True)
+
+    def validate_new_password(self, value):
+        """Validate password meets security requirements."""
+        if len(value) < 8:
+            raise serializers.ValidationError(
+                "Password must be at least 8 characters long."
+            )
+        if not any(c.isupper() for c in value):
+            raise serializers.ValidationError(
+                "Password must contain at least one uppercase letter."
+            )
+        if not any(c.islower() for c in value):
+            raise serializers.ValidationError(
+                "Password must contain at least one lowercase letter."
+            )
+        if not any(c.isdigit() for c in value):
+            raise serializers.ValidationError(
+                "Password must contain at least one digit."
+            )
+        return value
