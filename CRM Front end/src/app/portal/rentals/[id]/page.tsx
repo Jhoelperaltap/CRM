@@ -55,12 +55,12 @@ export default function RentalPropertyDetailPage() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [prop, cats] = await Promise.all([
+      const [propertyData, categoriesData] = await Promise.all([
         getRentalProperty(propertyId),
         getExpenseCategories(),
       ]);
-      setProperty(prop);
-      setCategories(cats);
+      setProperty(propertyData);
+      setCategories(categoriesData);
     } catch {
       setProperty(null);
     } finally {
