@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from apps.portal.views import (
     PortalAppointmentViewSet,
     PortalCaseViewSet,
+    PortalChangePasswordView,
     PortalDeviceRegisterView,
     PortalDocumentViewSet,
     PortalLoginView,
@@ -33,6 +34,11 @@ urlpatterns = [
     path("auth/me/", PortalMeView.as_view(), name="portal-me"),
     path(
         "auth/refresh/", PortalTokenRefreshView.as_view(), name="portal-token-refresh"
+    ),
+    path(
+        "auth/change-password/",
+        PortalChangePasswordView.as_view(),
+        name="portal-change-password",
     ),
     path(
         "auth/password-reset/",

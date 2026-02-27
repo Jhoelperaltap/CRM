@@ -85,6 +85,19 @@ export async function portalResetPassword(token: string, new_password: string) {
   return data;
 }
 
+export async function portalChangePassword(
+  current_password: string,
+  new_password: string,
+  confirm_password: string
+) {
+  const { data } = await portalApi.post("/auth/change-password/", {
+    current_password,
+    new_password,
+    confirm_password,
+  });
+  return data;
+}
+
 // Cases
 export async function portalGetCases() {
   const { data } = await portalApi.get<PortalCase[]>("/cases/");

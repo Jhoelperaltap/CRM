@@ -28,6 +28,7 @@ from apps.portal.serializers import (
     PortalAppointmentSerializer,
     PortalCaseDetailSerializer,
     PortalCaseListSerializer,
+    PortalChangePasswordSerializer,
     PortalContactSerializer,
     PortalDeviceTokenCreateSerializer,
     PortalDeviceTokenSerializer,
@@ -171,6 +172,41 @@ class PortalMeView(APIView):
     def get(self, request):
         serializer = PortalMeSerializer(request.portal_access)
         return Response(serializer.data)
+
+
+class PortalChangePasswordView(APIView):
+    """
+    Allow authenticated portal users to change their password.
+
+    SECURITY: Requires current password verification before allowing change.
+    """
+
+    permission_classes = [IsPortalAuthenticated]
+    authentication_classes = []
+
+    def post(self, request):
+        serializer = PortalChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        portal_access = request.portal_access
+
+        # Verify current password
+        if not verify_portal_password(
+            serializer.validated_data["current_password"],
+            portal_access.password_hash,
+        ):
+            return Response(
+                {"current_password": ["Current password is incorrect."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Update password
+        portal_access.password_hash = hash_portal_password(
+            serializer.validated_data["new_password"]
+        )
+        portal_access.save(update_fields=["password_hash"])
+
+        return Response({"detail": "Password changed successfully."})
 
 
 class PortalPasswordResetRequestView(APIView):

@@ -13,6 +13,9 @@ import {
   Wrench,
   FileCheck,
   ChevronRight,
+  Settings,
+  User,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -100,6 +103,23 @@ const BILLING_ITEMS: NavItem[] = [
   },
 ];
 
+const ACCOUNT_ITEMS: NavItem[] = [
+  {
+    label: "My Profile",
+    href: "/portal/settings",
+    icon: User,
+    color: "text-slate-400",
+    bgColor: "bg-slate-500/20",
+  },
+  {
+    label: "Security",
+    href: "/portal/settings/security",
+    icon: Shield,
+    color: "text-red-400",
+    bgColor: "bg-red-500/20",
+  },
+];
+
 export function PortalSidebar() {
   const pathname = usePathname();
 
@@ -164,7 +184,7 @@ export function PortalSidebar() {
           </div>
 
           {/* Billing Section */}
-          <div>
+          <div className="mb-6">
             <span className="mb-3 flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
               <span className="h-px flex-1 bg-white/10"></span>
               Billing
@@ -172,6 +192,18 @@ export function PortalSidebar() {
             </span>
             <div className="flex flex-col gap-1">
               {BILLING_ITEMS.map(renderNavItem)}
+            </div>
+          </div>
+
+          {/* Account Section */}
+          <div>
+            <span className="mb-3 flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+              <span className="h-px flex-1 bg-white/10"></span>
+              Account
+              <span className="h-px flex-1 bg-white/10"></span>
+            </span>
+            <div className="flex flex-col gap-1">
+              {ACCOUNT_ITEMS.map(renderNavItem)}
             </div>
           </div>
         </nav>
