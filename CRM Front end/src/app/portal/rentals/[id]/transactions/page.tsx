@@ -93,9 +93,9 @@ export default function TransactionsPage() {
       getRentalProperty(propertyId),
       getExpenseCategories(),
     ])
-      .then(([prop, cats]) => {
-        setProperty(prop);
-        setCategories(cats);
+      .then(([propertyData, categoriesData]) => {
+        setProperty(propertyData);
+        setCategories(categoriesData);
       })
       .catch(() => setProperty(null))
       .finally(() => setLoading(false));

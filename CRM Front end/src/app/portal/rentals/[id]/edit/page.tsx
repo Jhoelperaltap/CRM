@@ -32,18 +32,18 @@ export default function EditRentalPropertyPage() {
 
   useEffect(() => {
     getRentalProperty(propertyId)
-      .then((prop) => {
+      .then((propertyData) => {
         setFormData({
-          name: prop.name,
-          address_street: prop.address_street,
-          address_city: prop.address_city,
-          address_state: prop.address_state,
-          address_zip: prop.address_zip,
-          property_type: prop.property_type,
-          units_count: prop.units_count,
-          purchase_date: prop.purchase_date,
-          purchase_price: prop.purchase_price,
-          is_active: prop.is_active,
+          name: propertyData.name,
+          address_street: propertyData.address_street,
+          address_city: propertyData.address_city,
+          address_state: propertyData.address_state,
+          address_zip: propertyData.address_zip,
+          property_type: propertyData.property_type,
+          units_count: propertyData.units_count,
+          purchase_date: propertyData.purchase_date,
+          purchase_price: propertyData.purchase_price,
+          is_active: propertyData.is_active,
         });
       })
       .catch(() => {
