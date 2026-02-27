@@ -11,10 +11,15 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Sentry
-import sentry_sdk  # noqa: E402
+# Sentry (optional)
+try:
+    import sentry_sdk  # noqa: E402
 
-sentry_sdk.init(
-    dsn=env("SENTRY_DSN", default=""),  # noqa: F405
-    traces_sample_rate=0.1,
-)
+    sentry_dsn = env("SENTRY_DSN", default="")  # noqa: F405
+    if sentry_dsn:
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            traces_sample_rate=0.1,
+        )
+except ImportError:
+    pass  # Sentry not installed, skip
