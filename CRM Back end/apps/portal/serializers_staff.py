@@ -257,12 +257,16 @@ class StaffBillingAccessCreateSerializer(serializers.Serializer):
         return tenant
 
     def validate(self, data):
-        # Verify the contact belongs to the corporation
+        # Verify the contact belongs to the corporation (primary or in M2M)
         portal_access = data["portal_access"]
         tenant = data["tenant"]
 
         contact = portal_access.contact
-        if contact.corporation_id != tenant.id:
+        belongs_to_corp = (
+            contact.primary_corporation_id == tenant.id
+            or contact.corporations.filter(id=tenant.id).exists()
+        )
+        if not belongs_to_corp:
             raise serializers.ValidationError(
                 {
                     "tenant": "The contact must belong to this corporation to enable billing access."

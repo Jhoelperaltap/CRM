@@ -123,9 +123,12 @@ class CorporationViewSet(viewsets.ModelViewSet):
         from apps.contacts.serializers import ContactListSerializer
 
         # Use select_related to prevent N+1 queries for ContactListSerializer
+        # Filter contacts that have this corporation as primary OR in their M2M
+        from django.db.models import Q
+
         contacts_qs = Contact.objects.select_related(
-            "corporation", "assigned_to"
-        ).filter(corporation=corporation)
+            "primary_corporation", "assigned_to"
+        ).filter(Q(primary_corporation=corporation) | Q(corporations=corporation))
 
         # Include the primary contact even if it does not have the
         # corporation FK set (defensive).
@@ -134,7 +137,7 @@ class CorporationViewSet(viewsets.ModelViewSet):
             and not contacts_qs.filter(pk=corporation.primary_contact_id).exists()
         ):
             contacts_qs = contacts_qs | Contact.objects.select_related(
-                "corporation", "assigned_to"
+                "primary_corporation", "assigned_to"
             ).filter(pk=corporation.primary_contact_id)
 
         contacts_qs = contacts_qs.distinct().order_by("last_name", "first_name")

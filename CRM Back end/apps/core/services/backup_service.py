@@ -231,11 +231,11 @@ class BackupService:
                                 corporation_id=corporation_id
                             )
                         elif hasattr(model, "contact") and hasattr(
-                            model.contact.field.related_model, "corporation"
+                            model.contact.field.related_model, "primary_corporation"
                         ):
                             # Handle models related through contact
                             queryset = model.objects.filter(
-                                contact__corporation_id=corporation_id
+                                contact__primary_corporation_id=corporation_id
                             )
                         else:
                             continue

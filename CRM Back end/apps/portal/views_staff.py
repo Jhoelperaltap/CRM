@@ -123,8 +123,13 @@ class StaffPortalAccessViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Verify contact belongs to corporation
-        if portal_access.contact.corporation_id != tenant.id:
+        # Verify contact belongs to corporation (primary or in M2M)
+        contact = portal_access.contact
+        belongs_to_corp = (
+            contact.primary_corporation_id == tenant.id
+            or contact.corporations.filter(id=tenant.id).exists()
+        )
+        if not belongs_to_corp:
             return Response(
                 {"tenant": "The contact must belong to this corporation."},
                 status=status.HTTP_400_BAD_REQUEST,

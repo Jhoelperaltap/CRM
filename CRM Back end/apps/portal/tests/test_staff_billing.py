@@ -41,7 +41,7 @@ def corporation(db):
 @pytest.fixture
 def contact_with_corp(corporation):
     """Create a contact linked to the corporation."""
-    return ContactFactory(corporation=corporation)
+    return ContactFactory(primary_corporation=corporation)
 
 
 @pytest.fixture

@@ -104,7 +104,7 @@ class ContactFactory(DjangoModelFactory):
     phone = factory.Sequence(lambda n: f"+1555{n:07d}")
     mobile = factory.Sequence(lambda n: f"+1666{n:07d}")
     status = "active"
-    corporation = None
+    primary_corporation = None
     assigned_to = factory.SubFactory(UserFactory)
     created_by = factory.SubFactory(UserFactory)
 
@@ -467,7 +467,9 @@ class EmailTemplateFactory(DjangoModelFactory):
 
     name = factory.Sequence(lambda n: f"Template {n}")
     subject = "Hello {{contact_name}}"
-    body_text = "Dear {{contact_name}},\n\nYour case {{case_number}} is ready.\n\nBest regards"
+    body_text = (
+        "Dear {{contact_name}},\n\nYour case {{case_number}} is ready.\n\nBest regards"
+    )
     variables = factory.LazyFunction(lambda: ["contact_name", "case_number"])
     is_active = True
 
@@ -607,7 +609,9 @@ class ClientPortalAccessFactory(DjangoModelFactory):
     contact = factory.SubFactory(ContactFactory)
     email = factory.LazyAttribute(lambda obj: obj.contact.email)
     password_hash = factory.LazyFunction(
-        lambda: __import__("django.contrib.auth.hashers", fromlist=["make_password"]).make_password("PortalPass123!")
+        lambda: __import__(
+            "django.contrib.auth.hashers", fromlist=["make_password"]
+        ).make_password("PortalPass123!")
     )
     is_active = True
 

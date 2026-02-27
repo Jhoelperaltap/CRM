@@ -46,7 +46,7 @@ def corporation():
 @pytest.fixture
 def portal_access(corporation):
     """Create a portal access with billing access."""
-    contact = ContactFactory(corporation=corporation)
+    contact = ContactFactory(primary_corporation=corporation)
     access = create_portal_access(contact)
     BillingPortalAccess.objects.create(
         portal_access=access,
@@ -343,7 +343,7 @@ class TestBillingAccessPermissions:
 
         from apps.portal.auth import create_portal_tokens
 
-        contact = ContactFactory(corporation=corporation)
+        contact = ContactFactory(primary_corporation=corporation)
         access = create_portal_access(contact)
         # No BillingPortalAccess created
 
@@ -362,7 +362,7 @@ class TestBillingAccessPermissions:
 
         from apps.portal.auth import create_portal_tokens
 
-        contact = ContactFactory(corporation=corporation)
+        contact = ContactFactory(primary_corporation=corporation)
         access = create_portal_access(contact)
         BillingPortalAccess.objects.create(
             portal_access=access,

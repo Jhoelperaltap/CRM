@@ -69,8 +69,8 @@ class TestCorporationDelete:
 class TestCorporationLinkedContacts:
     def test_linked_contacts(self, authenticated_client):
         corp = CorporationFactory()
-        ContactFactory(corporation=corp)
-        ContactFactory(corporation=corp)
+        ContactFactory(primary_corporation=corp)
+        ContactFactory(primary_corporation=corp)
         resp = authenticated_client.get(f"{BASE}{corp.id}/contacts/")
         assert resp.status_code == status.HTTP_200_OK
         assert len(resp.data) == 2
