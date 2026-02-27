@@ -108,13 +108,35 @@ docker-compose -f docker-compose.prod.yml restart
 docker-compose -f docker-compose.prod.yml down
 ```
 
-### Update application
+### Update application (Zero-Downtime)
+```bash
+cd /opt/ebenezer-crm/deploy
+
+# Método recomendado: usar script de deployment
+./deploy.sh
+
+# O para rebuild completo (más lento):
+./deploy.sh --full
+```
+
+**¿Qué hace el script?**
+1. Descarga cambios de git
+2. Crea backup de seguridad
+3. Construye nuevas imágenes
+4. Actualiza servicios UNO POR UNO (sin detener los demás)
+5. Ejecuta migraciones mientras el servicio corre
+6. Recarga Nginx sin reiniciar
+
+**Actualización manual (método antiguo):**
 ```bash
 cd /opt/ebenezer-crm
 git pull origin main
 cd deploy
-docker-compose -f docker-compose.prod.yml up -d --build
-docker-compose -f docker-compose.prod.yml exec backend python manage.py migrate
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d --no-deps backend
+docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
+docker compose -f docker-compose.prod.yml up -d --no-deps frontend
+docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
 ```
 
 ### Database backup
