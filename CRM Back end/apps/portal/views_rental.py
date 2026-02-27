@@ -8,7 +8,6 @@ from decimal import Decimal
 from io import StringIO
 
 from django.db.models import Sum
-from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import status, viewsets
@@ -23,6 +22,7 @@ from apps.portal.models_rental import (
 )
 from apps.portal.permissions import IsPortalAuthenticated
 from apps.portal.serializers_rental import (
+    RentalDashboardSerializer,
     RentalExpenseCategoryCreateSerializer,
     RentalExpenseCategorySerializer,
     RentalMonthlySummarySerializer,
@@ -31,9 +31,7 @@ from apps.portal.serializers_rental import (
     RentalPropertyListSerializer,
     RentalTransactionCreateSerializer,
     RentalTransactionSerializer,
-    RentalDashboardSerializer,
 )
-
 
 # Month mapping for summary calculations
 MONTH_NAMES = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
@@ -412,12 +410,11 @@ class PortalRentalTransactionViewSet(viewsets.ViewSet):
         # Verify property belongs to this contact
         property_id = serializer.validated_data.get("property")
         if property_id:
-            try:
-                prop = RentalProperty.objects.get(
-                    id=property_id.id if hasattr(property_id, "id") else property_id,
-                    contact_id=request.portal_contact_id,
-                )
-            except RentalProperty.DoesNotExist:
+            exists = RentalProperty.objects.filter(
+                id=property_id.id if hasattr(property_id, "id") else property_id,
+                contact_id=request.portal_contact_id,
+            ).exists()
+            if not exists:
                 return Response(
                     {"property": ["Property not found."]},
                     status=status.HTTP_400_BAD_REQUEST,

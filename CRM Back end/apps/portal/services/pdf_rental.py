@@ -8,8 +8,8 @@ from decimal import Decimal
 from typing import Any
 
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER, TA_RIGHT
-from reportlab.lib.pagesizes import letter, landscape
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
@@ -19,7 +19,6 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
-
 
 MONTH_NAMES = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
 MONTH_LABELS = {
@@ -93,7 +92,7 @@ def generate_rental_summary_pdf(summary_data: dict[str, Any], contact_name: str 
     property_name = summary_data.get("property_name", "Rental Property")
     year = summary_data.get("year", "")
 
-    elements.append(Paragraph(f"Rental Property Summary", title_style))
+    elements.append(Paragraph("Rental Property Summary", title_style))
     elements.append(Paragraph(f"{property_name} - {year}", subtitle_style))
 
     if contact_name:
