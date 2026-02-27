@@ -119,12 +119,12 @@ class CorporationViewSet(viewsets.ModelViewSet):
         """
         corporation = self.get_object()
 
-        from apps.contacts.models import Contact
-        from apps.contacts.serializers import ContactListSerializer
-
         # Use select_related to prevent N+1 queries for ContactListSerializer
         # Filter contacts that have this corporation as primary OR in their M2M
         from django.db.models import Q
+
+        from apps.contacts.models import Contact
+        from apps.contacts.serializers import ContactListSerializer
 
         contacts_qs = Contact.objects.select_related(
             "primary_corporation", "assigned_to"
