@@ -16,7 +16,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-APP_DIR="/opt/ebenezer-crm"
+APP_DIR="/opt/ebenezer-crm/deploy"
 COMPOSE_FILE="docker-compose.prod.yml"
 VERSION=$(date +%Y%m%d%H%M%S)
 FULL_REBUILD=false
@@ -67,7 +67,9 @@ check_health() {
 # 1. Pull latest changes (if git repo)
 # -----------------------------------------------------------------------------
 echo -e "\n${YELLOW}[1/7] Descargando actualizaciones...${NC}"
-if [ -d ".git" ]; then
+REPO_DIR="/opt/ebenezer-crm"
+if [ -d "$REPO_DIR/.git" ]; then
+    cd $REPO_DIR
     git fetch origin main
     LOCAL=$(git rev-parse HEAD)
     REMOTE=$(git rev-parse origin/main)
@@ -78,6 +80,7 @@ if [ -d ".git" ]; then
     else
         echo -e "  ${GREEN}Ya está actualizado.${NC}"
     fi
+    cd $APP_DIR
 else
     echo -e "  (No es repositorio git, saltando)"
 fi
