@@ -53,6 +53,7 @@ services:
       - DOCUMENT_ENCRYPTION_KEY=${DOCUMENT_ENCRYPTION_KEY}
       - FRONTEND_URL=https://ebenezertaxservices1.od2.ejsupportit.com
       - API_URL=https://ebenezertaxservices1.od2.ejsupportit.com
+      - SECURE_SSL_REDIRECT=False
     volumes:
       - media_data:/app/media
       - static_data:/app/staticfiles
