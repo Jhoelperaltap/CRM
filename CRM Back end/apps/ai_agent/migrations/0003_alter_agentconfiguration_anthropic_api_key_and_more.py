@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ai_agent', '0002_add_backup_automation'),
+        ("ai_agent", "0002_add_backup_automation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='agentconfiguration',
-            name='anthropic_api_key',
-            field=models.CharField(blank=True, help_text='Anthropic API key (stored encrypted)', max_length=500),
+            model_name="agentconfiguration",
+            name="anthropic_api_key",
+            field=models.CharField(
+                blank=True,
+                help_text="Anthropic API key (stored encrypted)",
+                max_length=500,
+            ),
         ),
         migrations.AlterField(
-            model_name='agentconfiguration',
-            name='openai_api_key',
-            field=models.CharField(blank=True, help_text='OpenAI API key (stored encrypted)', max_length=500),
+            model_name="agentconfiguration",
+            name="openai_api_key",
+            field=models.CharField(
+                blank=True,
+                help_text="OpenAI API key (stored encrypted)",
+                max_length=500,
+            ),
         ),
     ]
