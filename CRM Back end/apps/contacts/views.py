@@ -60,9 +60,13 @@ class ContactViewSet(viewsets.ModelViewSet):
     # Queryset
     # ------------------------------------------------------------------
     def get_queryset(self):
-        qs = Contact.objects.select_related(
-            "primary_corporation", "assigned_to", "created_by", "reports_to", "sla"
-        ).prefetch_related("corporations").all()
+        qs = (
+            Contact.objects.select_related(
+                "primary_corporation", "assigned_to", "created_by", "reports_to", "sla"
+            )
+            .prefetch_related("corporations")
+            .all()
+        )
 
         # Annotate a boolean ``_is_starred`` so serializers can avoid N+1
         if self.request.user.is_authenticated:
@@ -309,7 +313,11 @@ class ContactViewSet(viewsets.ModelViewSet):
                     contact.country,
                     contact.status,
                     contact.source,
-                    contact.primary_corporation.name if contact.primary_corporation else "",
+                    (
+                        contact.primary_corporation.name
+                        if contact.primary_corporation
+                        else ""
+                    ),
                     contact.assigned_to.get_full_name() if contact.assigned_to else "",
                     contact.description,
                     contact.tags,

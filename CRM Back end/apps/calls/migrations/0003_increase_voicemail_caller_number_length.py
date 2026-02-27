@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('calls', '0002_fix_field_lengths'),
+        ("calls", "0002_fix_field_lengths"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='voicemail',
-            name='caller_number',
+            model_name="voicemail",
+            name="caller_number",
             field=models.CharField(max_length=30),
         ),
     ]

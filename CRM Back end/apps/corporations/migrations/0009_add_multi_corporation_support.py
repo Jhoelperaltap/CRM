@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('corporations', '0008_corporation_idx_corp_status_assigned_and_more'),
+        ("corporations", "0008_corporation_idx_corp_status_assigned_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='corporation',
-            name='related_corporations',
-            field=models.ManyToManyField(blank=True, help_text='Other corporations related to this one', to='corporations.corporation', verbose_name='related corporations'),
+            model_name="corporation",
+            name="related_corporations",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Other corporations related to this one",
+                to="corporations.corporation",
+                verbose_name="related corporations",
+            ),
         ),
     ]
