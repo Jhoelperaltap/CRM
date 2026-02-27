@@ -51,7 +51,7 @@ check_health() {
 
     echo -n "  Verificando salud de $service"
     while [ $attempt -lt $max_attempts ]; do
-        if docker compose -f $COMPOSE_FILE exec -T $service curl -sf http://localhost:8000/api/v1/health/ > /dev/null 2>&1; then
+        if docker compose -f $COMPOSE_FILE exec -T $service curl -sf http://localhost:8000/api/docs/ > /dev/null 2>&1; then
             echo -e " ${GREEN}✓${NC}"
             return 0
         fi
@@ -181,7 +181,7 @@ echo -e ""
 echo -e "${YELLOW}Verificación de endpoints:${NC}"
 
 # Check backend
-if curl -sf http://localhost:8080/api/v1/health/ > /dev/null 2>&1; then
+if curl -sf http://localhost:8080/api/docs/ > /dev/null 2>&1; then
     echo -e "  Backend API:  ${GREEN}✓ OK${NC}"
 else
     echo -e "  Backend API:  ${RED}✗ ERROR${NC}"
