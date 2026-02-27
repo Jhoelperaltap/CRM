@@ -38,10 +38,13 @@ export interface ChatbotConfigurationUpdate {
 
 // Knowledge Base
 export type KnowledgeEntryType = 'faq' | 'service' | 'policy' | 'general';
+export type TargetAudience = 'portal' | 'crm' | 'all';
 
 export interface ChatbotKnowledgeEntry {
   id: string;
   entry_type: KnowledgeEntryType;
+  target_audience: TargetAudience;
+  target_audience_display: string;
   title: string;
   content: string;
   keywords: string;
@@ -53,6 +56,7 @@ export interface ChatbotKnowledgeEntry {
 
 export interface ChatbotKnowledgeEntryCreate {
   entry_type: KnowledgeEntryType;
+  target_audience: TargetAudience;
   title: string;
   content: string;
   keywords?: string;
@@ -135,6 +139,12 @@ export const ENTRY_TYPE_LABELS: Record<KnowledgeEntryType, string> = {
   service: 'Service Description',
   policy: 'Policy',
   general: 'General Information',
+};
+
+export const TARGET_AUDIENCE_LABELS: Record<TargetAudience, string> = {
+  portal: 'Portal Clients Only',
+  crm: 'CRM Users Only',
+  all: 'Both (Portal & CRM)',
 };
 
 export const DAY_OF_WEEK_LABELS: Record<number, string> = {

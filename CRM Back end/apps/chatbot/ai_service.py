@@ -49,6 +49,7 @@ class ChatbotAIService:
         conversation,
         user_message: str,
         include_functions: bool = True,
+        audience: str = "portal",
     ) -> dict:
         """
         Get AI response for a user message.
@@ -69,7 +70,7 @@ class ChatbotAIService:
             }
 
         # Build conversation history
-        messages = self._build_messages(conversation, user_message)
+        messages = self._build_messages(conversation, user_message, audience)
 
         # Define available functions/tools
         tools = self._get_tools() if include_functions else None
@@ -88,9 +89,9 @@ class ChatbotAIService:
                 "tokens_used": 0,
             }
 
-    def _build_messages(self, conversation, user_message: str) -> list:
+    def _build_messages(self, conversation, user_message: str, audience: str = "portal") -> list:
         """Build the message history for the AI."""
-        messages = [{"role": "system", "content": self.config.get_full_system_prompt()}]
+        messages = [{"role": "system", "content": self.config.get_full_system_prompt(audience)}]
 
         # Add conversation history (last 20 messages for context)
         for msg in conversation.messages.all()[:20]:

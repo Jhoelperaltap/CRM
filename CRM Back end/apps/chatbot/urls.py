@@ -7,6 +7,9 @@ from apps.chatbot.views import (
     ChatbotConversationViewSet,
     ChatbotKnowledgeViewSet,
     ChatbotStatsView,
+    CRMChatHistoryView,
+    CRMChatStartView,
+    CRMChatView,
 )
 
 app_name = "chatbot"
@@ -19,5 +22,9 @@ router.register("conversations", ChatbotConversationViewSet, basename="conversat
 urlpatterns = [
     path("config/", ChatbotConfigurationView.as_view(), name="config"),
     path("stats/", ChatbotStatsView.as_view(), name="stats"),
+    # CRM Chat endpoints
+    path("chat/", CRMChatView.as_view(), name="crm_chat"),
+    path("chat/start/", CRMChatStartView.as_view(), name="crm_chat_start"),
+    path("chat/history/", CRMChatHistoryView.as_view(), name="crm_chat_history"),
     path("", include(router.urls)),
 ]

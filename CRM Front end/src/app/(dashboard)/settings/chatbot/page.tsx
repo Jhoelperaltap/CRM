@@ -33,8 +33,10 @@ import {
   AI_PROVIDER_LABELS,
   AI_MODELS,
   ENTRY_TYPE_LABELS,
+  TARGET_AUDIENCE_LABELS,
   DAY_OF_WEEK_LABELS,
   KnowledgeEntryType,
+  TargetAudience,
 } from "@/types/chatbot";
 import {
   Dialog,
@@ -109,7 +111,7 @@ export default function ChatbotSettingsPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <PageHeader title="AI Chatbot" description="Configure the AI chatbot for the client portal" />
+        <PageHeader title="AI Chatbot" description="Configure the AI chatbot for the client portal and CRM users" />
         <LoadingSpinner />
       </div>
     );
@@ -117,7 +119,7 @@ export default function ChatbotSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="AI Chatbot" description="Configure the AI chatbot for the client portal" />
+      <PageHeader title="AI Chatbot" description="Configure the AI chatbot for the client portal and CRM users" />
 
       {message && (
         <div
@@ -540,6 +542,7 @@ function KnowledgeBaseSection({
 
   const [formData, setFormData] = useState({
     entry_type: "general" as KnowledgeEntryType,
+    target_audience: "all" as TargetAudience,
     title: "",
     content: "",
     keywords: "",
@@ -550,6 +553,7 @@ function KnowledgeBaseSection({
   const resetForm = () => {
     setFormData({
       entry_type: "general",
+      target_audience: "all",
       title: "",
       content: "",
       keywords: "",
@@ -562,6 +566,7 @@ function KnowledgeBaseSection({
     setEditingEntry(entry);
     setFormData({
       entry_type: entry.entry_type,
+      target_audience: entry.target_audience,
       title: entry.title,
       content: entry.content,
       keywords: entry.keywords,
@@ -629,8 +634,14 @@ function KnowledgeBaseSection({
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="text-base">{entry.title}</CardTitle>
-                  <div className="flex gap-2 mt-1">
+                  <div className="flex flex-wrap gap-2 mt-1">
                     <Badge variant="secondary">{ENTRY_TYPE_LABELS[entry.entry_type]}</Badge>
+                    <Badge
+                      variant={entry.target_audience === 'portal' ? 'default' : entry.target_audience === 'crm' ? 'outline' : 'secondary'}
+                      className={entry.target_audience === 'portal' ? 'bg-blue-500' : entry.target_audience === 'crm' ? 'border-green-500 text-green-700' : ''}
+                    >
+                      {TARGET_AUDIENCE_LABELS[entry.target_audience]}
+                    </Badge>
                     {!entry.is_active && <Badge variant="outline">Inactive</Badge>}
                   </div>
                 </div>
@@ -692,13 +703,35 @@ function KnowledgeBaseSection({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Priority</Label>
-                <Input
-                  type="number"
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })}
-                />
+                <Label>Target Audience</Label>
+                <Select
+                  value={formData.target_audience}
+                  onValueChange={(value: TargetAudience) =>
+                    setFormData({ ...formData, target_audience: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(TARGET_AUDIENCE_LABELS).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Priority</Label>
+              <Input
+                type="number"
+                value={formData.priority}
+                onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })}
+              />
+              <p className="text-xs text-muted-foreground">Higher priority entries are used first when answering questions</p>
             </div>
 
             <div className="space-y-2">

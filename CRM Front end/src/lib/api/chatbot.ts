@@ -127,3 +127,52 @@ export async function getChatbotStats(): Promise<ChatbotStats> {
   const response = await api.get<ChatbotStats>("/chatbot/stats/");
   return response.data;
 }
+
+// CRM Chat (for CRM users)
+export interface CRMChatStartResponse {
+  conversation_id: string;
+  message: string;
+  status: string;
+}
+
+export interface CRMChatResponse {
+  conversation_id: string;
+  message: string;
+  action: string | null;
+  metadata: Record<string, unknown>;
+  status: string;
+}
+
+export interface CRMChatMessage {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  created_at: string;
+}
+
+export interface CRMChatHistoryResponse {
+  conversation_id: string;
+  status: string;
+  messages: CRMChatMessage[];
+}
+
+export async function startCRMChat(): Promise<CRMChatStartResponse> {
+  const response = await api.post<CRMChatStartResponse>("/chatbot/chat/start/");
+  return response.data;
+}
+
+export async function sendCRMChatMessage(
+  message: string,
+  conversationId?: string
+): Promise<CRMChatResponse> {
+  const response = await api.post<CRMChatResponse>("/chatbot/chat/", {
+    message,
+    conversation_id: conversationId,
+  });
+  return response.data;
+}
+
+export async function getCRMChatHistory(): Promise<CRMChatHistoryResponse> {
+  const response = await api.get<CRMChatHistoryResponse>("/chatbot/chat/history/");
+  return response.data;
+}

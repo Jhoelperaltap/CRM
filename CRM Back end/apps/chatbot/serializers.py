@@ -117,11 +117,17 @@ class ChatbotConfigurationUpdateSerializer(serializers.ModelSerializer):
 class ChatbotKnowledgeEntrySerializer(serializers.ModelSerializer):
     """Knowledge base entry serializer."""
 
+    target_audience_display = serializers.CharField(
+        source="get_target_audience_display", read_only=True
+    )
+
     class Meta:
         model = ChatbotKnowledgeEntry
         fields = [
             "id",
             "entry_type",
+            "target_audience",
+            "target_audience_display",
             "title",
             "content",
             "keywords",
@@ -140,6 +146,7 @@ class ChatbotKnowledgeEntryCreateSerializer(serializers.ModelSerializer):
         model = ChatbotKnowledgeEntry
         fields = [
             "entry_type",
+            "target_audience",
             "title",
             "content",
             "keywords",

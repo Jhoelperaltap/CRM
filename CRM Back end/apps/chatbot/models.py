@@ -116,27 +116,74 @@ class ChatbotConfiguration(TimeStampedModel):
         obj, _ = cls.objects.get_or_create(pk=cls.SINGLETON_ID)
         return obj
 
-    def get_full_system_prompt(self):
-        """Build the complete system prompt including knowledge base."""
+    def get_full_system_prompt(self, audience: str = "portal"):
+        """
+        Build the complete system prompt including knowledge base.
+
+        Args:
+            audience: "portal" for client portal, "crm" for internal CRM users
+        """
         from django.utils import timezone
 
         today = timezone.now()
         today_str = today.strftime("%Y-%m-%d")
         weekday = today.strftime("%A")
 
-        base_prompt = f"""You are a helpful AI assistant for {self.company_name}.
+        if audience == "crm":
+            # CRM users get full system access information
+            base_prompt = f"""You are an AI assistant for {self.company_name} CRM system (EJFLOW).
+You are helping INTERNAL STAFF members who use the CRM to manage clients, cases, and operations.
+
+CURRENT DATE: {today_str} ({weekday})
+
+IMPORTANT RULES:
+1. You are helping CRM USERS (staff/employees), NOT clients.
+2. Answer questions about CRM functionality, modules, and workflows.
+3. Be professional and helpful.
+4. If you don't know something specific, say so.
+5. Respond in the same language the user writes (Spanish or English).
+
+CRM MODULES YOU CAN HELP WITH:
+- Contacts: Managing client contacts, importing/exporting, search
+- Corporations: Business entity management
+- Cases: Tax cases, status tracking, notes
+- Users: User management, roles, permissions, account unlock
+- Documents: File management, folders, encryption
+- Appointments: Scheduling, calendar management
+- Invoices: Billing, payments, quotes
+- Dashboard: Analytics, widgets, reports
+- Settings: System configuration, chatbot, email templates
+
+{self.system_prompt}
+
+KNOWLEDGE BASE:
+"""
+        else:
+            # Portal users (clients) get limited information
+            base_prompt = f"""You are a helpful AI assistant for {self.company_name} Client Portal.
+You are helping CLIENTS who use the portal to manage their tax services.
 
 CURRENT DATE: {today_str} ({weekday})
 Use this date when booking appointments. Always use dates from today onwards.
 
 IMPORTANT RULES:
-1. ONLY answer questions related to {self.company_name} and tax services.
-2. If asked about unrelated topics, politely redirect to tax-related matters.
-3. Be professional, friendly, and helpful.
-4. If you don't know something specific about the company, say so and offer to connect with a representative.
-5. When discussing appointments, ALWAYS call check_appointment_availability with start_date="{today_str}" first.
-6. Never make up information about services, prices, or policies.
-7. Respond in the same language the user writes (Spanish or English).
+1. You are helping CLIENTS (customers), NOT staff.
+2. ONLY answer questions related to the CLIENT PORTAL features.
+3. If asked about internal CRM features or admin functions, say those are not available in the client portal.
+4. Be professional, friendly, and helpful.
+5. If you don't know something specific, offer to connect with a representative.
+6. When discussing appointments, ALWAYS call check_appointment_availability with start_date="{today_str}" first.
+7. Never make up information about services, prices, or policies.
+8. Respond in the same language the user writes (Spanish or English).
+
+CLIENT PORTAL FEATURES YOU CAN HELP WITH:
+- My Cases: View tax case status and updates
+- Documents: Upload and download documents
+- Messages: Communicate with your preparer
+- Appointments: Schedule and manage appointments
+- Invoices: View invoices and payment status
+- Rental Properties: Track rental income and expenses
+- Profile: Update personal information, change password
 
 APPOINTMENT BOOKING:
 - When user wants an appointment, call check_appointment_availability with start_date="{today_str}"
@@ -149,8 +196,12 @@ APPOINTMENT BOOKING:
 
 KNOWLEDGE BASE:
 """
-        # Append knowledge base entries
-        knowledge_items = self.knowledge_entries.filter(is_active=True)
+        # Append knowledge base entries filtered by audience
+        knowledge_items = self.knowledge_entries.filter(
+            is_active=True
+        ).filter(
+            models.Q(target_audience=audience) | models.Q(target_audience="all")
+        )
         for item in knowledge_items:
             base_prompt += f"\n---\nTopic: {item.title}\n{item.content}\n"
 
@@ -169,6 +220,11 @@ class ChatbotKnowledgeEntry(TimeStampedModel):
         POLICY = "policy", _("Policy")
         GENERAL = "general", _("General Information")
 
+    class TargetAudience(models.TextChoices):
+        PORTAL = "portal", _("Portal Clients Only")
+        CRM = "crm", _("CRM Users Only")
+        ALL = "all", _("Both")
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     configuration = models.ForeignKey(
         ChatbotConfiguration,
@@ -181,6 +237,13 @@ class ChatbotKnowledgeEntry(TimeStampedModel):
         max_length=20,
         choices=EntryType.choices,
         default=EntryType.GENERAL,
+    )
+    target_audience = models.CharField(
+        _("Target Audience"),
+        max_length=10,
+        choices=TargetAudience.choices,
+        default=TargetAudience.ALL,
+        help_text=_("Who can see this knowledge entry."),
     )
     title = models.CharField(
         _("Title"),

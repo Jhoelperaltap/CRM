@@ -208,6 +208,226 @@ class ChatbotStatsView(APIView):
 
 
 # ---------------------------------------------------------------------------
+# CRM Chat Views (Internal Staff)
+# ---------------------------------------------------------------------------
+
+
+class CRMChatView(APIView):
+    """Chat endpoint for CRM users (internal staff)."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        from apps.chatbot.serializers import PortalChatMessageSerializer
+
+        serializer = PortalChatMessageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user_message = serializer.validated_data["message"]
+        conversation_id = serializer.validated_data.get("conversation_id")
+
+        # Load configuration
+        config = ChatbotConfiguration.load()
+        if not config.is_active:
+            return Response(
+                {"detail": "Chat service is currently unavailable."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        # Get or create conversation for CRM user
+        user = request.user
+        if conversation_id:
+            try:
+                conversation = ChatbotConversation.objects.get(
+                    pk=conversation_id,
+                    status=ChatbotConversation.Status.ACTIVE,
+                )
+                # Verify the conversation belongs to this user (via crm_user field)
+                if hasattr(conversation, 'crm_user') and conversation.crm_user != user:
+                    conversation = self._create_crm_conversation(user)
+            except ChatbotConversation.DoesNotExist:
+                conversation = self._create_crm_conversation(user)
+        else:
+            conversation = self._create_crm_conversation(user)
+
+        # Save user message
+        ChatbotMessage.objects.create(
+            conversation=conversation,
+            role=ChatbotMessage.Role.USER,
+            content=user_message,
+        )
+
+        # Check if API key is configured
+        if not config.api_key:
+            return Response(
+                {
+                    "conversation_id": str(conversation.id),
+                    "message": "I'm sorry, the chat service is not fully configured. Please contact the administrator.",
+                    "action": None,
+                    "metadata": {},
+                    "status": "error",
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        # Get AI response with CRM audience
+        try:
+            ai_service = ChatbotAIService(config)
+            response = ai_service.get_response(
+                conversation,
+                user_message,
+                include_functions=False,  # CRM chat doesn't need appointment booking
+                audience="crm",  # Use CRM knowledge base
+            )
+        except Exception as e:
+            logger.error(f"ChatbotAIService error (CRM): {e}")
+            return Response(
+                {
+                    "conversation_id": str(conversation.id),
+                    "message": "I'm sorry, there was an error processing your message. Please try again.",
+                    "action": None,
+                    "metadata": {},
+                    "status": "error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        response_content = response.get("content", "")
+
+        # Save assistant response
+        ChatbotMessage.objects.create(
+            conversation=conversation,
+            role=ChatbotMessage.Role.ASSISTANT,
+            content=response_content,
+            tokens_used=response.get("tokens_used", 0),
+        )
+
+        return Response(
+            {
+                "conversation_id": str(conversation.id),
+                "message": response_content,
+                "action": None,
+                "metadata": {},
+                "status": conversation.status,
+            }
+        )
+
+    def _create_crm_conversation(self, user):
+        """Create a conversation for CRM user."""
+        # CRM users don't have a contact, so we need to handle this differently
+        # We'll create a special contact or use a placeholder
+        from apps.contacts.models import Contact
+
+        # Try to find or create a system contact for CRM chat
+        system_contact, _ = Contact.objects.get_or_create(
+            email=f"crm-chat-{user.id}@system.internal",
+            defaults={
+                "first_name": user.first_name or "CRM",
+                "last_name": user.last_name or "User",
+                "status": "active",
+            },
+        )
+        return ChatbotConversation.objects.create(contact=system_contact)
+
+
+class CRMChatHistoryView(APIView):
+    """Get chat history for CRM user - returns the most recent active conversation."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        # Get the most recent active conversation for this CRM user
+        from apps.contacts.models import Contact
+
+        system_email = f"crm-chat-{user.id}@system.internal"
+        conversation = ChatbotConversation.objects.filter(
+            contact__email=system_email,
+            status=ChatbotConversation.Status.ACTIVE,
+        ).prefetch_related("messages").order_by("-created_at").first()
+
+        if not conversation:
+            return Response({
+                "conversation_id": None,
+                "status": None,
+                "messages": [],
+            })
+
+        # Return single conversation with messages
+        messages_data = [
+            {
+                "id": str(msg.id),
+                "role": msg.role,
+                "content": msg.content,
+                "created_at": msg.created_at.isoformat(),
+            }
+            for msg in conversation.messages.all()
+        ]
+
+        return Response({
+            "conversation_id": str(conversation.id),
+            "status": conversation.status,
+            "messages": messages_data,
+        })
+
+
+class CRMChatStartView(APIView):
+    """Start a new CRM chat conversation."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        config = ChatbotConfiguration.load()
+        if not config.is_active:
+            return Response(
+                {"detail": "Chat service is currently unavailable."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        user = request.user
+        from apps.contacts.models import Contact
+
+        # Create or get system contact for this user
+        system_contact, _ = Contact.objects.get_or_create(
+            email=f"crm-chat-{user.id}@system.internal",
+            defaults={
+                "first_name": user.first_name or "CRM",
+                "last_name": user.last_name or "User",
+                "status": "active",
+            },
+        )
+
+        conversation = ChatbotConversation.objects.create(contact=system_contact)
+
+        # Create welcome message for CRM
+        welcome_message = (
+            f"Hello {user.first_name or 'there'}! I'm the EJFLOW CRM assistant. "
+            "I can help you with questions about the CRM system, including:\n\n"
+            "- Managing contacts and corporations\n"
+            "- Working with tax cases\n"
+            "- User management and permissions\n"
+            "- Documents and file management\n"
+            "- Invoices and billing\n"
+            "- System settings and configuration\n\n"
+            "How can I help you today?"
+        )
+
+        ChatbotMessage.objects.create(
+            conversation=conversation,
+            role=ChatbotMessage.Role.ASSISTANT,
+            content=welcome_message,
+        )
+
+        return Response(
+            {
+                "conversation_id": conversation.id,
+                "message": welcome_message,
+                "status": conversation.status,
+            }
+        )
+
+
+# ---------------------------------------------------------------------------
 # Portal Views (Client-facing)
 # ---------------------------------------------------------------------------
 
