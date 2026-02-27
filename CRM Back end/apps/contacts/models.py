@@ -559,8 +559,21 @@ class Contact(TimeStampedModel):
 
     @corporation.setter
     def corporation(self, value):
-        """Backward compatibility: sets primary_corporation when assigning to corporation."""
+        """
+        Backward compatibility setter.
+
+        Allows legacy code/tests to do `contact.corporation = corp` by:
+        - setting primary_corporation
+        - ensuring the corporation is included in the M2M `corporations`
+        """
         self.primary_corporation = value
+        if value is None:
+            return
+
+        # If the contact is already saved, keep M2M consistent immediately.
+        # If not saved yet, caller should save first and then add to M2M.
+        if self.pk:
+            self.corporations.add(value)
 
     @property
     def corporation_name(self):
