@@ -294,7 +294,7 @@ class ContactViewSet(viewsets.ModelViewSet):
         ]
         writer.writerow(header)
 
-        for contact in qs.iterator():
+        for contact in qs.iterator(chunk_size=1000):
             writer.writerow(
                 [
                     str(contact.id),

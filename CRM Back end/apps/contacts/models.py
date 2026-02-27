@@ -557,6 +557,11 @@ class Contact(TimeStampedModel):
             return self.primary_corporation
         return self.corporations.first()
 
+    @corporation.setter
+    def corporation(self, value):
+        """Backward compatibility: sets primary_corporation when assigning to corporation."""
+        self.primary_corporation = value
+
     @property
     def corporation_name(self):
         """Returns name of primary corporation for display."""
