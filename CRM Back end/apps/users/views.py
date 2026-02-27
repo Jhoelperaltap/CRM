@@ -152,6 +152,62 @@ class UserViewSet(viewsets.ModelViewSet):
         )
 
     @action(
+        detail=True,
+        methods=["post"],
+        url_path="unlock",
+        permission_classes=[IsAuthenticated, IsAdminRole],
+    )
+    def unlock(self, request, pk=None):
+        """
+        Unlock a user account that was locked due to failed login attempts.
+
+        POST /api/v1/users/{id}/unlock/
+        """
+        from apps.users.services.brute_force import BruteForceProtection
+
+        user = self.get_object()
+
+        # Check if account is locked
+        is_locked, remaining = BruteForceProtection.check_account_locked(user)
+        if not is_locked:
+            return Response(
+                {"detail": "Account is not locked."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Unlock the account
+        BruteForceProtection.unlock_account(user)
+
+        return Response(
+            {"detail": f"Account {user.email} has been unlocked."},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="locked",
+        permission_classes=[IsAuthenticated, IsAdminRole],
+    )
+    def locked(self, request):
+        """
+        List all currently locked user accounts.
+
+        GET /api/v1/users/locked/
+        """
+        from django.utils import timezone
+
+        locked_users = User.objects.filter(
+            locked_until__isnull=False,
+            locked_until__gt=timezone.now(),
+        ).select_related("role")
+
+        serializer = UserSerializer(
+            locked_users, many=True, context={"request": request}
+        )
+        return Response(serializer.data)
+
+    @action(
         detail=False,
         methods=["get"],
         url_path="export_csv",

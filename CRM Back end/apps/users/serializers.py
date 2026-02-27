@@ -159,6 +159,16 @@ class UserSerializer(serializers.ModelSerializer):
 
     role = RoleSerializer(read_only=True)
     full_name = serializers.CharField(source="get_full_name", read_only=True)
+    is_locked = serializers.SerializerMethodField()
+
+    def get_is_locked(self, obj):
+        """Check if account is currently locked due to failed login attempts."""
+        from django.utils import timezone
+
+        if obj.locked_until and obj.locked_until > timezone.now():
+            return True
+        return False
+
     branch_name = serializers.CharField(
         source="branch.name", read_only=True, default=None
     )
@@ -235,6 +245,11 @@ class UserSerializer(serializers.ModelSerializer):
             "last_login_ip",
             "email_account",
             "email_account_email",
+            # Account lockout
+            "is_locked",
+            "failed_login_attempts",
+            "locked_until",
+            # Timestamps
             "created_at",
             "updated_at",
         ]

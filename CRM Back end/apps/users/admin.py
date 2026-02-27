@@ -84,12 +84,55 @@ class UserAdmin(BaseUserAdmin):
         "role",
         "is_active",
         "is_staff",
+        "is_locked",
         "created_at",
     )
     list_filter = ("is_active", "is_staff", "is_superuser", "role")
     search_fields = ("email", "username", "first_name", "last_name", "phone")
     ordering = ("-created_at",)
-    readonly_fields = ("id", "last_login", "last_login_ip", "created_at", "updated_at")
+    readonly_fields = (
+        "id",
+        "last_login",
+        "last_login_ip",
+        "created_at",
+        "updated_at",
+        "failed_login_attempts",
+        "last_failed_login",
+        "locked_until",
+    )
+    actions = ["unlock_accounts"]
+
+    @admin.display(boolean=True, description=_("Locked"))
+    def is_locked(self, obj):
+        """Display if account is currently locked."""
+        from django.utils import timezone
+
+        if obj.locked_until and obj.locked_until > timezone.now():
+            return True
+        return False
+
+    @admin.action(description=_("Unlock selected accounts"))
+    def unlock_accounts(self, request, queryset):
+        """Admin action to unlock selected user accounts."""
+        from apps.users.services.brute_force import BruteForceProtection
+
+        unlocked_count = 0
+        for user in queryset:
+            if BruteForceProtection.unlock_account(user):
+                unlocked_count += 1
+
+        if unlocked_count:
+            self.message_user(
+                request,
+                _("Successfully unlocked %(count)d account(s).")
+                % {"count": unlocked_count},
+            )
+        else:
+            self.message_user(
+                request,
+                _("No locked accounts were found in the selection."),
+                level="warning",
+            )
 
     fieldsets = (
         (None, {"fields": ("id", "email", "username", "password")}),
@@ -113,6 +156,17 @@ class UserAdmin(BaseUserAdmin):
         (
             _("Important dates"),
             {"fields": ("last_login", "last_login_ip", "created_at", "updated_at")},
+        ),
+        (
+            _("Account Security"),
+            {
+                "fields": (
+                    "failed_login_attempts",
+                    "last_failed_login",
+                    "locked_until",
+                ),
+                "classes": ("collapse",),
+            },
         ),
     )
 
