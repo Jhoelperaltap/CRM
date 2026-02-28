@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -75,7 +75,7 @@ jobs:
             type=sha,prefix=
 
       - name: Build and push Backend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./CRM Back end
           file: ./CRM Back end/docker/django/Dockerfile
@@ -86,7 +86,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push Frontend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./CRM Front end
           file: ./CRM Front end/Dockerfile
@@ -124,7 +124,7 @@ jobs:
 
       - name: Deploy via SSH (example)
         if: false  # Disabled by default - configure secrets first
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
