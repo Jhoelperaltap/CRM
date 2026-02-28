@@ -588,7 +588,6 @@ class ContactTagViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return tags visible to the user (shared + own personal tags)."""
-        from django.db.models import Q
 
         user = self.request.user
         return ContactTag.objects.filter(

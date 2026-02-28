@@ -28,7 +28,9 @@ class ContactFilter(django_filters.FilterSet):
     # Filter by reports_to (find contacts that report to a specific contact)
     reports_to = django_filters.UUIDFilter(field_name="reports_to__id")
     # Filter by office services
-    office_services = django_filters.CharFilter(field_name="office_services", lookup_expr="iexact")
+    office_services = django_filters.CharFilter(
+        field_name="office_services", lookup_expr="iexact"
+    )
     created_after = django_filters.DateFilter(
         field_name="created_at", lookup_expr="date__gte"
     )
@@ -68,9 +70,7 @@ class ContactFilter(django_filters.FilterSet):
         if not value or len(value) < 2:
             return queryset
 
-        include_related = (
-            self.data.get("include_related", "").lower() == "true"
-        )
+        include_related = self.data.get("include_related", "").lower() == "true"
 
         # Direct matches on contact fields and corporation name
         direct_q = (
@@ -123,7 +123,8 @@ class ContactFilter(django_filters.FilterSet):
         # Add all contacts from the same corporations
         if corp_ids:
             contacts_in_corps = Contact.objects.filter(
-                Q(corporations__id__in=corp_ids) | Q(primary_corporation_id__in=corp_ids)
+                Q(corporations__id__in=corp_ids)
+                | Q(primary_corporation_id__in=corp_ids)
             ).values_list("id", flat=True)
             all_contact_ids.update(contacts_in_corps)
 

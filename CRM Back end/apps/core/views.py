@@ -37,7 +37,9 @@ class GlobalSearchView(APIView):
 
     def get(self, request):
         q = request.query_params.get("q", "").strip()
-        include_related = request.query_params.get("include_related", "true").lower() == "true"
+        include_related = (
+            request.query_params.get("include_related", "true").lower() == "true"
+        )
 
         if len(q) < 2:
             return Response({"contacts": [], "corporations": [], "cases": []})
@@ -100,7 +102,9 @@ class GlobalSearchView(APIView):
         return Response(
             {
                 "contacts": ContactListSerializer(all_contacts, many=True).data,
-                "corporations": CorporationListSerializer(all_corporations, many=True).data,
+                "corporations": CorporationListSerializer(
+                    all_corporations, many=True
+                ).data,
                 "cases": TaxCaseListSerializer(cases, many=True).data,
             }
         )
