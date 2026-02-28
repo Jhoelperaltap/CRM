@@ -82,7 +82,7 @@ const REACTION_OPTIONS: { type: ReactionType; emoji: string; label: string }[] =
 ];
 
 interface CommentsSectionProps {
-  entityType: "contact" | "corporation";
+  entityType: "contact" | "corporation" | "case";
   entityId: string;
   className?: string;
   maxHeight?: string;

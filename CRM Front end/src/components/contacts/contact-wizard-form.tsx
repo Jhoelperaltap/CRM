@@ -266,12 +266,37 @@ export function ContactWizardForm() {
           })),
       };
 
+      console.log("Wizard payload:", JSON.stringify(payload, null, 2));
       const result = await wizardCreateContact(payload);
       setCreatedContactId(result.id);
       setShowSuccess(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Failed to create contact:", error);
-      alert("Failed to create contact. Please try again.");
+      // Extract detailed error message from axios response
+      let errorMessage = "Failed to create contact. Please try again.";
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: unknown; status?: number } };
+        if (axiosError.response?.data) {
+          const data = axiosError.response.data;
+          if (typeof data === "object") {
+            // Format nested validation errors
+            errorMessage = Object.entries(data as Record<string, unknown>)
+              .map(([key, value]) => {
+                if (typeof value === "object" && value !== null) {
+                  const nested = Object.entries(value as Record<string, unknown>)
+                    .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+                    .join("; ");
+                  return `${key}: ${nested}`;
+                }
+                return `${key}: ${Array.isArray(value) ? value.join(", ") : value}`;
+              })
+              .join("\n");
+          } else {
+            errorMessage = String(data);
+          }
+        }
+      }
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

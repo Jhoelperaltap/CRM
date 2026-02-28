@@ -24,10 +24,21 @@ from apps.users.permissions import IsAdminRole
 
 
 class GlobalSearchView(APIView):
+    """
+    Global search across contacts, corporations, and cases.
+
+    Includes related entities:
+    - When finding a contact, includes their corporations
+    - When finding a corporation, includes its contacts
+    - Contacts related via reports_to are also included
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         q = request.query_params.get("q", "").strip()
+        include_related = request.query_params.get("include_related", "true").lower() == "true"
+
         if len(q) < 2:
             return Response({"contacts": [], "corporations": [], "cases": []})
 
@@ -38,25 +49,58 @@ class GlobalSearchView(APIView):
         from apps.corporations.models import Corporation
         from apps.corporations.serializers import CorporationListSerializer
 
-        contacts = Contact.objects.filter(
+        # Direct matches
+        direct_contacts = Contact.objects.filter(
             Q(first_name__icontains=q)
             | Q(last_name__icontains=q)
             | Q(email__icontains=q)
             | Q(phone__icontains=q)
-        )[:5]
+        ).prefetch_related("corporations")[:10]
 
-        corporations = Corporation.objects.filter(
+        direct_corporations = Corporation.objects.filter(
             Q(name__icontains=q) | Q(legal_name__icontains=q) | Q(ein__icontains=q)
-        )[:5]
+        )[:10]
 
         cases = TaxCase.objects.filter(
             Q(case_number__icontains=q) | Q(title__icontains=q)
         )[:5]
 
+        # Collect all contact and corporation IDs
+        contact_ids = set(c.id for c in direct_contacts)
+        corp_ids = set(c.id for c in direct_corporations)
+
+        if include_related:
+            # Get corporations related to found contacts
+            for contact in direct_contacts:
+                for corp in contact.corporations.all():
+                    corp_ids.add(corp.id)
+
+            # Get contacts related to found corporations
+            for corp in direct_corporations:
+                related_contacts = Contact.objects.filter(corporations=corp)[:5]
+                for c in related_contacts:
+                    contact_ids.add(c.id)
+
+            # Get contacts related via reports_to (both directions)
+            for contact in direct_contacts:
+                # Contacts that this contact reports to
+                if contact.reports_to_id:
+                    contact_ids.add(contact.reports_to_id)
+                # Contacts that report to this contact
+                reporting_contacts = Contact.objects.filter(reports_to=contact)[:5]
+                for c in reporting_contacts:
+                    contact_ids.add(c.id)
+
+        # Fetch all related entities
+        all_contacts = Contact.objects.filter(id__in=contact_ids).prefetch_related(
+            "corporations", "primary_corporation"
+        )[:15]
+        all_corporations = Corporation.objects.filter(id__in=corp_ids)[:15]
+
         return Response(
             {
-                "contacts": ContactListSerializer(contacts, many=True).data,
-                "corporations": CorporationListSerializer(corporations, many=True).data,
+                "contacts": ContactListSerializer(all_contacts, many=True).data,
+                "corporations": CorporationListSerializer(all_corporations, many=True).data,
                 "cases": TaxCaseListSerializer(cases, many=True).data,
             }
         )

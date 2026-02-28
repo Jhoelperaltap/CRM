@@ -104,7 +104,7 @@ const ACTIVITY_COLORS: Record<ActivityType, { text: string; bg: string }> = {
 };
 
 interface ActivityTimelineProps {
-  entityType: "contact" | "corporation";
+  entityType: "contact" | "corporation" | "case";
   entityId: string;
   className?: string;
   maxHeight?: string;

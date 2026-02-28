@@ -9,15 +9,18 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { StatusWorkflow } from "@/components/cases/status-workflow";
 import { CaseNotes } from "@/components/cases/case-notes";
 import { CaseChecklist } from "@/components/cases/case-checklist";
+import { CaseLightDetail } from "@/components/cases/case-light-detail";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pencil, Trash2 } from "lucide-react";
+import { useUIStore } from "@/stores/ui-store";
 import Link from "next/link";
 
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const uiMode = useUIStore((s) => s.uiMode);
   const [taxCase, setTaxCase] = useState<TaxCase | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -27,6 +30,11 @@ export default function CaseDetailPage() {
 
   if (loading) return <LoadingSpinner />;
   if (!taxCase) return <div>Case not found</div>;
+
+  // Light Mode: Use simplified detail view
+  if (uiMode === "light") {
+    return <CaseLightDetail case_={taxCase} />;
+  }
 
   return (
     <div className="space-y-6">

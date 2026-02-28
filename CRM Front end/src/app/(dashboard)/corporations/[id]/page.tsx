@@ -64,7 +64,9 @@ import { CorporationSummaryCard } from "@/components/summary-card";
 import { PortalAccessDialog } from "@/components/contacts/portal-access-dialog";
 import { DepartmentFolders } from "@/components/departments";
 import { ClientStatusDropdown } from "@/components/corporations/client-status-dropdown";
+import { CorporationLightDetail } from "@/components/corporations/corporation-light-detail";
 import { getPortalAccounts } from "@/lib/api/settings";
+import { useUIStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 
@@ -185,6 +187,7 @@ function SidebarStatusBadge({ status }: { status: string }) {
 export default function CorporationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const uiMode = useUIStore((s) => s.uiMode);
   const [corp, setCorp] = useState<Corporation | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -300,6 +303,11 @@ export default function CorporationDetailPage() {
   if (loading) return <LoadingSpinner />;
   if (!corp) return <div className="p-8 text-center">Corporation not found</div>;
 
+  // Light Mode: Use simplified detail view
+  if (uiMode === "light") {
+    return <CorporationLightDetail corporation={corp} />;
+  }
+
   const formatRevenue = (revenue: number | null) => {
     if (!revenue) return "-";
     return `$${Number(revenue).toLocaleString()}`;
@@ -356,7 +364,7 @@ export default function CorporationDetailPage() {
       <PageHeader
         title={corp.name}
         description={corp.legal_name || undefined}
-        backHref="/corporations"
+        onBack={() => router.back()}
         actions={
           <>
             <ClientStatusDropdown

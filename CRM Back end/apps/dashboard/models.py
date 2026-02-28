@@ -165,7 +165,7 @@ class UserPreference(models.Model):
         _("UI mode"),
         max_length=10,
         choices=UIMode.choices,
-        default=UIMode.FULL,
+        default=UIMode.LIGHT,
     )
 
     class Meta:

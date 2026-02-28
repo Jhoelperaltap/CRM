@@ -140,7 +140,7 @@ export interface CreateActivityPayload {
 
 export interface CreateCommentPayload {
   content: string;
-  entity_type: "contact" | "corporation";
+  entity_type: "contact" | "corporation" | "case";
   entity_id: string;
   parent?: string;
   send_email?: boolean;

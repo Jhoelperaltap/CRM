@@ -6,6 +6,7 @@ interface PageHeaderProps {
   title: string;
   description?: string;
   backHref?: string;
+  onBack?: () => void;
   createHref?: string;
   createLabel?: string;
   actions?: React.ReactNode;
@@ -15,6 +16,7 @@ export function PageHeader({
   title,
   description,
   backHref,
+  onBack,
   createHref,
   createLabel = "Create",
   actions,
@@ -22,13 +24,20 @@ export function PageHeader({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        {backHref && (
-          <Button variant="ghost" size="icon" asChild className="shrink-0">
-            <Link href={backHref}>
+        {(backHref || onBack) && (
+          backHref ? (
+            <Button variant="ghost" size="icon" asChild className="shrink-0">
+              <Link href={backHref}>
+                <ArrowLeft className="h-4 w-4" />
+                <span className="sr-only">Back</span>
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={onBack}>
               <ArrowLeft className="h-4 w-4" />
               <span className="sr-only">Back</span>
-            </Link>
-          </Button>
+            </Button>
+          )
         )}
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">

@@ -20,11 +20,14 @@ import {
   Clock,
   ExternalLink,
   User,
+  Mail,
+  Phone,
   Activity,
   FolderOpen,
   ChevronRight,
   ChevronDown,
   Plus,
+  Link2,
   Loader2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,9 +37,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ActivityTimeline, CommentsSection } from "@/components/activities";
-import { format } from "date-fns";
 import api from "@/lib/api";
-import type { Contact } from "@/types";
+import type { Corporation, ContactSummary } from "@/types";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 // Related entity types
 interface RelatedCase {
@@ -132,37 +136,8 @@ function SidebarStatusBadge({ status }: { status: string }) {
   );
 }
 
-interface ContactLightDetailProps {
-  contact: Contact;
-}
-
-// Corporation type from API
-interface Corporation {
-  id: string;
-  name: string;
-  ein?: string;
-  state_id?: string;
-  entity_type?: string;
-  industry?: string;
-  billing_street?: string;
-  billing_city?: string;
-  billing_state?: string;
-  billing_zip?: string;
-  date_incorporated?: string;
-  fiscal_year_end?: string;
-  custom_fields?: Record<string, unknown>;
-}
-
-// Related contact type
-interface RelatedContact {
-  id: string;
-  first_name: string;
-  last_name: string;
-  full_name?: string;
-  email?: string;
-  mailing_street?: string;
-  ssn_last_four?: string;
-  custom_fields?: Record<string, unknown>;
+interface CorporationLightDetailProps {
+  corporation: Corporation;
 }
 
 // Table row for info
@@ -210,9 +185,8 @@ function CompanyItem({
   );
 }
 
-export function ContactLightDetail({ contact }: ContactLightDetailProps) {
-  const [corporations, setCorporations] = useState<Corporation[]>([]);
-  const [relatedContacts, setRelatedContacts] = useState<RelatedContact[]>([]);
+export function CorporationLightDetail({ corporation }: CorporationLightDetailProps) {
+  const [contacts, setContacts] = useState<ContactSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Related records state
@@ -222,14 +196,27 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
   const [documentYears, setDocumentYears] = useState<DocumentYear[]>([]);
   const [totalDocuments, setTotalDocuments] = useState(0);
 
-  const initials = `${contact.first_name?.[0] || ""}${contact.last_name?.[0] || ""}`
+  const initials = corporation.name
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
     .toUpperCase();
 
-  const mailingAddress = [
-    contact.mailing_street,
-    contact.mailing_city,
-    contact.mailing_state,
-    contact.mailing_zip,
+  const billingAddress = [
+    corporation.billing_street,
+    corporation.billing_city,
+    corporation.billing_state,
+    corporation.billing_zip,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const shippingAddress = [
+    corporation.shipping_street,
+    corporation.shipping_city,
+    corporation.shipping_state,
+    corporation.shipping_zip,
   ]
     .filter(Boolean)
     .join(", ");
@@ -263,42 +250,46 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
     return labels[type] || type;
   };
 
-  // Fetch full corporation data and related contacts
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "border-green-200 bg-green-50 text-green-700";
+      case "inactive":
+        return "border-gray-200 bg-gray-50 text-gray-600";
+      case "dissolved":
+        return "border-red-200 bg-red-50 text-red-600";
+      default:
+        return "border-gray-200 bg-gray-50 text-gray-600";
+    }
+  };
+
+  // Fetch contacts linked to this corporation
   useEffect(() => {
-    async function fetchData() {
+    async function fetchContacts() {
       setLoading(true);
       try {
-        // Fetch full corporation details
-        if (contact.corporations && contact.corporations.length > 0) {
-          const corpPromises = contact.corporations.map((corp) =>
-            api.get(`/corporations/${corp.id}/`).then((res) => res.data).catch(() => corp)
+        // If corporation has contacts array, fetch full details
+        if (corporation.contacts && corporation.contacts.length > 0) {
+          const contactPromises = corporation.contacts.map((contact) =>
+            api.get(`/contacts/${contact.id}/`).then((res) => res.data).catch(() => contact)
           );
-          const fullCorps = await Promise.all(corpPromises);
-          setCorporations(fullCorps);
-        }
-
-        // Fetch contacts that have this contact as reports_to (inverse relationship)
-        try {
-          const relatedRes = await api.get("/contacts/", {
-            params: { reports_to: contact.id, page_size: 10 },
-          });
-          if (relatedRes.data.results) {
-            setRelatedContacts(relatedRes.data.results);
-          }
-        } catch {
-          // Ignore if endpoint doesn't support this filter
+          const fullContacts = await Promise.all(contactPromises);
+          setContacts(fullContacts);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching contacts:", error);
       } finally {
         setLoading(false);
       }
     }
 
-    if (contact.id) {
-      fetchData();
+    if (corporation.id) {
+      fetchContacts();
     }
-  }, [contact.id, contact.corporations]);
+  }, [corporation.id, corporation.contacts]);
+
+  const customFields = corporation.custom_fields as Record<string, unknown> | undefined;
+  const dotNumber = customFields?.dot_number as string | undefined;
 
   // Fetch related records (cases, appointments, documents)
   useEffect(() => {
@@ -306,9 +297,9 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
       setSidebarLoading(true);
       try {
         const [casesRes, appointmentsRes, documentsRes] = await Promise.allSettled([
-          api.get("/cases/", { params: { contact: contact.id, page_size: 10 } }),
-          api.get("/appointments/", { params: { contact: contact.id, page_size: 10 } }),
-          api.get("/documents/", { params: { contact: contact.id, page_size: 100 } }),
+          api.get("/cases/", { params: { corporation: corporation.id, page_size: 10 } }),
+          api.get("/appointments/", { params: { corporation: corporation.id, page_size: 10 } }),
+          api.get("/documents/", { params: { corporation: corporation.id, page_size: 100 } }),
         ]);
 
         if (casesRes.status === "fulfilled") setCases(casesRes.value.data.results || []);
@@ -337,18 +328,8 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
       }
     }
 
-    if (contact.id) fetchSidebarData();
-  }, [contact.id]);
-
-  const customFields = contact.custom_fields as Record<string, unknown> | undefined;
-  const relationshipType = customFields?.relationship_type as string | undefined;
-  const registeredAgent = customFields?.registered_agent as boolean | undefined;
-  const priority = customFields?.priority as string | undefined;
-
-  // Get reports_to as RelatedContact
-  const reportsTo = contact.reports_to as RelatedContact | undefined;
-  const reportsToCustomFields = reportsTo?.custom_fields as Record<string, unknown> | undefined;
-  const reportsToRelationshipType = reportsToCustomFields?.relationship_type as string | undefined;
+    if (corporation.id) fetchSidebarData();
+  }, [corporation.id]);
 
   return (
     <div className="min-h-screen bg-gray-100 -m-6 p-4">
@@ -364,19 +345,25 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl font-bold text-white">
-                  {contact.first_name} {contact.last_name}
+                  {corporation.name}
                 </h1>
                 <div className="flex items-center gap-4 mt-1 text-sm text-white/70">
-                  {mailingAddress && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {mailingAddress}
-                    </span>
-                  )}
-                  {contact.contact_number && (
+                  {formatEntityType(corporation.entity_type) && (
                     <span className="flex items-center gap-1">
                       <Building2 className="h-3.5 w-3.5" />
-                      {contact.contact_number}
+                      {formatEntityType(corporation.entity_type)}
+                    </span>
+                  )}
+                  {corporation.industry && (
+                    <span className="flex items-center gap-1">
+                      <Briefcase className="h-3.5 w-3.5" />
+                      {corporation.industry}
+                    </span>
+                  )}
+                  {billingAddress && (
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {billingAddress}
                     </span>
                   )}
                 </div>
@@ -388,9 +375,9 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               </Badge>
               <div className="flex items-center gap-2">
                 <Button asChild size="sm" variant="secondary" className="bg-white/10 hover:bg-white/20 text-white border-0">
-                  <Link href={`/contacts/${contact.id}/edit`}>
+                  <Link href={`/corporations/${corporation.id}/edit`}>
                     <Pencil className="h-4 w-4 mr-2" />
-                    Edit Profile
+                    Edit Company
                   </Link>
                 </Button>
                 <Button size="sm" variant="secondary" className="bg-white/10 hover:bg-white/20 text-white border-0 px-3">
@@ -406,118 +393,66 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
       <div className="flex gap-4">
         {/* Left Column - 25% */}
         <div className="w-1/4 space-y-4">
-          {/* Customer Information */}
+          {/* Company Information */}
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-4">
-              <h5 className="font-semibold text-gray-800 mb-3">Customer Information</h5>
+              <h5 className="font-semibold text-gray-800 mb-3">Company Information</h5>
               <table className="w-full">
                 <tbody>
-                  <TableRow label="Name" value={`${contact.first_name} ${contact.last_name}`} />
-                  <TableRow label="E-mail" value={contact.email} />
-                  <TableRow label="Phone" value={contact.phone} />
-                  <TableRow label="Address" value={mailingAddress} />
-                  <TableRow label="Social Security Number" value={contact.ssn_last_four ? `***-**-${contact.ssn_last_four}` : undefined} />
-                  <TableRow label="Joined on" value={formatDate(contact.created_at)} />
+                  <TableRow label="Name" value={corporation.name} />
+                  <TableRow label="Legal Name" value={corporation.legal_name} />
+                  <TableRow label="EIN" value={corporation.ein ? `***-**-${corporation.ein.slice(-4)}` : undefined} />
+                  <TableRow label="State ID" value={corporation.state_id} />
+                  <TableRow label="Entity Type" value={formatEntityType(corporation.entity_type)} />
+                  <TableRow label="Industry" value={corporation.industry} />
+                  <TableRow label="Status" value={corporation.status} />
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Relationship / Second Owner - from reports_to */}
-          {reportsTo && (
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h5 className="font-semibold text-gray-800">Relationship / Second Owner</h5>
-                  <Link href={`/contacts/${reportsTo.id}`}>
-                    <Button size="sm" variant="ghost" className="h-7 px-2">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Button>
-                  </Link>
-                </div>
-                <table className="w-full">
-                  <tbody>
-                    <TableRow
-                      label="Name"
-                      value={reportsTo.full_name || `${reportsTo.first_name} ${reportsTo.last_name}`}
-                      href={`/contacts/${reportsTo.id}`}
-                    />
-                    <TableRow label="Email" value={reportsTo.email} />
-                    <TableRow label="Address" value={reportsTo.mailing_street} />
-                    <TableRow label="Social Security Number" value={reportsTo.ssn_last_four ? `***-**-${reportsTo.ssn_last_four}` : undefined} />
-                    <TableRow label="Relationship" value={relationshipType || reportsToRelationshipType} />
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Related Contacts - contacts that have this contact as reports_to */}
-          {relatedContacts.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-4">
-                <h5 className="font-semibold text-gray-800 mb-3">Related Contacts</h5>
-                <div className="space-y-2">
-                  {relatedContacts.map((rel) => {
-                    const relCustomFields = rel.custom_fields as Record<string, unknown> | undefined;
-                    const relType = relCustomFields?.relationship_type as string | undefined;
-                    return (
-                      <Link
-                        key={rel.id}
-                        href={`/contacts/${rel.id}`}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                          <User className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">
-                            {rel.full_name || `${rel.first_name} ${rel.last_name}`}
-                          </p>
-                          {relType && (
-                            <p className="text-xs text-gray-500">{relType}</p>
-                          )}
-                        </div>
-                        <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Other */}
+          {/* Contact Information */}
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-4">
-              <h5 className="font-semibold text-gray-800 mb-3">Other</h5>
-              <div className="flex flex-wrap gap-2">
-                <Badge
-                  variant="outline"
-                  className={registeredAgent
-                    ? "border-green-200 bg-green-50 text-green-600"
-                    : "border-red-200 bg-red-50 text-red-500"
-                  }
-                >
-                  Registered Agent - {registeredAgent ? "Yes" : "No"}
-                </Badge>
-                {priority && (
-                  <Badge
-                    variant="outline"
-                    className={
-                      priority === "high"
-                        ? "border-red-200 bg-red-50 text-red-500"
-                        : priority === "low"
-                        ? "border-red-200 bg-red-50 text-red-500"
-                        : "border-yellow-200 bg-yellow-50 text-yellow-600"
-                    }
-                  >
-                    Priority - {priority.charAt(0).toUpperCase() + priority.slice(1)}
-                  </Badge>
-                )}
-              </div>
+              <h5 className="font-semibold text-gray-800 mb-3">Contact Information</h5>
+              <table className="w-full">
+                <tbody>
+                  <TableRow label="Email" value={corporation.email} />
+                  <TableRow label="Phone" value={corporation.phone} />
+                  <TableRow label="Fax" value={corporation.fax} />
+                  <TableRow label="Website" value={corporation.website} />
+                </tbody>
+              </table>
             </div>
           </div>
+
+          {/* Address */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-4">
+              <h5 className="font-semibold text-gray-800 mb-3">Address</h5>
+              <table className="w-full">
+                <tbody>
+                  <TableRow label="Billing Address" value={billingAddress} />
+                  <TableRow label="Shipping Address" value={shippingAddress} />
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Status Badge */}
+          {corporation.status && (
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="p-4">
+                <h5 className="font-semibold text-gray-800 mb-3">Status</h5>
+                <Badge
+                  variant="outline"
+                  className={cn("text-sm", getStatusBadgeColor(corporation.status))}
+                >
+                  {corporation.status.toUpperCase()}
+                </Badge>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column - 75% */}
@@ -525,91 +460,127 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
           {loading ? (
             <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <div className="animate-spin h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
-              <p className="mt-2 text-gray-500">Loading company data...</p>
+              <p className="mt-2 text-gray-500">Loading contacts...</p>
             </div>
-          ) : corporations.length > 0 ? (
-            corporations.map((corp) => {
-              const corpCustomFields = corp.custom_fields as Record<string, unknown> | undefined;
-              const dotNumber = corpCustomFields?.dot_number as string | undefined;
-
-              const corpAddress = [
-                corp.billing_street,
-                corp.billing_city,
-                corp.billing_state,
-                corp.billing_zip,
-              ].filter(Boolean).join(", ");
-
-              return (
-                <div key={corp.id} className="bg-white rounded-lg shadow-sm mb-4">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h5 className="font-semibold text-gray-800 text-lg">{corp.name}</h5>
-                      <Link href={`/corporations/${corp.id}`}>
-                        <Button size="sm" variant="outline">
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          View Full Details
-                        </Button>
-                      </Link>
-                    </div>
-                    <div className="grid grid-cols-3 gap-x-4">
-                      <CompanyItem icon={FileText} label="DOT" value={dotNumber} />
-                      <CompanyItem icon={Hash} label="EIN" value={corp.ein} />
-                      <CompanyItem icon={Hash} label="Control Number" value={corp.state_id} />
-                      <CompanyItem icon={Search} label="Type of Identity" value={formatEntityType(corp.entity_type)} />
-                      <CompanyItem icon={Calendar} label="Start Date" value={formatDate(corp.fiscal_year_end)} />
-                      <CompanyItem icon={Briefcase} label="Sector" value={corp.industry} />
-                      <CompanyItem icon={MapPinned} label="Address" value={corpAddress || corp.billing_street} />
-                      <CompanyItem icon={Clock} label="Date of Formation" value={formatDate(corp.date_incorporated)} />
-                    </div>
+          ) : (
+            <>
+              {/* Company Details */}
+              <div className="bg-white rounded-lg shadow-sm mb-4">
+                <div className="p-4">
+                  <h5 className="font-semibold text-gray-800 text-lg mb-3">Company Details</h5>
+                  <div className="grid grid-cols-3 gap-x-4">
+                    <CompanyItem icon={FileText} label="DOT Number" value={dotNumber} />
+                    <CompanyItem icon={Hash} label="EIN" value={corporation.ein} />
+                    <CompanyItem icon={Hash} label="State ID" value={corporation.state_id} />
+                    <CompanyItem icon={Search} label="Entity Type" value={formatEntityType(corporation.entity_type)} />
+                    <CompanyItem icon={Calendar} label="Fiscal Year End" value={corporation.fiscal_year_end} />
+                    <CompanyItem icon={Briefcase} label="Industry" value={corporation.industry} />
+                    <CompanyItem icon={MapPinned} label="Billing Address" value={billingAddress} />
+                    <CompanyItem icon={Clock} label="Date Incorporated" value={formatDate(corporation.date_incorporated)} />
                   </div>
                 </div>
-              );
-            })
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-4">
-                <h5 className="font-semibold text-gray-800 mb-3">Company</h5>
-                <div className="py-8 text-center text-gray-400">
-                  <Building2 className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No companies linked</p>
+              </div>
+
+              {/* Linked Contacts */}
+              <div className="bg-white rounded-lg shadow-sm">
+                <div className="p-4">
+                  <h5 className="font-semibold text-gray-800 text-lg mb-3">
+                    Contacts ({contacts.length})
+                  </h5>
+                  {contacts.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {contacts.map((contact) => {
+                        const contactInitials = `${contact.first_name?.[0] || ""}${contact.last_name?.[0] || ""}`
+                          .toUpperCase();
+                        return (
+                          <Link
+                            key={contact.id}
+                            href={`/contacts/${contact.id}`}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
+                          >
+                            <Avatar className="h-10 w-10 flex-shrink-0">
+                              <AvatarFallback className="bg-blue-100 text-blue-600 text-sm font-medium">
+                                {contactInitials || "?"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-800 truncate">
+                                {contact.full_name || `${contact.first_name} ${contact.last_name}`}
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                                {contact.email && (
+                                  <span className="flex items-center gap-1 truncate">
+                                    <Mail className="h-3 w-3" />
+                                    {contact.email}
+                                  </span>
+                                )}
+                                {contact.phone && (
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="h-3 w-3" />
+                                    {contact.phone}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center text-gray-400">
+                      <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No contacts linked</p>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Activity & Comments Section */}
-          <div className="bg-white rounded-lg shadow-sm mt-4">
-            <Tabs defaultValue="activity" className="w-full">
-              <div className="border-b px-4 pt-3">
-                <TabsList className="grid w-full grid-cols-2 max-w-[300px]">
-                  <TabsTrigger value="activity" className="gap-2">
-                    <Activity className="h-4 w-4" />
-                    Activity
-                  </TabsTrigger>
-                  <TabsTrigger value="comments" className="gap-2">
-                    <MessageSquare className="h-4 w-4" />
-                    Comments
-                  </TabsTrigger>
-                </TabsList>
+              {/* Notes Section */}
+              {corporation.description && (
+                <div className="bg-white rounded-lg shadow-sm mt-4">
+                  <div className="p-4">
+                    <h5 className="font-semibold text-gray-800 text-lg mb-3">Notes</h5>
+                    <p className="text-sm text-gray-600 whitespace-pre-wrap">{corporation.description}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Activity & Comments Section */}
+              <div className="bg-white rounded-lg shadow-sm mt-4">
+                <Tabs defaultValue="activity" className="w-full">
+                  <div className="border-b px-4 pt-3">
+                    <TabsList className="grid w-full grid-cols-2 max-w-[300px]">
+                      <TabsTrigger value="activity" className="gap-2">
+                        <Activity className="h-4 w-4" />
+                        Activity
+                      </TabsTrigger>
+                      <TabsTrigger value="comments" className="gap-2">
+                        <MessageSquare className="h-4 w-4" />
+                        Comments
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  <TabsContent value="activity" className="p-4 mt-0">
+                    <ActivityTimeline
+                      entityType="corporation"
+                      entityId={corporation.id}
+                      maxHeight="400px"
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="comments" className="p-4 mt-0">
+                    <CommentsSection
+                      entityType="corporation"
+                      entityId={corporation.id}
+                      maxHeight="400px"
+                    />
+                  </TabsContent>
+                </Tabs>
               </div>
-
-              <TabsContent value="activity" className="p-4 mt-0">
-                <ActivityTimeline
-                  entityType="contact"
-                  entityId={contact.id}
-                  maxHeight="400px"
-                />
-              </TabsContent>
-
-              <TabsContent value="comments" className="p-4 mt-0">
-                <CommentsSection
-                  entityType="contact"
-                  entityId={contact.id}
-                  maxHeight="400px"
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -631,7 +602,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               icon={<FolderOpen className="h-4 w-4 text-amber-500" />}
               count={totalDocuments}
               defaultOpen={documentYears.length > 0}
-              addHref={`/documents?contact=${contact.id}`}
+              addHref={`/documents?corporation=${corporation.id}`}
             >
               {documentYears.length === 0 ? (
                 <p className="text-xs text-muted-foreground">No documents</p>
@@ -640,7 +611,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
                   {documentYears.map((year) => (
                     <Link
                       key={year.year}
-                      href={`/documents?contact=${contact.id}&year=${year.year}`}
+                      href={`/documents?corporation=${corporation.id}&year=${year.year}`}
                       className="flex items-center justify-between p-2 rounded hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center gap-2">
@@ -653,7 +624,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
                     </Link>
                   ))}
                   <Link
-                    href={`/documents?contact=${contact.id}`}
+                    href={`/documents?corporation=${corporation.id}`}
                     className="flex items-center gap-1 text-xs text-primary hover:underline mt-2"
                   >
                     View all documents <ExternalLink className="h-3 w-3" />
@@ -668,7 +639,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               icon={<Briefcase className="h-4 w-4 text-blue-600" />}
               count={cases.length}
               defaultOpen={cases.length > 0}
-              addHref={`/cases/new?contact=${contact.id}`}
+              addHref={`/cases/new?corporation=${corporation.id}`}
             >
               {cases.length === 0 ? (
                 <p className="text-xs text-muted-foreground">No cases</p>
@@ -691,7 +662,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
                   ))}
                   {cases.length > 5 && (
                     <Link
-                      href={`/cases?contact=${contact.id}`}
+                      href={`/cases?corporation=${corporation.id}`}
                       className="flex items-center gap-1 text-xs text-primary hover:underline mt-1"
                     >
                       View all ({cases.length}) <ExternalLink className="h-3 w-3" />
@@ -701,35 +672,41 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               )}
             </SidebarSection>
 
-            {/* Corporations */}
+            {/* Contacts */}
             <SidebarSection
-              title="Companies"
-              icon={<Building2 className="h-4 w-4 text-slate-600" />}
-              count={corporations.length}
-              defaultOpen={corporations.length > 0}
+              title="Contacts"
+              icon={<User className="h-4 w-4 text-green-600" />}
+              count={contacts.length}
+              defaultOpen={contacts.length > 0}
+              addHref={`/contacts/new?corporation=${corporation.id}`}
             >
-              {corporations.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No companies linked</p>
+              {contacts.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No contacts</p>
               ) : (
                 <div className="space-y-1.5">
-                  {corporations.slice(0, 5).map((corp) => (
+                  {contacts.slice(0, 5).map((c) => (
                     <Link
-                      key={corp.id}
-                      href={`/corporations/${corp.id}`}
+                      key={c.id}
+                      href={`/contacts/${c.id}`}
                       className="block p-2 rounded border hover:bg-muted/50 transition-colors"
                     >
-                      <div className="font-medium text-sm">{corp.name}</div>
-                      {corp.entity_type && (
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {corp.entity_type.replace(/_/g, " ")}
+                      <div className="font-medium text-sm">
+                        {c.first_name} {c.last_name}
+                      </div>
+                      {(c.email || c.phone) && (
+                        <div className="text-xs text-muted-foreground mt-0.5 truncate">
+                          {c.email || c.phone}
                         </div>
                       )}
                     </Link>
                   ))}
-                  {corporations.length > 5 && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      +{corporations.length - 5} more
-                    </p>
+                  {contacts.length > 5 && (
+                    <Link
+                      href={`/contacts?corporation=${corporation.id}`}
+                      className="flex items-center gap-1 text-xs text-primary hover:underline mt-1"
+                    >
+                      View all ({contacts.length}) <ExternalLink className="h-3 w-3" />
+                    </Link>
                   )}
                 </div>
               )}
@@ -741,7 +718,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               icon={<Calendar className="h-4 w-4 text-indigo-600" />}
               count={appointments.length}
               defaultOpen={appointments.length > 0}
-              addHref={`/appointments/new?contact=${contact.id}`}
+              addHref={`/appointments/new?corporation=${corporation.id}`}
             >
               {appointments.length === 0 ? (
                 <p className="text-xs text-muted-foreground">No appointments</p>
@@ -764,7 +741,7 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
                   ))}
                   {appointments.length > 5 && (
                     <Link
-                      href={`/appointments?contact=${contact.id}`}
+                      href={`/appointments?corporation=${corporation.id}`}
                       className="flex items-center gap-1 text-xs text-primary hover:underline mt-1"
                     >
                       View all ({appointments.length}) <ExternalLink className="h-3 w-3" />
@@ -774,38 +751,69 @@ export function ContactLightDetail({ contact }: ContactLightDetailProps) {
               )}
             </SidebarSection>
 
-            {/* Related Contacts */}
-            {relatedContacts.length > 0 && (
-              <SidebarSection
-                title="Related Contacts"
-                icon={<User className="h-4 w-4 text-green-600" />}
-                count={relatedContacts.length}
-                defaultOpen={true}
-              >
+            {/* Related Corporations */}
+            <SidebarSection
+              title="Related Corporations"
+              icon={<Link2 className="h-4 w-4 text-purple-600" />}
+              count={corporation.related_corporations?.length || 0}
+              defaultOpen={(corporation.related_corporations?.length || 0) > 0}
+            >
+              {!corporation.related_corporations || corporation.related_corporations.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No related corporations</p>
+              ) : (
                 <div className="space-y-1.5">
-                  {relatedContacts.slice(0, 5).map((rel) => {
-                    const relCustomFields = rel.custom_fields as Record<string, unknown> | undefined;
-                    const relType = relCustomFields?.relationship_type as string | undefined;
-                    return (
-                      <Link
-                        key={rel.id}
-                        href={`/contacts/${rel.id}`}
-                        className="block p-2 rounded border hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="font-medium text-sm">
-                          {rel.full_name || `${rel.first_name} ${rel.last_name}`}
-                        </div>
-                        {relType && (
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {relType}
-                          </div>
-                        )}
-                      </Link>
-                    );
-                  })}
+                  {corporation.related_corporations.slice(0, 5).map((rc) => (
+                    <Link
+                      key={rc.id}
+                      href={`/corporations/${rc.id}`}
+                      className="block p-2 rounded border hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-sm truncate">{rc.name}</span>
+                      </div>
+                    </Link>
+                  ))}
+                  {corporation.related_corporations.length > 5 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      +{corporation.related_corporations.length - 5} more
+                    </p>
+                  )}
                 </div>
-              </SidebarSection>
-            )}
+              )}
+            </SidebarSection>
+
+            {/* Subsidiaries */}
+            <SidebarSection
+              title="Subsidiaries"
+              icon={<Building2 className="h-4 w-4 text-teal-600" />}
+              count={corporation.subsidiaries?.length || 0}
+              defaultOpen={(corporation.subsidiaries?.length || 0) > 0}
+            >
+              {!corporation.subsidiaries || corporation.subsidiaries.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No subsidiaries</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {corporation.subsidiaries.slice(0, 5).map((sub) => (
+                    <Link
+                      key={sub.id}
+                      href={`/corporations/${sub.id}`}
+                      className="block p-2 rounded border hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-sm truncate">{sub.name}</span>
+                      </div>
+                    </Link>
+                  ))}
+                  {corporation.subsidiaries.length > 5 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      +{corporation.subsidiaries.length - 5} more
+                    </p>
+                  )}
+                </div>
+              )}
+            </SidebarSection>
           </>
         )}
       </div>

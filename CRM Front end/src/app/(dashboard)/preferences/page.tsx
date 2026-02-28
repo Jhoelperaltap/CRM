@@ -159,6 +159,7 @@ export default function PreferencesPage() {
                     <Sparkles className="h-4 w-4" />
                     <div>
                       <span className="font-medium">Light Mode</span>
+                      <span className="text-blue-600 ml-1 text-xs">(Default)</span>
                       <span className="text-muted-foreground ml-2">
                         - Simplified wizard interface
                       </span>

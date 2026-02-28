@@ -3,7 +3,12 @@ import type { PaginatedResponse, ImportResponse } from "@/types/api";
 import type { Contact, ContactListItem } from "@/types";
 
 export async function getContacts(params?: Record<string, string>) {
-  const { data } = await api.get<PaginatedResponse<ContactListItem>>("/contacts/", { params });
+  // When searching, include related contacts (same corporation, reports_to)
+  const finalParams = { ...params };
+  if (params?.search && params.search.length >= 2) {
+    finalParams.include_related = "true";
+  }
+  const { data } = await api.get<PaginatedResponse<ContactListItem>>("/contacts/", { params: finalParams });
   return data;
 }
 

@@ -3,7 +3,7 @@ import io
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -47,7 +47,9 @@ class ContactViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, ModulePermission]
     module_name = "contacts"
     filterset_class = ContactFilter
-    search_fields = ["first_name", "last_name", "email", "phone"]
+    # Note: search is handled by ContactFilter.filter_search_with_related
+    # to support include_related parameter
+    search_fields = []  # Disabled - using custom filter instead
     ordering_fields = [
         "first_name",
         "last_name",
