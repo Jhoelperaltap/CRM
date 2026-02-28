@@ -489,10 +489,14 @@ class TestPublicFAQView:
         assert len(resp.data) == 1
 
     def test_search_public_faqs(self, api_client):
-        KBFAQFactory(is_active=True, is_public=True, question="How do I pay?")
+        # Use unique search term to avoid interference from other tests
+        unique_term = "UniquePaymentTerm98765"
+        KBFAQFactory(
+            is_active=True, is_public=True, question=f"How do I {unique_term}?"
+        )
         KBFAQFactory(is_active=True, is_public=True, question="What services?")
 
-        resp = api_client.get(f"{BASE_URL}public/faqs/?search=pay")
+        resp = api_client.get(f"{BASE_URL}public/faqs/?search={unique_term}")
         assert resp.status_code == status.HTTP_200_OK
         assert len(resp.data) == 1
 
