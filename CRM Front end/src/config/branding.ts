@@ -26,12 +26,21 @@ export const branding = {
     shortName: "ETS",
   },
 
+  // Version information
+  version: {
+    number: "1.0.0",
+    buildDate: "2026-02-28",
+    environment: process.env.NODE_ENV || "development",
+  },
+
   // Display modes
   display: {
     // Shows: "EJFLOW | Client Name" in topbar
     showPlatformInTopbar: true,
     // Shows: "Powered by EJFLOW" in footer/login
     showPoweredBy: true,
+    // Shows version in footer
+    showVersionInFooter: true,
   },
 
   // Meta information
@@ -54,4 +63,15 @@ export function getTopbarTitle(): string {
     return `${branding.platform.name} | ${branding.client.name}`;
   }
   return branding.client.name;
+}
+
+export function getVersionString(): string {
+  return `v${branding.version.number}`;
+}
+
+export function getFullVersionString(): string {
+  const env = branding.version.environment !== "production"
+    ? ` (${branding.version.environment})`
+    : "";
+  return `${branding.platform.name} v${branding.version.number}${env}`;
 }

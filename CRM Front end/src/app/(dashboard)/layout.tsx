@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { MegaMenuSidebar } from "@/components/layout/mega-menu-sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { Footer } from "@/components/layout/footer";
 import { CRMChatWidget } from "@/components/chat/crm-chat-widget";
 import { cn } from "@/lib/utils";
 import { SessionTimeoutProvider } from "@/providers/session-timeout-provider";
@@ -50,6 +51,9 @@ export default function DashboardLayout({
           <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
             {children}
           </main>
+
+          {/* Footer with version */}
+          <Footer />
         </div>
 
         {/* CRM Chat Assistant Widget */}
