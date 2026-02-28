@@ -199,7 +199,7 @@ export function MegaMenuSidebar() {
           title: "GENERAL",
           items: [
             { label: "Profile", href: "/users/profile", icon: User, iconColor: "text-blue-400", description: "Your profile settings" },
-            { label: "Appearance", href: "/settings/appearance", icon: Palette, iconColor: "text-pink-400", description: "Theme & display" },
+            { label: "Preferences", href: "/preferences", icon: Palette, iconColor: "text-pink-400", description: "Theme & display" },
           ],
         },
         {
@@ -215,7 +215,6 @@ export function MegaMenuSidebar() {
           items: [
             { label: "Modules", href: "/settings/modules", icon: Database, iconColor: "text-indigo-400", description: "Module settings" },
             { label: "Workflows", href: "/settings/workflows", icon: Workflow, iconColor: "text-orange-400", description: "Automation rules" },
-            { label: "API Keys", href: "/settings/api-keys", icon: Key, iconColor: "text-slate-400", description: "API access" },
             { label: "Audit Log", href: "/audit", icon: ScrollText, iconColor: "text-indigo-400", description: "Activity history" },
           ],
         },

@@ -75,6 +75,10 @@ export default function CallSettingsPage() {
   const [queues, setQueues] = useState<CallQueue[]>([]);
   const [providerDialogOpen, setProviderDialogOpen] = useState(false);
   const [editingProvider, setEditingProvider] = useState<TelephonyProvider | null>(null);
+  const [lineDialogOpen, setLineDialogOpen] = useState(false);
+  const [queueDialogOpen, setQueueDialogOpen] = useState(false);
+  const [newLine, setNewLine] = useState({ phone_number: "", friendly_name: "", line_type: "direct" });
+  const [newQueue, setNewQueue] = useState({ name: "", strategy: "ring_all", max_wait_time: 300 });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -137,6 +141,28 @@ export default function CallSettingsPage() {
       fetchData();
     } catch {
       /* empty */
+    }
+  };
+
+  const handleCreateLine = async () => {
+    try {
+      await phoneLineApi.create(newLine);
+      setLineDialogOpen(false);
+      setNewLine({ phone_number: "", friendly_name: "", line_type: "direct" });
+      fetchData();
+    } catch {
+      alert("Failed to create phone line");
+    }
+  };
+
+  const handleCreateQueue = async () => {
+    try {
+      await callQueueApi.create(newQueue);
+      setQueueDialogOpen(false);
+      setNewQueue({ name: "", strategy: "ring_all", max_wait_time: 300 });
+      fetchData();
+    } catch {
+      alert("Failed to create call queue");
     }
   };
 
@@ -578,10 +604,61 @@ export default function CallSettingsPage() {
         <TabsContent value="lines" className="space-y-4 mt-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Phone Lines</h3>
-            <Button>
-              <Plus className="mr-2 size-4" />
-              Add Line
-            </Button>
+            <Dialog open={lineDialogOpen} onOpenChange={setLineDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 size-4" />
+                  Add Line
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Phone Line</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Phone Number</Label>
+                    <Input
+                      placeholder="+1 (555) 123-4567"
+                      value={newLine.phone_number}
+                      onChange={(e) => setNewLine({ ...newLine, phone_number: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Friendly Name</Label>
+                    <Input
+                      placeholder="Main Office Line"
+                      value={newLine.friendly_name}
+                      onChange={(e) => setNewLine({ ...newLine, friendly_name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Line Type</Label>
+                    <Select
+                      value={newLine.line_type}
+                      onValueChange={(v) => setNewLine({ ...newLine, line_type: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="direct">Direct</SelectItem>
+                        <SelectItem value="shared">Shared</SelectItem>
+                        <SelectItem value="queue">Queue</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setLineDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleCreateLine}>
+                      Create Line
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {phoneLines.length > 0 ? (
@@ -632,10 +709,62 @@ export default function CallSettingsPage() {
         <TabsContent value="queues" className="space-y-4 mt-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Call Queues</h3>
-            <Button>
-              <Plus className="mr-2 size-4" />
-              Add Queue
-            </Button>
+            <Dialog open={queueDialogOpen} onOpenChange={setQueueDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 size-4" />
+                  Add Queue
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Call Queue</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Queue Name</Label>
+                    <Input
+                      placeholder="Sales Queue"
+                      value={newQueue.name}
+                      onChange={(e) => setNewQueue({ ...newQueue, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ring Strategy</Label>
+                    <Select
+                      value={newQueue.strategy}
+                      onValueChange={(v) => setNewQueue({ ...newQueue, strategy: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ring_all">Ring All</SelectItem>
+                        <SelectItem value="round_robin">Round Robin</SelectItem>
+                        <SelectItem value="least_recent">Least Recent</SelectItem>
+                        <SelectItem value="random">Random</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Max Wait Time (seconds)</Label>
+                    <Input
+                      type="number"
+                      value={newQueue.max_wait_time}
+                      onChange={(e) => setNewQueue({ ...newQueue, max_wait_time: parseInt(e.target.value) })}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setQueueDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleCreateQueue}>
+                      Create Queue
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {queues.length > 0 ? (
