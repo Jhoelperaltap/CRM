@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0004_stickynote'),
+        ("dashboard", "0004_stickynote"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userpreference',
-            name='ui_mode',
-            field=models.CharField(choices=[('full', 'Full Mode'), ('light', 'Light Mode')], default='full', max_length=10, verbose_name='UI mode'),
+            model_name="userpreference",
+            name="ui_mode",
+            field=models.CharField(
+                choices=[("full", "Full Mode"), ("light", "Light Mode")],
+                default="full",
+                max_length=10,
+                verbose_name="UI mode",
+            ),
         ),
     ]

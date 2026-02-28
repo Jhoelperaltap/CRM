@@ -70,7 +70,9 @@ class TestWizardCreateEndpoint:
         assert corp.ein == "12-3456789"
         assert contact.primary_corporation == corp
 
-    def test_wizard_create_with_multiple_corporations(self, authenticated_client, preparer_user):
+    def test_wizard_create_with_multiple_corporations(
+        self, authenticated_client, preparer_user
+    ):
         """Test creating a contact with multiple corporations."""
         url = reverse("contacts-wizard-create")
         payload = {
@@ -134,7 +136,9 @@ class TestWizardCreateEndpoint:
         assert rel_contact.corporations.count() == 1
         assert main_contact.corporations.first() == rel_contact.corporations.first()
 
-    def test_wizard_create_with_custom_fields(self, authenticated_client, preparer_user):
+    def test_wizard_create_with_custom_fields(
+        self, authenticated_client, preparer_user
+    ):
         """Test that custom fields are stored correctly."""
         url = reverse("contacts-wizard-create")
         payload = {
