@@ -137,7 +137,7 @@ All endpoints under `/api/v1/`. Key route groups:
 | `/api/v1/auth/` | users (urls_auth) | Login, logout, password change |
 | `/api/v1/users/` | users | User CRUD, `/me/` profile |
 | `/api/v1/roles/` | users (urls_roles) | Role list, permission management |
-| `/api/v1/contacts/` | contacts | Contact CRUD, `/star/`, `/import_csv/`, `/export_csv/` |
+| `/api/v1/contacts/` | contacts | Contact CRUD, `/star/`, `/import_csv/`, `/export_csv/`, `/wizard-create/` |
 | `/api/v1/corporations/` | corporations | Corporation CRUD |
 | `/api/v1/cases/` | cases | TaxCase CRUD, nested `/notes/` |
 | `/api/v1/dashboard/` | dashboard | Analytics widgets, `/config/` |
@@ -181,3 +181,35 @@ export const branding = {
 - Blue gradient sidebar: `from-[#1e5a99] via-[#336daa] to-[#4887bf]`
 - Logo gradient: `from-blue-600 to-blue-700`
 - Supports dark/light mode
+
+### Light Mode (Simplified UI)
+The application supports a "Light Mode" for users who prefer a simplified interface:
+- **Toggle**: Settings > Preferences > Interface Mode
+- **State Management**: Zustand store (`src/stores/ui-store.ts`) with `uiMode: "full" | "light"`
+- **Persistence**: Saved in backend `UserPreference.ui_mode` and synced with localStorage
+
+#### Light Mode Features
+| Feature | Full Mode | Light Mode |
+|---------|-----------|------------|
+| Contact Creation | Multi-tab form with modals | 4-step wizard (Customer → Relationship → Company → Finish) |
+| Contact List | Table view by default | Grid view with cards, gray background |
+| Contact Detail | Tabs with sidebar | 25%/75% column layout with animated header |
+| Navigation | All menu items | Corporations menu hidden |
+
+#### Light Mode Components
+- `src/components/ui/animated-background.tsx` — Canvas particle animation for headers
+- `src/components/ui/stepper.tsx` — Horizontal step indicator with free navigation
+- `src/components/contacts/contact-wizard-form.tsx` — 4-step creation wizard
+- `src/components/contacts/contact-card.tsx` — Card for grid view
+- `src/components/contacts/contact-grid.tsx` — Responsive grid layout
+- `src/components/contacts/contact-light-detail.tsx` — Simplified detail view
+
+#### Wizard Create Endpoint
+`POST /api/v1/contacts/wizard-create/` — Creates contact + relationship + corporations in single transaction:
+```json
+{
+  "contact": { "first_name": "...", "last_name": "...", ... },
+  "relationship": { "first_name": "...", "relationship_type": "..." } | null,
+  "corporations": [{ "name": "...", "ein": "...", ... }]
+}
+```

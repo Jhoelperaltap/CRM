@@ -785,6 +785,7 @@ CREATE INDEX idx_audit_user_date ON crm_audit_logs(user_id, created_at);
 │   ├── /                         GET, POST
 │   ├── {id}/                     GET, PUT, DELETE
 │   ├── {id}/star/                POST - Marcar favorito
+│   ├── wizard-create/            POST - Crear contacto + empresa + relación (Light Mode)
 │   ├── import_csv/               POST - Importar CSV
 │   └── export_csv/               GET - Exportar CSV
 ├── corporations/                 CRUD estándar
@@ -820,6 +821,7 @@ CREATE INDEX idx_audit_user_date ON crm_audit_logs(user_id, created_at);
 ├── dashboard/
 │   ├── widgets/                  GET
 │   └── config/                   GET, PUT
+├── preferences/                  GET, PUT - Preferencias usuario (ui_mode: full/light)
 ├── reports/                      GET, POST
 ├── workflows/                    CRUD
 ├── ai-agent/

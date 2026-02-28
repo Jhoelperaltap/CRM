@@ -627,6 +627,40 @@ Puede ver y editar:
 - **Zona Horaria:** Su zona local
 - **Notificaciones:** Qué alertas recibir
 
+### Modo de Interfaz (Light Mode)
+
+El sistema ofrece dos modos de interfaz para adaptarse a diferentes necesidades:
+
+#### Modo Completo (Full Mode)
+- Interfaz tradicional con todas las funcionalidades
+- Vista de tabla para contactos
+- Formularios detallados con todos los campos
+- Acceso a módulo de Corporaciones separado
+
+#### Modo Light (Simplificado)
+- Interfaz simplificada con wizard de 4 pasos
+- Vista de tarjetas para contactos
+- Fondo con efecto de universo animado
+- Crear cliente + empresa + relación en un solo flujo
+
+**Para cambiar el modo:**
+1. Vaya a **Settings** → **Preferences**
+2. En **Interface Mode**, seleccione:
+   - **Full Mode** - Todas las funciones
+   - **Light Mode** - Wizard simplificado
+3. Haga clic en **Save Preferences**
+
+#### Wizard de Creación (Light Mode)
+
+Al crear un cliente en Light Mode:
+
+1. **Step 1 - Customer Info:** Nombre, email, teléfono, dirección, SSN
+2. **Step 2 - Relationship:** Agregar segundo propietario/cónyuge (opcional)
+3. **Step 3 - Company:** Agregar empresa(s) con EIN, DOT, etc.
+4. **Step 4 - Finish:** Revisar y guardar
+
+**Nota:** Puede navegar libremente entre pasos haciendo clic en los círculos numerados.
+
 ---
 
 ## Atajos de Teclado
