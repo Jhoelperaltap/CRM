@@ -77,8 +77,8 @@ export default function CallSettingsPage() {
   const [editingProvider, setEditingProvider] = useState<TelephonyProvider | null>(null);
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const [queueDialogOpen, setQueueDialogOpen] = useState(false);
-  const [newLine, setNewLine] = useState({ phone_number: "", friendly_name: "", line_type: "direct" });
-  const [newQueue, setNewQueue] = useState({ name: "", strategy: "ring_all", max_wait_time: 300 });
+  const [newLine, setNewLine] = useState<{ phone_number: string; friendly_name: string; line_type: "inbound" | "outbound" | "both" }>({ phone_number: "", friendly_name: "", line_type: "both" });
+  const [newQueue, setNewQueue] = useState<{ name: string; strategy: "ring_all" | "round_robin" | "least_recent" | "random" | "linear"; max_wait_time: number }>({ name: "", strategy: "ring_all", max_wait_time: 300 });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -148,7 +148,7 @@ export default function CallSettingsPage() {
     try {
       await phoneLineApi.create(newLine);
       setLineDialogOpen(false);
-      setNewLine({ phone_number: "", friendly_name: "", line_type: "direct" });
+      setNewLine({ phone_number: "", friendly_name: "", line_type: "both" });
       fetchData();
     } catch {
       alert("Failed to create phone line");
@@ -636,15 +636,15 @@ export default function CallSettingsPage() {
                     <Label>Line Type</Label>
                     <Select
                       value={newLine.line_type}
-                      onValueChange={(v) => setNewLine({ ...newLine, line_type: v })}
+                      onValueChange={(v: "inbound" | "outbound" | "both") => setNewLine({ ...newLine, line_type: v })}
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="direct">Direct</SelectItem>
-                        <SelectItem value="shared">Shared</SelectItem>
-                        <SelectItem value="queue">Queue</SelectItem>
+                        <SelectItem value="both">Both (Inbound & Outbound)</SelectItem>
+                        <SelectItem value="inbound">Inbound Only</SelectItem>
+                        <SelectItem value="outbound">Outbound Only</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -733,7 +733,7 @@ export default function CallSettingsPage() {
                     <Label>Ring Strategy</Label>
                     <Select
                       value={newQueue.strategy}
-                      onValueChange={(v) => setNewQueue({ ...newQueue, strategy: v })}
+                      onValueChange={(v: "ring_all" | "round_robin" | "least_recent" | "random" | "linear") => setNewQueue({ ...newQueue, strategy: v })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -743,6 +743,7 @@ export default function CallSettingsPage() {
                         <SelectItem value="round_robin">Round Robin</SelectItem>
                         <SelectItem value="least_recent">Least Recent</SelectItem>
                         <SelectItem value="random">Random</SelectItem>
+                        <SelectItem value="linear">Linear</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
