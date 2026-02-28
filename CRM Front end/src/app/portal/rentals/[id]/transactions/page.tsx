@@ -25,7 +25,7 @@ import {
   Filter,
   X,
   Paperclip,
-  ExternalLink,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RentalTransactionModal } from "@/components/portal/rental-transaction-modal";
@@ -65,6 +65,7 @@ export default function TransactionsPage() {
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"income" | "expense">("income");
+  const [editingTransaction, setEditingTransaction] = useState<RentalTransaction | null>(null);
 
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
@@ -124,18 +125,32 @@ export default function TransactionsPage() {
   };
 
   const handleAddIncome = () => {
+    setEditingTransaction(null);
     setModalType("income");
     setModalOpen(true);
   };
 
   const handleAddExpense = () => {
+    setEditingTransaction(null);
     setModalType("expense");
+    setModalOpen(true);
+  };
+
+  const handleEdit = (txn: RentalTransaction) => {
+    setEditingTransaction(txn);
+    setModalType(txn.transaction_type);
     setModalOpen(true);
   };
 
   const handleModalSaved = () => {
     setModalOpen(false);
+    setEditingTransaction(null);
     loadTransactions();
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setEditingTransaction(null);
   };
 
   const clearFilters = () => {
@@ -429,13 +444,23 @@ export default function TransactionsPage() {
                       {formatCurrency(txn.amount)}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleDelete(txn.id)}
-                        disabled={deleting === txn.id}
-                        className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 disabled:opacity-50"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => handleEdit(txn)}
+                          className="rounded p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
+                          title="Edit transaction"
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(txn.id)}
+                          disabled={deleting === txn.id}
+                          className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 disabled:opacity-50"
+                          title="Delete transaction"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -449,13 +474,14 @@ export default function TransactionsPage() {
       {modalOpen && (
         <RentalTransactionModal
           open={modalOpen}
-          onClose={() => setModalOpen(false)}
+          onClose={handleModalClose}
           onSaved={handleModalSaved}
           propertyId={propertyId}
           year={year}
           month={month || new Date().getMonth() + 1}
           transactionType={modalType}
           categories={categories}
+          transaction={editingTransaction}
         />
       )}
     </div>

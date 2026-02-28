@@ -158,6 +158,33 @@ export async function createTransaction(payload: RentalTransactionFormData) {
 }
 
 export async function updateTransaction(id: string, payload: Partial<RentalTransactionFormData>) {
+  // If there's a receipt file, use FormData
+  if (payload.receipt instanceof File) {
+    const formData = new FormData();
+    if (payload.transaction_type) {
+      formData.append("transaction_type", payload.transaction_type);
+    }
+    if (payload.transaction_date) {
+      formData.append("transaction_date", payload.transaction_date);
+    }
+    if (payload.amount !== undefined) {
+      formData.append("amount", String(payload.amount));
+    }
+    if (payload.category) {
+      formData.append("category", payload.category);
+    }
+    if (payload.description !== undefined) {
+      formData.append("description", payload.description);
+    }
+    formData.append("receipt", payload.receipt);
+
+    const { data } = await rentalApi.patch<RentalTransaction>(`/transactions/${id}/`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  }
+
+  // Otherwise, use regular JSON
   const { data } = await rentalApi.patch<RentalTransaction>(`/transactions/${id}/`, payload);
   return data;
 }
