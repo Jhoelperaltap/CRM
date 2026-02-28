@@ -400,7 +400,7 @@ class Contact(TimeStampedModel):
         blank=True,
         default="",
     )
-    linkedin_url = models.URLField(
+    linkedin_url = models.CharField(
         _("LinkedIn URL"),
         max_length=500,
         blank=True,
@@ -411,7 +411,7 @@ class Contact(TimeStampedModel):
         null=True,
         blank=True,
     )
-    facebook_url = models.URLField(
+    facebook_url = models.CharField(
         _("Facebook URL"),
         max_length=500,
         blank=True,
