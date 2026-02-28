@@ -68,6 +68,8 @@ export interface RentalTransaction {
   transaction_date: string;
   amount: number;
   description: string;
+  receipt: string | null;
+  receipt_url: string | null;
   debit_amount: number;
   credit_amount: number;
   created_at: string;
@@ -81,6 +83,7 @@ export interface RentalTransactionFormData {
   transaction_date: string;
   amount: number;
   description?: string;
+  receipt?: File | null;
 }
 
 // Monthly values structure (for grid)

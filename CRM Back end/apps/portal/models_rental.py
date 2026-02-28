@@ -210,6 +210,13 @@ class RentalTransaction(TimeStampedModel):
         blank=True,
         default="",
     )
+    receipt = models.FileField(
+        _("receipt/proof"),
+        upload_to="rentals/receipts/%Y/%m/",
+        null=True,
+        blank=True,
+        help_text=_("Optional proof document (image or PDF)"),
+    )
     # Accounting-style fields
     debit_amount = models.DecimalField(
         _("debit"),

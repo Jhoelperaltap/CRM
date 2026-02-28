@@ -24,6 +24,8 @@ import {
   TrendingDown,
   Filter,
   X,
+  Paperclip,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RentalTransactionModal } from "@/components/portal/rental-transaction-modal";
@@ -145,13 +147,14 @@ export default function TransactionsPage() {
 
   const hasFilters = year !== currentYear || month !== null || typeFilter !== "all" || categoryFilter !== null;
 
-  // Calculate totals
+  // Calculate totals (ensure amount is a number)
   const totals = transactions.reduce(
     (acc, t) => {
+      const amount = typeof t.amount === "string" ? parseFloat(t.amount) : t.amount;
       if (t.transaction_type === "income") {
-        acc.income += t.amount;
+        acc.income += amount || 0;
       } else {
-        acc.expenses += t.amount;
+        acc.expenses += amount || 0;
       }
       return acc;
     },
@@ -357,6 +360,9 @@ export default function TransactionsPage() {
                   <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Description
                   </th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-slate-700 dark:text-slate-300 w-16">
+                    Proof
+                  </th>
                   <th className="px-4 py-3 text-right text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Amount
                   </th>
@@ -396,6 +402,21 @@ export default function TransactionsPage() {
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate">
                       {txn.description || "-"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {txn.receipt_url ? (
+                        <a
+                          href={txn.receipt_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center rounded p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                          title="View receipt"
+                        >
+                          <Paperclip className="size-4" />
+                        </a>
+                      ) : (
+                        <span className="text-slate-300 dark:text-slate-600">-</span>
+                      )}
                     </td>
                     <td
                       className={cn(

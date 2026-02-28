@@ -405,7 +405,9 @@ class PortalRentalTransactionViewSet(viewsets.ViewSet):
 
         qs = qs.order_by("-transaction_date", "-created_at")
 
-        serializer = RentalTransactionSerializer(qs, many=True)
+        serializer = RentalTransactionSerializer(
+            qs, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
@@ -418,7 +420,7 @@ class PortalRentalTransactionViewSet(viewsets.ViewSet):
         except RentalTransaction.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = RentalTransactionSerializer(txn)
+        serializer = RentalTransactionSerializer(txn, context={"request": request})
         return Response(serializer.data)
 
     def create(self, request):
@@ -442,7 +444,7 @@ class PortalRentalTransactionViewSet(viewsets.ViewSet):
         txn = serializer.save()
 
         return Response(
-            RentalTransactionSerializer(txn).data,
+            RentalTransactionSerializer(txn, context={"request": request}).data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -462,7 +464,9 @@ class PortalRentalTransactionViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(RentalTransactionSerializer(txn).data)
+        return Response(
+            RentalTransactionSerializer(txn, context={"request": request}).data
+        )
 
     def partial_update(self, request, pk=None):
         """Partial update a transaction."""

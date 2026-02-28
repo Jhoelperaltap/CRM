@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createTransaction } from "@/lib/api/portal-rental";
 import type { RentalExpenseCategory, TransactionType } from "@/types/portal-rental";
 import { MONTH_LABELS, MONTH_NAMES } from "@/types/portal-rental";
-import { X, DollarSign, Loader2 } from "lucide-react";
+import { X, DollarSign, Loader2, Upload, FileText, Image as ImageIcon, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RentalTransactionModalProps {
@@ -38,6 +38,9 @@ export function RentalTransactionModal({
   const [description, setDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
   const [selectedDay, setSelectedDay] = useState(15);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -47,8 +50,48 @@ export function RentalTransactionModal({
       setSelectedCategory(categoryId || "");
       setSelectedDay(15);
       setError(null);
+      setReceiptFile(null);
+      setReceiptPreview(null);
     }
   }, [open, categoryId]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf"];
+      if (!validTypes.includes(file.type)) {
+        setError("Please upload an image (JPG, PNG, GIF, WebP) or PDF file.");
+        return;
+      }
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("File size must be less than 10MB.");
+        return;
+      }
+      setReceiptFile(file);
+      setError(null);
+
+      // Create preview for images
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setReceiptPreview(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setReceiptPreview(null);
+      }
+    }
+  };
+
+  const removeFile = () => {
+    setReceiptFile(null);
+    setReceiptPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   if (!open) return null;
 
@@ -88,6 +131,7 @@ export function RentalTransactionModal({
         transaction_date: transactionDate,
         amount: numAmount,
         description: description.trim(),
+        receipt: receiptFile || undefined,
       });
 
       onSaved();
@@ -232,6 +276,67 @@ export function RentalTransactionModal({
               placeholder="e.g., Rent payment, Plumber repair"
               maxLength={500}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Receipt/Proof Upload */}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Receipt/Proof
+              <span className="ml-1 font-normal text-slate-400">(optional - image or PDF)</span>
+            </label>
+
+            {receiptFile ? (
+              <div className="relative rounded-lg border border-slate-300 dark:border-slate-600 p-3">
+                <div className="flex items-center gap-3">
+                  {receiptPreview ? (
+                    <img
+                      src={receiptPreview}
+                      alt="Receipt preview"
+                      className="h-16 w-16 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
+                      <FileText className="size-8 text-red-500" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                      {receiptFile.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {(receiptFile.size / 1024).toFixed(1)} KB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeFile}
+                    className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="cursor-pointer rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 p-4 text-center hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors"
+              >
+                <Upload className="mx-auto size-8 text-slate-400" />
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                  Click to upload receipt
+                </p>
+                <p className="text-xs text-slate-400">
+                  JPG, PNG, GIF, WebP or PDF (max 10MB)
+                </p>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
+              onChange={handleFileChange}
+              className="hidden"
             />
           </div>
 

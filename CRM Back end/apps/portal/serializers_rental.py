@@ -175,6 +175,7 @@ class RentalTransactionSerializer(serializers.ModelSerializer):
         source="get_transaction_type_display", read_only=True
     )
     property_name = serializers.CharField(source="property.name", read_only=True)
+    receipt_url = serializers.SerializerMethodField()
 
     class Meta:
         model = RentalTransaction
@@ -190,6 +191,8 @@ class RentalTransactionSerializer(serializers.ModelSerializer):
             "transaction_date",
             "amount",
             "description",
+            "receipt",
+            "receipt_url",
             "debit_amount",
             "credit_amount",
             "created_at",
@@ -200,6 +203,15 @@ class RentalTransactionSerializer(serializers.ModelSerializer):
             "credit_amount",
             "created_at",
         ]
+
+    def get_receipt_url(self, obj):
+        """Return the full URL for the receipt file."""
+        if obj.receipt:
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(obj.receipt.url)
+            return obj.receipt.url
+        return None
 
 
 class RentalTransactionCreateSerializer(serializers.ModelSerializer):
@@ -214,6 +226,7 @@ class RentalTransactionCreateSerializer(serializers.ModelSerializer):
             "transaction_date",
             "amount",
             "description",
+            "receipt",
         ]
 
     def validate(self, attrs):

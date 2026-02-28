@@ -131,6 +131,28 @@ export async function getTransaction(id: string) {
 }
 
 export async function createTransaction(payload: RentalTransactionFormData) {
+  // If there's a receipt file, use FormData
+  if (payload.receipt) {
+    const formData = new FormData();
+    formData.append("property", payload.property);
+    formData.append("transaction_type", payload.transaction_type);
+    formData.append("transaction_date", payload.transaction_date);
+    formData.append("amount", String(payload.amount));
+    if (payload.category) {
+      formData.append("category", payload.category);
+    }
+    if (payload.description) {
+      formData.append("description", payload.description);
+    }
+    formData.append("receipt", payload.receipt);
+
+    const { data } = await rentalApi.post<RentalTransaction>("/transactions/", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  }
+
+  // Otherwise, use regular JSON
   const { data } = await rentalApi.post<RentalTransaction>("/transactions/", payload);
   return data;
 }
