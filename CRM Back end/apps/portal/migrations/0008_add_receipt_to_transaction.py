@@ -6,23 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portal', '0007_rental_properties'),
+        ("portal", "0007_rental_properties"),
     ]
 
     operations = [
         migrations.RenameIndex(
-            model_name='rentaltransaction',
-            new_name='crm_rental__propert_879efe_idx',
-            old_name='crm_rental__propert_8f5a6c_idx',
+            model_name="rentaltransaction",
+            new_name="crm_rental__propert_879efe_idx",
+            old_name="crm_rental__propert_8f5a6c_idx",
         ),
         migrations.RenameIndex(
-            model_name='rentaltransaction',
-            new_name='crm_rental__transac_392d22_idx',
-            old_name='crm_rental__transac_4b9e2a_idx',
+            model_name="rentaltransaction",
+            new_name="crm_rental__transac_392d22_idx",
+            old_name="crm_rental__transac_4b9e2a_idx",
         ),
         migrations.AddField(
-            model_name='rentaltransaction',
-            name='receipt',
-            field=models.FileField(blank=True, help_text='Optional proof document (image or PDF)', null=True, upload_to='rentals/receipts/%Y/%m/', verbose_name='receipt/proof'),
+            model_name="rentaltransaction",
+            name="receipt",
+            field=models.FileField(
+                blank=True,
+                help_text="Optional proof document (image or PDF)",
+                null=True,
+                upload_to="rentals/receipts/%Y/%m/",
+                verbose_name="receipt/proof",
+            ),
         ),
     ]
