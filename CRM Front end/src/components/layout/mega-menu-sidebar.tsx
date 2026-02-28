@@ -198,7 +198,7 @@ export function MegaMenuSidebar() {
         {
           title: "GENERAL",
           items: [
-            { label: "Profile", href: "/settings/profile", icon: User, iconColor: "text-blue-400", description: "Your profile settings" },
+            { label: "Profile", href: "/users/profile", icon: User, iconColor: "text-blue-400", description: "Your profile settings" },
             { label: "Appearance", href: "/settings/appearance", icon: Palette, iconColor: "text-pink-400", description: "Theme & display" },
           ],
         },
