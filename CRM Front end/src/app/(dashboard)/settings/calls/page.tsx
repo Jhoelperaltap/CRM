@@ -77,8 +77,16 @@ export default function CallSettingsPage() {
   const [editingProvider, setEditingProvider] = useState<TelephonyProvider | null>(null);
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const [queueDialogOpen, setQueueDialogOpen] = useState(false);
-  const [newLine, setNewLine] = useState<{ phone_number: string; friendly_name: string; line_type: "inbound" | "outbound" | "both" }>({ phone_number: "", friendly_name: "", line_type: "both" });
+  const [newLine, setNewLine] = useState<{ provider: string; phone_number: string; friendly_name: string; line_type: "inbound" | "outbound" | "both" }>({ provider: "", phone_number: "", friendly_name: "", line_type: "both" });
   const [newQueue, setNewQueue] = useState<{ name: string; strategy: "ring_all" | "round_robin" | "least_recent" | "random" | "linear"; max_wait_time: number }>({ name: "", strategy: "ring_all", max_wait_time: 300 });
+  const [newProvider, setNewProvider] = useState({
+    name: "",
+    provider_type: "twilio" as "twilio" | "ringcentral" | "vonage" | "asterisk" | "custom",
+    account_sid: "",
+    api_key: "",
+    default_caller_id: "",
+    is_active: true,
+  });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -148,7 +156,7 @@ export default function CallSettingsPage() {
     try {
       await phoneLineApi.create(newLine);
       setLineDialogOpen(false);
-      setNewLine({ phone_number: "", friendly_name: "", line_type: "both" });
+      setNewLine({ provider: "", phone_number: "", friendly_name: "", line_type: "both" });
       fetchData();
     } catch {
       alert("Failed to create phone line");
@@ -163,6 +171,24 @@ export default function CallSettingsPage() {
       fetchData();
     } catch {
       alert("Failed to create call queue");
+    }
+  };
+
+  const handleCreateProvider = async () => {
+    try {
+      await telephonyProviderApi.create(newProvider);
+      setProviderDialogOpen(false);
+      setNewProvider({
+        name: "",
+        provider_type: "twilio",
+        account_sid: "",
+        api_key: "",
+        default_caller_id: "",
+        is_active: true,
+      });
+      fetchData();
+    } catch {
+      alert("Failed to create provider");
     }
   };
 
@@ -497,16 +523,81 @@ export default function CallSettingsPage() {
                   Add Provider
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>
                     {editingProvider ? "Edit Provider" : "Add Provider"}
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Provider configuration form would go here
-                  </p>
+                  <div className="space-y-2">
+                    <Label>Provider Name</Label>
+                    <Input
+                      placeholder="My Twilio Account"
+                      value={newProvider.name}
+                      onChange={(e) => setNewProvider({ ...newProvider, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Provider Type</Label>
+                    <Select
+                      value={newProvider.provider_type}
+                      onValueChange={(v: "twilio" | "ringcentral" | "vonage" | "asterisk" | "custom") =>
+                        setNewProvider({ ...newProvider, provider_type: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="twilio">Twilio</SelectItem>
+                        <SelectItem value="ringcentral">RingCentral</SelectItem>
+                        <SelectItem value="vonage">Vonage</SelectItem>
+                        <SelectItem value="asterisk">Asterisk/FreePBX</SelectItem>
+                        <SelectItem value="custom">Custom SIP</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Account SID / Username</Label>
+                    <Input
+                      placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                      value={newProvider.account_sid}
+                      onChange={(e) => setNewProvider({ ...newProvider, account_sid: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>API Key / Auth Token</Label>
+                    <Input
+                      type="password"
+                      placeholder="Your API key or auth token"
+                      value={newProvider.api_key}
+                      onChange={(e) => setNewProvider({ ...newProvider, api_key: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Default Caller ID</Label>
+                    <Input
+                      placeholder="+1 (555) 123-4567"
+                      value={newProvider.default_caller_id}
+                      onChange={(e) => setNewProvider({ ...newProvider, default_caller_id: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Active</Label>
+                    <Switch
+                      checked={newProvider.is_active}
+                      onCheckedChange={(checked) => setNewProvider({ ...newProvider, is_active: checked })}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setProviderDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleCreateProvider} disabled={!newProvider.name}>
+                      {editingProvider ? "Save Changes" : "Create Provider"}
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -617,6 +708,29 @@ export default function CallSettingsPage() {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
+                    <Label>Provider</Label>
+                    <Select
+                      value={newLine.provider}
+                      onValueChange={(v) => setNewLine({ ...newLine, provider: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a provider" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {providers.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {providers.length === 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        No providers configured. Add a provider first.
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
                     <Label>Phone Number</Label>
                     <Input
                       placeholder="+1 (555) 123-4567"
@@ -652,7 +766,7 @@ export default function CallSettingsPage() {
                     <Button variant="outline" onClick={() => setLineDialogOpen(false)}>
                       Cancel
                     </Button>
-                    <Button onClick={handleCreateLine}>
+                    <Button onClick={handleCreateLine} disabled={!newLine.provider || !newLine.phone_number}>
                       Create Line
                     </Button>
                   </div>
