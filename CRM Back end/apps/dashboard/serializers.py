@@ -131,6 +131,7 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
             "items_per_page",
             "date_format",
             "timezone",
+            "ui_mode",
         ]
         read_only_fields = ["id", "user"]
 

@@ -2,6 +2,7 @@ import csv
 import io
 
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import transaction
 from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from rest_framework import status, viewsets
@@ -19,6 +20,7 @@ from apps.contacts.serializers import (
     ContactListSerializer,
     ContactTagAssignmentSerializer,
     ContactTagSerializer,
+    WizardCreateSerializer,
 )
 from apps.core.validators import validate_csv_import
 from apps.users.permissions import ModulePermission
@@ -254,6 +256,123 @@ class ContactViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = EmailMessageListSerializer(qs, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["post"], url_path="wizard-create")
+    def wizard_create(self, request):
+        """
+        Create contact + relationship (optional) + corporations in a single transaction.
+
+        This endpoint is used by Light Mode to create all related entities at once.
+
+        Payload::
+
+            {
+                "contact": {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john@example.com",
+                    ...
+                },
+                "relationship": {
+                    "first_name": "Jane",
+                    "last_name": "Doe",
+                    "relationship_type": "Wife",
+                    ...
+                } | null,
+                "corporations": [
+                    {"name": "ABC Corp", "ein": "12-3456789", ...},
+                    ...
+                ]
+            }
+
+        Returns the created contact with all linked corporations.
+        """
+        from apps.corporations.models import Corporation
+
+        serializer = WizardCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        with transaction.atomic():
+            # Create main contact
+            contact_data = data["contact"]
+            # Map middle_name to title if provided (for simplicity)
+            middle_name = contact_data.pop("middle_name", "")
+            # Store sensitive_info in custom_fields
+            sensitive_info = contact_data.pop("sensitive_info", "")
+            # Store priority in custom_fields
+            priority = contact_data.pop("priority", "")
+            # Store registered_agent in custom_fields
+            registered_agent = contact_data.pop("registered_agent", False)
+
+            custom_fields = {}
+            if sensitive_info:
+                custom_fields["sensitive_info"] = sensitive_info
+            if priority:
+                custom_fields["priority"] = priority
+            if registered_agent:
+                custom_fields["registered_agent"] = registered_agent
+            if middle_name:
+                custom_fields["middle_name"] = middle_name
+
+            contact = Contact.objects.create(
+                created_by=request.user,
+                custom_fields=custom_fields,
+                **contact_data,
+            )
+
+            # Create corporations and link to contact
+            corporations_data = data.get("corporations", [])
+            created_corporations = []
+            for corp_data in corporations_data:
+                # Extract fields not directly on the model
+                dot_number = corp_data.pop("dot_number", "")
+
+                # Store dot_number in custom_fields
+                corp_custom_fields = {}
+                if dot_number:
+                    corp_custom_fields["dot_number"] = dot_number
+
+                # Set entity_type default if empty
+                entity_type = corp_data.get("entity_type", "") or "other"
+                corp_data["entity_type"] = entity_type
+
+                corp = Corporation.objects.create(
+                    created_by=request.user,
+                    custom_fields=corp_custom_fields,
+                    **corp_data,
+                )
+                created_corporations.append(corp)
+                contact.corporations.add(corp)
+
+            # Set first corporation as primary
+            if created_corporations:
+                contact.primary_corporation = created_corporations[0]
+                contact.save(update_fields=["primary_corporation"])
+
+            # Create relationship contact if provided
+            relationship_data = data.get("relationship")
+            if relationship_data:
+                rel_custom_fields = {}
+                relationship_type = relationship_data.pop("relationship_type", "")
+                if relationship_type:
+                    rel_custom_fields["relationship_type"] = relationship_type
+
+                relationship_contact = Contact.objects.create(
+                    created_by=request.user,
+                    custom_fields=rel_custom_fields,
+                    reports_to=contact,  # Link relationship to main contact
+                    **relationship_data,
+                )
+                # Link relationship contact to same corporations
+                for corp in created_corporations:
+                    relationship_contact.corporations.add(corp)
+
+        # Return the created contact
+        result_serializer = ContactDetailSerializer(
+            contact, context={"request": request}
+        )
+        return Response(result_serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["get"], url_path="export_csv")
     def export_csv(self, request):

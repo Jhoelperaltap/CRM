@@ -128,6 +128,10 @@ class UserPreference(models.Model):
         LIGHT = "light", _("Light")
         DARK = "dark", _("Dark")
 
+    class UIMode(models.TextChoices):
+        FULL = "full", _("Full Mode")
+        LIGHT = "light", _("Light Mode")
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -156,6 +160,12 @@ class UserPreference(models.Model):
         _("timezone"),
         max_length=50,
         default="America/New_York",
+    )
+    ui_mode = models.CharField(
+        _("UI mode"),
+        max_length=10,
+        choices=UIMode.choices,
+        default=UIMode.FULL,
     )
 
     class Meta:

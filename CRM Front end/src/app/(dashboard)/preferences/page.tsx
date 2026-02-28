@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getUserPreferences, updateUserPreferences } from "@/lib/api/dashboard";
+import { getUserPreferences, updateUserPreferences, type UserPreferences } from "@/lib/api/dashboard";
 import { useUIStore } from "@/stores/ui-store";
 import { PageHeader } from "@/components/ui/page-header";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,21 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-
-interface Preferences {
-  id: string;
-  user: string;
-  theme: string;
-  sidebar_collapsed: boolean;
-  items_per_page: number;
-  date_format: string;
-  timezone: string;
-}
+import { Monitor, Sparkles } from "lucide-react";
 
 export default function PreferencesPage() {
   const setTheme = useUIStore((s) => s.setTheme);
   const setSidebarCollapsed = useUIStore((s) => s.setSidebarCollapsed);
-  const [prefs, setPrefs] = useState<Preferences | null>(null);
+  const setUIMode = useUIStore((s) => s.setUIMode);
+  const [prefs, setPrefs] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{
@@ -46,12 +38,13 @@ export default function PreferencesPage() {
       // Sync backend preferences to the UI store
       setTheme(data.theme === "dark" ? "dark" : "light");
       setSidebarCollapsed(data.sidebar_collapsed);
+      setUIMode(data.ui_mode || "full");
     } catch (err) {
       console.error("Failed to load preferences", err);
     } finally {
       setLoading(false);
     }
-  }, [setTheme, setSidebarCollapsed]);
+  }, [setTheme, setSidebarCollapsed, setUIMode]);
 
   useEffect(() => {
     fetchPrefs();
@@ -68,11 +61,13 @@ export default function PreferencesPage() {
         items_per_page: prefs.items_per_page,
         date_format: prefs.date_format,
         timezone: prefs.timezone,
+        ui_mode: prefs.ui_mode,
       });
       setPrefs(updated);
       // Apply immediately to the UI
       setTheme(updated.theme === "dark" ? "dark" : "light");
       setSidebarCollapsed(updated.sidebar_collapsed);
+      setUIMode(updated.ui_mode || "full");
       setMessage({ type: "success", text: "Preferences saved successfully." });
     } catch (err) {
       console.error("Failed to save preferences", err);
@@ -127,6 +122,60 @@ export default function PreferencesPage() {
         </div>
       )}
 
+      {/* Interface Mode Card - Full Width */}
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            Interface Mode
+          </CardTitle>
+          <CardDescription>
+            Choose between the full-featured interface or a simplified light mode
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Select
+              value={prefs.ui_mode}
+              onValueChange={(v: "full" | "light") => setPrefs({ ...prefs, ui_mode: v })}
+            >
+              <SelectTrigger id="ui_mode" className="w-full md:w-[400px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="full">
+                  <div className="flex items-center gap-2">
+                    <Monitor className="h-4 w-4" />
+                    <div>
+                      <span className="font-medium">Full Mode</span>
+                      <span className="text-muted-foreground ml-2">
+                        - All fields and features
+                      </span>
+                    </div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="light">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    <div>
+                      <span className="font-medium">Light Mode</span>
+                      <span className="text-muted-foreground ml-2">
+                        - Simplified wizard interface
+                      </span>
+                    </div>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {prefs.ui_mode === "light"
+                ? "Light Mode uses a step-by-step wizard for creating contacts and a simplified card-based view."
+                : "Full Mode provides access to all fields and the traditional table-based interface."}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -137,7 +186,7 @@ export default function PreferencesPage() {
               <Label htmlFor="theme">Theme</Label>
               <Select
                 value={prefs.theme}
-                onValueChange={(v) => setPrefs({ ...prefs, theme: v })}
+                onValueChange={(v: "light" | "dark") => setPrefs({ ...prefs, theme: v })}
               >
                 <SelectTrigger id="theme">
                   <SelectValue />

@@ -34,9 +34,7 @@ import {
   Shield,
   Clock,
   MessageSquare,
-  Link2,
   Smartphone,
-  CheckCircle,
   Loader2,
   Send,
   ChevronRight,
@@ -54,9 +52,10 @@ import { ContactSummaryCard } from "@/components/summary-card";
 import { TagSelector } from "@/components/tags";
 import { PortalAccessDialog } from "@/components/contacts/portal-access-dialog";
 import { ClientMessagesSection } from "@/components/contacts/client-messages-section";
+import { ContactLightDetail } from "@/components/contacts/contact-light-detail";
 import { DepartmentFolders } from "@/components/departments";
 import { getPortalAccounts } from "@/lib/api/settings";
-import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/ui-store";
 import api from "@/lib/api";
 
 // Related entity types for sidebar
@@ -168,6 +167,7 @@ function SidebarStatusBadge({ status }: { status: string }) {
 export default function ContactDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const uiMode = useUIStore((s) => s.uiMode);
   const [contact, setContact] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -267,6 +267,34 @@ export default function ContactDetailPage() {
 
   if (loading) return <LoadingSpinner />;
   if (!contact) return <div className="p-8 text-center">Contact not found</div>;
+
+  // Light mode: Show simplified detail view
+  if (uiMode === "light") {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title={contact.full_name || `${contact.first_name} ${contact.last_name}`}
+          backHref="/contacts"
+          actions={
+            <>
+              <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+                <Trash2 className="mr-2 h-4 w-4" /> Delete
+              </Button>
+            </>
+          }
+        />
+        <ContactLightDetail contact={contact} />
+        <ConfirmDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title="Delete Contact"
+          description={`Are you sure you want to delete "${contact.full_name}"? This action cannot be undone.`}
+          confirmLabel="Delete"
+          onConfirm={handleDelete}
+        />
+      </div>
+    );
+  }
 
   const formatOptIn = (value: string) => {
     const labels: Record<string, string> = {

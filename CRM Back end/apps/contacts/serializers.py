@@ -488,3 +488,72 @@ class ContactTagAssignmentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["assigned_by"] = self.context["request"].user
         return super().create(validated_data)
+
+
+# ---------------------------------------------------------------------------
+# Wizard Serializers (Light Mode)
+# ---------------------------------------------------------------------------
+class WizardContactSerializer(serializers.Serializer):
+    """Contact fields for wizard-create endpoint."""
+
+    first_name = serializers.CharField(max_length=100)
+    middle_name = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    last_name = serializers.CharField(max_length=100)
+    date_of_birth = serializers.DateField(required=False, allow_null=True, default=None)
+    ssn_last_four = serializers.CharField(max_length=4, required=False, allow_blank=True, default="")
+    priority = serializers.CharField(max_length=50, required=False, allow_blank=True, default="")
+    registered_agent = serializers.BooleanField(required=False, default=False)
+    mailing_street = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
+    email = serializers.EmailField(required=False, allow_blank=True, default="")
+    phone = serializers.CharField(max_length=30, required=False, allow_blank=True, default="")
+    office_services = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    description = serializers.CharField(required=False, allow_blank=True, default="")
+    sensitive_info = serializers.CharField(required=False, allow_blank=True, default="")
+
+    def validate_ssn_last_four(self, value):
+        if value and (not value.isdigit() or len(value) != 4):
+            raise serializers.ValidationError("SSN last four must be exactly 4 digits.")
+        return value
+
+
+class WizardRelationshipSerializer(serializers.Serializer):
+    """Relationship (second owner) fields for wizard-create endpoint."""
+
+    first_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100)
+    email = serializers.EmailField(required=False, allow_blank=True, default="")
+    mailing_street = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
+    date_of_birth = serializers.DateField(required=False, allow_null=True, default=None)
+    ssn_last_four = serializers.CharField(max_length=4, required=False, allow_blank=True, default="")
+    relationship_type = serializers.CharField(max_length=50, required=False, allow_blank=True, default="")
+
+    def validate_ssn_last_four(self, value):
+        if value and (not value.isdigit() or len(value) != 4):
+            raise serializers.ValidationError("SSN last four must be exactly 4 digits.")
+        return value
+
+
+class WizardCorporationSerializer(serializers.Serializer):
+    """Corporation fields for wizard-create endpoint."""
+
+    name = serializers.CharField(max_length=255)
+    date_incorporated = serializers.DateField(required=False, allow_null=True, default=None)
+    state_id = serializers.CharField(max_length=50, required=False, allow_blank=True, default="")
+    dot_number = serializers.CharField(max_length=50, required=False, allow_blank=True, default="")
+    ein = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
+    entity_type = serializers.CharField(max_length=30, required=False, allow_blank=True, default="")
+    fiscal_year_end = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
+    industry = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    billing_street = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
+    description = serializers.CharField(required=False, allow_blank=True, default="")
+
+
+class WizardCreateSerializer(serializers.Serializer):
+    """
+    Serializer for wizard-create endpoint.
+    Creates contact + optional relationship + multiple corporations in a transaction.
+    """
+
+    contact = WizardContactSerializer()
+    relationship = WizardRelationshipSerializer(required=False, allow_null=True, default=None)
+    corporations = WizardCorporationSerializer(many=True, required=False, default=list)

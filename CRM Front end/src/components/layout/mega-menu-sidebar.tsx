@@ -71,6 +71,7 @@ interface MegaMenuGroup {
 export function MegaMenuSidebar() {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
+  const uiMode = useUIStore((state) => state.uiMode);
   const mobileMenuOpen = !useUIStore((state) => state.sidebarCollapsed);
   const toggleMobileMenu = useUIStore((state) => state.toggleSidebar);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -99,7 +100,8 @@ export function MegaMenuSidebar() {
           title: "CONTACTS",
           items: [
             { label: "All Contacts", href: "/contacts", icon: Users, iconColor: "text-cyan-400", description: "Manage individual contacts" },
-            { label: "Corporations", href: "/corporations", icon: Building2, iconColor: "text-slate-400", description: "Business entities" },
+            // Hide Corporations in Light Mode - companies are created through contact wizard
+            ...(uiMode !== "light" ? [{ label: "Corporations", href: "/corporations", icon: Building2, iconColor: "text-slate-400", description: "Business entities" }] : []),
             { label: "Import Contacts", href: "/contacts/import", icon: Users, iconColor: "text-cyan-400", description: "Import from CSV" },
           ],
         },

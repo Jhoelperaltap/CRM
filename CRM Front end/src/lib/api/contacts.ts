@@ -78,3 +78,54 @@ export async function sendClientMessage(
   );
   return data;
 }
+
+// Wizard Create (Light Mode)
+export interface WizardContactData {
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  date_of_birth?: string | null;
+  ssn_last_four?: string;
+  priority?: string;
+  registered_agent?: boolean;
+  mailing_street?: string;
+  email?: string;
+  phone?: string;
+  office_services?: string;
+  description?: string;
+  sensitive_info?: string;
+}
+
+export interface WizardRelationshipData {
+  first_name: string;
+  last_name: string;
+  email?: string;
+  mailing_street?: string;
+  date_of_birth?: string | null;
+  ssn_last_four?: string;
+  relationship_type?: string;
+}
+
+export interface WizardCorporationData {
+  name: string;
+  date_incorporated?: string | null;
+  state_id?: string;
+  dot_number?: string;
+  ein?: string;
+  entity_type?: string;
+  fiscal_year_end?: string;
+  industry?: string;
+  billing_street?: string;
+  description?: string;
+}
+
+export interface WizardCreatePayload {
+  contact: WizardContactData;
+  relationship?: WizardRelationshipData | null;
+  corporations?: WizardCorporationData[];
+}
+
+export async function wizardCreateContact(payload: WizardCreatePayload) {
+  const { data } = await api.post<Contact>("/contacts/wizard-create/", payload);
+  return data;
+}

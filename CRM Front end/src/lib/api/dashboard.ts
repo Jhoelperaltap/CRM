@@ -58,13 +58,26 @@ export async function getDashboardWidgets() {
   return data;
 }
 
-export async function getUserPreferences() {
-  const { data } = await api.get("/preferences/");
+export interface UserPreferences {
+  id: string;
+  user: string;
+  theme: "light" | "dark";
+  sidebar_collapsed: boolean;
+  items_per_page: number;
+  date_format: string;
+  timezone: string;
+  ui_mode: "full" | "light";
+}
+
+export async function getUserPreferences(): Promise<UserPreferences> {
+  const { data } = await api.get<UserPreferences>("/preferences/");
   return data;
 }
 
-export async function updateUserPreferences(payload: Record<string, unknown>) {
-  const { data } = await api.put("/preferences/", payload);
+export async function updateUserPreferences(
+  payload: Partial<Omit<UserPreferences, "id" | "user">>
+): Promise<UserPreferences> {
+  const { data } = await api.put<UserPreferences>("/preferences/", payload);
   return data;
 }
 
