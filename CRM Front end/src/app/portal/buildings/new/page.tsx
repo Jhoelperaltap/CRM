@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AxiosError } from "axios";
 import { createBuilding } from "@/lib/api/portal-commercial";
 import type { CommercialBuildingFormData } from "@/types/portal-commercial";
-import { ArrowLeft, Building2 } from "lucide-react";
+import { ArrowLeft, Building2, AlertTriangle } from "lucide-react";
 
 export default function NewBuildingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLicenseError, setIsLicenseError] = useState(false);
 
   // Form state
   const [name, setName] = useState("");
@@ -23,6 +25,7 @@ export default function NewBuildingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsLicenseError(false);
     setLoading(true);
 
     try {
@@ -39,8 +42,22 @@ export default function NewBuildingPage() {
       const building = await createBuilding(payload);
       router.push(`/portal/buildings/${building.id}`);
     } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to create building";
+      let errorMessage = "Failed to create building";
+
+      // Extract error message from Axios response
+      if (err instanceof AxiosError && err.response?.data) {
+        const data = err.response.data;
+        if (data.detail) {
+          errorMessage = data.detail;
+          // Check if this is a license limit error (403)
+          if (err.response.status === 403) {
+            setIsLicenseError(true);
+          }
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
       setError(errorMessage);
       setLoading(false);
     }
@@ -71,8 +88,38 @@ export default function NewBuildingPage() {
         className="rounded-xl border bg-white dark:bg-slate-900 p-6"
       >
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-600 dark:text-red-400">
-            {error}
+          <div
+            className={`mb-4 rounded-lg p-4 ${
+              isLicenseError
+                ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                : "bg-red-50 dark:bg-red-900/20"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              {isLicenseError && (
+                <AlertTriangle className="size-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              )}
+              <div>
+                <p
+                  className={`text-sm font-medium ${
+                    isLicenseError
+                      ? "text-amber-800 dark:text-amber-300"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {isLicenseError ? "License Limit Reached" : "Error"}
+                </p>
+                <p
+                  className={`text-sm mt-1 ${
+                    isLicenseError
+                      ? "text-amber-700 dark:text-amber-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {error}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 

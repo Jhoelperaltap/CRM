@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 import { getBuilding, createFloor, createUnit, createTenant, createLease } from "@/lib/api/portal-commercial";
 import type {
   CommercialBuilding,
@@ -15,6 +16,7 @@ import type {
 } from "@/types/portal-commercial";
 import { getOccupancyLevel } from "@/types/portal-commercial";
 import {
+  AlertTriangle,
   ArrowLeft,
   Building2,
   ChevronDown,
@@ -31,6 +33,23 @@ import {
   Ruler,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Helper to extract error message from API response
+function getApiErrorMessage(error: unknown): { message: string; isLicenseError: boolean } {
+  if (error instanceof AxiosError && error.response?.data) {
+    const data = error.response.data;
+    if (data.detail) {
+      return {
+        message: data.detail,
+        isLicenseError: error.response.status === 403,
+      };
+    }
+  }
+  if (error instanceof Error) {
+    return { message: error.message, isLicenseError: false };
+  }
+  return { message: "An unexpected error occurred", isLicenseError: false };
+}
 
 function formatCurrency(amount: number | string | null | undefined): string {
   if (amount === undefined || amount === null) return "-";
@@ -260,21 +279,9 @@ export default function BuildingDetailPage({
   }, [buildingId]);
 
   const handleAddFloor = async (data: CommercialFloorFormData) => {
-    try {
-      await createFloor(buildingId, data);
-      loadBuilding();
-      setShowAddFloorModal(false);
-    } catch (error: unknown) {
-      // Log error details for debugging
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: unknown } };
-        console.error("Error creating floor:", axiosError.response?.data);
-        alert(`Error creating floor: ${JSON.stringify(axiosError.response?.data)}`);
-      } else {
-        console.error("Error creating floor:", error);
-        alert("Error creating floor. Please try again.");
-      }
-    }
+    await createFloor(buildingId, data);
+    loadBuilding();
+    setShowAddFloorModal(false);
   };
 
   const handleAddUnit = async (floorId: string, data: CommercialUnitFormData) => {
@@ -502,13 +509,17 @@ function AddFloorModal({
   const [floorNumber, setFloorNumber] = useState(nextFloorNumber);
   const [name, setName] = useState("");
   const [totalSqft, setTotalSqft] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLicenseError, setIsLicenseError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isNaN(floorNumber)) {
-      alert("Please enter a valid floor number");
+      setError("Please enter a valid floor number");
       return;
     }
+    setError(null);
+    setIsLicenseError(false);
     setLoading(true);
     try {
       await onSubmit({
@@ -516,6 +527,10 @@ function AddFloorModal({
         name: name || undefined,
         total_sqft: totalSqft ? parseFloat(totalSqft) : undefined,
       });
+    } catch (err) {
+      const { message, isLicenseError: isLicense } = getApiErrorMessage(err);
+      setError(message);
+      setIsLicenseError(isLicense);
     } finally {
       setLoading(false);
     }
@@ -528,6 +543,37 @@ function AddFloorModal({
           Add New Floor
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div
+              className={`rounded-lg p-3 ${
+                isLicenseError
+                  ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                  : "bg-red-50 dark:bg-red-900/20"
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {isLicenseError && (
+                  <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                )}
+                <div className="text-sm">
+                  {isLicenseError && (
+                    <p className="font-medium text-amber-800 dark:text-amber-300">
+                      License Limit Reached
+                    </p>
+                  )}
+                  <p
+                    className={
+                      isLicenseError
+                        ? "text-amber-700 dark:text-amber-400"
+                        : "text-red-600 dark:text-red-400"
+                    }
+                  >
+                    {error}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Floor Number *
@@ -599,9 +645,13 @@ function AddUnitModal({
   const [unitNumber, setUnitNumber] = useState("");
   const [sqft, setSqft] = useState("");
   const [doorCode, setDoorCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLicenseError, setIsLicenseError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsLicenseError(false);
     setLoading(true);
     try {
       await onSubmit({
@@ -610,6 +660,10 @@ function AddUnitModal({
         door_code: doorCode || undefined,
         is_available: true,
       });
+    } catch (err) {
+      const { message, isLicenseError: isLicense } = getApiErrorMessage(err);
+      setError(message);
+      setIsLicenseError(isLicense);
     } finally {
       setLoading(false);
     }
@@ -622,6 +676,37 @@ function AddUnitModal({
           Add New Unit
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div
+              className={`rounded-lg p-3 ${
+                isLicenseError
+                  ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                  : "bg-red-50 dark:bg-red-900/20"
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {isLicenseError && (
+                  <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                )}
+                <div className="text-sm">
+                  {isLicenseError && (
+                    <p className="font-medium text-amber-800 dark:text-amber-300">
+                      License Limit Reached
+                    </p>
+                  )}
+                  <p
+                    className={
+                      isLicenseError
+                        ? "text-amber-700 dark:text-amber-400"
+                        : "text-red-600 dark:text-red-400"
+                    }
+                  >
+                    {error}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Unit Number *

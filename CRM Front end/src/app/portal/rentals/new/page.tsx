@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AxiosError } from "axios";
 import { createRentalProperty } from "@/lib/api/portal-rental";
 import type { RentalPropertyFormData } from "@/types/portal-rental";
 import { PROPERTY_TYPE_OPTIONS } from "@/types/portal-rental";
-import { ArrowLeft, Home, Save, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Home, Save, Loader2 } from "lucide-react";
 
 export default function NewRentalPropertyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLicenseError, setIsLicenseError] = useState(false);
   const [formData, setFormData] = useState<RentalPropertyFormData>({
     name: "",
     address_street: "",
@@ -28,14 +30,29 @@ export default function NewRentalPropertyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsLicenseError(false);
     setLoading(true);
 
     try {
       const property = await createRentalProperty(formData);
       router.push(`/portal/rentals/${property.id}`);
     } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to create property";
+      let errorMessage = "Failed to create property";
+
+      // Extract error message from Axios response
+      if (err instanceof AxiosError && err.response?.data) {
+        const data = err.response.data;
+        if (data.detail) {
+          errorMessage = data.detail;
+          // Check if this is a license limit error (403)
+          if (err.response.status === 403) {
+            setIsLicenseError(true);
+          }
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
       setError(errorMessage);
       setLoading(false);
     }
@@ -79,8 +96,38 @@ export default function NewRentalPropertyPage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4 text-sm text-red-700 dark:text-red-400">
-            {error}
+          <div
+            className={`rounded-lg p-4 ${
+              isLicenseError
+                ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                : "bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              {isLicenseError && (
+                <AlertTriangle className="size-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              )}
+              <div>
+                <p
+                  className={`text-sm font-medium ${
+                    isLicenseError
+                      ? "text-amber-800 dark:text-amber-300"
+                      : "text-red-700 dark:text-red-400"
+                  }`}
+                >
+                  {isLicenseError ? "License Limit Reached" : "Error"}
+                </p>
+                <p
+                  className={`text-sm mt-1 ${
+                    isLicenseError
+                      ? "text-amber-700 dark:text-amber-400"
+                      : "text-red-700 dark:text-red-400"
+                  }`}
+                >
+                  {error}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
