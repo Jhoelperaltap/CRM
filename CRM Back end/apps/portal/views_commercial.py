@@ -21,7 +21,6 @@ from apps.portal.models_commercial import (
     CommercialUnit,
 )
 from apps.portal.permissions import IsPortalAuthenticated
-from apps.portal.services.licensing import LicensingService
 from apps.portal.serializers_commercial import (
     BuildingDashboardSerializer,
     BuildingPaymentSummarySerializer,
@@ -40,6 +39,7 @@ from apps.portal.serializers_commercial import (
     CommercialUnitCreateSerializer,
     CommercialUnitSerializer,
 )
+from apps.portal.services.licensing import LicensingService
 
 
 def _calculate_building_dashboard(building):

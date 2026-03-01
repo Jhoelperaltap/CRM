@@ -21,7 +21,6 @@ from apps.portal.models_rental import (
     RentalTransaction,
 )
 from apps.portal.permissions import IsPortalAuthenticated
-from apps.portal.services.licensing import LicensingService
 from apps.portal.serializers_rental import (
     RentalDashboardSerializer,
     RentalExpenseCategoryCreateSerializer,
@@ -33,6 +32,7 @@ from apps.portal.serializers_rental import (
     RentalTransactionCreateSerializer,
     RentalTransactionSerializer,
 )
+from apps.portal.services.licensing import LicensingService
 
 # Month mapping for summary calculations
 MONTH_NAMES = [

@@ -8,7 +8,6 @@ Detects impersonation tokens and:
 """
 
 from django.http import JsonResponse
-from django.utils import timezone
 
 from apps.portal.models_admin import PortalImpersonationToken
 
