@@ -11,6 +11,32 @@ export interface PortalAccess {
   email: string;
   contact: PortalContact;
   last_login: string | null;
+  modules?: PortalModules;
+  impersonation?: PortalImpersonationInfo | null;
+}
+
+// Module access control
+export interface PortalModules {
+  dashboard: boolean;
+  billing: boolean;
+  messages: boolean;
+  documents: boolean;
+  cases: boolean;
+  rentals: boolean;
+  buildings: boolean;
+  appointments: boolean;
+}
+
+// Impersonation info from backend
+export interface PortalImpersonationInfo {
+  is_impersonating: boolean;
+  admin_id: string | null;
+  admin_name: string | null;
+  admin_email: string | null;
+  contact_id: string | null;
+  contact_name: string | null;
+  expires_at: string | null;
+  remaining_minutes: number;
 }
 
 export interface PortalLoginResponse {
@@ -78,4 +104,18 @@ export interface PortalAppointment {
   status: string;
   assigned_to_name: string;
   created_at: string;
+}
+
+// License usage types
+export interface LicenseLimit {
+  current?: number;
+  limit: number;
+  unlimited: boolean;
+}
+
+export interface LicenseUsage {
+  buildings: LicenseLimit;
+  floors_per_building: LicenseLimit;
+  units_per_building: LicenseLimit;
+  rental_properties: LicenseLimit;
 }

@@ -7,6 +7,7 @@ from apps.portal.views import (
     PortalChangePasswordView,
     PortalDeviceRegisterView,
     PortalDocumentViewSet,
+    PortalLicenseUsageView,
     PortalLoginView,
     PortalLogoutView,
     PortalMessageViewSet,
@@ -55,6 +56,13 @@ urlpatterns = [
         PortalDeviceRegisterView.as_view(),
         name="portal-device-register",
     ),
+    path(
+        "license-usage/",
+        PortalLicenseUsageView.as_view(),
+        name="portal-license-usage",
+    ),
     # Rental properties module
     path("rentals/", include("apps.portal.urls_rental")),
+    # Commercial buildings module
+    path("commercial/", include("apps.portal.urls_commercial")),
 ] + router.urls

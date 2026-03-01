@@ -62,3 +62,72 @@ The Support Team
         logger.error(f"Failed to send password reset email to {email}: {exc}")
         # Retry with exponential backoff
         raise self.retry(exc=exc, countdown=60 * (2**self.request.retries))
+
+
+@shared_task(bind=True, max_retries=3)
+def send_impersonation_notification_email(
+    self, contact_id: str, admin_name: str, admin_email: str = None
+):
+    """
+    Send notification email to client when an admin impersonates their account.
+
+    Args:
+        contact_id: UUID of the contact being impersonated
+        admin_name: Name of the admin performing impersonation
+        admin_email: Email of the admin (optional, for reference)
+    """
+    from django.utils import timezone
+
+    from apps.contacts.models import Contact
+
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+
+        # Get portal access email
+        if not hasattr(contact, "portal_access") or not contact.portal_access:
+            logger.warning(f"Contact {contact_id} has no portal access, skipping notification")
+            return {"status": "skipped", "reason": "no_portal_access"}
+
+        email = contact.portal_access.email
+        client_name = f"{contact.first_name} {contact.last_name}".strip() or "Customer"
+        timestamp = timezone.now().strftime("%B %d, %Y at %I:%M %p %Z")
+
+        subject = "[EJFLOW] Administrative access to your account"
+        message = f"""
+Dear {client_name},
+
+We want to inform you that an EJFLOW administrator has accessed your
+customer portal account to provide assistance.
+
+Access Details:
+- Date and Time: {timestamp}
+- Administrator: {admin_name}
+- Reason: Technical support / Data correction
+
+This access was performed in accordance with our support procedures
+to help resolve issues or correct information in your account.
+
+If you did not request assistance or have any questions about this access,
+please contact us immediately.
+
+Best regards,
+The EJFLOW Team
+        """.strip()
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        logger.info(f"Impersonation notification email sent to {email}")
+        return {"status": "sent", "email": email}
+
+    except Contact.DoesNotExist:
+        logger.error(f"Contact {contact_id} not found for impersonation notification")
+        return {"status": "error", "reason": "contact_not_found"}
+
+    except Exception as exc:
+        logger.error(f"Failed to send impersonation notification: {exc}")
+        raise self.retry(exc=exc, countdown=60 * (2**self.request.retries))

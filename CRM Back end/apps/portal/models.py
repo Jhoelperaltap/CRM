@@ -4,6 +4,11 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+# Import models from separate files so Django can find them
+from apps.portal.models_rental import *  # noqa: F401, F403
+from apps.portal.models_commercial import *  # noqa: F401, F403
+from apps.portal.models_admin import *  # noqa: F401, F403
+
 
 class ClientPortalAccess(models.Model):
     """

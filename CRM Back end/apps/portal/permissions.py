@@ -50,11 +50,17 @@ class IsPortalAuthenticated(BasePermission):
 
         portal_access_id = payload.get("portal_access_id")
         try:
-            portal_access = ClientPortalAccess.objects.select_related("contact").get(
-                id=portal_access_id, is_active=True
-            )
+            portal_access = ClientPortalAccess.objects.select_related(
+                "contact", "contact__portal_config"
+            ).get(id=portal_access_id, is_active=True)
         except ClientPortalAccess.DoesNotExist:
             return False
+
+        # Check if portal access is active (admin control)
+        contact = portal_access.contact
+        if hasattr(contact, "portal_config") and contact.portal_config:
+            if not contact.portal_config.is_portal_active:
+                return False
 
         request.portal_access = portal_access
         request.portal_contact_id = str(portal_access.contact_id)

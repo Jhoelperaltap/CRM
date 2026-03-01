@@ -128,6 +128,15 @@ class PortalLoginView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
+        # Check if portal access is active (admin control)
+        contact = portal_access.contact
+        if hasattr(contact, "portal_config") and contact.portal_config:
+            if not contact.portal_config.is_portal_active:
+                return Response(
+                    {"detail": "Your portal access has been deactivated. Please contact support."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
         portal_access.last_login = timezone.now()
         portal_access.save(update_fields=["last_login"])
 
@@ -171,7 +180,57 @@ class PortalMeView(APIView):
 
     def get(self, request):
         serializer = PortalMeSerializer(request.portal_access)
-        return Response(serializer.data)
+        data = serializer.data
+
+        # Add module access info
+        contact = request.portal_access.contact
+        if hasattr(contact, "portal_config") and contact.portal_config:
+            config = contact.portal_config
+            data["modules"] = {
+                "dashboard": config.module_dashboard,
+                "billing": config.module_billing,
+                "messages": config.module_messages,
+                "documents": config.module_documents,
+                "cases": config.module_cases,
+                "rentals": config.module_rentals,
+                "buildings": config.module_buildings,
+                "appointments": config.module_appointments,
+            }
+            data["enabled_modules"] = config.get_enabled_modules()
+        else:
+            # Default: all modules disabled if no config
+            data["modules"] = {
+                "dashboard": False,
+                "billing": False,
+                "messages": False,
+                "documents": False,
+                "cases": False,
+                "rentals": False,
+                "buildings": False,
+                "appointments": False,
+            }
+            data["enabled_modules"] = []
+
+        # Add impersonation info
+        is_impersonating = getattr(request, "is_impersonating", False)
+        if is_impersonating:
+            admin = getattr(request, "impersonating_admin", None)
+            token = getattr(request, "impersonation_token", None)
+            impersonated_contact = getattr(request, "impersonated_contact", None)
+            data["impersonation"] = {
+                "is_impersonating": True,
+                "admin_id": str(admin.id) if admin else None,
+                "admin_name": f"{admin.first_name} {admin.last_name}".strip() if admin else None,
+                "admin_email": admin.email if admin else None,
+                "contact_id": str(impersonated_contact.id) if impersonated_contact else None,
+                "contact_name": f"{impersonated_contact.first_name} {impersonated_contact.last_name}".strip() if impersonated_contact else None,
+                "expires_at": token.expires_at.isoformat() if token else None,
+                "remaining_minutes": token.get_remaining_minutes() if token else 0,
+            }
+        else:
+            data["impersonation"] = None
+
+        return Response(data)
 
 
 class PortalChangePasswordView(APIView):
@@ -179,12 +238,20 @@ class PortalChangePasswordView(APIView):
     Allow authenticated portal users to change their password.
 
     SECURITY: Requires current password verification before allowing change.
+    SECURITY: Blocked during admin impersonation to prevent unauthorized changes.
     """
 
     permission_classes = [IsPortalAuthenticated]
     authentication_classes = []
 
     def post(self, request):
+        # Block password change during impersonation
+        if getattr(request, "is_impersonating", False):
+            return Response(
+                {"detail": "Password change is not allowed during impersonation."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = PortalChangePasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -699,6 +766,25 @@ class PortalAppointmentViewSet(viewsets.ViewSet):
 
         serializer = PortalAppointmentSerializer(qs, many=True)
         return Response(serializer.data)
+
+
+# -----------------------------------------------------------------------
+# License Usage View
+# -----------------------------------------------------------------------
+
+
+class PortalLicenseUsageView(APIView):
+    """Get current license usage for the authenticated client."""
+
+    permission_classes = [IsPortalAuthenticated]
+    authentication_classes = []
+
+    def get(self, request):
+        from apps.portal.services.licensing import LicensingService
+
+        contact = request.portal_access.contact
+        usage = LicensingService.get_usage_summary(contact)
+        return Response(usage)
 
 
 # -----------------------------------------------------------------------

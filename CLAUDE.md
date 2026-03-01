@@ -83,7 +83,7 @@ CRM Back end/
 │   ├── cases/              # TaxCase and TaxCaseNote — central domain entity
 │   ├── dashboard/          # Dashboard widgets, user preferences
 │   ├── audit/              # Audit logging middleware and endpoints
-│   └── portal/             # Client portal: rental properties, messages, documents
+│   └── portal/             # Client portal: rentals, commercial buildings, messages, documents, admin
 └── requirements/
     ├── base.txt            # Core deps (Django 5.1, DRF, simplejwt, celery, etc.)
     └── development.txt     # Dev tools (pytest-django, black, ruff, factory-boy, etc.)
@@ -96,9 +96,11 @@ CRM Front end/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── (dashboard)/        # Protected dashboard routes
+│   │   │   └── portal-admin/   # Portal administration panel (staff only)
 │   │   ├── portal/             # Client portal (EJFLOW Client)
 │   │   │   ├── dashboard/      # Portal dashboard with widgets
-│   │   │   └── rentals/        # Rental properties management
+│   │   │   ├── rentals/        # Rental properties management
+│   │   │   └── buildings/      # Commercial buildings management
 │   │   └── login/              # Authentication pages
 │   ├── components/
 │   │   ├── layout/
@@ -146,6 +148,8 @@ All endpoints under `/api/v1/`. Key route groups:
 | `/api/v1/search/` | core | Global search |
 | `/api/v1/portal/auth/` | portal | Client portal authentication |
 | `/api/v1/portal/rentals/` | portal (urls_rental) | Rental properties: CRUD, transactions, summaries, PDF export |
+| `/api/v1/portal/commercial/` | portal (urls_commercial) | Commercial buildings: CRUD, floors, units, tenants, leases, payments |
+| `/api/v1/portal-admin/` | portal (urls_admin) | Portal administration: clients, modules, impersonation |
 | `/api/docs/` | — | Swagger UI |
 
 ### Infrastructure
@@ -212,4 +216,121 @@ The application supports a "Light Mode" for users who prefer a simplified interf
   "relationship": { "first_name": "...", "relationship_type": "..." } | null,
   "corporations": [{ "name": "...", "ein": "...", ... }]
 }
+```
+
+## Client Portal (EJFLOW Client)
+
+The client portal allows contacts to access their information, billing, documents, and rental properties.
+
+### Portal Modules
+| Module | Description | URL Prefix |
+|--------|-------------|------------|
+| `dashboard` | Main dashboard with summary widgets | `/portal/dashboard` |
+| `billing` | Invoices, payments, billing history | `/portal/billing` |
+| `messages` | Messaging with staff | `/portal/messages` |
+| `documents` | Document management | `/portal/documents` |
+| `cases` | Tax cases status | `/portal/cases` |
+| `rentals` | Residential rental properties | `/portal/rentals` |
+| `buildings` | Commercial buildings management | `/portal/buildings` |
+
+### Commercial Buildings Module
+Management of commercial real estate with multi-tenant support:
+- **Buildings**: Main entity with address, sqft
+- **Floors**: Floors within buildings
+- **Units**: Individual suites/units on each floor
+- **Tenants**: Business tenants occupying units
+- **Leases**: Rental contracts with renewal tracking
+- **Payments**: Monthly rent payment tracking
+
+#### Payment Control
+`GET /api/v1/portal/commercial/buildings/{id}/payment-summary/` — Year-to-date payment tracking:
+- Monthly payment status grid (paid/pending/overdue)
+- Delinquent tenants list
+- Collection rate by floor
+- Query params: `year`, `month` (optional)
+
+### Portal Models
+```
+apps/portal/
+├── models.py              # RentalProperty, RentalTransaction, PortalMessage, PortalDocument
+├── models_commercial.py   # CommercialBuilding, Floor, Unit, Tenant, Lease, Payment
+└── models_admin.py        # PortalClientConfig, PortalSession, PortalAdminLog, ImpersonationToken
+```
+
+## Portal Administration Panel
+
+Staff-only panel to manage client portal access from the main CRM.
+
+### Access Control
+- **Only Admin role** can access portal administration
+- Available at: `/portal-admin/` in the CRM dashboard
+
+### Features
+
+#### 1. Module Presets (Templates)
+Pre-configured module sets that can be applied to clients:
+| Preset | Modules Included |
+|--------|------------------|
+| Full | All modules |
+| Basic | Dashboard, Messages, Documents |
+| Real Estate | Dashboard, Rentals, Buildings |
+| Custom | Manual selection |
+
+#### 2. Client Configuration
+- **Default state**: All modules disabled, admin must activate
+- Per-client module toggle (enable/disable each module)
+- Apply preset with one click
+- Activate/deactivate portal access
+
+#### 3. Impersonation (View as Client)
+Enter the client portal as if logged in as the client:
+- **Duration**: 1 hour token expiration
+- **Restrictions**: Cannot change client password
+- **Allowed**: Modify data to fix client errors
+- **Notification**: Client receives email when admin accesses their account
+- **Audit**: All actions logged with impersonation flag
+
+#### 4. Session Management
+- View active client sessions
+- Force logout
+- Reset password
+- Track last login/activity
+
+### Portal Admin API Endpoints
+```
+/api/v1/portal-admin/presets/                    # Module presets CRUD
+/api/v1/portal-admin/clients/                    # List portal clients
+/api/v1/portal-admin/clients/{id}/               # Client detail
+/api/v1/portal-admin/clients/{id}/config/        # Module configuration
+/api/v1/portal-admin/clients/{id}/apply-preset/  # Apply preset
+/api/v1/portal-admin/clients/{id}/impersonate/   # Start impersonation
+/api/v1/portal-admin/clients/{id}/toggle-access/ # Enable/disable access
+/api/v1/portal-admin/clients/{id}/force-logout/  # Force logout
+/api/v1/portal-admin/impersonate/end/            # End impersonation
+```
+
+### Portal Admin Models
+```python
+# apps/portal/models_admin.py
+
+PortalModulePreset      # Template configurations (Full, Basic, etc.)
+PortalClientConfig      # Per-client module settings and status
+PortalSession           # Active client sessions tracking
+PortalAdminLog          # Audit log for admin actions
+PortalImpersonationToken # Temporary tokens for impersonation (1hr expiry)
+```
+
+### Frontend Structure
+```
+CRM Front end/src/app/
+├── (dashboard)/
+│   └── portal-admin/           # Admin panel pages
+│       ├── page.tsx            # Client list
+│       └── [contactId]/
+│           ├── page.tsx        # Client detail
+│           └── config/page.tsx # Module configuration
+└── portal/
+    ├── layout.tsx              # Checks module access + impersonation banner
+    └── components/
+        └── impersonation-banner.tsx
 ```

@@ -21,6 +21,7 @@ from apps.portal.models_rental import (
     RentalTransaction,
 )
 from apps.portal.permissions import IsPortalAuthenticated
+from apps.portal.services.licensing import LicensingService
 from apps.portal.serializers_rental import (
     RentalDashboardSerializer,
     RentalExpenseCategoryCreateSerializer,
@@ -201,6 +202,15 @@ class PortalRentalPropertyViewSet(viewsets.ViewSet):
 
     def create(self, request):
         """Create a new rental property."""
+        # Check licensing limit
+        contact = request.portal_access.contact
+        can_create, error_msg = LicensingService.can_create_rental_property(contact)
+        if not can_create:
+            return Response(
+                {"detail": error_msg},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = RentalPropertyCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 

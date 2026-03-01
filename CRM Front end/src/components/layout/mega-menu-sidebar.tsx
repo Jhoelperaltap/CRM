@@ -38,6 +38,7 @@ import {
   Key,
   FolderTree,
   Palette,
+  UserCog,
   type LucideIcon,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
@@ -216,6 +217,14 @@ export function MegaMenuSidebar() {
             { label: "Modules", href: "/settings/modules", icon: Database, iconColor: "text-indigo-400", description: "Module settings" },
             { label: "Workflows", href: "/settings/workflows", icon: Workflow, iconColor: "text-orange-400", description: "Automation rules" },
             { label: "Audit Log", href: "/audit", icon: ScrollText, iconColor: "text-indigo-400", description: "Activity history" },
+          ],
+        },
+        {
+          title: "PORTAL",
+          items: [
+            { label: "Portal Clients", href: "/portal-admin", icon: UserCog, iconColor: "text-teal-400", description: "Manage client portal" },
+            { label: "Module Presets", href: "/portal-admin/presets", icon: FolderTree, iconColor: "text-violet-400", description: "Portal module presets" },
+            { label: "Portal Audit Log", href: "/portal-admin/logs", icon: ScrollText, iconColor: "text-cyan-400", description: "Admin activity logs" },
           ],
         },
       ],

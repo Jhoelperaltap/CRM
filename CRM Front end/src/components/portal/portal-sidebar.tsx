@@ -9,16 +9,18 @@ import {
   MessageSquare,
   Calendar,
   Home,
+  Building2,
   Receipt,
   Package,
   Wrench,
   FileCheck,
   ChevronRight,
-  Settings,
   User,
   Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePortalAuthStore } from "@/stores/portal-auth-store";
+import type { PortalModules } from "@/types/portal";
 
 interface NavItem {
   label: string;
@@ -26,6 +28,7 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   bgColor: string;
+  module?: keyof PortalModules; // Which module controls visibility
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -35,6 +38,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: LayoutDashboard,
     color: "text-blue-400",
     bgColor: "bg-blue-500/20",
+    module: "dashboard",
   },
   {
     label: "Cases",
@@ -42,6 +46,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: Briefcase,
     color: "text-amber-400",
     bgColor: "bg-amber-500/20",
+    module: "cases",
   },
   {
     label: "Documents",
@@ -49,6 +54,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: FileText,
     color: "text-emerald-400",
     bgColor: "bg-emerald-500/20",
+    module: "documents",
   },
   {
     label: "Messages",
@@ -56,6 +62,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: MessageSquare,
     color: "text-purple-400",
     bgColor: "bg-purple-500/20",
+    module: "messages",
   },
   {
     label: "Appointments",
@@ -63,6 +70,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: Calendar,
     color: "text-pink-400",
     bgColor: "bg-pink-500/20",
+    module: "appointments",
   },
   {
     label: "Rental Properties",
@@ -70,6 +78,15 @@ const NAV_ITEMS: NavItem[] = [
     icon: Home,
     color: "text-teal-400",
     bgColor: "bg-teal-500/20",
+    module: "rentals",
+  },
+  {
+    label: "Commercial Buildings",
+    href: "/portal/buildings",
+    icon: Building2,
+    color: "text-violet-400",
+    bgColor: "bg-violet-500/20",
+    module: "buildings",
   },
 ];
 
@@ -80,6 +97,7 @@ const BILLING_ITEMS: NavItem[] = [
     icon: Receipt,
     color: "text-cyan-400",
     bgColor: "bg-cyan-500/20",
+    module: "billing",
   },
   {
     label: "Products",
@@ -87,6 +105,7 @@ const BILLING_ITEMS: NavItem[] = [
     icon: Package,
     color: "text-orange-400",
     bgColor: "bg-orange-500/20",
+    module: "billing",
   },
   {
     label: "Services",
@@ -94,6 +113,7 @@ const BILLING_ITEMS: NavItem[] = [
     icon: Wrench,
     color: "text-indigo-400",
     bgColor: "bg-indigo-500/20",
+    module: "billing",
   },
   {
     label: "Invoices",
@@ -101,6 +121,7 @@ const BILLING_ITEMS: NavItem[] = [
     icon: FileText,
     color: "text-green-400",
     bgColor: "bg-green-500/20",
+    module: "billing",
   },
   {
     label: "Quotes",
@@ -108,6 +129,7 @@ const BILLING_ITEMS: NavItem[] = [
     icon: FileCheck,
     color: "text-rose-400",
     bgColor: "bg-rose-500/20",
+    module: "billing",
   },
 ];
 
@@ -130,6 +152,15 @@ const ACCOUNT_ITEMS: NavItem[] = [
 
 export function PortalSidebar() {
   const pathname = usePathname();
+  const isModuleEnabled = usePortalAuthStore((s) => s.isModuleEnabled);
+
+  // Filter items based on enabled modules
+  const visibleNavItems = NAV_ITEMS.filter(
+    (item) => !item.module || isModuleEnabled(item.module)
+  );
+  const visibleBillingItems = BILLING_ITEMS.filter(
+    (item) => !item.module || isModuleEnabled(item.module)
+  );
 
   const renderNavItem = (item: NavItem) => {
     const isActive = pathname === item.href ||
@@ -180,28 +211,32 @@ export function PortalSidebar() {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4">
           {/* Main Section */}
-          <div className="mb-6">
-            <span className="mb-3 flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
-              <span className="h-px flex-1 bg-white/10"></span>
-              Main
-              <span className="h-px flex-1 bg-white/10"></span>
-            </span>
-            <div className="flex flex-col gap-1">
-              {NAV_ITEMS.map(renderNavItem)}
+          {visibleNavItems.length > 0 && (
+            <div className="mb-6">
+              <span className="mb-3 flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                <span className="h-px flex-1 bg-white/10"></span>
+                Main
+                <span className="h-px flex-1 bg-white/10"></span>
+              </span>
+              <div className="flex flex-col gap-1">
+                {visibleNavItems.map(renderNavItem)}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Billing Section */}
-          <div className="mb-6">
-            <span className="mb-3 flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
-              <span className="h-px flex-1 bg-white/10"></span>
-              Billing
-              <span className="h-px flex-1 bg-white/10"></span>
-            </span>
-            <div className="flex flex-col gap-1">
-              {BILLING_ITEMS.map(renderNavItem)}
+          {visibleBillingItems.length > 0 && (
+            <div className="mb-6">
+              <span className="mb-3 flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                <span className="h-px flex-1 bg-white/10"></span>
+                Billing
+                <span className="h-px flex-1 bg-white/10"></span>
+              </span>
+              <div className="flex flex-col gap-1">
+                {visibleBillingItems.map(renderNavItem)}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Account Section */}
           <div>
@@ -221,13 +256,15 @@ export function PortalSidebar() {
           <div className="rounded-xl bg-gradient-to-r from-blue-600/20 to-indigo-600/20 p-4">
             <p className="text-sm font-medium text-white">Need Help?</p>
             <p className="mt-1 text-xs text-white/60">Contact our support team for assistance.</p>
-            <Link
-              href="/portal/messages"
-              className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              Send Message
-              <ChevronRight className="size-3" />
-            </Link>
+            {isModuleEnabled("messages") && (
+              <Link
+                href="/portal/messages"
+                className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Send Message
+                <ChevronRight className="size-3" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

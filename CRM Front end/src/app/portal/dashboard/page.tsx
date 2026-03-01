@@ -15,13 +15,16 @@ import {
   ArrowRight,
   TrendingUp,
   Clock,
-  Home,
+  Building2,
 } from "lucide-react";
 import { RentalDashboardWidget } from "@/components/portal/rental-dashboard-widget";
+import { BuildingsDashboardWidget } from "@/components/portal/buildings-dashboard-widget";
 import { cn } from "@/lib/utils";
+import type { PortalModules } from "@/types/portal";
 
 export default function PortalDashboardPage() {
   const contact = usePortalAuthStore((s) => s.contact);
+  const isModuleEnabled = usePortalAuthStore((s) => s.isModuleEnabled);
   const [caseCount, setCaseCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [upcomingAppointments, setUpcomingAppointments] = useState(0);
@@ -29,18 +32,38 @@ export default function PortalDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      portalGetCases().then((cases) => setCaseCount(cases.length)).catch(() => {}),
-      portalGetMessages().then((msgs) => setUnreadMessages(msgs.filter((m) => !m.is_read).length)).catch(() => {}),
-      portalGetAppointments().then((appts) => {
-        const now = new Date().toISOString();
-        setUpcomingAppointments(appts.filter((a) => a.start_datetime > now).length);
-      }).catch(() => {}),
-      portalGetDocuments().then((docs) => setDocumentCount(docs.length)).catch(() => {}),
-    ]).finally(() => setLoading(false));
-  }, []);
+    const promises: Promise<void>[] = [];
 
-  const cards = [
+    // Only fetch data for enabled modules
+    if (isModuleEnabled("cases")) {
+      promises.push(
+        portalGetCases().then((cases) => setCaseCount(cases.length)).catch(() => {})
+      );
+    }
+    if (isModuleEnabled("messages")) {
+      promises.push(
+        portalGetMessages().then((msgs) => setUnreadMessages(msgs.filter((m) => !m.is_read).length)).catch(() => {})
+      );
+    }
+    if (isModuleEnabled("appointments")) {
+      promises.push(
+        portalGetAppointments().then((appts) => {
+          const now = new Date().toISOString();
+          setUpcomingAppointments(appts.filter((a) => a.start_datetime > now).length);
+        }).catch(() => {})
+      );
+    }
+    if (isModuleEnabled("documents")) {
+      promises.push(
+        portalGetDocuments().then((docs) => setDocumentCount(docs.length)).catch(() => {})
+      );
+    }
+
+    Promise.all(promises).finally(() => setLoading(false));
+  }, [isModuleEnabled]);
+
+  // Define all cards with their module requirements
+  const allCards = [
     {
       label: "Active Cases",
       value: caseCount,
@@ -50,6 +73,7 @@ export default function PortalDashboardPage() {
       bgGradient: "from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30",
       iconBg: "bg-amber-100 dark:bg-amber-900/50",
       iconColor: "text-amber-600 dark:text-amber-400",
+      module: "cases" as keyof PortalModules,
     },
     {
       label: "Unread Messages",
@@ -60,6 +84,7 @@ export default function PortalDashboardPage() {
       bgGradient: "from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30",
       iconBg: "bg-purple-100 dark:bg-purple-900/50",
       iconColor: "text-purple-600 dark:text-purple-400",
+      module: "messages" as keyof PortalModules,
     },
     {
       label: "Appointments",
@@ -70,6 +95,7 @@ export default function PortalDashboardPage() {
       bgGradient: "from-pink-50 to-rose-50 dark:from-pink-950/30 dark:to-rose-950/30",
       iconBg: "bg-pink-100 dark:bg-pink-900/50",
       iconColor: "text-pink-600 dark:text-pink-400",
+      module: "appointments" as keyof PortalModules,
     },
     {
       label: "Documents",
@@ -80,29 +106,51 @@ export default function PortalDashboardPage() {
       bgGradient: "from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30",
       iconBg: "bg-emerald-100 dark:bg-emerald-900/50",
       iconColor: "text-emerald-600 dark:text-emerald-400",
+      module: "documents" as keyof PortalModules,
     },
   ];
 
-  const quickActions = [
+  // Filter cards based on enabled modules
+  const cards = allCards.filter(
+    (card) => card.module === null || isModuleEnabled(card.module)
+  );
+
+  // Define all quick actions with module requirements
+  const allQuickActions = [
     {
       label: "Upload Document",
       icon: Upload,
       href: "/portal/documents",
       color: "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700",
+      module: "documents" as keyof PortalModules,
     },
     {
       label: "Send Message",
       icon: Send,
       href: "/portal/messages",
       color: "bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700",
+      module: "messages" as keyof PortalModules,
     },
     {
       label: "View Cases",
       icon: Eye,
       href: "/portal/cases",
       color: "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700",
+      module: "cases" as keyof PortalModules,
+    },
+    {
+      label: "View Buildings",
+      icon: Building2,
+      href: "/portal/buildings",
+      color: "bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700",
+      module: "buildings" as keyof PortalModules,
     },
   ];
+
+  // Filter quick actions based on enabled modules
+  const quickActions = allQuickActions.filter((action) =>
+    isModuleEnabled(action.module)
+  );
 
   // Get current time greeting
   const getGreeting = () => {
@@ -180,88 +228,102 @@ export default function PortalDashboardPage() {
         })}
       </div>
 
-      {/* Quick Actions & Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Quick Actions */}
-        <div className="rounded-2xl border bg-white dark:bg-slate-900 p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="size-5 text-blue-500" />
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-              Quick Actions
-            </h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <Link
-                  key={action.label}
-                  href={action.href}
-                  className={cn(
-                    "flex flex-col items-center gap-3 rounded-xl p-4 text-white transition-all duration-200",
-                    "hover:scale-105 hover:shadow-lg",
-                    action.color
-                  )}
-                >
-                  <Icon className="size-6" />
-                  <span className="text-sm font-medium text-center">{action.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Billing Quick Access */}
-        <div className="rounded-2xl border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-blue-100 dark:bg-blue-900/50 p-2">
-                <FileText className="size-5 text-blue-600 dark:text-blue-400" />
+      {/* Quick Actions & Billing - only show if there are actions or billing is enabled */}
+      {(quickActions.length > 0 || isModuleEnabled("billing")) && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Quick Actions */}
+          {quickActions.length > 0 && (
+            <div className="rounded-2xl border bg-white dark:bg-slate-900 p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <TrendingUp className="size-5 text-blue-500" />
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Quick Actions
+                </h2>
               </div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Billing & Invoices
-              </h2>
+              <div className={cn(
+                "grid gap-3",
+                quickActions.length === 1 ? "grid-cols-1" :
+                quickActions.length === 2 ? "sm:grid-cols-2" :
+                "sm:grid-cols-3"
+              )}>
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <Link
+                      key={action.label}
+                      href={action.href}
+                      className={cn(
+                        "flex flex-col items-center gap-3 rounded-xl p-4 text-white transition-all duration-200",
+                        "hover:scale-105 hover:shadow-lg",
+                        action.color
+                      )}
+                    >
+                      <Icon className="size-6" />
+                      <span className="text-sm font-medium text-center">{action.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-            <Link
-              href="/portal/billing"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1"
-            >
-              View All
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
+          )}
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Link
-              href="/portal/billing/invoices"
-              className="flex items-center gap-3 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="rounded-lg bg-green-100 dark:bg-green-900/50 p-2">
-                <FileText className="size-5 text-green-600 dark:text-green-400" />
+          {/* Billing Quick Access - only show if billing module is enabled */}
+          {isModuleEnabled("billing") && (
+            <div className="rounded-2xl border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="rounded-lg bg-blue-100 dark:bg-blue-900/50 p-2">
+                    <FileText className="size-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    Billing & Invoices
+                  </h2>
+                </div>
+                <Link
+                  href="/portal/billing"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1"
+                >
+                  View All
+                  <ArrowRight className="size-4" />
+                </Link>
               </div>
-              <div>
-                <p className="font-medium text-slate-900 dark:text-white">Invoices</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">View & pay invoices</p>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Link
+                  href="/portal/billing/invoices"
+                  className="flex items-center gap-3 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="rounded-lg bg-green-100 dark:bg-green-900/50 p-2">
+                    <FileText className="size-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white">Invoices</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">View & pay invoices</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/portal/billing/quotes"
+                  className="flex items-center gap-3 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="rounded-lg bg-rose-100 dark:bg-rose-900/50 p-2">
+                    <FileText className="size-5 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white">Quotes</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Review quotes</p>
+                  </div>
+                </Link>
               </div>
-            </Link>
-            <Link
-              href="/portal/billing/quotes"
-              className="flex items-center gap-3 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="rounded-lg bg-rose-100 dark:bg-rose-900/50 p-2">
-                <FileText className="size-5 text-rose-600 dark:text-rose-400" />
-              </div>
-              <div>
-                <p className="font-medium text-slate-900 dark:text-white">Quotes</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Review quotes</p>
-              </div>
-            </Link>
-          </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
-      {/* Rental Properties Widget */}
-      <RentalDashboardWidget />
+      {/* Rental Properties Widget - only show if rentals module is enabled */}
+      {isModuleEnabled("rentals") && <RentalDashboardWidget />}
+
+      {/* Commercial Buildings Widget - only show if buildings module is enabled */}
+      {isModuleEnabled("buildings") && <BuildingsDashboardWidget />}
     </div>
   );
 }
