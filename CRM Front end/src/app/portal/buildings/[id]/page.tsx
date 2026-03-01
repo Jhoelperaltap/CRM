@@ -142,7 +142,7 @@ function FloorSection({
               {floor.units.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
-                    No units in this floor. Click "Add Unit" to create one.
+                    No units in this floor. Click &quot;Add Unit&quot; to create one.
                   </td>
                 </tr>
               ) : (
