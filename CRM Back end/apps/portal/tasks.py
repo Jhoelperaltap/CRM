@@ -85,7 +85,9 @@ def send_impersonation_notification_email(
 
         # Get portal access email
         if not hasattr(contact, "portal_access") or not contact.portal_access:
-            logger.warning(f"Contact {contact_id} has no portal access, skipping notification")
+            logger.warning(
+                f"Contact {contact_id} has no portal access, skipping notification"
+            )
             return {"status": "skipped", "reason": "no_portal_access"}
 
         email = contact.portal_access.email

@@ -108,7 +108,14 @@ class PortalClientConfigSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "contact", "last_login", "last_activity", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "contact",
+            "last_login",
+            "last_activity",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_enabled_modules(self, obj) -> list[str]:
         return obj.get_enabled_modules()
@@ -311,7 +318,9 @@ class PortalImpersonationTokenSerializer(serializers.ModelSerializer):
 
     admin_user_name = serializers.SerializerMethodField()
     contact_name = serializers.SerializerMethodField()
-    remaining_minutes = serializers.IntegerField(source="get_remaining_minutes", read_only=True)
+    remaining_minutes = serializers.IntegerField(
+        source="get_remaining_minutes", read_only=True
+    )
     is_valid = serializers.BooleanField(read_only=True)
 
     class Meta:

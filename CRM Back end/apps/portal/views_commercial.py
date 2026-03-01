@@ -140,13 +140,15 @@ def _get_paid_months(lease, year):
 def _calculate_payment_summary(building, year, month=None):
     """Calculate payment summary for a building."""
     today = timezone.now().date()
-    current_month = today.month if today.year == year else (12 if today.year > year else 0)
+    current_month = (
+        today.month if today.year == year else (12 if today.year > year else 0)
+    )
 
     # Get all units in the building
-    units = CommercialUnit.objects.filter(
-        floor__building=building
-    ).select_related("floor").prefetch_related(
-        "tenants", "leases", "leases__payments"
+    units = (
+        CommercialUnit.objects.filter(floor__building=building)
+        .select_related("floor")
+        .prefetch_related("tenants", "leases", "leases__payments")
     )
 
     # Calculate totals
@@ -200,20 +202,24 @@ def _calculate_payment_summary(building, year, month=None):
 
         for m in expected_months:
             if m in paid_months:
-                months_status.append({
-                    "month": m,
-                    "paid": True,
-                    "amount": paid_months[m]["amount"],
-                    "payment_date": paid_months[m]["date"],
-                })
+                months_status.append(
+                    {
+                        "month": m,
+                        "paid": True,
+                        "amount": paid_months[m]["amount"],
+                        "payment_date": paid_months[m]["date"],
+                    }
+                )
                 total_paid += paid_months[m]["amount"]
             else:
-                months_status.append({
-                    "month": m,
-                    "paid": False,
-                    "amount": None,
-                    "payment_date": None,
-                })
+                months_status.append(
+                    {
+                        "month": m,
+                        "paid": False,
+                        "amount": None,
+                        "payment_date": None,
+                    }
+                )
             # Count as expected only for months up to current
             if m <= max_month:
                 total_expected += monthly_rent
@@ -224,7 +230,7 @@ def _calculate_payment_summary(building, year, month=None):
         building_expected_ytd += total_expected
         building_collected_ytd += total_paid
         floors_data[floor.id]["collected_ytd"] += total_paid
-        floors_data[floor.id]["pending_ytd"] += (total_expected - total_paid)
+        floors_data[floor.id]["pending_ytd"] += total_expected - total_paid
 
         # Check if unit is fully paid for the period
         if total_paid >= total_expected:
@@ -233,30 +239,34 @@ def _calculate_payment_summary(building, year, month=None):
             floors_data[floor.id]["units_pending"] += 1
 
         # Build unit data
-        units_data.append({
-            "id": unit.id,
-            "unit_number": unit.unit_number,
-            "floor_number": floor.floor_number,
-            "tenant_name": tenant.tenant_name if tenant else None,
-            "business_name": tenant.business_name if tenant else None,
-            "monthly_rent": monthly_rent,
-            "months_status": months_status,
-            "total_expected_ytd": total_expected,
-            "total_paid_ytd": total_paid,
-            "balance_due": max(Decimal("0.00"), total_expected - total_paid),
-        })
+        units_data.append(
+            {
+                "id": unit.id,
+                "unit_number": unit.unit_number,
+                "floor_number": floor.floor_number,
+                "tenant_name": tenant.tenant_name if tenant else None,
+                "business_name": tenant.business_name if tenant else None,
+                "monthly_rent": monthly_rent,
+                "months_status": months_status,
+                "total_expected_ytd": total_expected,
+                "total_paid_ytd": total_paid,
+                "balance_due": max(Decimal("0.00"), total_expected - total_paid),
+            }
+        )
 
         # Add to delinquent if has owed months
         if owed_months:
-            delinquent_data.append({
-                "unit_id": unit.id,
-                "unit_number": unit.unit_number,
-                "tenant_name": tenant.tenant_name if tenant else "Unknown",
-                "business_name": tenant.business_name if tenant else None,
-                "months_owed": owed_months,
-                "total_owed": len(owed_months) * monthly_rent,
-                "monthly_rent": monthly_rent,
-            })
+            delinquent_data.append(
+                {
+                    "unit_id": unit.id,
+                    "unit_number": unit.unit_number,
+                    "tenant_name": tenant.tenant_name if tenant else "Unknown",
+                    "business_name": tenant.business_name if tenant else None,
+                    "months_owed": owed_months,
+                    "total_owed": len(owed_months) * monthly_rent,
+                    "monthly_rent": monthly_rent,
+                }
+            )
 
     # Calculate collection rate
     collection_rate = Decimal("0.0")
@@ -276,7 +286,9 @@ def _calculate_payment_summary(building, year, month=None):
             "collection_rate": round(collection_rate, 1),
         },
         "floors": sorted(floors_data.values(), key=lambda x: x["floor_number"]),
-        "units": sorted(units_data, key=lambda x: (x["floor_number"], x["unit_number"])),
+        "units": sorted(
+            units_data, key=lambda x: (x["floor_number"], x["unit_number"])
+        ),
         "delinquent": sorted(delinquent_data, key=lambda x: -x["total_owed"]),
     }
 

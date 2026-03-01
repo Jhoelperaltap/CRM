@@ -19,7 +19,9 @@ from apps.portal.views_commercial import (
 
 router = DefaultRouter()
 router.register(
-    r"buildings", PortalCommercialBuildingViewSet, basename="portal-commercial-buildings"
+    r"buildings",
+    PortalCommercialBuildingViewSet,
+    basename="portal-commercial-buildings",
 )
 router.register(
     r"floors", PortalCommercialFloorViewSet, basename="portal-commercial-floors"

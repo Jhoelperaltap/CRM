@@ -162,11 +162,15 @@ class PortalClientViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         """Get detailed info for a single client."""
         try:
-            contact = Contact.objects.select_related(
-                "portal_access",
-                "portal_config",
-                "portal_config__preset",
-            ).prefetch_related("portal_sessions").get(pk=pk)
+            contact = (
+                Contact.objects.select_related(
+                    "portal_access",
+                    "portal_config",
+                    "portal_config__preset",
+                )
+                .prefetch_related("portal_sessions")
+                .get(pk=pk)
+            )
         except Contact.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -197,13 +201,14 @@ class PortalClientViewSet(viewsets.ViewSet):
             return Response(serializer.data)
 
         # Update config
-        serializer = PortalClientConfigUpdateSerializer(config, data=request.data, partial=True)
+        serializer = PortalClientConfigUpdateSerializer(
+            config, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
 
         # Track what changed
         old_values = {
-            field: getattr(config, field)
-            for field in serializer.validated_data.keys()
+            field: getattr(config, field) for field in serializer.validated_data.keys()
         }
 
         serializer.save()
@@ -290,10 +295,12 @@ class PortalClientViewSet(viewsets.ViewSet):
             ip_address=get_client_ip(request),
         )
 
-        return Response({
-            "is_portal_active": config.is_portal_active,
-            "message": f"Portal access {'enabled' if new_value else 'disabled'}",
-        })
+        return Response(
+            {
+                "is_portal_active": config.is_portal_active,
+                "message": f"Portal access {'enabled' if new_value else 'disabled'}",
+            }
+        )
 
     @action(detail=True, methods=["get"])
     def sessions(self, request, pk=None):
@@ -303,7 +310,9 @@ class PortalClientViewSet(viewsets.ViewSet):
         except Contact.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        sessions = PortalSession.objects.filter(contact=contact).order_by("-last_activity")[:20]
+        sessions = PortalSession.objects.filter(contact=contact).order_by(
+            "-last_activity"
+        )[:20]
         serializer = PortalSessionSerializer(sessions, many=True)
         return Response(serializer.data)
 
@@ -333,10 +342,12 @@ class PortalClientViewSet(viewsets.ViewSet):
             ip_address=get_client_ip(request),
         )
 
-        return Response({
-            "message": f"Logged out {count} active session(s)",
-            "sessions_ended": count,
-        })
+        return Response(
+            {
+                "message": f"Logged out {count} active session(s)",
+                "sessions_ended": count,
+            }
+        )
 
     @action(detail=True, methods=["post"], url_path="reset-password")
     def reset_password(self, request, pk=None):
@@ -359,7 +370,9 @@ class PortalClientViewSet(viewsets.ViewSet):
         portal_access = contact.portal_access
         portal_access.reset_token = secrets.token_urlsafe(32)
         portal_access.reset_token_expires_at = timezone.now() + timedelta(hours=24)
-        portal_access.save(update_fields=["reset_token", "reset_token_expires_at", "updated_at"])
+        portal_access.save(
+            update_fields=["reset_token", "reset_token_expires_at", "updated_at"]
+        )
 
         # TODO: Send reset email
         # send_password_reset_email.delay(contact.id)
@@ -372,9 +385,11 @@ class PortalClientViewSet(viewsets.ViewSet):
             ip_address=get_client_ip(request),
         )
 
-        return Response({
-            "message": "Password reset initiated. Email will be sent to client.",
-        })
+        return Response(
+            {
+                "message": "Password reset initiated. Email will be sent to client.",
+            }
+        )
 
     @action(detail=True, methods=["post"])
     def impersonate(self, request, pk=None):
@@ -450,9 +465,11 @@ class PortalClientViewSet(viewsets.ViewSet):
         except Contact.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        logs = PortalAdminLog.objects.filter(contact=contact).select_related(
-            "admin_user"
-        ).order_by("-created_at")[:50]
+        logs = (
+            PortalAdminLog.objects.filter(contact=contact)
+            .select_related("admin_user")
+            .order_by("-created_at")[:50]
+        )
 
         serializer = PortalAdminLogSerializer(logs, many=True)
         return Response(serializer.data)
@@ -470,22 +487,28 @@ class ImpersonationView(APIView):
 
     def get(self, request):
         """Get current impersonation status for the admin."""
-        token = PortalImpersonationToken.objects.filter(
-            admin_user=request.user,
-            is_active=True,
-        ).select_related("contact").first()
+        token = (
+            PortalImpersonationToken.objects.filter(
+                admin_user=request.user,
+                is_active=True,
+            )
+            .select_related("contact")
+            .first()
+        )
 
         if not token or not token.is_valid:
             return Response({"is_impersonating": False})
 
-        return Response({
-            "is_impersonating": True,
-            "token": token.token,
-            "contact_id": str(token.contact.id),
-            "contact_name": f"{token.contact.first_name} {token.contact.last_name}".strip(),
-            "expires_at": token.expires_at,
-            "remaining_minutes": token.get_remaining_minutes(),
-        })
+        return Response(
+            {
+                "is_impersonating": True,
+                "token": token.token,
+                "contact_id": str(token.contact.id),
+                "contact_name": f"{token.contact.first_name} {token.contact.last_name}".strip(),
+                "expires_at": token.expires_at,
+                "remaining_minutes": token.get_remaining_minutes(),
+            }
+        )
 
     def delete(self, request):
         """End current impersonation session."""
@@ -638,13 +661,20 @@ class PortalAdminStatsView(APIView):
         clients_with_access = ClientPortalAccess.objects.filter(is_active=True).count()
 
         # Active portal configs
-        active_clients = PortalClientConfig.objects.filter(is_portal_active=True).count()
+        active_clients = PortalClientConfig.objects.filter(
+            is_portal_active=True
+        ).count()
 
         # Online now (active session in last 15 minutes)
-        online_now = PortalSession.objects.filter(
-            is_active=True,
-            last_activity__gte=fifteen_minutes_ago,
-        ).values("contact_id").distinct().count()
+        online_now = (
+            PortalSession.objects.filter(
+                is_active=True,
+                last_activity__gte=fifteen_minutes_ago,
+            )
+            .values("contact_id")
+            .distinct()
+            .count()
+        )
 
         # Inactive (no activity in 30 days)
         inactive_30_days = PortalClientConfig.objects.filter(

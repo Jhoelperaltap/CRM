@@ -132,10 +132,14 @@ def get_impersonation_context(request):
     return {
         "is_impersonating": True,
         "admin_id": str(admin.id) if admin else None,
-        "admin_name": f"{admin.first_name} {admin.last_name}".strip() if admin else None,
+        "admin_name": (
+            f"{admin.first_name} {admin.last_name}".strip() if admin else None
+        ),
         "admin_email": admin.email if admin else None,
         "contact_id": str(contact.id) if contact else None,
-        "contact_name": f"{contact.first_name} {contact.last_name}".strip() if contact else None,
+        "contact_name": (
+            f"{contact.first_name} {contact.last_name}".strip() if contact else None
+        ),
         "expires_at": token.expires_at if token else None,
         "remaining_minutes": token.get_remaining_minutes() if token else 0,
     }

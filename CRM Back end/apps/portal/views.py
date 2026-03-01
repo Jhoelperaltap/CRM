@@ -133,7 +133,9 @@ class PortalLoginView(APIView):
         if hasattr(contact, "portal_config") and contact.portal_config:
             if not contact.portal_config.is_portal_active:
                 return Response(
-                    {"detail": "Your portal access has been deactivated. Please contact support."},
+                    {
+                        "detail": "Your portal access has been deactivated. Please contact support."
+                    },
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
@@ -220,10 +222,18 @@ class PortalMeView(APIView):
             data["impersonation"] = {
                 "is_impersonating": True,
                 "admin_id": str(admin.id) if admin else None,
-                "admin_name": f"{admin.first_name} {admin.last_name}".strip() if admin else None,
+                "admin_name": (
+                    f"{admin.first_name} {admin.last_name}".strip() if admin else None
+                ),
                 "admin_email": admin.email if admin else None,
-                "contact_id": str(impersonated_contact.id) if impersonated_contact else None,
-                "contact_name": f"{impersonated_contact.first_name} {impersonated_contact.last_name}".strip() if impersonated_contact else None,
+                "contact_id": (
+                    str(impersonated_contact.id) if impersonated_contact else None
+                ),
+                "contact_name": (
+                    f"{impersonated_contact.first_name} {impersonated_contact.last_name}".strip()
+                    if impersonated_contact
+                    else None
+                ),
                 "expires_at": token.expires_at.isoformat() if token else None,
                 "remaining_minutes": token.get_remaining_minutes() if token else 0,
             }

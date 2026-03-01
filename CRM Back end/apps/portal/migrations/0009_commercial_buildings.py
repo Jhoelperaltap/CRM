@@ -253,7 +253,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "email",
-                    models.EmailField(blank=True, default="", max_length=254, verbose_name="email"),
+                    models.EmailField(
+                        blank=True, default="", max_length=254, verbose_name="email"
+                    ),
                 ),
                 (
                     "phone",

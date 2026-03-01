@@ -96,9 +96,7 @@ class LicensingService:
 
         from apps.portal.models_commercial import CommercialUnit
 
-        current_count = CommercialUnit.objects.filter(
-            floor__building=building
-        ).count()
+        current_count = CommercialUnit.objects.filter(floor__building=building).count()
 
         if current_count >= config.max_units_per_building:
             return False, _(
@@ -198,9 +196,7 @@ class LicensingService:
         config = LicensingService.get_client_config(contact)
 
         floors_count = building.floors.count()
-        units_count = CommercialUnit.objects.filter(
-            floor__building=building
-        ).count()
+        units_count = CommercialUnit.objects.filter(floor__building=building).count()
 
         return {
             "floors": {

@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portal', '0011_initial_module_presets'),
+        ("portal", "0011_initial_module_presets"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='portalclientconfig',
-            name='module_appointments',
-            field=models.BooleanField(default=False, verbose_name='appointments'),
+            model_name="portalclientconfig",
+            name="module_appointments",
+            field=models.BooleanField(default=False, verbose_name="appointments"),
         ),
         migrations.AddField(
-            model_name='portalmodulepreset',
-            name='module_appointments',
-            field=models.BooleanField(default=False, verbose_name='appointments'),
+            model_name="portalmodulepreset",
+            name="module_appointments",
+            field=models.BooleanField(default=False, verbose_name="appointments"),
         ),
     ]

@@ -9,177 +9,421 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contacts', '0011_change_social_url_fields_to_charfield'),
-        ('portal', '0009_commercial_buildings'),
+        ("contacts", "0011_change_social_url_fields_to_charfield"),
+        ("portal", "0009_commercial_buildings"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PortalAdminLog',
+            name="PortalAdminLog",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('action', models.CharField(choices=[('impersonate_start', 'Started impersonation'), ('impersonate_end', 'Ended impersonation'), ('toggle_module', 'Toggled module'), ('apply_preset', 'Applied preset'), ('toggle_access', 'Toggled portal access'), ('force_logout', 'Forced logout'), ('reset_password', 'Reset password'), ('view_client', 'Viewed client'), ('update_config', 'Updated configuration')], max_length=50, verbose_name='action')),
-                ('details', models.JSONField(blank=True, default=dict, help_text='Additional action details', verbose_name='details')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, verbose_name='IP address')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "action",
+                    models.CharField(
+                        choices=[
+                            ("impersonate_start", "Started impersonation"),
+                            ("impersonate_end", "Ended impersonation"),
+                            ("toggle_module", "Toggled module"),
+                            ("apply_preset", "Applied preset"),
+                            ("toggle_access", "Toggled portal access"),
+                            ("force_logout", "Forced logout"),
+                            ("reset_password", "Reset password"),
+                            ("view_client", "Viewed client"),
+                            ("update_config", "Updated configuration"),
+                        ],
+                        max_length=50,
+                        verbose_name="action",
+                    ),
+                ),
+                (
+                    "details",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Additional action details",
+                        verbose_name="details",
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True, null=True, verbose_name="IP address"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'portal admin log',
-                'verbose_name_plural': 'portal admin logs',
-                'db_table': 'crm_portal_admin_logs',
-                'ordering': ['-created_at'],
+                "verbose_name": "portal admin log",
+                "verbose_name_plural": "portal admin logs",
+                "db_table": "crm_portal_admin_logs",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='PortalClientConfig',
+            name="PortalClientConfig",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('module_dashboard', models.BooleanField(default=False, verbose_name='dashboard')),
-                ('module_billing', models.BooleanField(default=False, verbose_name='billing')),
-                ('module_messages', models.BooleanField(default=False, verbose_name='messages')),
-                ('module_documents', models.BooleanField(default=False, verbose_name='documents')),
-                ('module_cases', models.BooleanField(default=False, verbose_name='cases')),
-                ('module_rentals', models.BooleanField(default=False, verbose_name='rentals')),
-                ('module_buildings', models.BooleanField(default=False, verbose_name='buildings')),
-                ('is_portal_active', models.BooleanField(default=False, help_text='Whether the client can access the portal', verbose_name='portal active')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('last_activity', models.DateTimeField(blank=True, null=True, verbose_name='last activity')),
-                ('notes', models.TextField(blank=True, default='', verbose_name='admin notes')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "module_dashboard",
+                    models.BooleanField(default=False, verbose_name="dashboard"),
+                ),
+                (
+                    "module_billing",
+                    models.BooleanField(default=False, verbose_name="billing"),
+                ),
+                (
+                    "module_messages",
+                    models.BooleanField(default=False, verbose_name="messages"),
+                ),
+                (
+                    "module_documents",
+                    models.BooleanField(default=False, verbose_name="documents"),
+                ),
+                (
+                    "module_cases",
+                    models.BooleanField(default=False, verbose_name="cases"),
+                ),
+                (
+                    "module_rentals",
+                    models.BooleanField(default=False, verbose_name="rentals"),
+                ),
+                (
+                    "module_buildings",
+                    models.BooleanField(default=False, verbose_name="buildings"),
+                ),
+                (
+                    "is_portal_active",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Whether the client can access the portal",
+                        verbose_name="portal active",
+                    ),
+                ),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "last_activity",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last activity"
+                    ),
+                ),
+                (
+                    "notes",
+                    models.TextField(
+                        blank=True, default="", verbose_name="admin notes"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'portal client configuration',
-                'verbose_name_plural': 'portal client configurations',
-                'db_table': 'crm_portal_client_configs',
+                "verbose_name": "portal client configuration",
+                "verbose_name_plural": "portal client configurations",
+                "db_table": "crm_portal_client_configs",
             },
         ),
         migrations.CreateModel(
-            name='PortalImpersonationToken',
+            name="PortalImpersonationToken",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('token', models.CharField(max_length=255, unique=True, verbose_name='token')),
-                ('expires_at', models.DateTimeField(verbose_name='expires at')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('ended_at', models.DateTimeField(blank=True, null=True, verbose_name='ended at')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, verbose_name='IP address')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "token",
+                    models.CharField(max_length=255, unique=True, verbose_name="token"),
+                ),
+                ("expires_at", models.DateTimeField(verbose_name="expires at")),
+                ("is_active", models.BooleanField(default=True, verbose_name="active")),
+                (
+                    "ended_at",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="ended at"
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True, null=True, verbose_name="IP address"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'portal impersonation token',
-                'verbose_name_plural': 'portal impersonation tokens',
-                'db_table': 'crm_portal_impersonation_tokens',
-                'ordering': ['-created_at'],
+                "verbose_name": "portal impersonation token",
+                "verbose_name_plural": "portal impersonation tokens",
+                "db_table": "crm_portal_impersonation_tokens",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='PortalModulePreset',
+            name="PortalModulePreset",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(help_text="Display name for this preset (e.g., 'Full', 'Basic')", max_length=100, unique=True, verbose_name='preset name')),
-                ('description', models.TextField(blank=True, default='', help_text='Description of what this preset includes', verbose_name='description')),
-                ('module_dashboard', models.BooleanField(default=False, verbose_name='dashboard')),
-                ('module_billing', models.BooleanField(default=False, verbose_name='billing')),
-                ('module_messages', models.BooleanField(default=False, verbose_name='messages')),
-                ('module_documents', models.BooleanField(default=False, verbose_name='documents')),
-                ('module_cases', models.BooleanField(default=False, verbose_name='cases')),
-                ('module_rentals', models.BooleanField(default=False, verbose_name='rentals')),
-                ('module_buildings', models.BooleanField(default=False, verbose_name='buildings')),
-                ('is_system', models.BooleanField(default=False, help_text='System presets cannot be deleted', verbose_name='system preset')),
-                ('is_default', models.BooleanField(default=False, help_text='Default preset for new clients', verbose_name='default preset')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Display name for this preset (e.g., 'Full', 'Basic')",
+                        max_length=100,
+                        unique=True,
+                        verbose_name="preset name",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        default="",
+                        help_text="Description of what this preset includes",
+                        verbose_name="description",
+                    ),
+                ),
+                (
+                    "module_dashboard",
+                    models.BooleanField(default=False, verbose_name="dashboard"),
+                ),
+                (
+                    "module_billing",
+                    models.BooleanField(default=False, verbose_name="billing"),
+                ),
+                (
+                    "module_messages",
+                    models.BooleanField(default=False, verbose_name="messages"),
+                ),
+                (
+                    "module_documents",
+                    models.BooleanField(default=False, verbose_name="documents"),
+                ),
+                (
+                    "module_cases",
+                    models.BooleanField(default=False, verbose_name="cases"),
+                ),
+                (
+                    "module_rentals",
+                    models.BooleanField(default=False, verbose_name="rentals"),
+                ),
+                (
+                    "module_buildings",
+                    models.BooleanField(default=False, verbose_name="buildings"),
+                ),
+                (
+                    "is_system",
+                    models.BooleanField(
+                        default=False,
+                        help_text="System presets cannot be deleted",
+                        verbose_name="system preset",
+                    ),
+                ),
+                (
+                    "is_default",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Default preset for new clients",
+                        verbose_name="default preset",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'portal module preset',
-                'verbose_name_plural': 'portal module presets',
-                'db_table': 'crm_portal_module_presets',
-                'ordering': ['-is_system', 'name'],
+                "verbose_name": "portal module preset",
+                "verbose_name_plural": "portal module presets",
+                "db_table": "crm_portal_module_presets",
+                "ordering": ["-is_system", "name"],
             },
         ),
         migrations.CreateModel(
-            name='PortalSession',
+            name="PortalSession",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('session_key', models.CharField(help_text='Session identifier or JWT token ID', max_length=255, verbose_name='session key')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, verbose_name='IP address')),
-                ('user_agent', models.TextField(blank=True, default='', verbose_name='user agent')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('last_activity', models.DateTimeField(auto_now=True, verbose_name='last activity')),
-                ('logged_out_at', models.DateTimeField(blank=True, null=True, verbose_name='logged out at')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "session_key",
+                    models.CharField(
+                        help_text="Session identifier or JWT token ID",
+                        max_length=255,
+                        verbose_name="session key",
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True, null=True, verbose_name="IP address"
+                    ),
+                ),
+                (
+                    "user_agent",
+                    models.TextField(blank=True, default="", verbose_name="user agent"),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="active")),
+                (
+                    "last_activity",
+                    models.DateTimeField(auto_now=True, verbose_name="last activity"),
+                ),
+                (
+                    "logged_out_at",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="logged out at"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'portal session',
-                'verbose_name_plural': 'portal sessions',
-                'db_table': 'crm_portal_sessions',
-                'ordering': ['-last_activity'],
+                "verbose_name": "portal session",
+                "verbose_name_plural": "portal sessions",
+                "db_table": "crm_portal_sessions",
+                "ordering": ["-last_activity"],
             },
         ),
         migrations.RenameIndex(
-            model_name='commerciallease',
-            new_name='crm_commerc_unit_id_2f7ed4_idx',
-            old_name='crm_commerc_unit_id_1a2b3c_idx',
+            model_name="commerciallease",
+            new_name="crm_commerc_unit_id_2f7ed4_idx",
+            old_name="crm_commerc_unit_id_1a2b3c_idx",
         ),
         migrations.RenameIndex(
-            model_name='commerciallease',
-            new_name='crm_commerc_start_d_ff56f8_idx',
-            old_name='crm_commerc_start_d_4d5e6f_idx',
+            model_name="commerciallease",
+            new_name="crm_commerc_start_d_ff56f8_idx",
+            old_name="crm_commerc_start_d_4d5e6f_idx",
         ),
         migrations.RenameIndex(
-            model_name='commercialpayment',
-            new_name='crm_commerc_lease_i_938769_idx',
-            old_name='crm_commerc_lease_i_7g8h9i_idx',
+            model_name="commercialpayment",
+            new_name="crm_commerc_lease_i_938769_idx",
+            old_name="crm_commerc_lease_i_7g8h9i_idx",
         ),
         migrations.AddField(
-            model_name='portaladminlog',
-            name='admin_user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='portal_admin_logs', to=settings.AUTH_USER_MODEL, verbose_name='admin user'),
+            model_name="portaladminlog",
+            name="admin_user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="portal_admin_logs",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="admin user",
+            ),
         ),
         migrations.AddField(
-            model_name='portaladminlog',
-            name='contact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='portal_admin_logs', to='contacts.contact', verbose_name='contact'),
+            model_name="portaladminlog",
+            name="contact",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="portal_admin_logs",
+                to="contacts.contact",
+                verbose_name="contact",
+            ),
         ),
         migrations.AddField(
-            model_name='portalclientconfig',
-            name='contact',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='portal_config', to='contacts.contact', verbose_name='contact'),
+            model_name="portalclientconfig",
+            name="contact",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="portal_config",
+                to="contacts.contact",
+                verbose_name="contact",
+            ),
         ),
         migrations.AddField(
-            model_name='portalimpersonationtoken',
-            name='admin_user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='impersonation_tokens', to=settings.AUTH_USER_MODEL, verbose_name='admin user'),
+            model_name="portalimpersonationtoken",
+            name="admin_user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="impersonation_tokens",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="admin user",
+            ),
         ),
         migrations.AddField(
-            model_name='portalimpersonationtoken',
-            name='contact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='impersonation_tokens', to='contacts.contact', verbose_name='contact'),
+            model_name="portalimpersonationtoken",
+            name="contact",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="impersonation_tokens",
+                to="contacts.contact",
+                verbose_name="contact",
+            ),
         ),
         migrations.AddField(
-            model_name='portalclientconfig',
-            name='preset',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='clients', to='portal.portalmodulepreset', verbose_name='applied preset'),
+            model_name="portalclientconfig",
+            name="preset",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="clients",
+                to="portal.portalmodulepreset",
+                verbose_name="applied preset",
+            ),
         ),
         migrations.AddField(
-            model_name='portalsession',
-            name='contact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='portal_sessions', to='contacts.contact', verbose_name='contact'),
+            model_name="portalsession",
+            name="contact",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="portal_sessions",
+                to="contacts.contact",
+                verbose_name="contact",
+            ),
         ),
         migrations.AddIndex(
-            model_name='portaladminlog',
-            index=models.Index(fields=['contact', '-created_at'], name='crm_portal__contact_6f83bc_idx'),
+            model_name="portaladminlog",
+            index=models.Index(
+                fields=["contact", "-created_at"], name="crm_portal__contact_6f83bc_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='portaladminlog',
-            index=models.Index(fields=['admin_user', '-created_at'], name='crm_portal__admin_u_60ee20_idx'),
+            model_name="portaladminlog",
+            index=models.Index(
+                fields=["admin_user", "-created_at"],
+                name="crm_portal__admin_u_60ee20_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='portaladminlog',
-            index=models.Index(fields=['action', '-created_at'], name='crm_portal__action_8ee99a_idx'),
+            model_name="portaladminlog",
+            index=models.Index(
+                fields=["action", "-created_at"], name="crm_portal__action_8ee99a_idx"
+            ),
         ),
     ]

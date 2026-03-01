@@ -614,9 +614,7 @@ class MonthPaymentStatusSerializer(serializers.Serializer):
 
     month = serializers.IntegerField()
     paid = serializers.BooleanField()
-    amount = serializers.DecimalField(
-        max_digits=12, decimal_places=2, allow_null=True
-    )
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2, allow_null=True)
     payment_date = serializers.DateField(allow_null=True)
 
 

@@ -324,6 +324,7 @@ class CommercialLease(TimeStampedModel):
     def days_until_expiration(self):
         """Calculate days until lease expiration."""
         from django.utils import timezone
+
         today = timezone.now().date()
         if self.end_date > today:
             return (self.end_date - today).days
